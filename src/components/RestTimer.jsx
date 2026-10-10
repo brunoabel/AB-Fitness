@@ -128,7 +128,7 @@ export default function RestTimer({
       )}
 
       {/* Caixa do Temporizador */}
-      <div className="max-w-md mx-auto px-3 pb-3">
+      <div className="max-w-md mx-auto px-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]">
         <div className={`rounded-3xl border shadow-lg backdrop-blur-xl transition-all duration-300 ${
           isAlerting 
             ? 'bg-sky-500/95 border-sky-300 text-white shadow-sky-400/40' 

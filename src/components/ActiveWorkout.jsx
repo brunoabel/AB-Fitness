@@ -236,8 +236,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   return (
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950/90 pb-36 animate-fadeIn transition-colors">
       {/* Top Bar Fixa / Glassmorphism */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-sky-100 dark:border-slate-800 shadow-xs transition-colors">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-sky-100 dark:border-slate-800 shadow-xs transition-colors pt-[env(safe-area-inset-top,0px)]">
+        <div className="max-w-md mx-auto px-4 pt-3 pb-3 flex items-center justify-between">
           <button
             onClick={() => {
               if (window.confirm('Deseja pausar o treino? Seu progresso e cargas estão salvos!')) {

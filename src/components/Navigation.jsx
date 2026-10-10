@@ -10,8 +10,8 @@ export default function Navigation({ activeTab, onTabChange }) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-sky-100 dark:border-slate-800 shadow-lg transition-colors">
-      <div className="max-w-md mx-auto px-6 py-2 flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-sky-100 dark:border-slate-800 shadow-lg transition-colors pb-[max(env(safe-area-inset-bottom,0px),8px)]">
+      <div className="max-w-md mx-auto px-6 pt-2 pb-1 flex items-center justify-around">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

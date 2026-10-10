@@ -11,8 +11,8 @@ export default function Header({
   onToggleTheme
 }) {
   return (
-    <header className="w-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border-b border-sky-100 dark:border-slate-800 sticky top-0 z-20 transition-colors">
-      <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="w-full bg-white/85 dark:bg-slate-900/95 backdrop-blur-md border-b border-sky-100 dark:border-slate-800 sticky top-0 z-20 transition-colors pt-[env(safe-area-inset-top,0px)]">
+      <div className="max-w-md mx-auto px-4 pt-3 pb-3 flex items-center justify-between">
         {/* Marca / Logo LA Workout */}
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-400 to-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-400/20">

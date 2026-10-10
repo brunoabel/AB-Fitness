@@ -37,6 +37,23 @@
   }
 }
 
+/* Safe Area Insets para celulares com Notch / Ilha Dinâmica / Barra Home */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+
+.safe-top-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+
+.safe-bottom-nav {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
 /* Custom scrollbar for mobile feel */
 ::-webkit-scrollbar {
   width: 4px;
