@@ -1,0 +1,19 @@
+{
+  "name": "LA Workout — Atleta Sub-17",
+  "short_name": "LA Workout",
+  "description": "Treino Inteligente de Força, Explosão & Prevenção para Atleta de Futebol",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070d18",
+  "theme_color": "#070d18",
+  "categories": ["fitness", "sports", "health"],
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
