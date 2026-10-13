@@ -38,72 +38,65 @@ export default function WeeklyDashboard({
 
   return (
     <div className="max-w-md mx-auto px-4 py-4 space-y-4 animate-fadeIn transition-colors">
-      {/* Banner de Boas-Vindas & Foco de Atleta */}
-      <div className="relative overflow-hidden p-5 rounded-3xl bg-gradient-to-br from-white dark:from-slate-900 via-sky-50/80 dark:via-slate-900/90 to-sky-100/40 dark:to-sky-950/30 border border-sky-100 dark:border-slate-800 shadow-sm transition-colors">
-        <div className="relative z-10 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5 text-sky-500 fill-sky-500" />
-                AB Fitness • Treino Inteligente
-              </span>
-            </div>
-
-            {onOpenCustomize && (
-              <button
-                onClick={onOpenCustomize}
-                className="inline-flex items-center gap-1 text-[10px] font-extrabold text-sky-700 dark:text-sky-300 bg-white/90 dark:bg-slate-800 px-2.5 py-1 rounded-full border border-sky-200/80 dark:border-slate-700 shadow-xs hover:bg-sky-50 active:scale-95 transition-all"
-                title="Personalizar seu plano de acordo com suas metas"
-              >
-                <Sparkles className="w-3 h-3 text-sky-500" />
-                <span>Personalizar</span>
-              </button>
-            )}
-          </div>
-
-          <h1 className="text-xl font-black text-slate-800 dark:text-white tracking-tight leading-snug">
-            Constância gera excelência. O seu melhor treino começa agora!
-          </h1>
-
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-            Exercícios com biomecânica de precisão, progressão de carga planejada e descanso científico para resultados máximos.
-          </p>
-
-          {/* Barra de Meta Semanal */}
-          <div className="pt-2 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-700 dark:text-slate-200">Meta Semanal:</span>
-              <span className="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300 font-black text-[11px] border border-sky-200/60 dark:border-sky-800">
-                {completedCount} dias concluídos
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              Evolução Ativa
+      {/* Cabeçalho Executivo de Performance */}
+      <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-sky-500" />
+            <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+              Painel de Performance
             </span>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-sky-400 to-sky-500 h-full rounded-full transition-all duration-700"
-              style={{ width: `${Math.min(100, (completedCount / 4) * 100)}%` }}
-            />
-          </div>
+
+          {onOpenCustomize && (
+            <button
+              onClick={onOpenCustomize}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-slate-800 hover:bg-sky-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded-xl border border-sky-100 dark:border-slate-700 active:scale-95 transition-all"
+              title="Personalizar seu plano de acordo com suas metas"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-sky-500" />
+              <span>Personalizar</span>
+            </button>
+          )}
         </div>
 
-        {/* Efeito decorativo de fundo */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-sky-300/20 dark:bg-sky-600/10 rounded-full blur-2xl pointer-events-none" />
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
+          Consistência e Sobrecarga Progressiva
+        </h1>
+
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+          Monitore séries, ajuste cargas com precisão biomecânica e acompanhe sua evolução semanal.
+        </p>
+
+        {/* Progresso Semanal Limpo */}
+        <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Meta Semanal:</span>
+            <span className="font-bold text-sky-600 dark:text-sky-400">
+              {completedCount} de 4 treinos concluídos
+            </span>
+          </div>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            {Math.min(100, Math.round((completedCount / 4) * 100))}%
+          </span>
+        </div>
+        <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mt-2">
+          <div 
+            className="bg-sky-500 h-full rounded-full transition-all duration-500"
+            style={{ width: `${Math.min(100, (completedCount / 4) * 100)}%` }}
+          />
+        </div>
       </div>
 
-      {/* Seletor dos Dias da Semana (Seg a Dom) */}
+      {/* Seletor dos Dias da Semana */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-sky-500" />
-            <span>Escalação da Semana</span>
+            <span>Cronograma Semanal</span>
           </h2>
           <span className="text-[11px] text-sky-600 dark:text-sky-400 font-semibold">
-            {currentJsDay === selectedDayId ? 'Hoje (No Campo & Ferro)' : 'Dia Selecionado'}
+            {currentJsDay === selectedDayId ? 'Hoje' : 'Dia Selecionado'}
           </span>
         </div>
 
@@ -123,13 +116,13 @@ export default function WeeklyDashboard({
                 }}
                 className={`py-3 px-1 rounded-2xl flex flex-col items-center justify-between transition-all active:scale-95 border ${
                   isSelected
-                    ? 'bg-gradient-to-b from-sky-400 to-sky-500 text-white border-sky-400 shadow-md shadow-sky-400/30 font-bold'
+                    ? 'bg-sky-500 text-white border-sky-500 shadow-sm font-bold'
                     : isToday
-                      ? 'bg-sky-50 dark:bg-slate-800 border-sky-300 dark:border-sky-500/50 text-sky-800 dark:text-sky-300'
+                      ? 'bg-sky-50/80 dark:bg-slate-800 border-sky-300 dark:border-sky-500/50 text-sky-800 dark:text-sky-300'
                       : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-sky-200'
                 }`}
               >
-                <span className={`text-[10px] font-black ${
+                <span className={`text-[10px] font-bold ${
                   isSelected ? 'text-white' : isToday ? 'text-sky-700 dark:text-sky-300' : 'text-slate-400'
                 }`}>
                   {day.shortName}
@@ -161,32 +154,32 @@ export default function WeeklyDashboard({
       </div>
 
       {/* Cartão de Detalhes do Treino do Dia Selecionado */}
-      <div className="rounded-3xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
-        {/* Topo do Card com Cor e Título */}
-        <div className="p-5 bg-gradient-to-r from-sky-50/70 dark:from-slate-800/80 via-white dark:via-slate-900 to-sky-50/40 dark:to-slate-900 border-b border-sky-100 dark:border-slate-800 flex items-start justify-between">
+      <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+        {/* Topo do Card com Título e Foco */}
+        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between bg-slate-50/50 dark:bg-slate-900/60">
           <div>
             <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-black text-[10px] uppercase tracking-wider border border-sky-200/50 dark:border-sky-800">
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold text-[10px] uppercase tracking-wider border border-sky-200/60 dark:border-sky-800">
                 {selectedWorkout.name}
               </span>
               {selectedWorkout.badge && (
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-[10px] border border-amber-200/50 dark:border-amber-800">
+                <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold text-[10px] border border-slate-200/60 dark:border-slate-700">
                   {selectedWorkout.badge}
                 </span>
               )}
               {currentJsDay === selectedWorkout.dayId && (
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-200/60 dark:border-emerald-800">
                   Treino de Hoje
                 </span>
               )}
               {isSelectedDayCompleted && (
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] flex items-center gap-1">
-                  ✓ Tá Pago!
+                  ✓ Concluído
                 </span>
               )}
             </div>
 
-            <h3 className="text-xl font-black text-slate-800 dark:text-white leading-tight">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
               {selectedWorkout.title}
             </h3>
 
@@ -196,7 +189,7 @@ export default function WeeklyDashboard({
           </div>
 
           {!selectedWorkout.isRestDay && (
-            <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-100 dark:border-slate-700 text-xs font-semibold">
+            <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs font-semibold shrink-0">
               <Clock className="w-3.5 h-3.5 text-sky-500" />
               <span>{selectedWorkout.duration}</span>
             </div>
@@ -204,36 +197,36 @@ export default function WeeklyDashboard({
         </div>
 
         {/* Descrição e Lista de Exercícios */}
-        <div className="p-5 space-y-4">
+        <div className="p-4 sm:p-5 space-y-4">
           <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
             {selectedWorkout.description}
           </p>
 
-          {/* Se for Dia de Descanso / Matchday */}
+          {/* Se for Dia de Descanso */}
           {selectedWorkout.isRestDay ? (
-            <div className="p-6 rounded-2xl bg-sky-50/60 dark:bg-slate-800/60 border border-sky-100 dark:border-slate-700 text-center space-y-3">
-              <div className="w-14 h-14 rounded-full bg-white dark:bg-slate-700 text-sky-500 dark:text-sky-400 flex items-center justify-center mx-auto shadow-sm">
-                <Coffee className="w-7 h-7" />
+            <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-700 text-sky-500 dark:text-sky-400 flex items-center justify-center mx-auto shadow-xs border border-slate-200/60 dark:border-slate-600">
+                <Coffee className="w-6 h-6" />
               </div>
-              <h4 className="text-base font-black text-slate-800 dark:text-white">
+              <h4 className="text-base font-bold text-slate-900 dark:text-white">
                 {selectedWorkout.title}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                Músculo cresce no descanso e no sono anabólico! Beba pelo menos 3L de água, carboidratos limpos e durma 8 horas pra voar no gramado.
+                A regeneração muscular e adaptação neural ocorrem durante o descanso. Priorize nutrição equilibrada, hidratação constante e 7 a 9 horas de sono de qualidade.
               </p>
               <button
                 onClick={onOpenGuide}
-                className="mt-2 text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline"
+                className="mt-1 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
               >
-                Ver manual de nutrição e descanso para atletas de 16 anos →
+                Ver diretrizes de recuperação e hipertrofia →
               </button>
             </div>
           ) : (
             <>
               {/* Lista Prévia dos Exercícios */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
-                  <span>Exercícios do Dia ({selectedWorkout.exercises.length})</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider px-1">
+                  <span>Exercícios ({selectedWorkout.exercises.length})</span>
                   <span>Séries Sugeridas</span>
                 </div>
 
@@ -241,19 +234,17 @@ export default function WeeklyDashboard({
                   <div
                     key={ex.id}
                     onClick={() => onViewExercise(ex)}
-                    className="p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/70 hover:bg-sky-50/60 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 hover:border-sky-200 dark:hover:border-sky-500/40 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                    className="p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-sky-50/50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-sky-200 dark:hover:border-sky-500/40 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-xl bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 font-black text-xs flex items-center justify-center border border-sky-100 dark:border-slate-600 shadow-xs">
+                      <div className="w-7 h-7 rounded-xl bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 font-bold text-xs flex items-center justify-center border border-slate-200/80 dark:border-slate-600 shadow-xs">
                         {index + 1}
                       </div>
                       <div>
-                        <div className="flex items-center gap-1.5">
-                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                            {ex.name}
-                          </h5>
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-400">
+                        <h5 className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                          {ex.name}
+                        </h5>
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-400 mt-0.5">
                           <span className="font-semibold text-sky-600 dark:text-sky-400">{ex.badge || ex.target}</span>
                           <span>•</span>
                           <span>{ex.equipment}</span>
@@ -262,7 +253,7 @@ export default function WeeklyDashboard({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 bg-sky-100/70 dark:bg-sky-950 px-2 py-0.5 rounded-lg border border-sky-200/50 dark:border-sky-800">
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700">
                         {ex.defaultSets}x {ex.suggestedReps}
                       </span>
                       <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors" />
@@ -278,11 +269,11 @@ export default function WeeklyDashboard({
                     triggerHaptic(20);
                     onStartWorkout(selectedWorkout);
                   }}
-                  className="w-full py-4 rounded-3xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-black text-base shadow-lg shadow-sky-400/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  className="w-full py-3.5 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer"
                 >
-                  <Play className="w-5 h-5 fill-current" />
+                  <Play className="w-4 h-4 fill-current" />
                   <span>
-                    {isSelectedDayCompleted ? 'Refazer / Alterar Cargas' : 'Iniciar Treino Agora • Bora!'}
+                    {isSelectedDayCompleted ? 'Revisar Treino' : 'Iniciar Treino'}
                   </span>
                 </button>
               </div>
@@ -291,21 +282,21 @@ export default function WeeklyDashboard({
         </div>
       </div>
 
-      {/* Card Rápido: Guia para Atleta de Futebol */}
+      {/* Card Rápido: Manual de Hipertrofia & Ciência */}
       <div 
         onClick={onOpenGuide}
-        className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-slate-800 shadow-xs hover:border-sky-300 dark:hover:border-sky-600 transition-all cursor-pointer flex items-center justify-between active:scale-[0.99]"
+        className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-sky-300 dark:hover:border-sky-600 transition-all cursor-pointer flex items-center justify-between active:scale-[0.99]"
       >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold border border-sky-100 dark:border-slate-700">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              Manual do Atleta: Hipertrofia & Ciência
+            <h4 className="text-xs font-bold text-slate-900 dark:text-slate-200">
+              Diretrizes de Treino: Hipertrofia & Ciência
             </h4>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Diretrizes de fisiologia, periodização e sobrecarga progressiva.
+              Diretrizes biomecânicas, tempo sob tensão e recuperação.
             </p>
           </div>
         </div>

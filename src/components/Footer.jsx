@@ -5,9 +5,9 @@ export default function Footer({ onOpenGuide }) {
     <footer className="w-full max-w-md mx-auto px-4 py-8 text-center text-xs text-slate-400 dark:text-slate-500 space-y-3 transition-colors">
       <div className="flex items-center justify-center gap-2">
         <span className="w-6 h-px bg-slate-200 dark:bg-slate-800" />
-        <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-black tracking-wider text-[11px] uppercase">
+        <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-bold tracking-widest text-[11px] uppercase">
           <Dumbbell className="w-3.5 h-3.5" />
-          <span>AB Fitness • SaaS Pro</span>
+          <span>AB Fitness</span>
         </div>
         <span className="w-6 h-px bg-slate-200 dark:bg-slate-800" />
       </div>
@@ -38,7 +38,7 @@ export default function Footer({ onOpenGuide }) {
 
       <div className="text-[10px] text-slate-400 dark:text-slate-600 flex items-center justify-center gap-1">
         <ShieldCheck className="w-3 h-3 text-emerald-500" />
-        <span>Supabase PostgreSQL + RLS Seguro • 2026</span>
+        <span>Dados e histórico protegidos com criptografia</span>
       </div>
     </footer>
   );

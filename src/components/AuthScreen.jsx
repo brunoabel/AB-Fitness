@@ -75,18 +75,15 @@ export default function AuthScreen() {
         
         {/* Topo / Marca AB Fitness */}
         <div className="text-center mb-8 animate-fadeIn">
-          <div className="inline-flex p-4 rounded-3xl bg-gradient-to-tr from-sky-400 to-sky-500 text-white shadow-xl shadow-sky-400/25 mb-4 ring-8 ring-sky-100/60 dark:ring-sky-950/40">
-            <Dumbbell className="w-9 h-9 stroke-[2.2]" />
+          <div className="inline-flex w-14 h-14 rounded-2xl bg-sky-500 text-white items-center justify-center shadow-xs mb-3">
+            <Dumbbell className="w-7 h-7 stroke-[2.2]" />
           </div>
           
-          <h1 className="text-2xl font-black tracking-tight text-slate-800 dark:text-white flex items-center justify-center gap-1.5">
-            <span>AB Fitness</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-extrabold uppercase border border-sky-200/60 dark:border-sky-800">
-              SaaS Pro
-            </span>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            AB Fitness
           </h1>
-          <p className="text-xs text-sky-700/80 dark:text-sky-400 font-medium mt-1">
-            Gestão Inteligente de Treinos & Performance
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
+            Treino, Biomecânica & Sobrecarga Progressiva
           </p>
         </div>
 
@@ -202,7 +199,7 @@ export default function AuthScreen() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 mt-2 rounded-2xl bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600 hover:from-sky-500 hover:to-sky-700 text-white font-extrabold text-sm shadow-lg shadow-sky-400/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+              className="w-full py-3.5 mt-2 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -229,26 +226,26 @@ export default function AuthScreen() {
           <button
             type="button"
             onClick={handleGuestAccess}
-            className="w-full py-3 px-4 rounded-2xl bg-sky-50 hover:bg-sky-100/80 dark:bg-slate-800 dark:hover:bg-slate-700/80 border border-sky-200/60 dark:border-slate-700 text-sky-800 dark:text-sky-300 font-bold text-xs flex items-center justify-between active:scale-[0.98] transition-all"
+            className="w-full py-3 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-2 text-left">
               <Sparkles className="w-4 h-4 text-sky-500 flex-shrink-0" />
               <div>
                 <span className="block font-bold">Acessar como Convidado</span>
-                <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-normal">
+                <span className="block text-[10px] text-slate-400 font-normal">
                   Experimente sem criar conta agora
                 </span>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-sky-400" />
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>
         </div>
 
-        {/* Badge Informativo de Supabase Auth */}
+        {/* Badge Informativo de Segurança */}
         <div className="mt-5 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50/70 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 border border-sky-100 dark:border-slate-800">
-            <ShieldCheck className="w-3.5 h-3.5 text-sky-500" />
-            <span>Autenticação & Isolamento Supabase com RLS</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-800">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Dados e histórico protegidos com criptografia</span>
           </div>
         </div>
 

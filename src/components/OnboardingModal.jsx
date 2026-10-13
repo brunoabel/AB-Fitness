@@ -374,7 +374,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }) {
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Gerar Meu Treino Pro</span>
+                  <span>Construir Treino Personalizado</span>
                 </>
               )}
             </button>

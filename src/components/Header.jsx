@@ -34,20 +34,17 @@ export default function Header({
         
         {/* Marca / Logo AB Fitness */}
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-400 to-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-400/20 ring-2 ring-sky-100 dark:ring-sky-950">
-            <Dumbbell className="w-5 h-5 stroke-[2.5]" />
+          <div className="w-9 h-9 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-xs">
+            <Dumbbell className="w-4 h-4 stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base text-slate-800 dark:text-white tracking-tight">
+              <span className="font-bold text-base text-slate-900 dark:text-white tracking-tight">
                 AB Fitness
               </span>
-              <span className="px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 text-[9px] font-black uppercase tracking-wider border border-sky-200/50 dark:border-sky-800">
-                {isGuest ? 'Demo' : 'Pro'}
-              </span>
             </div>
-            <p className="text-[11px] text-sky-600 dark:text-sky-400 font-semibold truncate max-w-[130px]">
-              Olá, {userName}
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[140px]">
+              {userName}
             </p>
           </div>
         </div>
@@ -60,12 +57,12 @@ export default function Header({
               if (onToggleTheme) onToggleTheme();
               triggerHaptic(10);
             }}
-            className="p-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-300 border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-all"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-amber-300 border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-all"
             title={isDark ? 'Modo Claro' : 'Modo Escuro'}
             aria-label="Alternar tema"
           >
             {isDark ? (
-              <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+              <Sun className="w-4 h-4 text-amber-400" />
             ) : (
               <Moon className="w-4 h-4 text-slate-600" />
             )}
@@ -73,10 +70,10 @@ export default function Header({
 
           {/* Streak de Treinos */}
           <div 
-            className="flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-2.5 py-1.5 rounded-2xl border border-amber-200/70 dark:border-amber-800/60 text-xs font-bold"
+            className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs font-bold"
             title={`${completedCount} treinos concluídos`}
           >
-            <Flame className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" />
+            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
             <span>{completedCount}</span>
           </div>
 
@@ -110,7 +107,7 @@ export default function Header({
               <User className="w-4 h-4" />
             </button>
 
-            {/* Dropdown de Perfil & SaaS */}
+            {/* Dropdown de Perfil & Configurações */}
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-sky-100 dark:border-slate-800 p-2 z-50 animate-fadeIn text-xs">
                 <div className="p-2.5 border-b border-slate-100 dark:border-slate-800">

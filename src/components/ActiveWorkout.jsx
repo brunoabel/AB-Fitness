@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ChevronLeft, 
   Check, 
   Plus, 
   Trash2, 
   Eye, 
-  Trophy, 
   Clock, 
   ChevronDown,
   ChevronUp,
   Zap,
-  ShieldCheck,
-  TrendingUp
+  TrendingUp,
+  CheckCircle2
 } from 'lucide-react';
 import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
@@ -29,29 +28,28 @@ import { useAuth } from '../context/AuthContext';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
+
+  // Recupera rascunho ativo se for do mesmo treino
+  const activeDraft = useRef(getActiveDraft()).current;
+  const isResumed = activeDraft && activeDraft.workoutDayId === workout.dayId;
+
   // Estado para armazenar as séries de cada exercício
   const [exercisesData, setExercisesData] = useState(() => {
-    const saved = getSavedWeights();
-    const draft = getActiveDraft();
-
-    // Se houver um rascunho ativo do mesmo dia, recupera
-    if (draft && draft.workoutDayId === workout.dayId) {
-      return draft.exercisesData;
+    if (isResumed && activeDraft.exercisesData) {
+      return activeDraft.exercisesData;
     }
 
-    // Inicialização padrão com os exercícios do treino
+    const saved = getSavedWeights();
     const initial = {};
     workout.exercises.forEach((ex) => {
       const prevSets = saved[ex.id];
       if (prevSets && prevSets.length > 0) {
-        // Recupera cargas anteriores do utilizador
         initial[ex.id] = prevSets.map((s) => ({
           weight: s.weight ?? ex.suggestedWeight,
           reps: s.reps ?? ex.suggestedReps,
           completed: false,
         }));
       } else {
-        // Gera as séries padrão (ex: 3 séries)
         const setsCount = ex.defaultSets || 3;
         initial[ex.id] = Array.from({ length: setsCount }, () => ({
           weight: ex.suggestedWeight,
@@ -63,29 +61,35 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return initial;
   });
 
-  // Mapa de histórico das cargas do último treino para comparativo de evolução
+  // Histórico das cargas anteriores para comparativo discreto
   const [pastWeights] = useState(() => getSavedWeights());
 
-  // Cronômetro do tempo decorrido do treino
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Cronômetro do treino
+  const [elapsedSeconds, setElapsedSeconds] = useState(() => {
+    return isResumed ? (activeDraft.elapsedSeconds || 0) : 0;
+  });
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const elapsedRef = useRef(elapsedSeconds);
 
   // Trigger para auto-iniciar o Rest Timer ao concluir uma série
   const [restTimerTrigger, setRestTimerTrigger] = useState(0);
   const [currentRestDefault, setCurrentRestDefault] = useState(60);
 
-  // Modal de Demonstração do Exercício
+  // Modais
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
-
-  // Modal de Celebração de Conclusão
   const [showCelebration, setShowCelebration] = useState(false);
 
-  // Exercício atualmente expandido na visualização
+  // Exercício expandido
   const [expandedExerciseId, setExpandedExerciseId] = useState(
     workout.exercises[0]?.id || null
   );
 
-  // Relógio do treino
+  // Mantém elapsedRef sincronizado sem provocar re-renders
+  useEffect(() => {
+    elapsedRef.current = elapsedSeconds;
+  }, [elapsedSeconds]);
+
+  // Cronômetro (apenas atualiza estado numérico local)
   useEffect(() => {
     let interval = null;
     if (isTimerRunning) {
@@ -96,14 +100,29 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
-  // Persistir rascunho a cada alteração
+  // Debounced auto-save do rascunho quando as séries mudam (NÃO a cada segundo!)
   useEffect(() => {
-    saveActiveDraft({
-      workoutDayId: workout.dayId,
-      elapsedSeconds,
-      exercisesData,
-    });
-  }, [workout.dayId, elapsedSeconds, exercisesData]);
+    const timer = setTimeout(() => {
+      saveActiveDraft({
+        workoutDayId: workout.dayId,
+        elapsedSeconds: elapsedRef.current,
+        exercisesData,
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [workout.dayId, exercisesData]);
+
+  // Debounce para gravação de cargas no LocalStorage ao digitar
+  const weightsTimeoutRef = useRef({});
+  const debouncedSaveWeights = (exId, sets) => {
+    if (weightsTimeoutRef.current[exId]) {
+      clearTimeout(weightsTimeoutRef.current[exId]);
+    }
+    weightsTimeoutRef.current[exId] = setTimeout(() => {
+      saveExerciseWeights(exId, sets);
+    }, 350);
+  };
 
   const formatElapsed = (sec) => {
     const mins = Math.floor(sec / 60);
@@ -111,31 +130,31 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // Atualizar peso de uma série
+  // Atualizar carga
   const handleWeightChange = (exId, setIndex, newWeight) => {
     const val = Math.max(0, parseFloat(newWeight) || 0);
     setExercisesData((prev) => {
       const next = { ...prev };
       next[exId] = [...next[exId]];
       next[exId][setIndex] = { ...next[exId][setIndex], weight: val };
-      saveExerciseWeights(exId, next[exId]);
+      debouncedSaveWeights(exId, next[exId]);
       return next;
     });
   };
 
-  // Atualizar repetições de uma série
+  // Atualizar repetições
   const handleRepsChange = (exId, setIndex, newReps) => {
     const val = Math.max(0, parseInt(newReps, 10) || 0);
     setExercisesData((prev) => {
       const next = { ...prev };
       next[exId] = [...next[exId]];
       next[exId][setIndex] = { ...next[exId][setIndex], reps: val };
-      saveExerciseWeights(exId, next[exId]);
+      debouncedSaveWeights(exId, next[exId]);
       return next;
     });
   };
 
-  // Alternar status de conclusão da série (com haptic e auto-start no timer)
+  // Marcar série concluída (haptic + timer imediato)
   const toggleSetComplete = (exId, setIndex, suggestedRestTime = 60) => {
     setExercisesData((prev) => {
       const next = { ...prev };
@@ -146,7 +165,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       if (isNowCompleted) {
         sound.playTick();
         triggerHaptic(20);
-        // Disparar o descanso automático
         setCurrentRestDefault(suggestedRestTime || 60);
         setRestTimerTrigger(Date.now());
       }
@@ -156,7 +174,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     });
   };
 
-  // Adicionar nova série a um exercício
+  // Adicionar série
   const handleAddSet = (exId) => {
     setExercisesData((prev) => {
       const current = prev[exId] || [];
@@ -174,7 +192,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     triggerHaptic(10);
   };
 
-  // Remover uma série
+  // Remover série
   const handleRemoveSet = (exId, setIndex) => {
     setExercisesData((prev) => {
       const current = prev[exId] || [];
@@ -187,7 +205,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     triggerHaptic(10);
   };
 
-  // Cálculos de progresso
+  // Métricas de progresso calculadas de forma leve
   let totalSetsCount = 0;
   let completedSetsCount = 0;
   let totalVolumeKg = 0;
@@ -207,50 +225,56 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     ? Math.round((completedSetsCount / totalSetsCount) * 100) 
     : 0;
 
-  // Finalizar treino completo
-  const handleFinishWorkout = async () => {
+  // Finalização instantânea e otimista (Zero Lag)
+  const handleFinishWorkout = () => {
     setIsTimerRunning(false);
+    triggerHaptic([30, 80, 30]);
 
-    // Salvar no Supabase (se logado) e persistência local via serviço modular
-    await recordWorkoutCompletion({
+    // 1. Gravação local e disparo visual imediato em 0ms
+    markDayCompleted(workout.dayId);
+    saveActiveDraft(null);
+    setShowCelebration(true);
+
+    // 2. Sincronização em nuvem desacoplada em background (sem bloquear o modal)
+    recordWorkoutCompletion({
       userId: user?.id,
       workout,
-      durationSeconds: elapsedSeconds,
+      durationSeconds: elapsedRef.current,
       exercisesData,
-      notes: `Treino finalizado com ${completedSetsCount} séries e volume de ${totalVolumeKg} kg.`
+      notes: `Treino finalizado com ${completedSetsCount} séries e volume total de ${totalVolumeKg} kg.`
+    }).catch((err) => {
+      console.warn('Sincronização em nuvem executada com aviso:', err);
     });
+  };
 
-    // Marcar o dia como concluído
-    markDayCompleted(workout.dayId);
-
-    // Limpar rascunho
-    saveActiveDraft(null);
-
-    // Abrir modal de celebração
-    setShowCelebration(true);
+  const handlePauseAndExit = () => {
+    // Salva o rascunho com o tempo atual e volta suavemente
+    saveActiveDraft({
+      workoutDayId: workout.dayId,
+      elapsedSeconds: elapsedRef.current,
+      exercisesData,
+    });
+    onBackToDashboard();
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950/90 pb-36 animate-fadeIn transition-colors">
-      {/* Top Bar Fixa / Glassmorphism */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-sky-100 dark:border-slate-800 shadow-xs transition-colors pt-[env(safe-area-inset-top,0px)]">
-        <div className="max-w-md mx-auto px-4 pt-3 pb-3 flex items-center justify-between">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#070d18] pb-36 transition-colors">
+      {/* Top Bar Fixa / Design Executivo */}
+      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors pt-[env(safe-area-inset-top,0px)]">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           <button
-            onClick={() => {
-              if (window.confirm('Deseja pausar o treino? Seu progresso e cargas estão salvos!')) {
-                onBackToDashboard();
-              }
-            }}
-            className="flex items-center gap-1 text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-slate-800 px-2.5 py-1.5 rounded-xl border border-sky-200/70 dark:border-slate-700 active:scale-95 transition-all"
+            onClick={handlePauseAndExit}
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-all"
+            title="Pausar e voltar ao painel"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Voltar</span>
+            <span>Pausar</span>
           </button>
 
-          {/* Cronômetro Central do Treino */}
-          <div className="flex items-center gap-2 bg-slate-100/90 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
-            <Clock className="w-3.5 h-3.5 text-sky-500 animate-pulse" />
-            <span className="font-mono text-xs font-black text-slate-700 dark:text-slate-200">
+          {/* Cronômetro Central Monospaçado */}
+          <div className="flex items-center gap-2 bg-slate-900 dark:bg-slate-800 text-sky-400 px-3.5 py-1.5 rounded-full border border-slate-800 dark:border-slate-700 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+            <span className="font-mono text-xs font-bold tracking-wider">
               {formatElapsed(elapsedSeconds)}
             </span>
           </div>
@@ -258,31 +282,31 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           {/* Botão Finalizar Treino */}
           <button
             onClick={handleFinishWorkout}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-black text-xs shadow-sm shadow-sky-400/30 active:scale-95 transition-all flex items-center gap-1"
+            className="px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs shadow-xs shadow-sky-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Check className="w-3.5 h-3.5 stroke-[3]" />
-            <span>Tá Pago!</span>
+            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Concluir</span>
           </button>
         </div>
 
-        {/* Barra de Progresso Global do Treino */}
-        <div className="w-full bg-sky-100/50 dark:bg-slate-800 h-1.5">
+        {/* Linha Fina de Progresso */}
+        <div className="w-full bg-slate-100 dark:bg-slate-800 h-1">
           <div 
-            className="bg-gradient-to-r from-sky-400 to-sky-500 h-full transition-all duration-500"
+            className="bg-sky-500 h-full transition-all duration-300"
             style={{ width: `${completionPercentage}%` }}
           />
         </div>
       </header>
 
       {/* Conteúdo Principal do Treino */}
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-4">
-        {/* Banner do Dia com estatísticas rápidas */}
-        <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-slate-800 shadow-sm flex items-center justify-between transition-colors">
+      <main className="max-w-md mx-auto px-4 pt-4 space-y-3.5">
+        {/* Banner do Dia */}
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <span className="text-[11px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-wider block">
-              Execução Ativa • {workout.name}
+            <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest block">
+              Sessão Ativa • {workout.name}
             </span>
-            <h1 className="text-lg font-black text-slate-800 dark:text-white leading-tight">
+            <h1 className="text-base font-bold text-slate-900 dark:text-white leading-tight mt-0.5">
               {workout.title}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
@@ -291,25 +315,25 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           </div>
 
           <div className="text-right">
-            <div className="text-xl font-black text-sky-600 dark:text-sky-400">
+            <div className="text-lg font-black text-sky-600 dark:text-sky-400">
               {completionPercentage}%
             </div>
-            <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase">
+            <div className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">
               {completedSetsCount}/{totalSetsCount} séries
             </div>
           </div>
         </div>
 
         {/* Dica Científica de Biomecânica */}
-        <div className="p-3 rounded-2xl bg-sky-50/70 dark:bg-slate-900 border border-sky-200/60 dark:border-slate-800 text-xs text-sky-900 dark:text-sky-300 flex items-start gap-2.5">
+        <div className="p-3 rounded-2xl bg-sky-50/60 dark:bg-slate-900/60 border border-sky-100 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 flex items-start gap-2.5">
           <Zap className="w-4 h-4 text-sky-500 shrink-0 mt-0.5 fill-sky-500" />
-          <div className="leading-relaxed">
-            <strong className="font-extrabold text-sky-950 dark:text-sky-200">Biomecânica de Elite:</strong> Controle a descida do peso (2 a 3s) para maximizar a tensão muscular no alongamento e proteger ligamentos e articulações.
+          <div className="leading-relaxed text-[11px]">
+            <strong className="font-bold text-slate-900 dark:text-white">Biomecânica:</strong> Cadência excêntrica de 2 a 3 segundos com amplitude articular completa estimula maior resposta hipertrófica e previne lesões.
           </div>
         </div>
 
         {/* Lista Sequencial de Exercícios */}
-        <div className="space-y-3.5">
+        <div className="space-y-3">
           {workout.exercises.map((exercise, exIndex) => {
             const sets = exercisesData[exercise.id] || [];
             const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed);
@@ -318,51 +342,50 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
             return (
               <div
                 key={exercise.id}
-                className={`rounded-3xl border transition-all duration-200 bg-white dark:bg-slate-900 shadow-sm overflow-hidden ${
+                className={`rounded-2xl border transition-all duration-200 bg-white dark:bg-slate-900 shadow-xs overflow-hidden ${
                   isCompletedAll 
-                    ? 'border-emerald-300 dark:border-emerald-700/60 shadow-emerald-50 dark:shadow-none' 
+                    ? 'border-emerald-200 dark:border-emerald-900/50' 
                     : isExpanded 
-                      ? 'border-sky-300 dark:border-sky-500/50 ring-2 ring-sky-100 dark:ring-sky-950' 
-                      : 'border-sky-100 dark:border-slate-800'
+                      ? 'border-sky-300 dark:border-sky-700/60 ring-1 ring-sky-200/50 dark:ring-sky-900/40' 
+                      : 'border-slate-200/80 dark:border-slate-800'
                 }`}
               >
-                {/* Cabeçalho do Card do Exercício */}
+                {/* Cabeçalho do Card */}
                 <div 
-                  className={`p-4 flex items-center justify-between cursor-pointer transition-colors ${
+                  className={`p-3.5 flex items-center justify-between cursor-pointer transition-colors ${
                     isCompletedAll 
-                      ? 'bg-emerald-50/40 dark:bg-emerald-950/20' 
+                      ? 'bg-emerald-50/30 dark:bg-emerald-950/20' 
                       : 'bg-white dark:bg-slate-900'
                   }`}
                   onClick={() => setExpandedExerciseId(isExpanded ? null : exercise.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 ${
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
                       isCompletedAll
-                        ? 'bg-emerald-500 text-white shadow-xs'
-                        : 'bg-sky-100 dark:bg-slate-800 text-sky-700 dark:text-sky-300'
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                     }`}>
-                      {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}
+                      {isCompletedAll ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : exIndex + 1}
                     </div>
 
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
                           {exercise.target}
                         </span>
                         {exercise.badge && (
-                          <span className="px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[9px] font-bold">
+                          <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[9px] font-medium">
                             {exercise.badge}
                           </span>
                         )}
                       </div>
-                      <h2 className="text-sm font-bold text-slate-800 dark:text-white leading-tight">
+                      <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {exercise.name}
                       </h2>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {/* Botão Ver Execução */}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -370,11 +393,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                         setSelectedExerciseForModal(exercise);
                         triggerHaptic(10);
                       }}
-                      className="p-2 rounded-xl bg-sky-50 dark:bg-slate-800 hover:bg-sky-100 dark:hover:bg-slate-700 text-sky-600 dark:text-sky-300 border border-sky-200/60 dark:border-slate-700 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
-                      title="Ver demonstração e benefício no futebol"
+                      className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-sky-600 text-xs font-semibold flex items-center gap-1 border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-all"
+                      title="Ver demonstração técnica"
                     >
-                      <Eye className="w-4 h-4" />
-                      <span className="hidden sm:inline text-[11px]">Guia</span>
+                      <Eye className="w-3.5 h-3.5 text-sky-500" />
+                      <span className="hidden sm:inline text-[10px]">Guia</span>
                     </button>
 
                     <div className="text-slate-400">
@@ -385,45 +408,45 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
                 {/* Corpo do Exercício: Tabela de Séries */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-100 dark:border-slate-800 space-y-3 animate-fadeIn">
-                    {/* Benefício Científico de Performance */}
+                  <div className="px-3.5 pb-3.5 pt-1 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                    {/* Benefício Científico */}
                     {exercise.soccerBenefit && (
-                      <div className="text-[11px] text-slate-600 dark:text-slate-300 bg-sky-50/50 dark:bg-slate-800/60 p-2.5 rounded-2xl border border-sky-100 dark:border-slate-700/80 flex items-start gap-2">
-                        <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+                      <div className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 shrink-0 mt-0.5" />
                         <div>
-                          <strong className="text-sky-800 dark:text-sky-300">Ciência & Fisiologia:</strong> {exercise.soccerBenefit}
+                          <strong className="text-slate-900 dark:text-white font-semibold">Fisiologia:</strong> {exercise.soccerBenefit}
                         </div>
                       </div>
                     )}
 
-                    {/* Cabeçalho da Tabela de Séries */}
-                    <div className="grid grid-cols-12 gap-2 text-center text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">
+                    {/* Cabeçalho da Tabela */}
+                    <div className="grid grid-cols-12 gap-2 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">
                       <div className="col-span-2 text-left">Série</div>
                       <div className="col-span-4">Carga (kg)</div>
                       <div className="col-span-3">Reps</div>
-                      <div className="col-span-3">Concluir</div>
+                      <div className="col-span-3">Status</div>
                     </div>
 
                     {/* Linhas de Séries */}
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {sets.map((set, setIdx) => (
                         <div
                           key={setIdx}
-                          className={`grid grid-cols-12 gap-2 items-center p-2 rounded-2xl border transition-all ${
+                          className={`grid grid-cols-12 gap-2 items-center p-2 rounded-xl border transition-all ${
                             set.completed
-                              ? 'bg-sky-50/60 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800'
-                              : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-sky-200'
+                              ? 'bg-sky-50/40 dark:bg-sky-950/20 border-sky-200/80 dark:border-sky-800/50'
+                              : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800'
                           }`}
                         >
                           {/* Número da Série */}
                           <div className="col-span-2 flex items-center gap-1">
-                            <span className="font-black text-xs text-slate-700 dark:text-slate-300">
+                            <span className="font-bold text-xs text-slate-700 dark:text-slate-300">
                               #{setIdx + 1}
                             </span>
                             {sets.length > 1 && !set.completed && (
                               <button
                                 onClick={() => handleRemoveSet(exercise.id, setIdx)}
-                                className="text-slate-300 dark:text-slate-600 hover:text-rose-500 transition-colors p-1"
+                                className="text-slate-300 dark:text-slate-600 hover:text-rose-500 transition-colors p-0.5"
                                 title="Remover série"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -431,7 +454,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                             )}
                           </div>
 
-                          {/* Input de Carga (kg) & Comparativo com Último Treino */}
+                          {/* Input de Carga (kg) */}
                           <div className="col-span-4 flex flex-col items-center justify-center">
                             <div className="relative w-full">
                               <input
@@ -443,18 +466,18 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                                   handleWeightChange(exercise.id, setIdx, e.target.value)
                                 }
                                 disabled={set.completed}
-                                className={`w-full text-center font-bold text-sm py-2 px-1 rounded-xl border transition-all ${
+                                className={`w-full text-center font-bold text-sm py-1.5 px-1 rounded-lg border transition-all ${
                                   set.completed
-                                    ? 'bg-white/80 dark:bg-slate-800 border-sky-200 dark:border-slate-700 text-sky-900 dark:text-sky-200 opacity-90'
-                                    : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-400 focus:ring-2 focus:ring-sky-100'
+                                    ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 opacity-90'
+                                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                                 }`}
                               />
-                              <span className="absolute right-2 top-2.5 text-[10px] text-slate-400 pointer-events-none">
+                              <span className="absolute right-2 top-2 text-[10px] text-slate-400 pointer-events-none">
                                 kg
                               </span>
                             </div>
 
-                            {/* Dica Sutil de Dopamina & Evolução */}
+                            {/* Comparativo com Último Treino */}
                             {(() => {
                               const pastExercise = pastWeights[exercise.id];
                               const pastSet = pastExercise && pastExercise[setIdx];
@@ -464,17 +487,16 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
                               if (diff > 0) {
                                 return (
-                                  <div className="flex items-center gap-0.5 text-[9px] font-black text-emerald-600 dark:text-emerald-400 mt-1 leading-none">
+                                  <div className="flex items-center gap-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 leading-none">
                                     <TrendingUp className="w-2.5 h-2.5 shrink-0" />
-                                    <span>+{diff}kg! Monstro 🔥</span>
+                                    <span>+{diff}kg evolução</span>
                                   </div>
                                 );
                               }
 
                               return (
-                                <div className="text-[9px] font-medium text-slate-400 dark:text-slate-500 mt-1 leading-none text-center truncate w-full" title={`Último: ${pastWeightVal} kg`}>
-                                  Último: <strong className="font-bold text-slate-600 dark:text-slate-300">{pastWeightVal}kg</strong>
-                                  <span className="hidden sm:inline text-sky-500 font-bold ml-0.5">(+2kg hoje?)</span>
+                                <div className="text-[9px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 leading-none text-center truncate w-full">
+                                  Anterior: {pastWeightVal}kg
                                 </div>
                               );
                             })()}
@@ -490,29 +512,29 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                                 handleRepsChange(exercise.id, setIdx, e.target.value)
                               }
                               disabled={set.completed}
-                              className={`w-full text-center font-bold text-sm py-2 px-1 rounded-xl border transition-all ${
+                              className={`w-full text-center font-bold text-sm py-1.5 px-1 rounded-lg border transition-all ${
                                 set.completed
-                                  ? 'bg-white/80 dark:bg-slate-800 border-sky-200 dark:border-slate-700 text-sky-900 dark:text-sky-200 opacity-90'
-                                  : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-400 focus:ring-2 focus:ring-sky-100'
+                                  ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 opacity-90'
+                                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500'
                               }`}
                             />
                           </div>
 
-                          {/* Botão de Checkbox / Conclusão */}
+                          {/* Botão de Checkbox */}
                           <div className="col-span-3 flex justify-center">
                             <button
                               type="button"
                               onClick={() =>
                                 toggleSetComplete(exercise.id, setIdx, exercise.restTime)
                               }
-                              className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-sm ${
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 ${
                                 set.completed
-                                  ? 'bg-gradient-to-r from-sky-400 to-sky-500 text-white shadow-sky-400/30'
-                                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-sky-100 dark:hover:bg-slate-700 text-slate-400 hover:text-sky-600 border border-slate-200 dark:border-slate-700'
+                                  ? 'bg-sky-500 text-white shadow-xs'
+                                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-400 hover:text-sky-600 border border-slate-200 dark:border-slate-700'
                               }`}
                               title={set.completed ? 'Desmarcar série' : 'Concluir série e disparar descanso'}
                             >
-                              <Check className={`w-5 h-5 ${set.completed ? 'stroke-[3]' : 'stroke-2'}`} />
+                              <Check className={`w-4 h-4 ${set.completed ? 'stroke-[3]' : 'stroke-2'}`} />
                             </button>
                           </div>
                         </div>
@@ -524,14 +546,14 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                       <button
                         type="button"
                         onClick={() => handleAddSet(exercise.id)}
-                        className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-sky-700 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 border border-slate-200/80 dark:border-slate-700"
+                        className="py-1.5 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 border border-slate-200/80 dark:border-slate-700"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        <span>Nova Série</span>
+                        <span>Adicionar Série</span>
                       </button>
 
-                      <span className="text-[11px] text-slate-400 dark:text-slate-400">
-                        Descanso ideal: <strong className="text-sky-600 dark:text-sky-400">{exercise.restTime}s</strong>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                        Descanso recomendado: <strong className="text-sky-600 dark:text-sky-400">{exercise.restTime}s</strong>
                       </span>
                     </div>
                   </div>
@@ -541,28 +563,28 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           })}
         </div>
 
-        {/* Botão Finalizar Treino Grande */}
-        <div className="pt-4">
+        {/* Botão Finalizar Treino */}
+        <div className="pt-2">
           <button
             onClick={handleFinishWorkout}
-            className="w-full py-4 rounded-3xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-black text-base shadow-lg shadow-sky-400/30 transition-all flex items-center justify-center gap-2.5 active:scale-[0.98]"
+            className="w-full py-3.5 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md shadow-sky-500/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
           >
-            <Trophy className="w-5 h-5 text-amber-200" />
-            <span>Finalizar Treino de Hoje • Tá Pago!</span>
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Finalizar Sessão de Treino</span>
           </button>
-          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">
-            Cargas salvas automaticamente. O shape vem na constância!
+          <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
+            Cargas e histórico salvos automaticamente.
           </p>
         </div>
       </main>
 
-      {/* Temporizador de Descanso Fixo na Base */}
+      {/* Temporizador de Descanso Fixo */}
       <RestTimer 
         initialTime={currentRestDefault} 
         autoStartTrigger={restTimerTrigger} 
       />
 
-      {/* Modal de Demonstração Visual & Dicas Didáticas */}
+      {/* Modal de Demonstração Biomecânica */}
       {selectedExerciseForModal && (
         <ExerciseModal
           exercise={selectedExerciseForModal}
@@ -570,7 +592,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         />
       )}
 
-      {/* Modal de Celebração de Luxo com Confetes, Frase Frango & Resenha */}
+      {/* Modal de Celebração */}
       {showCelebration && (
         <CelebrationModal
           workout={workout}
