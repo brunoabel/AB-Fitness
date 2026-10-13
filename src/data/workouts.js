@@ -27,15 +27,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Ombro a Ombro',
-        soccerBenefit: 'Garante que quando o zagueiro ou lateral bater de lado, você não perde o equilíbrio nem a posse da bola.',
+        badge: 'Estabilidade Escapular',
+        soccerBenefit: 'Aumenta a estabilização articular do complexo do ombro e hipertrofia o peitoral maior com máxima amplitude e controle excêntrico.',
         steps: [
-          'Deite firme no banco, pés plantados no chão como se estivesse travando uma dividida.',
-          'Suba os halteres em movimento reto e controlado, sem bater um no outro no topo.',
-          'Desça devagar sentindo o peitoral abrir até o nível da linha do tórax.'
+          'Deite firme no banco com escápulas aduzidas e pés plantados no chão para máxima base.',
+          'Suba os halteres em trajetória convergente controlada sem colidir as anilhas no topo.',
+          'Desça em 2 a 3 segundos sentindo o peitoral alongar até a linha média do tórax.'
         ],
         breathingTip: 'Solte o ar na força da subida; inspire na descida controlada.',
-        beginnerMistake: 'Fazer com peso pesado demais e balançar as pernas no banco. Pés no chão firmes!',
+        beginnerMistake: 'Fazer com carga excessiva e balançar o corpo no banco. Pés firmes e escápulas travadas!',
         animationType: 'dumbbell-press'
       },
       {
@@ -48,14 +48,14 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Força de Impulsão',
-        soccerBenefit: 'Melhora o posicionamento corporal nas bolas aéreas e nas disputas de cabeceio.',
+        badge: 'Força Vertical',
+        soccerBenefit: 'Desenvolve força de empurrar vertical e estabilidade escapular, fortalecendo deltoides e cadeia superior.',
         steps: [
-          'Sente-se com as costas coladas no encosto e cotovelos a 90 graus na altura dos olhos.',
+          'Sente-se com as costas coladas no encosto e cotovelos a 75-80 graus no plano escapular.',
           'Empurre os halteres para cima de forma explosiva até quase estender os braços.',
-          'Desça em 2 segundos segurando o peso na linha da orelha.'
+          'Desça em 2 segundos mantendo o controle até a linha das orelhas.'
         ],
-        breathingTip: 'Expire rápido na subida explosiva; inspire na descida suave.',
+        breathingTip: 'Expire na subida concêntrica; inspire na descida excêntrica suave.',
         beginnerMistake: 'Arredondar a lombar descolando as costas do banco.',
         animationType: 'shoulder-press'
       },
@@ -69,12 +69,12 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Shape Atlético',
-        soccerBenefit: 'Alarga a linha dos ombros, dando presença física imponente no gramado.',
+        badge: 'Largura de Ombros',
+        soccerBenefit: 'Isola o deltoide lateral proporcionando maior densidade e aspecto em V na silhueta atlética.',
         steps: [
           'Em pé, incline o tronco 5 graus à frente e segure os halteres ao lado da coxa.',
-          'Abra os braços até a altura do ombro com cotovelos levemente dobrados.',
-          'Segure 1 segundo no topo e desça sem deixar o peso bater na coxa.'
+          'Abra os braços até a altura do ombro com cotovelos levemente flexionados.',
+          'Segure 1 segundo no pico de contração e desça sem deixar o peso bater na coxa.'
         ],
         breathingTip: 'Solte o ar ao subir e puxe o ar ao descer.',
         beginnerMistake: 'Usar impulso com o quadril jogando o corpo para trás. Mantenha o tronco estável e isole os deltoides!',
@@ -90,15 +90,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Proteção de Braço',
-        soccerBenefit: 'Braço forte para usar na barreira e para proteger a bola com o braço estendido.',
+        badge: 'Extensão de Cotovelo',
+        soccerBenefit: 'Desenvolve as três cabeças do tríceps com ênfase na contração terminal e proteção articular dos cotovelos.',
         steps: [
-          'Cotovelos colados nas costelas, incline um pouco o tronco à frente.',
-          'Estique o braço para baixo abrindo as pontas da corda no final.',
-          'Volte devagar até a altura do peito mantendo os cotovelos travados no lugar.'
+          'Cotovelos alinhados às costelas, incline ligeiramente o tronco à frente para estabilizar o centro de gravidade.',
+          'Estenda os cotovelos para baixo abrindo as pontas da corda na máxima contração.',
+          'Retorne de forma controlada até 90 graus mantendo os cotovelos fixos.'
         ],
         breathingTip: 'Solte o ar esticando para baixo; puxe o ar na subida controlada.',
-        beginnerMistake: 'Mexer os ombros para frente e para trás. Cotovelo fica colado.',
+        beginnerMistake: 'Mexer os ombros para frente e para trás. Cotovelo fica travado.',
         animationType: 'triceps-pushdown'
       },
       {
@@ -111,12 +111,12 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 16,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Core Blindado',
-        soccerBenefit: 'Estabilidade rotacional pura: impede que o tronco gire quando você leva um tranco correndo.',
+        badge: 'Anti-Rotação',
+        soccerBenefit: 'Ativação do core profundo e oblíquos para resistir a forças rotacionais e proteger a coluna vertebral.',
         steps: [
-          'Posição de flexão com pés afastados na largura dos ombros para dar base.',
-          'Tire a mão direita e toque no ombro esquerdo sem mexer nem rebolar o quadril.',
-          'Alterne os lados lentamente, mantendo o abdômen travado como uma pedra.'
+          'Posição de flexão com pés afastados na largura dos ombros para garantir estabilidade.',
+          'Retire a mão direita e toque no ombro esquerdo sem rotacionar a bacia.',
+          'Alterne os lados lentamente, mantendo a musculatura abdominal em contração isométrica rígida.'
         ],
         breathingTip: 'Respire continuamente sem travar o ar na barriga.',
         beginnerMistake: 'Ficar balançando o quadril de um lado para o outro. O corpo deve ficar 100% reto.',
@@ -149,15 +149,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'O Rei do Futebol',
-        soccerBenefit: 'O futebol é jogado em uma perna por vez (chute, salto, sprint). O búlgaro é o melhor exercício do mundo pra arranque e estabilidade de joelho.',
+        badge: 'Estabilidade Unilateral',
+        soccerBenefit: 'O agachamento unilateral corrige assimetrias de força entre os membros inferiores, ativa o glúteo médio e aumenta a estabilidade dinâmica do joelho.',
         steps: [
           'Apoie o peito do pé de trás no banco e dê um passo à frente com a outra perna.',
           'Desça o joelho de trás em direção ao chão mantendo o tronco levemente inclinado.',
-          'Empurre o chão com o calcanhar da frente para subir forte.'
+          'Empurre o chão com o calcanhar da frente para subir com cadência controlada.'
         ],
         breathingTip: 'Inspire ao descer; solte o ar empurrando o chão na subida.',
-        beginnerMistake: 'Deixar o joelho da frente desabar para dentro. Joelho sempre alinhado com a ponta do pé.',
+        beginnerMistake: 'Deixar o joelho da frente desabar em valgo dinâmico. Joelho sempre alinhado com o segundo dedo do pé.',
         animationType: 'squat'
       },
       {
@@ -170,36 +170,36 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Vacina Anti-Estiramento',
-        soccerBenefit: 'Fortalece o posterior na fase excêntrica. 80% das lesões de arrancada no futebol são no posterior — esse exercício evita isso.',
+        badge: 'Cadeia Posterior',
+        soccerBenefit: 'O RDL fortalece os isquiotibiais em posição de máximo alongamento sob tensão excêntrica, chave contra encurtamento e lesões musculares.',
         steps: [
-          'Pés na largura do quadril, joelhos levemente destravados (não dobre muito).',
-          'Jogue o quadril para trás como se fosse fechar a porta de um carro com a bunda.',
-          'Desça os halteres raspando rente à canela até sentir alongar a parte de trás da coxa e volte apertando os glúteos.'
+          'Pés na largura do quadril, joelhos levemente destravados (flexão de 15 a 20 graus).',
+          'Projete o quadril posteriormente mantendo a coluna em alinhamento neutro.',
+          'Desça os halteres rentes à canela sentindo o alongamento dos isquiotibiais e retorne estendendo o quadril.'
         ],
-        breathingTip: 'Inspire descendo com a coluna reta; expire subindo firme.',
-        beginnerMistake: 'Arredondar as costas ou dobrar os joelhos como agachamento. O movimento é no quadril!',
+        breathingTip: 'Inspire descendo com a coluna alinhada; expire na extensão de quadril.',
+        beginnerMistake: 'Flexionar os joelhos em excesso transformando em agachamento. O movimento é um hinge de quadril!',
         animationType: 'leg-curl'
       },
       {
         id: 'elevacao-pelvica-soccer',
         name: 'Elevação Pélvica / Hip Thrust com Halter',
-        target: 'Glúteo Máximo (Motor do Sprint)',
+        target: 'Glúteo Máximo',
         secondary: 'Posterior e Core',
         equipment: 'Banco + Halter no Quadril',
         suggestedWeight: 12,
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Motor da Arrancada',
-        soccerBenefit: 'Glúteo forte é o que gera aceleração máxima nos primeiros 5 metros de arrancada e potência no salto.',
+        badge: 'Extensão de Quadril',
+        soccerBenefit: 'Desenvolve força no pico de contração do glúteo máximo, fundamental para potência explosiva, velocidade e saúde lombar.',
         steps: [
-          'Apoie as costas no banco logo abaixo das escápulas e coloque o halter sobre o quadril.',
-          'Pés firmes no chão na largura dos ombros.',
-          'Empurre o quadril para o alto até alinhar com o joelho, espremendo o glúteo por 1 segundo no topo.'
+          'Apoie a região escapular no banco e posicione o peso sobre a linha do quadril.',
+          'Pés plantados no chão com tíbias verticais no topo do movimento.',
+          'Estenda o quadril até a linha neutra, sustentando 1 segundo de contração isométrica no topo.'
         ],
-        breathingTip: 'Solte o ar na subida apertando a bunda; inspire na descida.',
-        beginnerMistake: 'Hiperestender a coluna lombar no topo. Quem faz a força é o glúteo, não a lombar.',
+        breathingTip: 'Solte o ar na subida apertando o glúteo; inspire no retorno.',
+        beginnerMistake: 'Hiperestender a coluna lombar no topo. A força deve vir exclusivamente da extensão do quadril.',
         animationType: 'leg-press'
       },
       {
@@ -212,15 +212,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 15,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Pernas de Mola',
-        soccerBenefit: 'Dá elasticidade para saltar de cabeça e agilidade rápida para mudanças de direção curtas.',
+        badge: 'Propulsão & Tornozelo',
+        soccerBenefit: 'Fortalece a musculatura da panturrilha e tendão de Aquiles, aprimorando rigidez elástica, impulsão e estabilidade articular.',
         steps: [
-          'Ponta dos pés na beira do degrau com calcanhares para fora.',
-          'Suba na ponta do pé o mais alto possível de forma rápida e explosiva.',
-          'Desça devagar em 3 segundos alongando bem o calcanhar abaixo da borda.'
+          'Antepé na borda do step com calcanhares livres para máxima amplitude.',
+          'Suba na ponta dos pés com flexão plantar máxima controlada.',
+          'Desça devagar em 3 segundos permitindo alongamento completo abaixo do nível do step.'
         ],
-        breathingTip: 'Expire na subida rápida e inspire na descida lenta.',
-        beginnerMistake: 'Ficar quicando rápido sem amplitude. Faça subida rápida e descida lenta.',
+        breathingTip: 'Expire na subida concêntrica e inspire na descida excêntrica profunda.',
+        beginnerMistake: 'Ficar quicando sem controle de tempo. Priorize pausa de 1s no topo e descida lenta.',
         animationType: 'calf-raise'
       }
     ]
@@ -250,15 +250,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 15,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Escudo Anti-Pubalgia',
-        soccerBenefit: 'A lesão que mais afasta adolescentes no futebol é a dor no púbis/adutor (pubalgia). Esse exercício protege a virilha.',
+        badge: 'Fortalecimento Adutor',
+        soccerBenefit: 'A prancha Copenhague fortalece os adutores e músculos estabilizadores da pelve, prevenindo pubalgia e desequilíbrios biomecânicos.',
         steps: [
-          'Deite de lado em prancha lateral, com o joelho da perna de cima apoiado no banco.',
-          'Eleve o quadril mantendo o corpo reto e a perna de baixo suspensa.',
-          'Segure a posição por 15 segundos de cada lado com firmeza.'
+          'Deite de lado em prancha lateral com o joelho da perna superior apoiado sobre o banco.',
+          'Eleve o quadril mantendo alinhamento longitudinal neutro e a perna inferior em suspensão.',
+          'Sustente a contração isométrica por 15 segundos em cada lado.'
         ],
-        breathingTip: 'Mantenha respiração constante e suave.',
-        beginnerMistake: 'Deixar o quadril cair em direção ao chão. Mantenha o corpo reto como uma tábua.',
+        breathingTip: 'Mantenha respiração constante e diafragmática sem travar o ar.',
+        beginnerMistake: 'Permitir a queda da pelve em direção ao chão. Mantenha o corpo perfeitamente alinhado.',
         animationType: 'mobility'
       },
       {
@@ -271,15 +271,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 30,
-        badge: 'Giro Rápido',
-        soccerBenefit: 'Aumenta a facilidade de girar o corpo para driblar e chutar sem travar a bacia.',
+        badge: 'Mobilidade de Quadril',
+        soccerBenefit: 'Aumenta a amplitude de rotação interna e externa da cabeça femoral, aliviando sobrecargas na coluna lombar e joelhos.',
         steps: [
-          'Sente-se no chão com as duas pernas dobradas em 90 graus.',
-          'Incline o peito ereto à frente sobre o joelho dianteiro sentindo o glúteo alongar.',
-          'Gire os joelhos para o lado oposto sem tirar os calcanhares do chão.'
+          'Sente-se no solo com ambas as pernas flexionadas a 90 graus.',
+          'Incline o tronco com coluna ereta sobre o fêmur dianteiro, ativando a cápsula articular.',
+          'Transicione os membros para o lado oposto mantendo os calcanhares em contato com o solo.'
         ],
-        breathingTip: 'Inspire fundo e solte todo o ar na descida relaxando a musculatura.',
-        beginnerMistake: 'Ter pressa. Faça o movimento suave sentindo cada articulação destravar.',
+        breathingTip: 'Inspire profundamente e expire na flexão anterior relaxando os tecidos.',
+        beginnerMistake: 'Arredondar excessivamente a coluna torácica. O movimento deve provir do quadril.',
         animationType: 'mobility'
       },
       {
@@ -292,15 +292,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 30,
-        badge: 'Pernas Leves',
-        soccerBenefit: 'Tira a rigidez dos treinos com chuteira e melhora a flexão do tornozelo.',
+        badge: 'Dorsiflexão & Isquiotibiais',
+        soccerBenefit: 'Aumenta a complacência do tecido conectivo e melhora a dorsiflexão do tornozelo, essencial para amplitude em agachamentos e passadas.',
         steps: [
-          'Deitado de costas, eleve uma perna estendida para o alto segurando atrás da coxa.',
-          'Faça movimentos de ponta de pé (para cima e para baixo) 10 vezes.',
-          'Troque a perna e repita sentindo a perna ficar leve.'
+          'Em decúbito dorsal, eleve um membro estendido com suporte posterior manual ou elástico.',
+          'Execute flexão e extensão do tornozelo (dorsiflexão e flexão plantar) de forma compassada.',
+          'Alterne os membros focando no relaxamento da cadeia posterior sob tração leve.'
         ],
-        breathingTip: 'Respire com calma, oxigenando o corpo todo.',
-        beginnerMistake: 'Puxar com força excessiva a ponto de tremer. Deve ser um alongamento confortável.',
+        breathingTip: 'Respire ritmicamente em cadência relaxante.',
+        beginnerMistake: 'Aplicar tração excessiva gerando compensação na região lombar.',
         animationType: 'stretch'
       }
     ]
@@ -330,15 +330,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Postura Imponente',
-        soccerBenefit: 'Abre o peito, melhora a postura na corrida e dá aquele visual em V de atleta.',
+        badge: 'Largura Dorsal',
+        soccerBenefit: 'Estimula o grande dorsal em movimento de adução escapular, promovendo expansão da caixa torácica e postura alinhada.',
         steps: [
-          'Ajuste o apoio da coxa para ficar bem preso.',
-          'Puxe a barra em direção ao peitoral superior estufando o peito.',
-          'Aperte as costas por 1 segundo e deixe a barra subir devagar alongando as asas.'
+          'Ajuste o apoio dos joelhos para estabilização firme da pelve.',
+          'Puxe a barra em direção à porção superior do esterno com depressão escapular ativa.',
+          'Sustente 1 segundo no pico de contração dorsal e controle o retorno excêntrico em 2 a 3 segundos.'
         ],
-        breathingTip: 'Puxe o ar antes; solte o ar puxando a barra ao peito.',
-        beginnerMistake: 'Jogar o tronco 45 graus para trás como se estivesse deitado. Mantenha tronco firme!',
+        breathingTip: 'Inspire antes de iniciar; expire na fase concêntrica puxando ao peito.',
+        beginnerMistake: 'Inclinar o tronco excessivamente para trás transformando em remada. Mantenha ligeira inclinação fixa de 10-15 graus.',
         animationType: 'lat-pulldown'
       },
       {
@@ -351,15 +351,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 10,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Equilíbrio de Força',
-        soccerBenefit: 'Elimina assimetria entre o lado direito e esquerdo do corpo, evitando desvios na passada.',
+        badge: 'Densidade Escapular',
+        soccerBenefit: 'Promove espessura das costas e corrige desequilíbrios musculares bilaterais mantendo a coluna em alinhamento neutro.',
         steps: [
-          'Apoie mão e joelho no banco, mantendo as costas retas paralelas ao chão.',
-          'Puxe o halter com o cotovelo apontando para o teto, raspando perto da cintura.',
-          'Desça devagar até o braço esticar sentindo alongar a dorsal.'
+          'Apoie mão e joelho contralaterais no banco com coluna paralela ao solo.',
+          'Puxe o halter em direção ao quadril conduzindo o movimento com o cotovelo rente ao tronco.',
+          'Estenda completamente o braço na descida para alongamento seguro da fáscia dorsal.'
         ],
-        breathingTip: 'Solte o ar na subida do halter; inspire na descida.',
-        beginnerMistake: 'Girar o tronco todo para puxar o peso. Só o braço se mexe!',
+        breathingTip: 'Solte o ar na tração concêntrica; inspire no alongamento excêntrico.',
+        beginnerMistake: 'Rotacionar excessivamente o tronco para compensar o peso. Isole o trabalho nas costas.',
         animationType: 'one-arm-row'
       },
       {
@@ -372,15 +372,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 60,
-        badge: 'Braço de Respeito',
-        soccerBenefit: 'Bíceps fortes protegem as articulações do cotovelo e dão imponência física.',
+        badge: 'Pico de Bíceps',
+        soccerBenefit: 'A angulação semi-pronada da barra W reduz o estresse sobre as articulações radioulnares e isola as duas cabeças do bíceps.',
         steps: [
-          'Em pé, segure a barra W nas curvas com pegada firme.',
-          'Suba a barra dobrando os cotovelos sem mexer o quadril nem balançar o corpo.',
-          'Aperte o bíceps no topo e desça em 2 segundos controlados.'
+          'Em posição ortostática estável, segure a barra W nas empunhaduras anguladas.',
+          'Flexione os cotovelos sem movimentação anterior dos ombros ou balanço do tronco.',
+          'Sustente a contração máxima no topo por 1 segundo e desça em 2 a 3 segundos controlados.'
         ],
-        breathingTip: 'Expire na subida da barra; inspire ao descer.',
-        beginnerMistake: 'Dar tranco com a coluna. Se precisar balançar o tronco, reduza a carga para preservar a técnica impecável e isolar o bíceps!',
+        breathingTip: 'Expire na flexão do cotovelo; inspire na extensão excêntrica.',
+        beginnerMistake: 'Usar pêndulo lombar para impulsionar a barra. Reduza a carga e preserve o isolamento neuromuscular.',
         animationType: 'bicep-curl'
       },
       {
@@ -393,15 +393,15 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 15,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Potência do Chute',
-        soccerBenefit: 'O chicote do chute começa na flexão do abdômen. Abdômen forte = bomba no gol.',
+        badge: 'Flexão de Tronco',
+        soccerBenefit: 'Fortalece o reto abdominal com sobrecarga progressiva, aprimorando a transmissão de força do core e estabilidade pélvica.',
         steps: [
-          'Deitado de costas, segure a anilha junto ao peito.',
-          'Suba o tronco enrolando as costelas em direção ao umbigo, esvaziando o ar dos pulmões.',
-          'Desça devagar sem deixar a cabeça bater no chão.'
+          'Em decúbito dorsal com joelhos flexionados a 90 graus, apoie a carga sobre o tórax superior.',
+          'Flexione o tronco aproximando as costelas da crista ilíaca, promovendo expiração completa.',
+          'Retorne controladamente sem relaxar a tensão muscular contra o solo.'
         ],
-        breathingTip: 'Solte TODO o ar na subida apertando a barriga; inspire ao descer.',
-        beginnerMistake: 'Subir puxando o pescoço com as mãos. Mantenha o olhar no teto.',
+        breathingTip: 'Expire completamente o ar no topo da contração; inspire no retorno.',
+        beginnerMistake: 'Puxar a região cervical. O movimento deve provir estritamente do encurtamento do abdômen.',
         animationType: 'crunch'
       }
     ]

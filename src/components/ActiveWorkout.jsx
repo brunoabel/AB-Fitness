@@ -386,12 +386,12 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                 {/* Corpo do Exercício: Tabela de Séries */}
                 {isExpanded && (
                   <div className="px-4 pb-4 pt-1 border-t border-slate-100 dark:border-slate-800 space-y-3 animate-fadeIn">
-                    {/* Benefício específico no futebol */}
+                    {/* Benefício Científico de Performance */}
                     {exercise.soccerBenefit && (
                       <div className="text-[11px] text-slate-600 dark:text-slate-300 bg-sky-50/50 dark:bg-slate-800/60 p-2.5 rounded-2xl border border-sky-100 dark:border-slate-700/80 flex items-start gap-2">
                         <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
                         <div>
-                          <strong className="text-sky-800 dark:text-sky-300">Vantagem em Campo:</strong> {exercise.soccerBenefit}
+                          <strong className="text-sky-800 dark:text-sky-300">Ciência & Fisiologia:</strong> {exercise.soccerBenefit}
                         </div>
                       </div>
                     )}
