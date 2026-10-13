@@ -8,6 +8,9 @@ import HistoryView from './components/HistoryView';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
+import AuthScreen from './components/AuthScreen';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { fetchUserSchedule } from './services/workoutService';
 import { 
   getCompletedDays, 
   getSoundPreference, 
@@ -18,8 +21,12 @@ import {
 } from './utils/storage';
 import { WEEKLY_SCHEDULE } from './data/workouts';
 import { sound } from './utils/audio';
+import { Dumbbell } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
+  const { user, isGuest, loading } = useAuth();
+
+  const [schedule, setSchedule] = useState(WEEKLY_SCHEDULE);
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'active-workout'
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'history'
   const [activeWorkout, setActiveWorkout] = useState(() => {
@@ -48,6 +55,25 @@ export default function App() {
   useEffect(() => {
     sound.toggleSound(soundEnabled);
   }, [soundEnabled]);
+
+  // Carregar plano do usuário no Supabase ao autenticar
+  useEffect(() => {
+    let active = true;
+    if (user && user.id && user.id !== 'guest-local-user') {
+      fetchUserSchedule(user.id)
+        .then((userPlan) => {
+          if (active && userPlan && userPlan.length > 0) {
+            setSchedule(userPlan);
+          }
+        })
+        .catch((err) => {
+          console.warn('Erro ao carregar plano customizado:', err);
+        });
+    }
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const handleStartWorkout = (workout) => {
     setActiveWorkout(workout);
@@ -82,6 +108,29 @@ export default function App() {
     }
   };
 
+  // 1. Tela de Carregamento Inicial (Splash)
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f8ff] dark:bg-[#070d18] flex flex-col items-center justify-center p-6 text-center">
+        <div className="p-4 rounded-3xl bg-gradient-to-tr from-sky-400 to-sky-500 text-white shadow-xl shadow-sky-400/30 animate-pulse mb-4">
+          <Dumbbell className="w-10 h-10 stroke-[2.2]" />
+        </div>
+        <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
+          AB Fitness
+        </h2>
+        <p className="text-xs text-sky-600 dark:text-sky-400 font-semibold mt-1">
+          Carregando treinos e performance...
+        </p>
+      </div>
+    );
+  }
+
+  // 2. Proteção de Rota: Usuário não autenticado vê a tela de Login / Cadastro
+  if (!user && !isGuest) {
+    return <AuthScreen />;
+  }
+
+  // 3. Aplicação Logada (Dashboard & Treinos)
   return (
     <div className={`${isDark ? 'dark' : ''} min-h-screen bg-[#f3f9fd] dark:bg-[#070d18] text-slate-800 dark:text-slate-100 font-sans selection:bg-sky-200 selection:text-sky-900 antialiased flex flex-col justify-between transition-colors duration-300`}>
       {/* Container Central com Proporção Mobile-First Premium */}
@@ -114,6 +163,7 @@ export default function App() {
                   onStartWorkout={handleStartWorkout}
                   onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
                   onOpenGuide={() => setShowGuideModal(true)}
+                  schedule={schedule}
                 />
               )}
 
@@ -149,5 +199,13 @@ export default function App() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

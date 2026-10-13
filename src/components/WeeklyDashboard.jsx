@@ -19,14 +19,15 @@ export default function WeeklyDashboard({
   completedDays = [], 
   onStartWorkout, 
   onViewExercise,
-  onOpenGuide 
+  onOpenGuide,
+  schedule = WEEKLY_SCHEDULE
 }) {
   // Detecta o dia da semana atual (0 = Dom, 1 = Seg, ..., 6 = Sáb)
   const [currentJsDay] = useState(() => new Date().getDay());
   const [selectedDayId, setSelectedDayId] = useState(() => new Date().getDay());
 
   // Encontra o treino do dia selecionado
-  const selectedWorkout = WEEKLY_SCHEDULE.find((d) => d.dayId === selectedDayId) || WEEKLY_SCHEDULE[0];
+  const selectedWorkout = schedule.find((d) => d.dayId === selectedDayId) || schedule[0];
 
   // Verifica se o dia selecionado já foi completado hoje
   const isSelectedDayCompleted = completedDays.some((c) => c.dayId === selectedDayId);
@@ -94,7 +95,7 @@ export default function WeeklyDashboard({
 
         {/* Pílulas de Navegação por Dia da Semana */}
         <div className="grid grid-cols-7 gap-1.5">
-          {WEEKLY_SCHEDULE.map((day) => {
+          {schedule.map((day) => {
             const isToday = day.dayId === currentJsDay;
             const isSelected = day.dayId === selectedDayId;
             const isDone = completedDays.some((c) => c.dayId === day.dayId);

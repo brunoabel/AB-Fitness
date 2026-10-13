@@ -1,7 +1,7 @@
 {
-  "name": "LA Workout — Atleta Sub-17",
-  "short_name": "LA Workout",
-  "description": "Treino Inteligente de Força, Explosão & Prevenção para Atleta de Futebol",
+  "name": "AB Fitness — Gestão de Treinos",
+  "short_name": "AB Fitness",
+  "description": "Gestão Inteligente de Treinos de Academia, Cargas & Performance de Atleta",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

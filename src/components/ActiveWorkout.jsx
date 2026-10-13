@@ -20,13 +20,15 @@ import { sound, triggerHaptic } from '../utils/audio';
 import { 
   getSavedWeights, 
   saveExerciseWeights, 
-  addWorkoutToHistory, 
   markDayCompleted,
   saveActiveDraft,
   getActiveDraft
 } from '../utils/storage';
+import { recordWorkoutCompletion } from '../services/workoutService';
+import { useAuth } from '../context/AuthContext';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
+  const { user } = useAuth();
   // Estado para armazenar as séries de cada exercício
   const [exercisesData, setExercisesData] = useState(() => {
     const saved = getSavedWeights();
@@ -206,21 +208,16 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     : 0;
 
   // Finalizar treino completo
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = async () => {
     setIsTimerRunning(false);
 
-    // Salvar no histórico
-    const durationMin = Math.max(1, Math.round(elapsedSeconds / 60));
-    addWorkoutToHistory({
-      id: `w-${Date.now()}`,
-      dayId: workout.dayId,
-      workoutTitle: workout.title,
-      workoutName: workout.name,
-      durationMinutes: durationMin,
-      totalSets: completedSetsCount,
-      totalVolumeKg,
-      date: new Date().toLocaleDateString('pt-BR'),
-      timestamp: Date.now(),
+    // Salvar no Supabase (se logado) e persistência local via serviço modular
+    await recordWorkoutCompletion({
+      userId: user?.id,
+      workout,
+      durationSeconds: elapsedSeconds,
+      exercisesData,
+      notes: `Treino finalizado com ${completedSetsCount} séries e volume de ${totalVolumeKg} kg.`
     });
 
     // Marcar o dia como concluído
