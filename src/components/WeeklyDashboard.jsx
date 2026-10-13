@@ -13,6 +13,8 @@ import {
   Zap
 } from 'lucide-react';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
+import { ATHLETE_MANUALS } from '../data/athleteManuals';
+import { getSavedUserProfile } from './OnboardingModal';
 import { triggerHaptic } from '../utils/audio';
 
 export default function WeeklyDashboard({ 
@@ -282,26 +284,37 @@ export default function WeeklyDashboard({
         </div>
       </div>
 
-      {/* Card Rápido: Manual de Hipertrofia & Ciência */}
-      <div 
-        onClick={onOpenGuide}
-        className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-sky-300 dark:hover:border-sky-600 transition-all cursor-pointer flex items-center justify-between active:scale-[0.99]"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold border border-sky-100 dark:border-slate-700">
-            <Sparkles className="w-5 h-5" />
+      {/* Card Rápido: Manual Personalizado do Atleta / Objetivo */}
+      {(() => {
+        const userProfile = getSavedUserProfile();
+        const userGoal = userProfile?.goal || 'athlete';
+        const currentManual = ATHLETE_MANUALS[userGoal] || ATHLETE_MANUALS.athlete;
+
+        return (
+          <div 
+            onClick={onOpenGuide}
+            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-sky-300 dark:hover:border-sky-600 transition-all cursor-pointer flex items-center justify-between active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold border border-sky-100 dark:border-slate-700 shadow-xs shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest block">
+                  {currentManual.tag}
+                </span>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-slate-200 mt-0.5">
+                  {currentManual.title}
+                </h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                  {currentManual.subtitle}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
           </div>
-          <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-slate-200">
-              Diretrizes de Treino: Hipertrofia & Ciência
-            </h4>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Diretrizes biomecânicas, tempo sob tensão e recuperação.
-            </p>
-          </div>
-        </div>
-        <ChevronRight className="w-4 h-4 text-slate-400" />
-      </div>
+        );
+      })()}
     </div>
   );
 }

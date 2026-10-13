@@ -23,7 +23,7 @@ export default function Footer({ onOpenGuide }) {
             className="inline-flex items-center gap-1 text-[11px] text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-semibold bg-sky-50 dark:bg-slate-800 px-3 py-1 rounded-full border border-sky-200/60 dark:border-slate-700 active:scale-95 transition-all"
           >
             <Sparkles className="w-3 h-3 text-sky-500" />
-            <span>Manual Científico: Hipertrofia & Performance</span>
+            <span>Manuais de Treino: Futebol, Hipertrofia & Metas</span>
           </button>
         </div>
       )}

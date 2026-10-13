@@ -3,7 +3,7 @@ import Header from './components/Header';
 import WeeklyDashboard from './components/WeeklyDashboard';
 import ActiveWorkout from './components/ActiveWorkout';
 import ExerciseModal from './components/ExerciseModal';
-import BeginnerGuideModal from './components/BeginnerGuideModal';
+import AthleteManualModal from './components/AthleteManualModal';
 import HistoryView from './components/HistoryView';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
@@ -209,9 +209,9 @@ function AppContent() {
           />
         )}
 
-        {/* Modal do Guia para Atletas & Performance */}
+        {/* Modal de Manuais do Atleta & Performance Especializados */}
         {showGuideModal && (
-          <BeginnerGuideModal
+          <AthleteManualModal
             onClose={() => setShowGuideModal(false)}
           />
         )}
