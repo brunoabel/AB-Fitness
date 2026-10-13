@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Dumbbell, 
   Flame, 
   BookOpen, 
   Volume2, 
@@ -11,6 +10,7 @@ import {
   LogOut,
   ShieldCheck
 } from 'lucide-react';
+import ABLogo from './ABLogo';
 import { sound, triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context/AuthContext';
 
@@ -34,8 +34,8 @@ export default function Header({
         
         {/* Marca / Logo AB Fitness */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-xs">
-            <Dumbbell className="w-4 h-4 stroke-[2.5]" />
+          <div className="w-9 h-9 flex items-center justify-center">
+            <ABLogo size={36} variant={isDark ? 'dark' : 'light'} />
           </div>
           <div>
             <div className="flex items-center gap-1.5">

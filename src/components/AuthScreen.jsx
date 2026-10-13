@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Dumbbell, 
   Lock, 
   Mail, 
   User, 
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/audio';
+import ABLogo from './ABLogo';
 
 export default function AuthScreen() {
   const { signInWithEmail, signUpWithEmail, continueAsGuest } = useAuth();
@@ -75,8 +75,8 @@ export default function AuthScreen() {
         
         {/* Topo / Marca AB Fitness */}
         <div className="text-center mb-8 animate-fadeIn">
-          <div className="inline-flex w-14 h-14 rounded-2xl bg-sky-500 text-white items-center justify-center shadow-xs mb-3">
-            <Dumbbell className="w-7 h-7 stroke-[2.2]" />
+          <div className="inline-flex w-16 h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 items-center justify-center shadow-lg mb-4 border border-slate-800">
+            <ABLogo size={56} variant="dark" />
           </div>
           
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -86,6 +86,7 @@ export default function AuthScreen() {
             Treino, Biomecânica & Sobrecarga Progressiva
           </p>
         </div>
+
 
         {/* Caixa Principal de Autenticação */}
         <div className="bg-white/95 dark:bg-slate-900/90 rounded-3xl p-6 shadow-xl shadow-sky-900/5 border border-sky-100 dark:border-slate-800 backdrop-blur-xl">
