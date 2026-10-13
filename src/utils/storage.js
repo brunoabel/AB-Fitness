@@ -1,19 +1,24 @@
-// Gerenciamento de persistência local com LocalStorage para o LA Workout
+// Gerenciamento de persistência local com LocalStorage para o AB Fitness
 // Garante que o utilizador nunca perca as suas cargas nem o histórico
 
 const KEYS = {
-  WEIGHTS: 'la_workout_weights_v1',
-  HISTORY: 'la_workout_history_v1',
-  COMPLETED_DAYS: 'la_workout_completed_days_v1',
-  ACTIVE_DRAFT: 'la_workout_active_draft_v1',
-  TIMER_PREF: 'la_workout_timer_pref_v1',
-  SOUND_ENABLED: 'la_workout_sound_enabled_v1',
-  THEME_MODE: 'la_workout_theme_mode_v1'
+  WEIGHTS: 'ab_fitness_weights_v1',
+  HISTORY: 'ab_fitness_history_v1',
+  COMPLETED_DAYS: 'ab_fitness_completed_days_v1',
+  ACTIVE_DRAFT: 'ab_fitness_active_draft_v1',
+  TIMER_PREF: 'ab_fitness_timer_pref_v1',
+  SOUND_ENABLED: 'ab_fitness_sound_enabled_v1',
+  THEME_MODE: 'ab_fitness_theme_mode_v1'
+};
+
+// Fallback para chaves anteriores garantindo zero perda de dados
+const getWithLegacyFallback = (key, legacyKey) => {
+  return localStorage.getItem(key) || (legacyKey ? localStorage.getItem(legacyKey) : null);
 };
 
 export const getSavedWeights = () => {
   try {
-    const raw = localStorage.getItem(KEYS.WEIGHTS);
+    const raw = getWithLegacyFallback(KEYS.WEIGHTS, 'la_workout_weights_v1');
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -30,7 +35,7 @@ export const saveExerciseWeights = (exerciseId, setsData) => {
 
 export const getWorkoutHistory = () => {
   try {
-    const raw = localStorage.getItem(KEYS.HISTORY);
+    const raw = getWithLegacyFallback(KEYS.HISTORY, 'la_workout_history_v1');
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -50,7 +55,7 @@ export const addWorkoutToHistory = (workoutRecord) => {
 
 export const getCompletedDays = () => {
   try {
-    const raw = localStorage.getItem(KEYS.COMPLETED_DAYS);
+    const raw = getWithLegacyFallback(KEYS.COMPLETED_DAYS, 'la_workout_completed_days_v1');
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -72,7 +77,7 @@ export const markDayCompleted = (dayId) => {
 
 export const getActiveDraft = () => {
   try {
-    const raw = localStorage.getItem(KEYS.ACTIVE_DRAFT);
+    const raw = getWithLegacyFallback(KEYS.ACTIVE_DRAFT, 'la_workout_active_draft_v1');
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -91,7 +96,7 @@ export const saveActiveDraft = (draft) => {
 
 export const getTimerPreference = () => {
   try {
-    const raw = localStorage.getItem(KEYS.TIMER_PREF);
+    const raw = getWithLegacyFallback(KEYS.TIMER_PREF, 'la_workout_timer_pref_v1');
     return raw ? Number(raw) : 60;
   } catch {
     return 60;
@@ -106,7 +111,7 @@ export const saveTimerPreference = (sec) => {
 
 export const getSoundPreference = () => {
   try {
-    const raw = localStorage.getItem(KEYS.SOUND_ENABLED);
+    const raw = getWithLegacyFallback(KEYS.SOUND_ENABLED, 'la_workout_sound_enabled_v1');
     return raw !== null ? JSON.parse(raw) : true;
   } catch {
     return true;
@@ -121,10 +126,10 @@ export const saveSoundPreference = (enabled) => {
 
 export const getThemePreference = () => {
   try {
-    const raw = localStorage.getItem(KEYS.THEME_MODE);
-    return raw || 'dark'; // Padrão 'dark' moderno para adolescente ou o que estiver salvo
+    const raw = getWithLegacyFallback(KEYS.THEME_MODE, 'la_workout_theme_mode_v1');
+    return raw || 'light';
   } catch {
-    return 'dark';
+    return 'light';
   }
 };
 

@@ -15,7 +15,7 @@ export default function HistoryView() {
       <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
         <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 text-xs font-black uppercase tracking-wider">
           <Trophy className="w-4 h-4 text-amber-400" />
-          <span>Evolução do Atleta Sub-17</span>
+          <span>Evolução • AB Fitness</span>
         </div>
 
         <h2 className="text-xl font-black text-slate-800 dark:text-white">

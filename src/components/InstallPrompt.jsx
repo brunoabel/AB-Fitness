@@ -75,7 +75,7 @@ export default function InstallPrompt() {
                   Toque em <Share className="w-3 h-3 inline text-sky-500" /> e depois em <PlusSquare className="w-3 h-3 inline text-sky-500" /> <strong>"Adicionar à Tela de Início"</strong>
                 </span>
               ) : (
-                'Abra em tela cheia sem barra de navegador e use offline no clube!'
+                'Abra em tela cheia como app nativo e use offline no treino!'
               )}
             </p>
           </div>

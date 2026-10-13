@@ -42,19 +42,19 @@ export default function CelebrationModal({
   }, []);
 
   const handleShare = async () => {
-    const textToShare = `Treino concluído no LA Workout! 💪\n"Bom treino, frango, nos vemos amanhã!"\nTempo: ${durationMinutes} min • ${totalSetsCompleted} séries • ${totalVolumeKg} kg levantados.\nA titularidade no clube tá garantida! ⚽`;
+    const textToShare = `Treino concluído no AB Fitness! 💪\n"Excelente treino! Disciplina é a ponte entre metas e conquistas."\nTempo: ${durationMinutes} min • ${totalSetsCompleted} séries • ${totalVolumeKg} kg levantados.\nFoco e evolução contínua! ⚡`;
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Treino Concluído — LA Workout',
+          title: 'Treino Concluído — AB Fitness',
           text: textToShare,
         });
       } catch {}
     } else {
       try {
         await navigator.clipboard.writeText(textToShare);
-        alert('Resumo copiado para a área de transferência! Manda no grupo do time!');
+        alert('Resumo copiado para a área de transferência! Compartilhe seu progresso!');
       } catch {}
     }
   };
@@ -77,7 +77,7 @@ export default function CelebrationModal({
 
           <span className="px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-800 dark:text-sky-300 text-[11px] font-extrabold uppercase tracking-wider mb-1 flex items-center gap-1">
             <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span>Tá Pago, Monstro!</span>
+            <span>Treino Concluído com Sucesso!</span>
           </span>
 
           <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
@@ -89,21 +89,21 @@ export default function CelebrationModal({
           </p>
         </div>
 
-        {/* Mensagem de Resenha Solicitada para o Irmão de 16 Anos */}
+        {/* Mensagem Motivacional e Positiva de Atleta */}
         <div className="px-5 py-2">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-sky-50 dark:from-slate-800/80 to-slate-50 dark:to-slate-800/40 border border-sky-200/80 dark:border-sky-500/20 text-center relative overflow-hidden shadow-inner">
             <div className="absolute -top-6 -left-6 w-16 h-16 bg-sky-300/20 rounded-full blur-xl pointer-events-none" />
             
             <p className="text-base font-extrabold text-slate-800 dark:text-sky-200 tracking-tight leading-snug mb-1.5">
-              “Bom treino frango, nos vemos amanhã!” 🍗🔥
+              “Excelente treino! Nos vemos amanhã mais fortes.” ⚡🏆
             </p>
             
             <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              O shape tá vindo e a titularidade no clube tá garantida. Como diz a canção: um dia frio é um bom lugar pra bater recorde!
+              A consistência diária é o segredo dos grandes resultados. Você deu o seu melhor hoje e o seu corpo vai responder na mesma moeda.
             </p>
             
             <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest block mt-2">
-              — LA Workout • Modo Atleta Sub-17
+              — AB Fitness • Gestão de Treinos
             </span>
           </div>
         </div>

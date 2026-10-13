@@ -14,7 +14,7 @@ import {
 // Busca o plano semanal personalizado do usuário logado
 export async function fetchUserSchedule(userId) {
   if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
-    return WEEKLY_SCHEDULE;
+    return getLocalCustomPlan() || WEEKLY_SCHEDULE;
   }
 
   try {
@@ -275,4 +275,89 @@ export async function getExerciseLastWeight(userId, exerciseCode) {
   }
 
   return null;
+}
+
+const STORAGE_CUSTOM_PLAN_KEY = 'ab_fitness_custom_plan_v1';
+
+// Salva plano personalizado no Supabase e LocalStorage
+export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitness — Plano Personalizado') {
+  // Salvar no LocalStorage para resposta imediata
+  try {
+    localStorage.setItem(STORAGE_CUSTOM_PLAN_KEY, JSON.stringify(planDays));
+  } catch {}
+
+  // Se logado no Supabase, atualizar na nuvem
+  if (isSupabaseConfigured() && supabase && userId && userId !== 'guest-local-user') {
+    try {
+      // 1. Remover dias e exercícios antigos do usuário
+      await supabase.from('workout_days').delete().eq('user_id', userId);
+
+      // 2. Inserir novo plano
+      const { data: planRow } = await supabase
+        .from('workout_plans')
+        .upsert({
+          user_id: userId,
+          title: planTitle,
+          is_active: true
+        })
+        .select()
+        .single();
+
+      // 3. Inserir novos dias e exercícios
+      for (const day of planDays) {
+        const { data: dayRow } = await supabase
+          .from('workout_days')
+          .insert({
+            user_id: userId,
+            plan_id: planRow?.id,
+            day_number: day.dayId,
+            day_name: day.name,
+            title: day.title,
+            focus: day.focus,
+            duration: day.duration,
+            intensity: day.intensity,
+            is_rest_day: day.isRestDay,
+            badge: day.badge
+          })
+          .select()
+          .single();
+
+        if (dayRow && day.exercises && day.exercises.length > 0) {
+          const exPayloads = day.exercises.map((ex, idx) => ({
+            user_id: userId,
+            workout_day_id: dayRow.id,
+            exercise_code: ex.id,
+            name: ex.name,
+            target_muscle: ex.target,
+            secondary_muscle: ex.secondary || null,
+            equipment: ex.equipment,
+            suggested_weight: ex.suggestedWeight || 10,
+            suggested_reps: ex.suggestedReps || 10,
+            default_sets: ex.defaultSets || 3,
+            rest_time_seconds: ex.restTime || 60,
+            order_index: idx,
+            badge: ex.badge,
+            soccer_benefit: ex.soccerBenefit || null,
+            tips: ex.executionSteps || ex.steps || []
+          }));
+
+          await supabase.from('exercises').insert(exPayloads);
+        }
+      }
+    } catch (err) {
+      console.warn('Erro ao salvar plano personalizado no Supabase:', err);
+    }
+  }
+
+  return planDays;
+}
+
+// Recupera plano salvo localmente se existir
+export function getLocalCustomPlan() {
+  try {
+    const raw = localStorage.getItem(STORAGE_CUSTOM_PLAN_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }

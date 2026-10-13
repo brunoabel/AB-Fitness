@@ -20,6 +20,7 @@ export default function WeeklyDashboard({
   onStartWorkout, 
   onViewExercise,
   onOpenGuide,
+  onOpenCustomize,
   schedule = WEEKLY_SCHEDULE
 }) {
   // Detecta o dia da semana atual (0 = Dom, 1 = Seg, ..., 6 = Sáb)
@@ -40,39 +41,52 @@ export default function WeeklyDashboard({
       {/* Banner de Boas-Vindas & Foco de Atleta */}
       <div className="relative overflow-hidden p-5 rounded-3xl bg-gradient-to-br from-white dark:from-slate-900 via-sky-50/80 dark:via-slate-900/90 to-sky-100/40 dark:to-sky-950/30 border border-sky-100 dark:border-slate-800 shadow-sm transition-colors">
         <div className="relative z-10 space-y-2">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-            <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 text-sky-500 fill-sky-500" />
-              Rotina de Clube Sub-17 • Foco no Shape
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5 text-sky-500 fill-sky-500" />
+                AB Fitness • Treino Inteligente
+              </span>
+            </div>
+
+            {onOpenCustomize && (
+              <button
+                onClick={onOpenCustomize}
+                className="inline-flex items-center gap-1 text-[10px] font-extrabold text-sky-700 dark:text-sky-300 bg-white/90 dark:bg-slate-800 px-2.5 py-1 rounded-full border border-sky-200/80 dark:border-slate-700 shadow-xs hover:bg-sky-50 active:scale-95 transition-all"
+                title="Personalizar seu plano de acordo com suas metas"
+              >
+                <Sparkles className="w-3 h-3 text-sky-500" />
+                <span>Personalizar</span>
+              </button>
+            )}
           </div>
 
           <h1 className="text-xl font-black text-slate-800 dark:text-white tracking-tight leading-snug">
-            Carcaça de titular não se cria no sofá. Bora pro play!
+            Constância gera excelência. O seu melhor treino começa agora!
           </h1>
 
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-            Concilie os 4 treinos com bola no clube com ganho de massa, arranque de velocista e força no ombro a ombro.
+            Exercícios com biomecânica de precisão, progressão de carga planejada e descanso científico para resultados máximos.
           </p>
 
           {/* Barra de Meta Semanal */}
           <div className="pt-2 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-700 dark:text-slate-200">Meta da Semana:</span>
+              <span className="font-bold text-slate-700 dark:text-slate-200">Meta Semanal:</span>
               <span className="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300 font-black text-[11px] border border-sky-200/60 dark:border-sky-800">
-                {completedCount} de 5 dias pagos
+                {completedCount} dias concluídos
               </span>
             </div>
             <span className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold flex items-center gap-1">
               <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              Modo Monstro
+              Evolução Ativa
             </span>
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
             <div 
               className="bg-gradient-to-r from-sky-400 to-sky-500 h-full rounded-full transition-all duration-700"
-              style={{ width: `${Math.min(100, (completedCount / 5) * 100)}%` }}
+              style={{ width: `${Math.min(100, (completedCount / 4) * 100)}%` }}
             />
           </div>
         </div>
@@ -288,10 +302,10 @@ export default function WeeklyDashboard({
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              Manual do Atleta: Futebol 4x + Academia
+              Manual do Atleta: Hipertrofia & Ciência
             </h4>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Como não cansar as pernas pro clube e evitar pubalgia.
+              Diretrizes de fisiologia, periodização e sobrecarga progressiva.
             </p>
           </div>
         </div>

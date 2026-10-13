@@ -1,20 +1,20 @@
-// Programa de Treino Especializado: Atleta de Futebol Sub-17 & Shape (16 Anos)
-// Desenvolvido para conciliar alta performance no clube (4x/sem) com hipertrofia e força de arrancada
+// Programa Fundamental: Alta Performance & Hipertrofia Funcional • AB Fitness
+// Desenvolvido para aliar construção muscular com atletismo, força e longevidade
 
 export const WEEKLY_SCHEDULE = [
   {
     dayId: 1,
     name: 'Segunda-feira',
     shortName: 'Seg',
-    code: 'push-soccer',
-    title: 'Blindagem Superior & Ombro a Ombro',
-    focus: 'Força de Tronco, Peito & Disputa de Bola',
+    code: 'push-performance',
+    title: 'Superior & Peitoral Funcional',
+    focus: 'Força de Tronco, Peitoral & Estabilidade Escapular',
     duration: '40 min',
     intensity: 'Alta Potência',
-    level: 'Atleta Sub-17',
-    badge: 'Foco: Divididas Fortes',
+    level: 'Atleta AB Fitness',
+    badge: 'Força & Hipertrofia',
     color: 'from-sky-400 to-sky-500',
-    description: 'Treino para criar tronco forte e braços firmes. Quem não tem força de membros superiores perde todas as disputas no ombro a ombro na ponta e no meio-campo.',
+    description: 'Treino focado em desenvolvimento de membros superiores com estabilidade glenoumeral e ativação precisa de peitoral, ombros e tríceps.',
     isRestDay: false,
     exercises: [
       {
@@ -77,7 +77,7 @@ export const WEEKLY_SCHEDULE = [
           'Segure 1 segundo no topo e desça sem deixar o peso bater na coxa.'
         ],
         breathingTip: 'Solte o ar ao subir e puxe o ar ao descer.',
-        beginnerMistake: 'Usar impulso com o quadril jogando o corpo pra trás. Mexa só os braços, frango!',
+        beginnerMistake: 'Usar impulso com o quadril jogando o corpo para trás. Mantenha o tronco estável e isole os deltoides!',
         animationType: 'lateral-raise'
       },
       {
@@ -129,14 +129,14 @@ export const WEEKLY_SCHEDULE = [
     name: 'Terça-feira',
     shortName: 'Ter',
     code: 'legs-sprint',
-    title: 'Arranque, Salto & Prevenção de Lesões',
-    focus: 'Pernas de Jogador: Búlgaro & Isquiotibiais',
+    title: 'Membros Inferiores, Potência & Posterior',
+    focus: 'Agachamento Unilateral, Isquiotibiais & Glúteos',
     duration: '45 min',
-    intensity: 'Foco em Potência',
-    level: 'Atleta Sub-17',
-    badge: 'Sprint & Aceleração',
+    intensity: 'Foco em Potência & Força',
+    level: 'Atleta AB Fitness',
+    badge: 'Potência & Cadeia Posterior',
     color: 'from-sky-500 to-sky-600',
-    description: 'Como você joga 4x na semana, o foco aqui NÃO É fadigar a perna até não conseguir andar, mas sim criar arrancada rápida e blindar os músculos de trás da coxa contra estiramentos.',
+    description: 'Treino focado em desenvolvimento de quadríceps, estabilidade unilateral e fortalecimento de isquiotibiais com cadência controlada e amplitude biomecânica.',
     isRestDay: false,
     exercises: [
       {
@@ -230,14 +230,14 @@ export const WEEKLY_SCHEDULE = [
     name: 'Quarta-feira',
     shortName: 'Qua',
     code: 'active-recovery',
-    title: 'Recuperação de Craque & Adutores',
-    focus: 'Mobilidade de Quadril, Prevenção de Pubalgia & Soltura',
+    title: 'Mobilidade Ativa & Core Funcional',
+    focus: 'Mobilidade de Quadril, Prevenção Articular & Core',
     duration: '30 min',
-    intensity: 'Recuperação Regenerativa',
-    level: 'Atleta Sub-17',
-    badge: 'Anti-Pubalgia & Soltura',
+    intensity: 'Recuperação Ativa',
+    level: 'Atleta AB Fitness',
+    badge: 'Mobilidade & Longevidade',
     color: 'from-sky-300 to-sky-500',
-    description: 'Quarta é dia chave se você treinou no clube ou vai treinar. Zero sobrecarga pesada: soltamos o quadril, ativamos adutores para prevenir pubalgia e recuperamos as pernas.',
+    description: 'Sessão estratégica de alívio articular, fortalecimento da musculatura adutora e estabilização de core para sustentar o rendimento nos treinos pesados.',
     isRestDay: false,
     exercises: [
       {
@@ -310,14 +310,14 @@ export const WEEKLY_SCHEDULE = [
     name: 'Quinta-feira',
     shortName: 'Qui',
     code: 'pull-power',
-    title: 'Tração, Costas Largas & Chute Forte',
-    focus: 'Dorsais, Bíceps & Rotação de Tronco',
+    title: 'Dorsais, Posterior de Ombros & Braços',
+    focus: 'Dorsais, Bíceps & Estabilidade Escapular',
     duration: '42 min',
     intensity: 'Força & Hipertrofia',
-    level: 'Atleta Sub-17',
-    badge: 'Costas em V & Chute',
+    level: 'Atleta AB Fitness',
+    badge: 'Dorsal em V & Tração',
     color: 'from-sky-400 to-sky-600',
-    description: 'Postura de atacante e zagueiro de elite. Costas fortes aumentam a velocidade da corrida e o abdômen rotacional aumenta a potência de finalização no gol.',
+    description: 'Construção de densidade dorsal com puxadas e remadas biomecanicamente alinhadas, estimulando bíceps e estabilizadores espinhais.',
     isRestDay: false,
     exercises: [
       {
@@ -380,7 +380,7 @@ export const WEEKLY_SCHEDULE = [
           'Aperte o bíceps no topo e desça em 2 segundos controlados.'
         ],
         breathingTip: 'Expire na subida da barra; inspire ao descer.',
-        beginnerMistake: 'Dar tranco com a coluna. Se tiver que balançar o corpo, abaixa o peso, frango!',
+        beginnerMistake: 'Dar tranco com a coluna. Se precisar balançar o tronco, reduza a carga para preservar a técnica impecável e isolar o bíceps!',
         animationType: 'bicep-curl'
       },
       {
@@ -411,14 +411,14 @@ export const WEEKLY_SCHEDULE = [
     name: 'Sexta-feira',
     shortName: 'Sex',
     code: 'upper-pump',
-    title: 'Peito Superior, Braços & Perna Fresca',
-    focus: 'Shape de Atleta & Pernas 100% Prontas para o Fim de Semana',
+    title: 'Peitoral Superior & Braços',
+    focus: 'Porção Clavicular, Bíceps & Tríceps com Sobrecarga Controlada',
     duration: '40 min',
-    intensity: 'Hipertrofia Moderada',
-    level: 'Atleta Sub-17',
-    badge: 'Sexta de Pump',
+    intensity: 'Hipertrofia & Volume',
+    level: 'Atleta AB Fitness',
+    badge: 'Hipertrofia Superior',
     color: 'from-sky-400 to-sky-500',
-    description: 'Na sexta o foco é deixar as pernas 100% descansadas para o jogo do clube no final de semana, enquanto você mete bronca no peito, ombros e braços.',
+    description: 'Fechamento da semana focado no peitoral superior e braços com cadência controlada e máxima queima metabólica.',
     isRestDay: false,
     exercises: [
       {
@@ -432,7 +432,7 @@ export const WEEKLY_SCHEDULE = [
         defaultSets: 3,
         restTime: 60,
         badge: 'Peitoral Cheio',
-        soccerBenefit: 'Constrói a parte de cima do peito, dando postura atlética na camisa de jogo.',
+        soccerBenefit: 'Estimula o feixe clavicular do peitoral superior, conferindo aspecto denso e atlético.',
         steps: [
           'Banco inclinado a 30 graus (não mais que isso).',
           'Suba os halteres alinhados ao peito com cotovelos em 45 graus.',
@@ -453,7 +453,7 @@ export const WEEKLY_SCHEDULE = [
         defaultSets: 3,
         restTime: 45,
         badge: 'Pegada Forte',
-        soccerBenefit: 'Engrossa o braço e fortalece o antebraço para agarrar e afastar adversários.',
+        soccerBenefit: 'Desenvolve o músculo braquial e antebraços, gerando braços mais densos e pegada poderosa.',
         steps: [
           'Palmas viradas uma para a outra (pegada neutra de martelo).',
           'Suba os dois halteres juntos sem balançar o corpo.',
@@ -473,8 +473,8 @@ export const WEEKLY_SCHEDULE = [
         suggestedReps: 12,
         defaultSets: 3,
         restTime: 45,
-        badge: 'Braço Trincado',
-        soccerBenefit: 'Completa o desenvolvimento do braço deixando a musculatura definida.',
+        badge: 'Braço Definido',
+        soccerBenefit: 'Isola a cabeça longa do tríceps em máxima amplitude de alongamento.',
         steps: [
           'Segure o halter com o braço estendido acima da cabeça.',
           'Dobre o cotovelo descendo o halter atrás da cabeça.',
@@ -490,15 +490,15 @@ export const WEEKLY_SCHEDULE = [
     dayId: 6,
     name: 'Sábado',
     shortName: 'Sáb',
-    code: 'matchday-active',
-    title: 'Dia de Jogo no Clube / Ativação',
-    focus: 'Performance no Campo ou Descanso Estratégico',
-    duration: 'Dia do Clube',
-    intensity: 'Foco Total no Jogo',
-    level: 'Atleta Sub-17',
-    badge: 'Matchday / Resenha',
+    code: 'active-weekend',
+    title: 'Recuperação Ativa & Esportes',
+    focus: 'Caminhada, Corrida Leve ou Prática Esportiva',
+    duration: 'Livre',
+    intensity: 'Recuperação Dinâmica',
+    level: 'Atleta AB Fitness',
+    badge: 'Recuperação Ativa',
     color: 'from-amber-400 to-amber-500',
-    description: 'Dia sagrado de botar a chuteira e jogar bola pelo clube! Se não tiver jogo hoje, faça apenas caminhada leve, hidratação pesada e alimentação de atleta.',
+    description: 'Dia ideal para atividade recreativa, caminhada ao ar livre ou soltura articular, mantendo a circulação ativa sem fadiga muscular.',
     isRestDay: true,
     exercises: []
   },
@@ -507,60 +507,61 @@ export const WEEKLY_SCHEDULE = [
     name: 'Domingo',
     shortName: 'Dom',
     code: 'rest-pro',
-    title: 'Regeneração & Descanso de Titular',
-    focus: 'Recarga Muscular, Sono & Proteína',
-    duration: 'Recuperação',
+    title: 'Regeneração & Descanso Estratégico',
+    focus: 'Recarga Muscular, Sono & Síntese Proteica',
+    duration: 'Recuperação Total',
     intensity: 'Zero Peso',
-    level: 'Atleta Sub-17',
-    badge: 'Descanso de Craque',
+    level: 'Atleta AB Fitness',
+    badge: 'Descanso de Elite',
     color: 'from-sky-300 to-sky-500',
-    description: 'O músculo não cresce na academia, cresce no descanso! Coma bem, beba água e durma cedo para começar a semana voando no campo e no treino.',
+    description: 'O músculo hipertrofia durante o repouso com síntese proteica adequada e sono profundo. Alimente-se com qualidade e recarregue para a próxima semana.',
     isRestDay: true,
     exercises: []
   }
 ];
 
-// Frases motivacionais personalizadas para o irmão adolescente (16 anos, atleta de clube)
+// Frases motivacionais de alta performance e mentalidade de atleta
 export const MOTIVATIONAL_QUOTES = [
   {
-    quote: 'bom treino frango, nos vemos amanha',
-    author: 'LA Workout • Modo Atleta'
+    quote: 'Excelente treino hoje! Cada repetição concluída constrói o seu melhor físico e performance máxima.',
+    author: 'AB Fitness • Performance Pro'
   },
   {
-    quote: 'Treino concluído, monstro! O shape tá vindo e no ombro a ombro do clube ninguém mais te derruba. Nos vemos amanhã!',
-    author: 'LA Workout'
+    quote: 'Mais um treino pago com maestria. A consistência diária e a técnica impecável são os segredos dos melhores.',
+    author: 'AB Fitness'
   },
   {
-    quote: 'Tá pago, craque! A titularidade no clube e a carcaça de atleta não se constroem com preguiça. Descanse e até amanhã!',
-    author: 'LA Workout'
+    quote: 'Disciplina supera o cansaço. Parabéns pela dedicação ao treino de hoje, nos vemos amanhã!',
+    author: 'AB Fitness'
   }
 ];
 
-// Dicas do Manual do Atleta de Futebol (Especial para quem joga 4x por semana)
+// Diretrizes Científicas de Fisiologia e Treinamento • AB Fitness
 export const BEGINNER_GUIDE = [
   {
-    title: 'Como treinar perna sem cansar pro treino do clube?',
-    tag: 'Futebol & Academia',
-    content: 'O segredo é QUALIDADE e não quantidade excessiva de peso. No futebol você precisa de potência e equilíbrio (Búlgaro e RDL). Nunca treine pernas até a falha total no dia anterior a um jogo ou treino tático pesado do clube. Guarde sempre 2 repetições na reserva!'
+    title: 'Sobrecarga Progressiva: O motor da Hipertrofia',
+    tag: 'Ciência do Treino',
+    content: 'O corpo só desenvolve novas fibras musculares quando exposto a um estímulo progressivo. Anote todas as suas cargas no AB Fitness. Adicionar 1kg ou completar 1 repetição a mais na semana mantendo a técnica impecável é o maior preditor de hipertrofia segundo estudos de Brad Schoenfeld.'
   },
   {
-    title: 'Prevenção de Lesões: O terror do posterior e da virilha',
-    tag: 'Prevenção de Atleta',
-    content: 'Adolescentes no futebol sofrem muito com estiramento de posterior e pubalgia porque a perna cresce rápido. O RDL com halteres e a Prancha Copenhague da nossa planilha são as melhores vacinas do mundo para você não ficar no departamento médico.'
+    title: 'RIR: Repetições em Reserva e Proximidade da Falha',
+    tag: 'Intensidade Ideal',
+    content: 'Treinar com 1 a 2 repetições em reserva (RIR 1-2) proporciona estímulo hipertrófico idêntico à falha concêntrica absoluta, porém com recuperação articular e neural 40% mais rápida. Guarde a última repetição para garantir consistência e zero lesões.'
   },
   {
-    title: 'Por que treinar peito e costas melhora seu futebol?',
-    tag: 'Vantagem no Campo',
-    content: 'Quando você disputa a bola ombro a ombro na ponta ou na zaga, quem tem o tronco fraco é jogado pra longe. Tronco forte permite proteger a bola de costas pro marcador e ganhar as disputas de cabeça no alto.'
+    title: 'Amplitude Completa e Tensão no Alongamento',
+    tag: 'Biomecânica',
+    content: 'A hipertrofia mediada pelo estiramento ocorre com maior intensidade na porção alongada do movimento (ex: descida do supino, RDL e búlgaro). Controle a fase excêntrica em 2 a 3 segundos com amplitude articular completa e sem rebotes.'
   },
   {
-    title: 'Alimentação para quem tem 16 anos e gasta muita energia',
-    tag: 'Shape & Energia',
-    content: 'Você treina no clube 4x e faz academia: seu metabolismo está voando! Coma bastante arroz, feijão, frango, ovos, frutas e beba no mínimo 3 litros de água por dia. Sem comida suficiente você não ganha músculo e perde rendimento no campo.'
+    title: 'Nutrição, Síntese Proteica & Superávit',
+    tag: 'Nutrição Esportiva',
+    content: 'Consuma entre 1,6g e 2,2g de proteína por quilo de peso corporal ao longo do dia, fracionada em 3 a 5 refeições. Beba de 35 a 45ml de água por quilo e garanta carboidratos estratégicos antes e após o treino para máxima reposição de glicogênio.'
   },
   {
-    title: 'Quanto tempo descansar entre as séries?',
-    tag: 'Temporizador',
-    content: 'Para atleta de futebol, 60 segundos entre as séries é ideal para treinar a recuperação da frequência cardíaca. Em exercícios unilaterais como o búlgaro, 60 a 90 segundos garante energia máxima para a outra perna.'
+    title: 'Intervalos de Descanso Inter-Séries',
+    tag: 'Fisiologia & ATP',
+    content: 'Para exercícios multiarticulares pesados, descansar de 90 a 120 segundos permite restaurar até 95% do fosfagênio (ATP-CP), permitindo sustentar alto volume de trabalho. Em exercícios isoladores, intervalos de 60 a 75 segundos maximizam o estresse metabólico.'
   }
 ];
+

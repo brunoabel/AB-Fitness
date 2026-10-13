@@ -1,4 +1,4 @@
-// Web Audio API sintetizador de sons suaves e elegantes para o LA Workout
+// Web Audio API sintetizador de sons suaves e elegantes para o AB Fitness
 // Não depende de arquivos externos, funciona 100% offline e com toque premium
 
 class SoundService {

@@ -300,11 +300,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           </div>
         </div>
 
-        {/* Dica de Futebol / Atleta */}
+        {/* Dica Científica de Biomecânica */}
         <div className="p-3 rounded-2xl bg-sky-50/70 dark:bg-slate-900 border border-sky-200/60 dark:border-slate-800 text-xs text-sky-900 dark:text-sky-300 flex items-start gap-2.5">
           <Zap className="w-4 h-4 text-sky-500 shrink-0 mt-0.5 fill-sky-500" />
           <div className="leading-relaxed">
-            <strong className="font-extrabold text-sky-950 dark:text-sky-200">Ritmo de Jogo:</strong> Controle a descida do peso (2 seg) para proteger os tendões e articulações para os 4 treinos da semana no clube.
+            <strong className="font-extrabold text-sky-950 dark:text-sky-200">Biomecânica de Elite:</strong> Controle a descida do peso (2 a 3s) para maximizar a tensão muscular no alongamento e proteger ligamentos e articulações.
           </div>
         </div>
 

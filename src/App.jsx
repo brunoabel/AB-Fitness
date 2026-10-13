@@ -9,8 +9,9 @@ import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
 import AuthScreen from './components/AuthScreen';
+import OnboardingModal, { getSavedUserProfile } from './components/OnboardingModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { fetchUserSchedule } from './services/workoutService';
+import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan } from './services/workoutService';
 import { 
   getCompletedDays, 
   getSoundPreference, 
@@ -26,19 +27,20 @@ import { Dumbbell } from 'lucide-react';
 function AppContent() {
   const { user, isGuest, loading } = useAuth();
 
-  const [schedule, setSchedule] = useState(WEEKLY_SCHEDULE);
+  const [schedule, setSchedule] = useState(() => getLocalCustomPlan() || WEEKLY_SCHEDULE);
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'active-workout'
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'history'
   const [activeWorkout, setActiveWorkout] = useState(() => {
     const draft = getActiveDraft();
     if (draft && draft.workoutDayId !== undefined) {
-      return WEEKLY_SCHEDULE.find((w) => w.dayId === draft.workoutDayId) || null;
+      return (getLocalCustomPlan() || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId) || null;
     }
     return null;
   });
   const [completedDays, setCompletedDays] = useState(() => getCompletedDays());
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => getSoundPreference());
   const [isDark, setIsDark] = useState(() => getThemePreference() === 'dark');
 
@@ -70,10 +72,16 @@ function AppContent() {
           console.warn('Erro ao carregar plano customizado:', err);
         });
     }
+
+    // Se o usuário nunca configurou as metas do treino, abrir o wizard automaticamente
+    if ((user || isGuest) && !getSavedUserProfile()) {
+      setShowOnboardingModal(true);
+    }
+
     return () => {
       active = false;
     };
-  }, [user]);
+  }, [user, isGuest]);
 
   const handleStartWorkout = (workout) => {
     setActiveWorkout(workout);
@@ -105,6 +113,14 @@ function AppContent() {
       setShowGuideModal(true);
     } else {
       setActiveTab(tab);
+    }
+  };
+
+  // Callback ao finalizar questionário de personalização de treinos
+  const handleOnboardingComplete = async (customizedPlan) => {
+    setSchedule(customizedPlan);
+    if (user?.id) {
+      await saveCustomUserPlan(user.id, customizedPlan);
     }
   };
 
@@ -149,6 +165,7 @@ function AppContent() {
               <Header
                 completedCount={completedDays.length}
                 onOpenGuide={() => setShowGuideModal(true)}
+                onOpenCustomize={() => setShowOnboardingModal(true)}
                 soundEnabled={soundEnabled}
                 onToggleSound={handleToggleSound}
                 isDark={isDark}
@@ -163,6 +180,7 @@ function AppContent() {
                   onStartWorkout={handleStartWorkout}
                   onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
                   onOpenGuide={() => setShowGuideModal(true)}
+                  onOpenCustomize={() => setShowOnboardingModal(true)}
                   schedule={schedule}
                 />
               )}
@@ -183,7 +201,7 @@ function AppContent() {
           </>
         )}
 
-        {/* Modal de Demonstração Visual de Exercício */}
+        {/* Modal de Demonstração Biomecânica de Exercício */}
         {selectedExerciseForModal && (
           <ExerciseModal
             exercise={selectedExerciseForModal}
@@ -191,12 +209,19 @@ function AppContent() {
           />
         )}
 
-        {/* Modal do Guia para Atletas de Futebol */}
+        {/* Modal do Guia para Atletas & Performance */}
         {showGuideModal && (
           <BeginnerGuideModal
             onClose={() => setShowGuideModal(false)}
           />
         )}
+
+        {/* Modal de Onboarding & Personalização de Metas */}
+        <OnboardingModal
+          isOpen={showOnboardingModal}
+          onClose={() => setShowOnboardingModal(false)}
+          onComplete={handleOnboardingComplete}
+        />
       </div>
     </div>
   );

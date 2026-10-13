@@ -17,6 +17,7 @@ import { useAuth } from '../context/AuthContext';
 export default function Header({ 
   completedCount = 0, 
   onOpenGuide, 
+  onOpenCustomize,
   soundEnabled = true, 
   onToggleSound,
   isDark = true,
@@ -126,6 +127,19 @@ export default function Header({
                 </div>
 
                 <div className="py-1">
+                  {onOpenCustomize && (
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        onOpenCustomize();
+                      }}
+                      className="w-full text-left px-2.5 py-2 rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 text-sky-700 dark:text-sky-300 font-bold flex items-center gap-2"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-sky-500" />
+                      <span>Personalizar Meu Treino</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);
@@ -134,7 +148,7 @@ export default function Header({
                     className="w-full text-left px-2.5 py-2 rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-2"
                   >
                     <BookOpen className="w-3.5 h-3.5 text-sky-500" />
-                    <span>Manual do Atleta</span>
+                    <span>Manual de Performance</span>
                   </button>
 
                   <button
