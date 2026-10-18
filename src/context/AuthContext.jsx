@@ -1,7 +1,6 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-
-export const AuthContext = createContext(null);
+import { AuthContext } from './authContextDef';
 
 const GUEST_STORAGE_KEY = 'ab_fitness_guest_mode_v1';
 
@@ -132,11 +131,17 @@ export function AuthProvider({ children }) {
     });
   };
 
+  const isAdmin = Boolean(
+    user?.email === 'brunoaaraujo2005@gmail.com' ||
+    user?.user_metadata?.role === 'admin'
+  );
+
   const value = {
     user,
     session,
     loading,
     isGuest,
+    isAdmin,
     isConfigured: configured,
     signInWithEmail,
     signUpWithEmail,
@@ -146,5 +151,3 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export { useAuth } from './useAuth';

@@ -63,7 +63,7 @@ export async function fetchUserSchedule(userId) {
     }
 
     // Mapear dados retornados do Supabase para o formato consumido pela UI
-    return days.map((d) => ({
+    const mapped = days.map((d) => ({
       dayId: d.day_number,
       supabaseDayId: d.id,
       name: d.day_name,
@@ -94,9 +94,19 @@ export async function fetchUserSchedule(userId) {
           beginnerMistake: 'Evite movimentos bruscos e mantenha a postura.'
         }))
     }));
+
+    // BLINDAGEM DE SEGURANÇA: Se por qualquer motivo os treinos do Supabase vierem sem exercícios,
+    // NUNCA sobrescrever com lista vazia. Mantém o cronograma padrão com todos os exercícios.
+    const totalExercises = mapped.reduce((acc, d) => acc + (d.exercises?.length || 0), 0);
+    if (totalExercises === 0) {
+      console.warn('Treinos retornados sem exercícios no Supabase. Mantendo WEEKLY_SCHEDULE.');
+      return getLocalCustomPlan() || WEEKLY_SCHEDULE;
+    }
+
+    return mapped;
   } catch (err) {
     console.error('Falha de rede ao buscar plano no Supabase:', err);
-    return WEEKLY_SCHEDULE;
+    return getLocalCustomPlan() || WEEKLY_SCHEDULE;
   }
 }
 
@@ -178,20 +188,48 @@ export async function recordWorkoutCompletion({
   exercisesData,
   notes = ''
 }) {
-  // 1. Atualizar LocalStorage primeiro para resposta visual instantânea e offline-ready
+  // 1. Calcular métricas precisas da sessão
+  let totalSets = 0;
+  let totalVolumeKg = 0;
+  Object.values(exercisesData || {}).forEach((sets) => {
+    if (Array.isArray(sets)) {
+      sets.forEach((s) => {
+        if (s.completed) {
+          totalSets++;
+          totalVolumeKg += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+        }
+      });
+    }
+  });
+
+  const durationMinutes = Math.max(1, Math.round((durationSeconds || 0) / 60));
+  const now = new Date();
+  const dateFormatted = now.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: 'short'
+  });
+
+  // Atualizar LocalStorage primeiro para resposta visual instantânea e offline-ready
   const summary = {
+    id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
     workoutDayId: workout.dayId,
+    workoutName: workout.name,
     dayName: workout.name,
     workoutTitle: workout.title,
-    durationSeconds,
-    completedAt: new Date().toISOString(),
+    durationSeconds: durationSeconds || 0,
+    durationMinutes,
+    totalSets,
+    totalVolumeKg,
+    date: dateFormatted,
+    completedAt: now.toISOString(),
     notes,
-    exerciseCount: workout.exercises.length
+    exerciseCount: workout.exercises?.length || 0,
+    exercisesData
   };
   addWorkoutToHistory(summary);
 
   // Salvar cargas de cada exercício no LocalStorage
-  Object.entries(exercisesData).forEach(([exId, sets]) => {
+  Object.entries(exercisesData || {}).forEach(([exId, sets]) => {
     saveExerciseWeights(exId, sets);
   });
 
@@ -352,12 +390,104 @@ export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitne
   return planDays;
 }
 
-// Recupera plano salvo localmente se existir
+// Recupera plano salvo localmente se existir e tiver exercícios válidos
 export function getLocalCustomPlan() {
   try {
     const raw = localStorage.getItem(STORAGE_CUSTOM_PLAN_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    const hasExercises = parsed.some((d) => Array.isArray(d.exercises) && d.exercises.length > 0);
+    return hasExercises ? parsed : null;
   } catch {
     return null;
   }
 }
+
+/**
+ * Funções Exclusivas para o Painel de Administrador
+ */
+
+// Busca todos os atletas, treinos e estatísticas gerais
+export async function fetchAdminAthletesData() {
+  if (!isSupabaseConfigured() || !supabase) {
+    return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0 };
+  }
+
+  try {
+    // 1. Buscar todos os perfis cadastrados
+    const { data: athletes, error: athError } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (athError) {
+      console.error('Erro ao buscar perfis de atletas:', athError);
+      return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0 };
+    }
+
+    // 2. Buscar todas as sessões de treino concluídas
+    const { data: sessions, error: sessError } = await supabase
+      .from('workout_sessions')
+      .select('*')
+      .order('completed_at', { ascending: false });
+
+    if (sessError) {
+      console.warn('Erro ao carregar sessões:', sessError.message);
+    }
+
+    // 3. Buscar logs de exercícios para volume total
+    const { data: logs } = await supabase
+      .from('exercise_logs')
+      .select('weight_kg, reps_completed, completed');
+
+    const totalVolumeKg = (logs || []).reduce(
+      (acc, curr) => acc + (Number(curr.weight_kg) * Number(curr.reps_completed) || 0),
+      0
+    );
+
+    return {
+      athletes: athletes || [],
+      sessions: sessions || [],
+      totalLogsCount: logs?.length || 0,
+      totalVolumeKg: Math.round(totalVolumeKg)
+    };
+  } catch (err) {
+    console.error('Erro no serviço administrativo:', err);
+    return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0 };
+  }
+}
+
+// Busca detalhes aprofundados e histórico de um atleta específico
+export async function fetchAthleteDetails(athleteId) {
+  if (!isSupabaseConfigured() || !supabase || !athleteId) return null;
+
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', athleteId)
+      .single();
+
+    const { data: sessions } = await supabase
+      .from('workout_sessions')
+      .select('*')
+      .eq('user_id', athleteId)
+      .order('completed_at', { ascending: false });
+
+    const { data: plans } = await supabase
+      .from('workout_plans')
+      .select('*')
+      .eq('user_id', athleteId);
+
+    return {
+      profile,
+      sessions: sessions || [],
+      plans: plans || []
+    };
+  } catch (err) {
+    console.error('Erro ao buscar detalhes do atleta:', err);
+    return null;
+  }
+}
+

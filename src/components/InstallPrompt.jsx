@@ -60,19 +60,19 @@ export default function InstallPrompt() {
 
   return (
     <div className="mx-4 mt-3 animate-slideUp">
-      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/15 via-sky-400/10 to-sky-600/15 dark:from-sky-950/40 dark:to-slate-900 border border-sky-300/50 dark:border-sky-500/30 flex items-center justify-between gap-3 shadow-xs">
+      <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-400 to-sky-600 text-white flex items-center justify-center font-bold shrink-0 shadow-sm shadow-sky-400/30">
+          <div className="w-9 h-9 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold shrink-0 shadow-xs">
             <Download className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-black text-slate-800 dark:text-white leading-tight">
+            <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
               Instalar o App no Celular
             </h4>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-snug">
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-snug">
               {isIos ? (
                 <span className="flex items-center gap-1">
-                  Toque em <Share className="w-3 h-3 inline text-sky-500" /> e depois em <PlusSquare className="w-3 h-3 inline text-sky-500" /> <strong>"Adicionar à Tela de Início"</strong>
+                  Toque em <Share className="w-3 h-3 inline text-sky-400" /> e depois em <PlusSquare className="w-3 h-3 inline text-sky-400" /> <strong>"Adicionar à Tela de Início"</strong>
                 </span>
               ) : (
                 'Abra em tela cheia como app nativo e use offline no treino!'
@@ -85,14 +85,14 @@ export default function InstallPrompt() {
           {!isIos && deferredPrompt && (
             <button
               onClick={handleInstallClick}
-              className="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-[11px] font-black active:scale-95 transition-all shadow-xs"
+              className="px-3 py-1.5 rounded-xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white text-[11px] font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
             >
               Instalar
             </button>
           )}
           <button
             onClick={handleDismiss}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
             title="Fechar"
             aria-label="Dispensar aviso"
           >
@@ -101,5 +101,6 @@ export default function InstallPrompt() {
         </div>
       </div>
     </div>
+
   );
 }

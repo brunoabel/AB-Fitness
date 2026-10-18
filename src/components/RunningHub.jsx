@@ -11,10 +11,7 @@ import {
   Navigation2, 
   Trophy, 
   Footprints, 
-  ChevronRight, 
   Trash2,
-  Calendar,
-  Layers,
   CheckCircle2,
   Smartphone
 } from 'lucide-react';
@@ -56,6 +53,7 @@ export default function RunningHub({ isDark = true }) {
   // Histórico e Modal de Compartilhamento
   const [runsHistory, setRunsHistory] = useState(() => getRunsHistory());
   const [selectedRunForShare, setSelectedRunForShare] = useState(null);
+  const [lastCompletedRun, setLastCompletedRun] = useState(null);
 
   // Refs de controle de tempo e geolocalização
   const timerIntervalRef = useRef(null);
@@ -64,6 +62,26 @@ export default function RunningHub({ isDark = true }) {
   const lastCoordRef = useRef(null);
   const currentKmStartSecondsRef = useRef(0);
   const simStepRef = useRef(0);
+  const elapsedSecondsRef = useRef(0);
+  const countdownIntervalRef = useRef(null);
+
+  // Manter ref sincronizada sem disparar re-render do watcher de GPS
+  useEffect(() => {
+    elapsedSecondsRef.current = elapsedSeconds;
+  }, [elapsedSeconds]);
+
+  // Limpeza geral ao desmontar componente
+  useEffect(() => {
+    return () => {
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+      if (watchIdRef.current && 'geolocation' in navigator) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+    };
+  }, []);
 
   // Totais Acumulados
   const totalKmsAccumulated = runsHistory.reduce((acc, r) => acc + (Number(r.distanceKm) || 0), 0);
@@ -97,11 +115,11 @@ export default function RunningHub({ isDark = true }) {
     };
   }, [sessionStatus, distanceKm]);
 
-  // 2. Rastreamento GPS Real via navigator.geolocation
+  // 2. Rastreamento GPS Real via navigator.geolocation (Estável, sem reiniciar a cada segundo)
   useEffect(() => {
     if (sessionStatus === 'running' && !isSimulation) {
       if (!('geolocation' in navigator)) {
-        setGpsError('Geolocalização não suportada neste dispositivo.');
+        setTimeout(() => setGpsError('Geolocalização não suportada neste dispositivo.'), 0);
         return;
       }
 
@@ -137,8 +155,8 @@ export default function RunningHub({ isDark = true }) {
                 const currentKmMark = Math.floor(updatedDist);
                 const prevKmMark = Math.floor(prevDist);
                 if (currentKmMark > prevKmMark && currentKmMark > 0) {
-                  const splitTimeSec = elapsedSeconds - currentKmStartSecondsRef.current;
-                  currentKmStartSecondsRef.current = elapsedSeconds;
+                  const splitTimeSec = elapsedSecondsRef.current - currentKmStartSecondsRef.current;
+                  currentKmStartSecondsRef.current = elapsedSecondsRef.current;
                   const splitPace = formatPace(splitTimeSec);
 
                   setSplits((prevSplits) => [
@@ -208,7 +226,7 @@ export default function RunningHub({ isDark = true }) {
         watchIdRef.current = null;
       }
     };
-  }, [sessionStatus, isSimulation, elapsedSeconds]);
+  }, [sessionStatus, isSimulation]);
 
   // 3. Simulação Realista (Para testes rápidos ou corrida em passadeira)
   useEffect(() => {
@@ -283,15 +301,17 @@ export default function RunningHub({ isDark = true }) {
     try { sound.playTap(); } catch {}
     try { triggerHaptic(15); } catch {}
 
+    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     let count = 3;
-    const interval = setInterval(() => {
+    countdownIntervalRef.current = setInterval(() => {
       count -= 1;
       if (count > 0) {
         setCountdown(count);
         try { sound.playTap(); } catch {}
         try { triggerHaptic(15); } catch {}
       } else {
-        clearInterval(interval);
+        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
         setSessionStatus('running');
         try { sound.playStart(); } catch {}
         try { triggerHaptic(40); } catch {}
@@ -301,6 +321,10 @@ export default function RunningHub({ isDark = true }) {
 
   // Pular contagem regressiva e iniciar imediatamente
   const handleSkipCountdown = () => {
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
     setSessionStatus('running');
     try { sound.playStart(); } catch {}
     try { triggerHaptic(40); } catch {}
@@ -325,6 +349,14 @@ export default function RunningHub({ isDark = true }) {
     triggerHaptic(50);
     sound.playVictory();
 
+    // Limpar timers imediatamente para congelar métricas exatas
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+    if (watchIdRef.current) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+
     // Efeito de confetes
     try {
       confetti({
@@ -334,16 +366,23 @@ export default function RunningHub({ isDark = true }) {
       });
     } catch {}
 
+    const finalDistance = Number(distanceKm.toFixed(2));
+    const finalSeconds = elapsedSeconds;
+    const computedAvgPaceSec = avgPaceSeconds || (finalDistance > 0 ? Math.round(finalSeconds / finalDistance) : 0);
+    const avgSpeed = finalDistance > 0 && finalSeconds > 0 
+      ? Number((finalDistance / (finalSeconds / 3600)).toFixed(1))
+      : 0;
+
     const runRecord = {
       id: `run_${Date.now()}`,
       timestamp: Date.now(),
       date: new Date().toISOString(),
-      distanceKm: Number(distanceKm.toFixed(2)),
-      durationSeconds: elapsedSeconds,
-      avgPace: formatPace(avgPaceSeconds || Math.round(elapsedSeconds / (distanceKm || 0.01))),
-      avgPaceSeconds: avgPaceSeconds || Math.round(elapsedSeconds / (distanceKm || 0.01)),
-      calories: calories || calculateRunningCalories(distanceKm),
-      avgSpeedKmh: Number((distanceKm / (elapsedSeconds / 3600 || 1)).toFixed(1)),
+      distanceKm: finalDistance,
+      durationSeconds: finalSeconds,
+      avgPace: formatPace(computedAvgPaceSec),
+      avgPaceSeconds: computedAvgPaceSec,
+      calories: calories || calculateRunningCalories(finalDistance),
+      avgSpeedKmh: avgSpeed,
       elevationGainM,
       splits,
       coordinates: coordinates.slice(0, 500), // Armazena coordenadas do trajeto
@@ -353,14 +392,17 @@ export default function RunningHub({ isDark = true }) {
     saveRunRecord(runRecord);
     reloadHistory();
 
+    // Salva para exibição completa na aba pós-corrida
+    setLastCompletedRun(runRecord);
     // Abre imediatamente o modal de compartilhamento Strava
     setSelectedRunForShare(runRecord);
     setSessionStatus('completed');
   };
 
-  // Resetar após fechar modal
+  // Resetar após fechar resumo do treino
   const handleResetSession = () => {
     setSessionStatus('idle');
+    setLastCompletedRun(null);
     setDistanceKm(0);
     setElapsedSeconds(0);
     setCurrentPaceSeconds(0);
@@ -386,7 +428,7 @@ export default function RunningHub({ isDark = true }) {
   };
 
   return (
-    <div className="p-4 space-y-5 animate-fadeIn">
+    <div className="p-4 space-y-5 animate-fadeIn pb-24">
       
       {/* 1. Header do AB Running Club */}
       <div className="flex items-center justify-between">
@@ -408,7 +450,7 @@ export default function RunningHub({ isDark = true }) {
         {/* Badges de Totais Acumulados */}
         <div className="text-right bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-2xl">
           <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
-            Total Corrido
+            Total Corrido ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
           </span>
           <span className="text-sm font-black text-zinc-900 dark:text-white">
             {totalKmsAccumulated.toFixed(1)} <span className="text-[10px] text-sky-500">KM</span>
@@ -586,7 +628,165 @@ export default function RunningHub({ isDark = true }) {
         </div>
       )}
 
-      {/* 4. TELA INICIAL (PRONTO PARA CORRER) */}
+      {/* 4. TELA DE PÓS-CORRIDA / RESUMO CELEBRATÓRIO (COMPLETED) */}
+      {sessionStatus === 'completed' && lastCompletedRun && (
+        <div className="space-y-4 animate-fadeIn pb-12">
+          {/* Header de Celebração */}
+          <div className="p-5 rounded-3xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-black border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <Trophy className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  TREINO CONCLUÍDO • STRAVA ENGINE
+                </span>
+                <h2 className="text-xl font-black text-white tracking-tight">
+                  Excelente Corrida, Atleta! 🏆
+                </h2>
+              </div>
+            </div>
+            
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              O seu percurso, ritmo médio e parciais foram salvos com sucesso no seu perfil do Running Club.
+            </p>
+
+            {/* Ações Rápidas no Topo */}
+            <div className="mt-4 pt-3 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center gap-2">
+              <button
+                onClick={() => {
+                  setSelectedRunForShare(lastCompletedRun);
+                  triggerHaptic(15);
+                }}
+                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 hover:opacity-95 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition-all cursor-pointer"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>PARTILHAR (CARD INSTAGRAM)</span>
+              </button>
+
+              <button
+                onClick={handleResetSession}
+                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4 text-zinc-400" />
+                <span>Nova Corrida</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Mapa do Percurso Percorrido */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] font-black uppercase tracking-wider text-zinc-400">
+                Trajeto Oficial do Treino
+              </span>
+              <span className="text-[10px] text-sky-400 font-bold flex items-center gap-1">
+                <span>🛰️ Satélite HD</span>
+                <span>•</span>
+                <span>🏁 Chegada</span>
+              </span>
+            </div>
+            <RunningMap 
+              coordinates={lastCompletedRun.coordinates} 
+              splits={lastCompletedRun.splits}
+              isLive={false} 
+              isDark={isDark} 
+              height="260px" 
+            />
+          </div>
+
+          {/* Painel de Estatísticas Finais */}
+          <div className="p-5 rounded-3xl bg-zinc-900 border border-zinc-800 text-white shadow-xl space-y-4">
+            {/* Distância Gigante */}
+            <div className="text-center py-2 bg-black/40 rounded-2xl border border-zinc-800/60">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block">
+                Distância Total
+              </span>
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-5xl font-black tracking-tighter text-white font-mono">
+                  {Number(lastCompletedRun.distanceKm).toFixed(2)}
+                </span>
+                <span className="text-lg font-black text-sky-400">
+                  KM
+                </span>
+              </div>
+            </div>
+
+            {/* Grid 4 Métricas */}
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
+                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                  <Zap className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Ritmo Médio</span>
+                </div>
+                <span className="text-xl font-black text-white font-mono">
+                  {lastCompletedRun.avgPace}
+                </span>
+                <span className="text-[10px] text-zinc-500 block">Ritmo geral</span>
+              </div>
+
+              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
+                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                  <Timer className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Tempo Total</span>
+                </div>
+                <span className="text-xl font-black text-white font-mono">
+                  {formatDuration(lastCompletedRun.durationSeconds)}
+                </span>
+                <span className="text-[10px] text-zinc-500 block">Tempo decorrido</span>
+              </div>
+
+              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
+                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                  <Flame className="w-3.5 h-3.5 text-orange-400" />
+                  <span>Calorias</span>
+                </div>
+                <span className="text-xl font-black text-white font-mono">
+                  {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400">kcal</span>
+                </span>
+                <span className="text-[10px] text-zinc-500 block">Energia queimada</span>
+              </div>
+
+              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
+                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                  <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Velocidade</span>
+                </div>
+                <span className="text-xl font-black text-white font-mono">
+                  {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400">km/h</span>
+                </span>
+                <span className="text-[10px] text-zinc-500 block">Média horária</span>
+              </div>
+            </div>
+
+            {/* Splits / KM a KM */}
+            {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
+              <div className="pt-2 border-t border-zinc-800/80">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
+                  Parciais por KM (Splits Registrados)
+                </span>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {lastCompletedRun.splits.map((s) => (
+                    <div 
+                      key={s.km}
+                      className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-black/40 border border-zinc-800/60 font-mono"
+                    >
+                      <span className="font-bold text-sky-400">KM {s.km}</span>
+                      <span className="text-zinc-200">{s.pace}</span>
+                      <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 5. TELA INICIAL (PRONTO PARA CORRER) */}
       {sessionStatus === 'idle' && (
         <div className="space-y-4">
           
@@ -723,9 +923,6 @@ export default function RunningHub({ isDark = true }) {
           isOpen={!!selectedRunForShare}
           onClose={() => {
             setSelectedRunForShare(null);
-            if (sessionStatus === 'completed') {
-              handleResetSession();
-            }
           }}
         />
       )}

@@ -8,6 +8,8 @@
  * - NSCA (National Strength and Conditioning Association)
  */
 
+import { findExerciseIn100 } from './exercises100';
+
 // ==============================================================================
 // 1. BANCO DE DADOS MESTRE DE EXERCÍCIOS (ANATOMIA, EXECUÇÃO E SEGURANÇA)
 // ==============================================================================
@@ -440,14 +442,50 @@ export function generatePersonalizedWorkoutPlan({
     reps: 10, sets: 3, rest: 90, intensity: 'Equilibrada', quote: 'Constância diária.', badge: 'Fitness'
   };
 
+  // Ajuste por duração da sessão
+  if (duration === 'express') {
+    goalParams.sets = Math.max(2, goalParams.sets - 1);
+  } else if (duration === 'high_volume') {
+    goalParams.sets = goalParams.sets + 1;
+  }
+
+  // Identificação do foco muscular
+  const focusLabels = {
+    arms_chest: 'Foco: Braços & Peitoral',
+    legs_glutes: 'Foco: Pernas & Glúteos',
+    back_posture: 'Foco: Costas & Postura',
+    balanced: 'Foco: Equilibrado Geral'
+  };
+  if (focusMuscle && focusLabels[focusMuscle]) {
+    goalParams.badge = `${goalParams.badge} • ${focusLabels[focusMuscle]}`;
+  }
+
   const getEx = (key, customReps = null, customSets = null, customRest = null) => {
-    const base = EXERCISE_DATABASE[key];
+    // 1. Busca no banco de 100 exercícios oficiais
+    const found100 = findExerciseIn100(key);
+    // 2. Busca no banco de dados detalhado existente
+    const base = EXERCISE_DATABASE[key] || (found100 ? {
+      id: found100.slug,
+      name: found100.nome,
+      target: `${found100.grupo} (${found100.mecanica})`,
+      equipment: found100.mecanica,
+      executionSteps: [
+        'Posicione-se com alinhamento articular adequado e máxima estabilidade postural.',
+        'Execute a fase excêntrica de forma controlada em 2 a 3 segundos.',
+        'Finalize a fase concêntrica com aceleração e contração no pico.'
+      ],
+      postureCheckpoints: [
+        'Manter coluna vertebral neutra e abdômen ativado.',
+        'Controle articular completo sem impulsos.'
+      ]
+    } : null);
+
     if (!base) return null;
     return {
       ...base,
-      suggestedReps: customReps || goalParams.reps,
-      defaultSets: customSets || goalParams.sets,
-      restTime: customRest || goalParams.rest,
+      suggestedReps: customReps || found100?.reps || goalParams.reps,
+      defaultSets: customSets || found100?.series || goalParams.sets,
+      restTime: customRest || found100?.descanso_seg || goalParams.rest,
       suggestedWeight: experience === 'advanced' ? 16 : experience === 'intermediate' ? 12 : 8
     };
   };
@@ -462,7 +500,7 @@ export function generatePersonalizedWorkoutPlan({
         name: 'Segunda-feira',
         shortName: 'Seg',
         title: 'Full Body A: Base de Força & Tronco',
-        focus: 'Peitoral, Quadríceps & Costas',
+        focus: 'Peitoral, Quadríceps, Costas & Core',
         duration: '50 min',
         intensity: goalParams.intensity,
         badge: goalParams.badge,
@@ -470,11 +508,12 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Primeira sessão da semana ativando grandes grupos musculares com máxima eficiência e estímulo sistêmico.',
         isRestDay: false,
         exercises: [
-          getEx('supino-reto-halteres'),
-          getEx('agachamento-livre-ou-goblet'),
+          getEx('supino-reto-barra'),
+          getEx('agachamento-livre-barra'),
           getEx('puxada-frontal-aberta'),
-          getEx('desenvolvimento-militar-halteres'),
-          getEx('prancha-frontal-ativa', 45, 3, 45)
+          getEx('desenvolvimento-militar'),
+          getEx('cadeira-extensora'),
+          getEx('prancha-abdominal-frontal')
         ].filter(Boolean)
       },
       {
@@ -504,11 +543,12 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Sessão focada na cadeia posterior, postura e força de puxada.',
         isRestDay: false,
         exercises: [
-          getEx('stiff-romeno-halteres'),
-          getEx('remada-curvada-halteres'),
+          getEx('levantamento-terra'),
+          getEx('remada-curvada-barra'),
           getEx('supino-inclinado-halteres'),
-          getEx('rosca-direta-halteres'),
-          getEx('triceps-corda-polia')
+          getEx('elevacao-lateral-halteres'),
+          getEx('rosca-direta-barra'),
+          getEx('triceps-testa-barra-w')
         ].filter(Boolean)
       },
       {
@@ -539,10 +579,12 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('agachamento-bulgaro'),
-          getEx('elevacao-pelvica-quadril'),
-          getEx('crucifixo-reto-cabos'),
-          getEx('elevacao-lateral-halteres'),
-          getEx('face-pull-corda')
+          getEx('elevacao-pelvica-barra'),
+          getEx('crossover-polia-media'),
+          getEx('remada-unilateral-serrote'),
+          getEx('face-pull'),
+          getEx('rosca-martelo-halteres'),
+          getEx('triceps-corda')
         ].filter(Boolean)
       },
       {
@@ -591,14 +633,15 @@ export function generatePersonalizedWorkoutPlan({
         intensity: goalParams.intensity,
         badge: 'Upper Power',
         color: 'from-sky-400 to-sky-500',
-        description: 'Estímulo primário da parte superior com supino e puxada para largura de dorsais.',
+        description: 'Estímulo primário da parte superior com supino reto, puxada aberta e braços.',
         isRestDay: false,
         exercises: [
-          getEx('supino-reto-halteres'),
+          getEx('supino-reto-barra'),
           getEx('puxada-frontal-aberta'),
-          getEx('desenvolvimento-militar-halteres'),
-          getEx('remada-baixa-triangulo'),
-          getEx('triceps-corda-polia')
+          getEx('desenvolvimento-militar'),
+          getEx('remada-baixa-cabo'),
+          getEx('triceps-corda'),
+          getEx('rosca-direta-barra')
         ].filter(Boolean)
       },
       {
@@ -614,10 +657,12 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Construção de base forte nos membros inferiores com foco em quadríceps e estabilidade.',
         isRestDay: false,
         exercises: [
-          getEx('agachamento-livre-ou-goblet'),
+          getEx('agachamento-livre-barra'),
+          getEx('leg-press-45'),
           getEx('agachamento-bulgaro'),
-          getEx('stiff-romeno-halteres'),
-          getEx('prancha-frontal-ativa', 45, 3, 45)
+          getEx('cadeira-extensora'),
+          getEx('panturrilha-em-pe-maquina'),
+          getEx('prancha-abdominal-frontal')
         ].filter(Boolean)
       },
       {
@@ -648,10 +693,11 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('supino-inclinado-halteres'),
-          getEx('remada-curvada-halteres'),
-          getEx('elevacao-lateral-halteres'),
-          getEx('crucifixo-reto-cabos'),
-          getEx('rosca-direta-halteres')
+          getEx('remada-curvada-barra'),
+          getEx('crucifixo-inclinado-halteres'),
+          getEx('elevacao-lateral-polia'),
+          getEx('rosca-scott-barra-w'),
+          getEx('triceps-pulley-barra-reta')
         ].filter(Boolean)
       },
       {
@@ -667,10 +713,12 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Fechamento da semana com posterior de coxa e glúteo máximo protegendo joelhos e lombar.',
         isRestDay: false,
         exercises: [
-          getEx('elevacao-pelvica-quadril'),
-          getEx('stiff-romeno-halteres'),
-          getEx('agachamento-livre-ou-goblet'),
-          getEx('face-pull-corda')
+          getEx('levantamento-terra'),
+          getEx('stiff-com-halteres'),
+          getEx('elevacao-pelvica-barra'),
+          getEx('mesa-flexora'),
+          getEx('panturrilha-sentado-gemeos'),
+          getEx('abdominal-polia-rope-crunch')
         ].filter(Boolean)
       },
       {
@@ -705,7 +753,155 @@ export function generatePersonalizedWorkoutPlan({
   }
 
   // -------------------------------------------------------------
-  // DIVISÃO DE 5 DIAS NA SEMANA (PUSH / PULL / LEGS / UPPER / LOWER)
+  // DIVISÃO DE 6 DIAS NA SEMANA (PUSH / PULL / LEGS 2X - ATLETA AVANÇADO)
+  // -------------------------------------------------------------
+  if (frequencyDays === 6) {
+    return [
+      {
+        dayId: 1,
+        name: 'Segunda-feira',
+        shortName: 'Seg',
+        title: 'Push A: Peitoral Força & Deltoides',
+        focus: 'Peito, Ombros e Tríceps',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Push Power',
+        color: 'from-sky-400 to-sky-500',
+        description: 'Construção de força no plano horizontal com supino reto, desenvolvimento e trabalho acessório de tríceps.',
+        isRestDay: false,
+        exercises: [
+          getEx('supino-reto-barra'),
+          getEx('supino-inclinado-halteres'),
+          getEx('desenvolvimento-militar'),
+          getEx('elevacao-lateral-halteres'),
+          getEx('triceps-testa-barra-w'),
+          getEx('triceps-corda')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 2,
+        name: 'Terça-feira',
+        shortName: 'Ter',
+        title: 'Pull A: Largura de Dorsais & Bíceps',
+        focus: 'Costas, Trapézio e Bíceps',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Pull Power',
+        color: 'from-sky-500 to-blue-600',
+        description: 'Foco na abertura de dorsais em V e força de pegada com remadas e roscas pesadas.',
+        isRestDay: false,
+        exercises: [
+          getEx('barra-fixa-pronada'),
+          getEx('remada-curvada-barra'),
+          getEx('puxada-com-triangulo'),
+          getEx('face-pull'),
+          getEx('rosca-direta-barra'),
+          getEx('rosca-martelo-halteres')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 3,
+        name: 'Quarta-feira',
+        shortName: 'Qua',
+        title: 'Legs A: Quadríceps & Panturrilha',
+        focus: 'Membros Inferiores & Cadeia Anterior',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Legs Power',
+        color: 'from-blue-600 to-indigo-600',
+        description: 'Agachamento com barra e cadeia anterior pesada construindo força nas pernas.',
+        isRestDay: false,
+        exercises: [
+          getEx('agachamento-livre-barra'),
+          getEx('leg-press-45'),
+          getEx('agachamento-bulgaro'),
+          getEx('cadeira-extensora'),
+          getEx('panturrilha-em-pe-maquina'),
+          getEx('abdominal-polia-rope-crunch')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 4,
+        name: 'Quinta-feira',
+        shortName: 'Qui',
+        title: 'Push B: Peitoral Superior & Isolamentos',
+        focus: 'Peitoral Superior, Ombros e Tríceps',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Push Hypertrophy',
+        color: 'from-sky-400 to-indigo-500',
+        description: 'Estímulo metabólico focado no peitoral superior, crossover e cabeça lateral do deltoide.',
+        isRestDay: false,
+        exercises: [
+          getEx('supino-inclinado-halteres'),
+          getEx('crossover-polia-media'),
+          getEx('desenvolvimento-com-halteres'),
+          getEx('elevacao-lateral-polia'),
+          getEx('paralelas-foco-peito'),
+          getEx('triceps-pulley-barra-reta')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 5,
+        name: 'Sexta-feira',
+        shortName: 'Sex',
+        title: 'Pull B: Espessura de Costas & Bíceps',
+        focus: 'Dorsal Média, Posterior de Ombro e Bíceps',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Pull Density',
+        color: 'from-cyan-400 to-sky-600',
+        description: 'Densidade dorsal com remada cavalinho, serrote e pico de contração no bíceps.',
+        isRestDay: false,
+        exercises: [
+          getEx('remada-cavalinho'),
+          getEx('remada-unilateral-serrote'),
+          getEx('pulldown-com-corda'),
+          getEx('crucifixo-invertido-halteres'),
+          getEx('rosca-scott-barra-w'),
+          getEx('rosca-concentrada')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 6,
+        name: 'Sábado',
+        shortName: 'Sáb',
+        title: 'Legs B: Posterior, Glúteos & Core',
+        focus: 'Isquiotibiais, Glúteos & Abdômen',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Posterior & Glutes',
+        color: 'from-indigo-500 to-sky-500',
+        description: 'Cadeia posterior profunda protegendo a coluna lombar e joelhos com elevação pélvica e stiff.',
+        isRestDay: false,
+        exercises: [
+          getEx('stiff-com-halteres'),
+          getEx('elevacao-pelvica-barra'),
+          getEx('mesa-flexora'),
+          getEx('cadeira-abdutora'),
+          getEx('panturrilha-sentado-gemeos'),
+          getEx('prancha-abdominal-frontal')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 0,
+        name: 'Domingo',
+        shortName: 'Dom',
+        title: 'Recuperação Ativa & Descanso',
+        focus: 'Regeneração Neuromuscular',
+        duration: '0 min',
+        intensity: 'Repouso',
+        badge: 'Off Day',
+        color: 'from-slate-400 to-slate-500',
+        description: 'Descanso total para absorver as adaptações de 6 dias de treinamento intenso.',
+        isRestDay: true,
+        exercises: []
+      }
+    ];
+  }
+
+  // -------------------------------------------------------------
+  // DIVISÃO DE 5 DIAS NA SEMANA (PADRÃO: PUSH / PULL / LEGS / UPPER / LOWER)
   // -------------------------------------------------------------
   return [
     {
@@ -718,14 +914,15 @@ export function generatePersonalizedWorkoutPlan({
       intensity: goalParams.intensity,
       badge: 'Push Day',
       color: 'from-sky-400 to-sky-500',
-      description: 'Dia dedicado a empurrar cargas pesadas com peito e tríceps.',
+      description: 'Dia dedicado a empurrar cargas pesadas com peito, deltoides e tríceps.',
       isRestDay: false,
       exercises: [
-        getEx('supino-reto-halteres'),
+        getEx('supino-reto-barra'),
         getEx('supino-inclinado-halteres'),
-        getEx('desenvolvimento-militar-halteres'),
+        getEx('crossover-polia-media'),
+        getEx('desenvolvimento-militar'),
         getEx('elevacao-lateral-halteres'),
-        getEx('triceps-corda-polia')
+        getEx('triceps-corda')
       ].filter(Boolean)
     },
     {
@@ -738,14 +935,15 @@ export function generatePersonalizedWorkoutPlan({
       intensity: goalParams.intensity,
       badge: 'Pull Day',
       color: 'from-sky-500 to-blue-600',
-      description: 'Costas completas com puxadas verticais e remadas densas.',
+      description: 'Costas completas com puxadas verticais, remadas densas e flexores do cotovelo.',
       isRestDay: false,
       exercises: [
         getEx('puxada-frontal-aberta'),
-        getEx('remada-curvada-halteres'),
-        getEx('remada-baixa-triangulo'),
-        getEx('face-pull-corda'),
-        getEx('rosca-direta-halteres')
+        getEx('remada-curvada-barra'),
+        getEx('remada-unilateral-serrote'),
+        getEx('face-pull'),
+        getEx('rosca-direta-barra'),
+        getEx('rosca-martelo-halteres')
       ].filter(Boolean)
     },
     {
@@ -761,11 +959,12 @@ export function generatePersonalizedWorkoutPlan({
       description: 'Treino potente para os membros inferiores construindo base inabalável.',
       isRestDay: false,
       exercises: [
-        getEx('agachamento-livre-ou-goblet'),
+        getEx('agachamento-livre-barra'),
+        getEx('leg-press-45'),
         getEx('agachamento-bulgaro'),
-        getEx('stiff-romeno-halteres'),
-        getEx('elevacao-pelvica-quadril'),
-        getEx('prancha-frontal-ativa', 45, 3, 45)
+        getEx('stiff-com-halteres'),
+        getEx('panturrilha-em-pe-maquina'),
+        getEx('prancha-abdominal-frontal')
       ].filter(Boolean)
     },
     {
@@ -778,21 +977,21 @@ export function generatePersonalizedWorkoutPlan({
       intensity: goalParams.intensity,
       badge: 'Upper Fit',
       color: 'from-sky-400 to-indigo-500',
-      description: 'Volume complementar para deltoides e braços.',
+      description: 'Volume complementar para peito, dorsais, ombros e braços.',
       isRestDay: false,
       exercises: [
-        getEx('crucifixo-reto-cabos'),
-        getEx('puxada-frontal-aberta'),
-        getEx('elevacao-lateral-halteres'),
-        getEx('rosca-direta-halteres'),
-        getEx('triceps-corda-polia')
+        getEx('crucifixo-inclinado-halteres'),
+        getEx('puxada-com-triangulo'),
+        getEx('elevacao-lateral-polia'),
+        getEx('rosca-scott-barra-w'),
+        getEx('triceps-pulley-barra-reta')
       ].filter(Boolean)
     },
     {
       dayId: 5,
       name: 'Sexta-feira',
       shortName: 'Sex',
-      title: 'Inferior Posterior & Atleta',
+      title: 'Inferior Posterior & Glúteos',
       focus: 'Glúteos, Unilateral & Mobilidade',
       duration: '45 min',
       intensity: goalParams.intensity,
@@ -801,10 +1000,11 @@ export function generatePersonalizedWorkoutPlan({
       description: 'Finalize a semana com posterior blindado e glúteos ativos.',
       isRestDay: false,
       exercises: [
-        getEx('stiff-romeno-halteres'),
-        getEx('agachamento-bulgaro'),
-        getEx('elevacao-pelvica-quadril'),
-        getEx('face-pull-corda')
+        getEx('elevacao-pelvica-barra'),
+        getEx('mesa-flexora'),
+        getEx('cadeira-extensora'),
+        getEx('cadeira-abdutora'),
+        getEx('abdominal-polia-rope-crunch')
       ].filter(Boolean)
     },
     {

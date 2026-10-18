@@ -137,6 +137,27 @@ class SoundService {
       });
     } catch {}
   }
+
+  // Alias para celebração de treino / finalização do questionário
+  playWorkoutComplete() {
+    this.playCelebration();
+  }
+
+  playTap() {
+    this.playTick();
+  }
+
+  playStart() {
+    this.playStartRest();
+  }
+
+  playSuccess() {
+    this.playTick();
+  }
+
+  playVictory() {
+    this.playCelebration();
+  }
 }
 
 export const sound = new SoundService();

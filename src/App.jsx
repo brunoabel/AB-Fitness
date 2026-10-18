@@ -9,8 +9,12 @@ import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
 import AuthScreen from './components/AuthScreen';
-import OnboardingModal, { getSavedUserProfile } from './components/OnboardingModal';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import OnboardingModal from './components/OnboardingModal';
+import AdminDashboard from './components/AdminDashboard';
+import AppSplashScreen from './components/AppSplashScreen';
+import RunningHub from './components/RunningHub';
+import CustomWorkoutsHub from './components/CustomWorkoutsHub';
+import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan } from './services/workoutService';
 import { 
   getCompletedDays, 
@@ -18,22 +22,29 @@ import {
   saveSoundPreference,
   getActiveDraft,
   getThemePreference,
-  saveThemePreference
+  saveThemePreference,
+  getSavedUserProfile,
+  getCustomWorkouts
 } from './utils/storage';
 import { WEEKLY_SCHEDULE } from './data/workouts';
 import { sound } from './utils/audio';
-import { Dumbbell } from 'lucide-react';
+import ABLogo from './components/ABLogo';
+
 
 function AppContent() {
   const { user, isGuest, loading } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
 
   const [schedule, setSchedule] = useState(() => getLocalCustomPlan() || WEEKLY_SCHEDULE);
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'active-workout'
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'history'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'custom-workouts' | 'running' | 'history'
   const [activeWorkout, setActiveWorkout] = useState(() => {
     const draft = getActiveDraft();
     if (draft && draft.workoutDayId !== undefined) {
-      return (getLocalCustomPlan() || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId) || null;
+      const planWorkout = (getLocalCustomPlan() || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId);
+      if (planWorkout) return planWorkout;
+      const customList = getCustomWorkouts();
+      return customList.find((w) => w.id === draft.workoutDayId || w.dayId === draft.workoutDayId) || null;
     }
     return null;
   });
@@ -65,7 +76,10 @@ function AppContent() {
       fetchUserSchedule(user.id)
         .then((userPlan) => {
           if (active && userPlan && userPlan.length > 0) {
-            setSchedule(userPlan);
+            const hasExercises = userPlan.some((d) => Array.isArray(d.exercises) && d.exercises.length > 0);
+            if (hasExercises) {
+              setSchedule(userPlan);
+            }
           }
         })
         .catch((err) => {
@@ -75,7 +89,13 @@ function AppContent() {
 
     // Se o usuário nunca configurou as metas do treino, abrir o wizard automaticamente
     if ((user || isGuest) && !getSavedUserProfile()) {
-      setShowOnboardingModal(true);
+      const timer = setTimeout(() => {
+        if (active) setShowOnboardingModal(true);
+      }, 100);
+      return () => {
+        active = false;
+        clearTimeout(timer);
+      };
     }
 
     return () => {
@@ -91,6 +111,7 @@ function AppContent() {
 
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
+    setActiveWorkout(null);
     setCompletedDays(getCompletedDays());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -111,52 +132,64 @@ function AppContent() {
   const handleTabChange = (tab) => {
     if (tab === 'guide') {
       setShowGuideModal(true);
+    } else if (tab === 'admin') {
+      setCurrentView('admin');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
+      if (currentView === 'admin') {
+        setCurrentView('dashboard');
+      }
       setActiveTab(tab);
     }
   };
 
   // Callback ao finalizar questionário de personalização de treinos
-  const handleOnboardingComplete = async (customizedPlan) => {
+  const handleOnboardingComplete = (customizedPlan) => {
     setSchedule(customizedPlan);
     if (user?.id) {
-      await saveCustomUserPlan(user.id, customizedPlan);
+      saveCustomUserPlan(user.id, customizedPlan).catch((err) => {
+        console.warn('Erro ao salvar plano no Supabase:', err);
+      });
     }
   };
 
-  // 1. Tela de Carregamento Inicial (Splash)
+  // 1. Tela de Apresentação & Carregamento com Animação do Logo e Boas-Vindas
+  if (showSplash) {
+    return <AppSplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
+  // 2. Aguarda autenticação caso a splash finalize antes do Supabase
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f0f8ff] dark:bg-[#070d18] flex flex-col items-center justify-center p-6 text-center">
-        <div className="p-4 rounded-3xl bg-gradient-to-tr from-sky-400 to-sky-500 text-white shadow-xl shadow-sky-400/30 animate-pulse mb-4">
-          <Dumbbell className="w-10 h-10 stroke-[2.2]" />
-        </div>
-        <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
-          AB Fitness
-        </h2>
-        <p className="text-xs text-sky-600 dark:text-sky-400 font-semibold mt-1">
-          Carregando treinos e performance...
-        </p>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center select-none">
+        <ABLogo size={76} showText={true} />
       </div>
     );
   }
 
-  // 2. Proteção de Rota: Usuário não autenticado vê a tela de Login / Cadastro
+  // 3. Proteção de Rota: Usuário não autenticado vê a tela de Login / Cadastro
   if (!user && !isGuest) {
     return <AuthScreen />;
   }
 
   // 3. Aplicação Logada (Dashboard & Treinos)
   return (
-    <div className={`${isDark ? 'dark' : ''} min-h-screen bg-[#f3f9fd] dark:bg-[#070d18] text-slate-800 dark:text-slate-100 font-sans selection:bg-sky-200 selection:text-sky-900 antialiased flex flex-col justify-between transition-colors duration-300`}>
+    <div className={`${isDark ? 'dark' : ''} min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white dark:selection:bg-zinc-200 dark:selection:text-black antialiased flex flex-col justify-between transition-colors duration-200`}>
       {/* Container Central com Proporção Mobile-First Premium */}
-      <div className="w-full max-w-md mx-auto min-h-screen bg-[#f8fbfe] dark:bg-[#0b1322] shadow-2xl relative flex flex-col justify-between border-x border-sky-100/60 dark:border-slate-800/80 transition-colors duration-300">
+      <div className="w-full max-w-md mx-auto min-h-screen bg-white dark:bg-[#09090b] shadow-2xl relative flex flex-col justify-between border-x border-zinc-200/80 dark:border-zinc-800/80 transition-colors duration-200">
         
         {/* Visualização de Treino Ativo */}
         {currentView === 'active-workout' && activeWorkout ? (
           <ActiveWorkout
             workout={activeWorkout}
             onBackToDashboard={handleBackToDashboard}
+          />
+        ) : currentView === 'admin' ? (
+          <AdminDashboard
+            onBackToWorkout={() => {
+              setCurrentView('dashboard');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         ) : (
           /* Visualização do Dashboard Principal */
@@ -166,6 +199,10 @@ function AppContent() {
                 completedCount={completedDays.length}
                 onOpenGuide={() => setShowGuideModal(true)}
                 onOpenCustomize={() => setShowOnboardingModal(true)}
+                onOpenAdmin={() => {
+                  setCurrentView('admin');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 soundEnabled={soundEnabled}
                 onToggleSound={handleToggleSound}
                 isDark={isDark}
@@ -181,8 +218,20 @@ function AppContent() {
                   onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
                   onOpenGuide={() => setShowGuideModal(true)}
                   onOpenCustomize={() => setShowOnboardingModal(true)}
+                  onNavigateTab={handleTabChange}
                   schedule={schedule}
                 />
+              )}
+
+              {activeTab === 'custom-workouts' && (
+                <CustomWorkoutsHub
+                  onStartWorkout={handleStartWorkout}
+                  onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
+                />
+              )}
+
+              {activeTab === 'running' && (
+                <RunningHub isDark={isDark} />
               )}
 
               {activeTab === 'history' && (
