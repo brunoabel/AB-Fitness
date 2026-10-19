@@ -26,25 +26,39 @@ import {
   isValidGpsPoint,
   generateSimulatedStep 
 } from '../utils/runningService';
-import { getRunsHistory, saveRunRecord, deleteRunRecord } from '../utils/storage';
+import { 
+  getRunsHistory, 
+  saveRunRecord, 
+  deleteRunRecord,
+  getActiveRunDraft,
+  saveActiveRunDraft,
+  clearActiveRunDraft
+} from '../utils/storage';
 import { sound, triggerHaptic } from '../utils/audio';
 
 export default function RunningHub({ isDark = true }) {
-  // Estados da Sessão de Corrida: 'idle' | 'countdown' | 'running' | 'paused' | 'completed'
-  const [sessionStatus, setSessionStatus] = useState('idle');
-  const [countdown, setCountdown] = useState(3);
-  const [isSimulation, setIsSimulation] = useState(false);
+  // Rascunho de corrida recuperado (caso o usuário tenha pausado ou recarregado o app)
+  const initialDraft = React.useMemo(() => getActiveRunDraft(), []);
 
-  // Métricas ao vivo
-  const [distanceKm, setDistanceKm] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Estados da Sessão de Corrida: 'idle' | 'countdown' | 'running' | 'paused' | 'completed'
+  const [sessionStatus, setSessionStatus] = useState(() => (
+    initialDraft && (initialDraft.sessionStatus === 'running' || initialDraft.sessionStatus === 'paused')
+      ? 'paused'
+      : 'idle'
+  ));
+  const [countdown, setCountdown] = useState(3);
+  const [isSimulation, setIsSimulation] = useState(() => initialDraft?.isSimulation ?? false);
+
+  // Métricas ao vivo inicializadas do rascunho se existente
+  const [distanceKm, setDistanceKm] = useState(() => initialDraft?.distanceKm ?? 0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(() => initialDraft?.elapsedSeconds ?? 0);
   const [currentPaceSeconds, setCurrentPaceSeconds] = useState(0);
-  const [avgPaceSeconds, setAvgPaceSeconds] = useState(0);
+  const [avgPaceSeconds, setAvgPaceSeconds] = useState(() => initialDraft?.avgPaceSeconds ?? 0);
   const [speedKmh, setSpeedKmh] = useState(0);
-  const [calories, setCalories] = useState(0);
-  const [elevationGainM, setElevationGainM] = useState(0);
-  const [coordinates, setCoordinates] = useState([]);
-  const [splits, setSplits] = useState([]); // [{ km: 1, durationSeconds: 312, pace: "5'12\"" }]
+  const [calories, setCalories] = useState(() => initialDraft?.calories ?? 0);
+  const [elevationGainM, setElevationGainM] = useState(() => initialDraft?.elevationGainM ?? 0);
+  const [coordinates, setCoordinates] = useState(() => initialDraft?.coordinates ?? []);
+  const [splits, setSplits] = useState(() => initialDraft?.splits ?? []); // [{ km: 1, durationSeconds: 312, pace: "5'12\"" }]
 
   // GPS Sensor Status
   const [gpsAccuracy, setGpsAccuracy] = useState(null); // Em metros
@@ -64,11 +78,26 @@ export default function RunningHub({ isDark = true }) {
   const simStepRef = useRef(0);
   const elapsedSecondsRef = useRef(0);
   const countdownIntervalRef = useRef(null);
+  const justResumedRef = useRef(false);
 
   // Manter ref sincronizada sem disparar re-render do watcher de GPS
   useEffect(() => {
     elapsedSecondsRef.current = elapsedSeconds;
   }, [elapsedSeconds]);
+
+  // Se montou com rascunho recuperado, restaura refs necessárias
+  useEffect(() => {
+    if (initialDraft && (initialDraft.sessionStatus === 'running' || initialDraft.sessionStatus === 'paused')) {
+      if (initialDraft.coordinates && initialDraft.coordinates.length > 0) {
+        lastCoordRef.current = initialDraft.coordinates[initialDraft.coordinates.length - 1];
+      }
+      simStepRef.current = initialDraft.coordinates?.length || 0;
+      if (initialDraft.splits && initialDraft.splits.length > 0) {
+        const lastSplitTime = initialDraft.splits.reduce((acc, s) => acc + (s.durationSeconds || 0), 0);
+        currentKmStartSecondsRef.current = lastSplitTime;
+      }
+    }
+  }, [initialDraft]);
 
   // Limpeza geral ao desmontar componente
   useEffect(() => {
@@ -92,28 +121,52 @@ export default function RunningHub({ isDark = true }) {
     setRunsHistory(getRunsHistory());
   };
 
-  // 1. Cronômetro de Corrida
+  // 1. Cronômetro de Corrida (depende estritamente de sessionStatus para cadência precisa de 1s sem ser resetado)
   useEffect(() => {
     if (sessionStatus === 'running') {
       timerIntervalRef.current = setInterval(() => {
-        setElapsedSeconds((prev) => {
-          const next = prev + 1;
-          // Calcular pace médio geral (segundos / km)
-          if (distanceKm > 0.05) {
-            const avgPace = Math.round(next / distanceKm);
-            setAvgPaceSeconds(avgPace);
-          }
-          return next;
-        });
+        setElapsedSeconds((prev) => prev + 1);
       }, 1000);
     } else {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
     }
 
     return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
     };
-  }, [sessionStatus, distanceKm]);
+  }, [sessionStatus]);
+
+  // 1b. Cálculo Reativo e Estável do Pace Médio Geral (sem re-criar timer e sem side-effects impuros)
+  useEffect(() => {
+    if (distanceKm > 0.05 && elapsedSeconds > 0) {
+      const avg = Math.round(elapsedSeconds / distanceKm);
+      setAvgPaceSeconds(avg);
+    }
+  }, [elapsedSeconds, distanceKm]);
+
+  // 1c. Salvar rascunho automaticamente a cada mudança enquanto em corrida ou em pausa
+  useEffect(() => {
+    if (sessionStatus === 'running' || sessionStatus === 'paused') {
+      saveActiveRunDraft({
+        sessionStatus,
+        distanceKm,
+        elapsedSeconds,
+        avgPaceSeconds,
+        calories,
+        elevationGainM,
+        coordinates,
+        splits,
+        isSimulation,
+        timestamp: Date.now()
+      });
+    }
+  }, [sessionStatus, distanceKm, elapsedSeconds, avgPaceSeconds, calories, elevationGainM, coordinates, splits, isSimulation]);
 
   // 2. Rastreamento GPS Real via navigator.geolocation (Estável, sem reiniciar a cada segundo)
   useEffect(() => {
@@ -139,6 +192,14 @@ export default function RunningHub({ isDark = true }) {
 
           // Validar ponto com filtro de ruído
           if (isValidGpsPoint(newCoord, lastCoordRef.current)) {
+            // Se acabou de retomar da pausa, atualiza o ponto de referência sem calcular delta da pausa
+            if (justResumedRef.current) {
+              lastCoordRef.current = newCoord;
+              justResumedRef.current = false;
+              setCoordinates((prev) => [...prev, newCoord]);
+              return;
+            }
+
             if (lastCoordRef.current) {
               const deltaMeters = haversineDistanceMeters(
                 lastCoordRef.current.lat,
@@ -148,55 +209,64 @@ export default function RunningHub({ isDark = true }) {
               );
               const deltaKm = deltaMeters / 1000;
 
-              setDistanceKm((prevDist) => {
-                const updatedDist = prevDist + deltaKm;
+              // Ignora ruído estático minúsculo (< 1.5 metros) para não inflar distância parado
+              if (deltaMeters >= 1.5) {
+                setDistanceKm((prevDist) => {
+                  const updatedDist = prevDist + deltaKm;
 
-                // Checagem de Novo KM Concluído (Split)
-                const currentKmMark = Math.floor(updatedDist);
-                const prevKmMark = Math.floor(prevDist);
-                if (currentKmMark > prevKmMark && currentKmMark > 0) {
-                  const splitTimeSec = elapsedSecondsRef.current - currentKmStartSecondsRef.current;
-                  currentKmStartSecondsRef.current = elapsedSecondsRef.current;
-                  const splitPace = formatPace(splitTimeSec);
+                  // Checagem de Novo KM Concluído (Split)
+                  const currentKmMark = Math.floor(updatedDist);
+                  const prevKmMark = Math.floor(prevDist);
+                  if (currentKmMark > prevKmMark && currentKmMark > 0) {
+                    const splitTimeSec = elapsedSecondsRef.current - currentKmStartSecondsRef.current;
+                    currentKmStartSecondsRef.current = elapsedSecondsRef.current;
+                    const splitPace = formatPace(splitTimeSec);
 
-                  setSplits((prevSplits) => [
-                    ...prevSplits,
-                    {
-                      km: currentKmMark,
-                      durationSeconds: splitTimeSec,
-                      pace: splitPace
-                    }
-                  ]);
-                  sound.playSuccess();
-                  triggerHaptic(25);
-                }
+                    setSplits((prevSplits) => [
+                      ...prevSplits,
+                      {
+                        km: currentKmMark,
+                        durationSeconds: splitTimeSec,
+                        pace: splitPace
+                      }
+                    ]);
+                    try { sound.playSuccess(); } catch {}
+                    try { triggerHaptic(25); } catch {}
+                  }
 
-                // Calorias e Velocidade
-                setCalories(calculateRunningCalories(updatedDist));
-                return updatedDist;
-              });
+                  // Calorias
+                  setCalories(calculateRunningCalories(updatedDist));
+                  return updatedDist;
+                });
 
-              // Ritmo Instantâneo (Pace)
-              const timeDeltaSec = (newCoord.timestamp - lastCoordRef.current.timestamp) / 1000;
-              if (timeDeltaSec > 0 && deltaKm > 0) {
-                const instantPaceSec = Math.round(timeDeltaSec / deltaKm);
-                if (instantPaceSec >= 150 && instantPaceSec <= 1200) {
-                  setCurrentPaceSeconds(instantPaceSec);
+                // Altimetria
+                if (newCoord.altitude && lastCoordRef.current.altitude) {
+                  const elevDiff = newCoord.altitude - lastCoordRef.current.altitude;
+                  if (elevDiff > 0.5) {
+                    setElevationGainM((prev) => Math.round(prev + elevDiff));
+                  }
                 }
               }
 
-              // Altimetria
-              if (newCoord.altitude && lastCoordRef.current.altitude) {
-                const elevDiff = newCoord.altitude - lastCoordRef.current.altitude;
-                if (elevDiff > 0.5) {
-                  setElevationGainM((prev) => Math.round(prev + elevDiff));
+              // Ritmo Instantâneo (Pace) via delta de tempo
+              const timeDeltaSec = (newCoord.timestamp - lastCoordRef.current.timestamp) / 1000;
+              if (timeDeltaSec > 0 && deltaKm > 0) {
+                const instantPaceSec = Math.round(timeDeltaSec / deltaKm);
+                if (instantPaceSec >= 120 && instantPaceSec <= 1200) {
+                  setCurrentPaceSeconds(instantPaceSec);
                 }
               }
             }
 
-            // Atualiza velocidade
+            // Velocidade direta do sensor GNSS do smartphone (alta fidelidade)
             if (speed !== null && speed !== undefined && speed >= 0) {
               setSpeedKmh(Number((speed * 3.6).toFixed(1)));
+              if (speed > 0.6) {
+                const instantFromGps = Math.round(1000 / speed);
+                if (instantFromGps >= 120 && instantFromGps <= 1200) {
+                  setCurrentPaceSeconds(instantFromGps);
+                }
+              }
             }
 
             lastCoordRef.current = newCoord;
@@ -263,12 +333,16 @@ export default function RunningHub({ isDark = true }) {
             const prevKmMark = Math.floor(prevDist);
 
             if (currentKmMark > prevKmMark && currentKmMark > 0) {
+              const splitTimeSec = elapsedSecondsRef.current - currentKmStartSecondsRef.current;
+              currentKmStartSecondsRef.current = elapsedSecondsRef.current;
+              const splitPace = formatPace(splitTimeSec || 312);
+
               setSplits((prevSplits) => [
                 ...prevSplits,
                 {
                   km: currentKmMark,
-                  durationSeconds: 312,
-                  pace: "5'12\" /km"
+                  durationSeconds: splitTimeSec || 312,
+                  pace: splitPace
                 }
               ]);
               try { sound.playSuccess(); } catch {}
@@ -286,16 +360,38 @@ export default function RunningHub({ isDark = true }) {
         setSpeedKmh(11.4);
       }, 1000);
     } else {
-      if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+      if (simIntervalRef.current) {
+        clearInterval(simIntervalRef.current);
+        simIntervalRef.current = null;
+      }
     }
 
     return () => {
-      if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+      if (simIntervalRef.current) {
+        clearInterval(simIntervalRef.current);
+        simIntervalRef.current = null;
+      }
     };
   }, [sessionStatus, isSimulation]);
 
   // Contagem regressiva 3, 2, 1, VAI!
   const handleStartCountdown = () => {
+    // Limpar qualquer rascunho anterior e resetar para início limpo
+    clearActiveRunDraft();
+    setDistanceKm(0);
+    setElapsedSeconds(0);
+    setCurrentPaceSeconds(0);
+    setAvgPaceSeconds(0);
+    setSpeedKmh(0);
+    setCalories(0);
+    setElevationGainM(0);
+    setCoordinates([]);
+    setSplits([]);
+    lastCoordRef.current = null;
+    currentKmStartSecondsRef.current = 0;
+    simStepRef.current = 0;
+    justResumedRef.current = false;
+
     setSessionStatus('countdown');
     setCountdown(3);
     try { sound.playTap(); } catch {}
@@ -330,29 +426,40 @@ export default function RunningHub({ isDark = true }) {
     try { triggerHaptic(40); } catch {}
   };
 
-  // Pausar Corrida
+  // Pausar Corrida (congela velocidade e pace instantâneo sem afetar o tempo ou o pace médio acumulados)
   const handlePause = () => {
     setSessionStatus('paused');
-    sound.playTap();
-    triggerHaptic(15);
+    setSpeedKmh(0);
+    setCurrentPaceSeconds(0);
+    try { sound.playTap(); } catch {}
+    try { triggerHaptic(15); } catch {}
   };
 
-  // Retomar Corrida
+  // Retomar Corrida (estabelece nova âncora de GPS para evitar saltos ou distorções)
   const handleResume = () => {
+    justResumedRef.current = true;
     setSessionStatus('running');
-    sound.playTap();
-    triggerHaptic(15);
+    try { sound.playTap(); } catch {}
+    try { triggerHaptic(15); } catch {}
   };
 
   // Finalizar e Salvar Corrida
   const handleFinishRun = () => {
-    triggerHaptic(50);
-    sound.playVictory();
+    try { triggerHaptic(50); } catch {}
+    try { sound.playVictory(); } catch {}
+
+    clearActiveRunDraft();
 
     // Limpar timers imediatamente para congelar métricas exatas
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    if (simIntervalRef.current) clearInterval(simIntervalRef.current);
-    if (watchIdRef.current) {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    if (simIntervalRef.current) {
+      clearInterval(simIntervalRef.current);
+      simIntervalRef.current = null;
+    }
+    if (watchIdRef.current && 'geolocation' in navigator) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
@@ -399,8 +506,9 @@ export default function RunningHub({ isDark = true }) {
     setSessionStatus('completed');
   };
 
-  // Resetar após fechar resumo do treino
+  // Resetar após fechar resumo do treino ou descartar
   const handleResetSession = () => {
+    clearActiveRunDraft();
     setSessionStatus('idle');
     setLastCompletedRun(null);
     setDistanceKm(0);
@@ -415,6 +523,7 @@ export default function RunningHub({ isDark = true }) {
     lastCoordRef.current = null;
     currentKmStartSecondsRef.current = 0;
     simStepRef.current = 0;
+    justResumedRef.current = false;
   };
 
   // Excluir corrida do histórico
@@ -483,11 +592,11 @@ export default function RunningHub({ isDark = true }) {
       {(sessionStatus === 'running' || sessionStatus === 'paused') && (
         <div className="space-y-4">
           
-          {/* Mapa Google Maps em Tempo Real */}
+          {/* Mapa em Tempo Real (mantém o trajeto e corredor ativos mesmo em pausa) */}
           <RunningMap 
             coordinates={coordinates} 
             splits={splits}
-            isLive={sessionStatus === 'running'} 
+            isLive={sessionStatus === 'running' || sessionStatus === 'paused'} 
             isDark={isDark} 
             height="240px" 
           />
@@ -497,7 +606,11 @@ export default function RunningHub({ isDark = true }) {
             {/* Status do GPS no topo */}
             <div className="flex items-center justify-between mb-3 text-[11px]">
               <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${isSimulation ? 'bg-amber-400' : 'bg-emerald-400'} animate-pulse`} />
+                <span className={`w-2 h-2 rounded-full ${
+                  isSimulation 
+                    ? 'bg-amber-400' 
+                    : (sessionStatus === 'running' ? 'bg-emerald-400' : 'bg-amber-400')
+                } animate-pulse`} />
                 <span className="font-bold text-zinc-300">
                   {isSimulation ? 'Simulação Ativa (Teste)' : `GPS Ativo (±${gpsAccuracy || 5}m)`}
                 </span>
@@ -534,10 +647,12 @@ export default function RunningHub({ isDark = true }) {
                   <span className="font-semibold text-[10px] uppercase">Ritmo / Pace</span>
                 </div>
                 <span className="text-2xl font-black text-white font-mono">
-                  {formatPace(currentPaceSeconds || avgPaceSeconds)}
+                  {sessionStatus === 'paused'
+                    ? (avgPaceSeconds > 0 ? formatPace(avgPaceSeconds) : "--'--\"")
+                    : formatPace(currentPaceSeconds || avgPaceSeconds)}
                 </span>
                 <span className="text-[10px] text-zinc-500 block mt-0.5">
-                  Médio: {formatPace(avgPaceSeconds)}
+                  {sessionStatus === 'paused' ? 'Pausado (Pace Médio)' : `Médio: ${formatPace(avgPaceSeconds)}`}
                 </span>
               </div>
 
@@ -550,7 +665,7 @@ export default function RunningHub({ isDark = true }) {
                   {formatDuration(elapsedSeconds)}
                 </span>
                 <span className="text-[10px] text-zinc-500 block mt-0.5">
-                  Velocidade: {speedKmh} km/h
+                  {sessionStatus === 'paused' ? 'Treino Pausado' : `Velocidade: ${speedKmh} km/h`}
                 </span>
               </div>
 
@@ -597,32 +712,47 @@ export default function RunningHub({ isDark = true }) {
             )}
 
             {/* Controles Principais de Corrida */}
-            <div className="mt-5 pt-3 border-t border-zinc-800 flex items-center gap-3">
-              {sessionStatus === 'running' ? (
+            <div className="mt-5 pt-3 border-t border-zinc-800 space-y-2">
+              <div className="flex items-center gap-3">
+                {sessionStatus === 'running' ? (
+                  <button
+                    onClick={handlePause}
+                    className="flex-1 py-4 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Pause className="w-5 h-5 fill-current" />
+                    <span>PAUSAR</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleResume}
+                    className="flex-1 py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Play className="w-5 h-5 fill-current" />
+                    <span>RETOMAR</span>
+                  </button>
+                )}
+
                 <button
-                  onClick={handlePause}
-                  className="flex-1 py-4 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                  onClick={handleFinishRun}
+                  className="py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 active:scale-95 transition-all cursor-pointer"
                 >
-                  <Pause className="w-5 h-5 fill-current" />
-                  <span>PAUSAR</span>
+                  <Square className="w-5 h-5 fill-current" />
+                  <span>CONCLUIR</span>
                 </button>
-              ) : (
+              </div>
+
+              {sessionStatus === 'paused' && (
                 <button
-                  onClick={handleResume}
-                  className="flex-1 py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+                  onClick={() => {
+                    if (window.confirm('Deseja descartar este treino? Os dados da sessão atual serão cancelados.')) {
+                      handleResetSession();
+                    }
+                  }}
+                  className="w-full py-2 text-center text-xs font-bold text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
                 >
-                  <Play className="w-5 h-5 fill-current" />
-                  <span>RETOMAR</span>
+                  Descartar e Cancelar Treino
                 </button>
               )}
-
-              <button
-                onClick={handleFinishRun}
-                className="py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 active:scale-95 transition-all cursor-pointer"
-              >
-                <Square className="w-5 h-5 fill-current" />
-                <span>CONCLUIR</span>
-              </button>
             </div>
           </div>
         </div>

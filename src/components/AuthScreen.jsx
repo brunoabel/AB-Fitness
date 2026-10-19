@@ -47,8 +47,12 @@ export default function AuthScreen() {
       if (mode === 'login') {
         await signInWithEmail(email, password);
       } else {
-        await signUpWithEmail(email, password, fullName);
-        setSuccessMessage('Conta criada com sucesso! Conectando ao painel...');
+        const res = await signUpWithEmail(email, password, fullName);
+        if (res?.session) {
+          setSuccessMessage('Conta criada com sucesso! Conectando ao painel...');
+        } else {
+          setSuccessMessage('Conta criada! Enviamos um e-mail de confirmação. Toque no link recebido para acessar o AB Fitness.');
+        }
       }
     } catch (err) {
       console.error(err);

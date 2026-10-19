@@ -88,10 +88,17 @@ export function AuthProvider({ children }) {
     if (!configured || !supabase) {
       throw new Error('Supabase não configurado. Por favor, adicione as chaves no ambiente.');
     }
+
+    // Redirecionamento explícito para o AB Fitness após confirmação de e-mail
+    const redirectUrl = typeof window !== 'undefined' && window.location.origin
+      ? `${window.location.origin}/`
+      : 'https://ba-fitness.vercel.app/';
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName || email.split('@')[0],
         },

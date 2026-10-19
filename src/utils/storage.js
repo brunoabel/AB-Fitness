@@ -10,6 +10,7 @@ const KEYS = {
   SOUND_ENABLED: 'ab_fitness_sound_enabled_v1',
   THEME_MODE: 'ab_fitness_theme_mode_v1',
   RUNS: 'ab_fitness_runs_v1',
+  ACTIVE_RUN_DRAFT: 'ab_fitness_active_run_draft_v1',
   USER_PROFILE: 'ab_fitness_user_profile_v1',
   CUSTOM_WORKOUTS: 'ab_fitness_custom_workouts_v1'
 };
@@ -193,6 +194,32 @@ export const deleteRunRecord = (runId) => {
   } catch {
     return [];
   }
+};
+
+// Rascunho / Sessão Ativa de Corrida (para resiliência contra pausas, recarregamentos e troca de abas)
+export const getActiveRunDraft = () => {
+  try {
+    const raw = localStorage.getItem(KEYS.ACTIVE_RUN_DRAFT);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const saveActiveRunDraft = (draft) => {
+  try {
+    if (!draft) {
+      localStorage.removeItem(KEYS.ACTIVE_RUN_DRAFT);
+      return;
+    }
+    localStorage.setItem(KEYS.ACTIVE_RUN_DRAFT, JSON.stringify(draft));
+  } catch {}
+};
+
+export const clearActiveRunDraft = () => {
+  try {
+    localStorage.removeItem(KEYS.ACTIVE_RUN_DRAFT);
+  } catch {}
 };
 
 export const getSavedUserProfile = () => {
