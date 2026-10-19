@@ -13,11 +13,15 @@ import {
   Footprints, 
   Trash2,
   CheckCircle2,
-  Smartphone
+  Smartphone,
+  Volume2,
+  VolumeX,
+  Cloud
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import RunningMap from './RunningMap';
 import RunningShareModal from './RunningShareModal';
+import BadgeUnlockedToast from './BadgeUnlockedToast';
 import { 
   haversineDistanceMeters, 
   formatDuration, 
@@ -35,8 +39,27 @@ import {
   clearActiveRunDraft
 } from '../utils/storage';
 import { sound, triggerHaptic } from '../utils/audio';
+import { 
+  announceSplit, 
+  announceStart, 
+  announcePause, 
+  announceResume, 
+  announceFinish, 
+  getVoiceCuesPreference, 
+  saveVoiceCuesPreference 
+} from '../utils/speech';
+import { syncRunToSupabase, syncUserRunsFromSupabase } from '../services/runningSyncService';
+import { evaluateAndUnlockBadges } from '../utils/badgeService';
+import { useAuth } from '../context';
 
 export default function RunningHub({ isDark = true }) {
+  const { user } = useAuth();
+
+  // Preferência de áudio / locução por voz nos fones
+  const [voiceEnabled, setVoiceEnabled] = useState(() => getVoiceCuesPreference());
+  const [isCloudSynced, setIsCloudSynced] = useState(false);
+  const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
+
   // Rascunho de corrida recuperado (caso o usuário tenha pausado ou recarregado o app)
   const initialDraft = React.useMemo(() => getActiveRunDraft(), []);
 
@@ -120,6 +143,26 @@ export default function RunningHub({ isDark = true }) {
   const reloadHistory = () => {
     setRunsHistory(getRunsHistory());
   };
+
+  // Sincronizar corridas com o Supabase quando o usuário estiver autenticado
+  useEffect(() => {
+    let active = true;
+    if (user && user.id && user.id !== 'guest-local-user') {
+      syncUserRunsFromSupabase(user.id)
+        .then((merged) => {
+          if (active && Array.isArray(merged) && merged.length > 0) {
+            setRunsHistory(merged);
+            setIsCloudSynced(true);
+          }
+        })
+        .catch((err) => {
+          console.warn('Sincronização de corridas da nuvem indisponível:', err);
+        });
+    }
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   // 1. Cronômetro de Corrida (depende estritamente de sessionStatus para cadência precisa de 1s sem ser resetado)
   useEffect(() => {
@@ -232,6 +275,9 @@ export default function RunningHub({ isDark = true }) {
                     ]);
                     try { sound.playSuccess(); } catch {}
                     try { triggerHaptic(25); } catch {}
+                    if (voiceEnabled) {
+                      try { announceSplit(currentKmMark, splitTimeSec, splitPace); } catch {}
+                    }
                   }
 
                   // Calorias
@@ -347,6 +393,9 @@ export default function RunningHub({ isDark = true }) {
               ]);
               try { sound.playSuccess(); } catch {}
               try { triggerHaptic(20); } catch {}
+              if (voiceEnabled) {
+                try { announceSplit(currentKmMark, splitTimeSec || 312, splitPace); } catch {}
+              }
             }
 
             setCalories(calculateRunningCalories(updatedDist));
@@ -411,6 +460,9 @@ export default function RunningHub({ isDark = true }) {
         setSessionStatus('running');
         try { sound.playStart(); } catch {}
         try { triggerHaptic(40); } catch {}
+        if (voiceEnabled) {
+          try { announceStart(); } catch {}
+        }
       }
     }, 1000);
   };
@@ -424,6 +476,9 @@ export default function RunningHub({ isDark = true }) {
     setSessionStatus('running');
     try { sound.playStart(); } catch {}
     try { triggerHaptic(40); } catch {}
+    if (voiceEnabled) {
+      try { announceStart(); } catch {}
+    }
   };
 
   // Pausar Corrida (congela velocidade e pace instantâneo sem afetar o tempo ou o pace médio acumulados)
@@ -433,6 +488,9 @@ export default function RunningHub({ isDark = true }) {
     setCurrentPaceSeconds(0);
     try { sound.playTap(); } catch {}
     try { triggerHaptic(15); } catch {}
+    if (voiceEnabled) {
+      try { announcePause(); } catch {}
+    }
   };
 
   // Retomar Corrida (estabelece nova âncora de GPS para evitar saltos ou distorções)
@@ -441,6 +499,9 @@ export default function RunningHub({ isDark = true }) {
     setSessionStatus('running');
     try { sound.playTap(); } catch {}
     try { triggerHaptic(15); } catch {}
+    if (voiceEnabled) {
+      try { announceResume(); } catch {}
+    }
   };
 
   // Finalizar e Salvar Corrida
@@ -480,6 +541,11 @@ export default function RunningHub({ isDark = true }) {
       ? Number((finalDistance / (finalSeconds / 3600)).toFixed(1))
       : 0;
 
+    // Locução por voz de finalização nos fones
+    if (voiceEnabled) {
+      try { announceFinish(finalDistance, finalSeconds); } catch {}
+    }
+
     const runRecord = {
       id: `run_${Date.now()}`,
       timestamp: Date.now(),
@@ -498,6 +564,27 @@ export default function RunningHub({ isDark = true }) {
 
     saveRunRecord(runRecord);
     reloadHistory();
+
+    // 1. Sincronização em Nuvem (Supabase PostgreSQL)
+    if (user?.id && user.id !== 'guest-local-user') {
+      syncRunToSupabase(runRecord, user.id)
+        .then(() => {
+          setIsCloudSynced(true);
+        })
+        .catch((err) => {
+          console.warn('Erro ao salvar corrida na nuvem:', err);
+        });
+    }
+
+    // 2. Avaliação de Conquistas & Medalhas Desbloqueadas
+    try {
+      const unlocked = evaluateAndUnlockBadges();
+      if (unlocked && unlocked.length > 0) {
+        setNewlyUnlockedBadge(unlocked[0]);
+      }
+    } catch (badgeErr) {
+      console.warn('Erro ao avaliar conquistas:', badgeErr);
+    }
 
     // Salva para exibição completa na aba pós-corrida
     setLastCompletedRun(runRecord);
@@ -547,6 +634,12 @@ export default function RunningHub({ isDark = true }) {
             <span className="text-[10px] font-black tracking-widest uppercase text-sky-500">
               AB FITNESS • RUNNING CLUB
             </span>
+            {isCloudSynced && (
+              <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20 flex items-center gap-1">
+                <Cloud className="w-2.5 h-2.5" />
+                Nuvem OK
+              </span>
+            )}
           </div>
           <h1 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight mt-0.5">
             Running Club
@@ -556,14 +649,38 @@ export default function RunningHub({ isDark = true }) {
           </p>
         </div>
 
-        {/* Badges de Totais Acumulados */}
-        <div className="text-right bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-2xl">
-          <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
-            Total Corrido ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
-          </span>
-          <span className="text-sm font-black text-zinc-900 dark:text-white">
-            {totalKmsAccumulated.toFixed(1)} <span className="text-[10px] text-sky-500">KM</span>
-          </span>
+        <div className="flex items-center gap-2">
+          {/* Toggle de Locução por Voz nos Fones */}
+          <button
+            onClick={() => {
+              const next = !voiceEnabled;
+              setVoiceEnabled(next);
+              saveVoiceCuesPreference(next);
+              triggerHaptic(10);
+            }}
+            className={`p-2 rounded-2xl border transition-all flex items-center gap-1 cursor-pointer active:scale-95 ${
+              voiceEnabled 
+                ? 'bg-sky-500/15 text-sky-400 border-sky-500/30' 
+                : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400 border-zinc-200 dark:border-zinc-800'
+            }`}
+            title={voiceEnabled ? 'Locução por voz ativada nos fones' : 'Locução por voz desativada'}
+          >
+            {voiceEnabled ? (
+              <Volume2 className="w-4 h-4 text-sky-400" />
+            ) : (
+              <VolumeX className="w-4 h-4 text-zinc-400" />
+            )}
+          </button>
+
+          {/* Badges de Totais Acumulados */}
+          <div className="text-right bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-2xl">
+            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
+              Total ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
+            </span>
+            <span className="text-sm font-black text-zinc-900 dark:text-white">
+              {totalKmsAccumulated.toFixed(1)} <span className="text-[10px] text-sky-500">KM</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -1054,6 +1171,14 @@ export default function RunningHub({ isDark = true }) {
           onClose={() => {
             setSelectedRunForShare(null);
           }}
+        />
+      )}
+
+      {/* Toast de Conquista / Medalha Desbloqueada */}
+      {newlyUnlockedBadge && (
+        <BadgeUnlockedToast
+          badge={newlyUnlockedBadge}
+          onClose={() => setNewlyUnlockedBadge(null)}
         />
       )}
 

@@ -8,6 +8,7 @@ export default function CelebrationModal({
   durationMinutes = 0, 
   totalSetsCompleted = 0, 
   totalVolumeKg = 0, 
+  unlockedBadge = null,
   onClose 
 }) {
   useEffect(() => {
@@ -91,16 +92,33 @@ export default function CelebrationModal({
           </p>
         </div>
 
-        {/* Mensagem de Consistência */}
+        {/* Mensagem de Consistência ou Conquista Desbloqueada */}
         <div className="px-5 py-3">
-          <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-center">
-            <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-snug mb-1">
-              Consistência gera evolução permanente.
-            </p>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
-              Cargas e repetições salvas com sucesso no seu histórico.
-            </p>
-          </div>
+          {unlockedBadge ? (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 text-left flex items-center gap-3">
+              <span className="text-3xl shrink-0">{unlockedBadge.icon || '🏆'}</span>
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider block">
+                  Nova Conquista Desbloqueada!
+                </span>
+                <p className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                  {unlockedBadge.title}
+                </p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                  {unlockedBadge.description}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-center">
+              <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-snug mb-1">
+                Consistência gera evolução permanente.
+              </p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                Cargas e repetições salvas com sucesso no seu histórico.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Resumo Estatístico do Treino */}

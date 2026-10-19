@@ -14,6 +14,7 @@ import {
 import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
 import CelebrationModal from './CelebrationModal';
+import BadgeUnlockedToast from './BadgeUnlockedToast';
 import { sound, triggerHaptic } from '../utils/audio';
 import { 
   getSavedWeights, 
@@ -23,10 +24,12 @@ import {
   getActiveDraft
 } from '../utils/storage';
 import { recordWorkoutCompletion } from '../services/workoutService';
+import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { useAuth } from '../context';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
+  const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
 
   // Recupera rascunho ativo se for do mesmo treino
   const currentWorkoutDayId = workout?.dayId || workout?.id;
@@ -241,6 +244,17 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     // 1. Gravação local e disparo visual imediato em 0ms
     markDayCompleted(currentWorkoutDayId);
     saveActiveDraft(null);
+
+    // Avaliação de Conquistas & Medalhas Gamificadas
+    try {
+      const unlocked = evaluateAndUnlockBadges() || [];
+      if (unlocked.length > 0) {
+        setNewlyUnlockedBadge(unlocked[0]);
+      }
+    } catch (badgeErr) {
+      console.warn('Erro ao avaliar conquistas no treino:', badgeErr);
+    }
+
     setShowCelebration(true);
 
     // 2. Sincronização em nuvem desacoplada em background (sem bloquear o modal)
@@ -613,10 +627,19 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           durationMinutes={Math.max(1, Math.round(elapsedSeconds / 60))}
           totalSetsCompleted={completedSetsCount}
           totalVolumeKg={totalVolumeKg}
+          unlockedBadge={newlyUnlockedBadge}
           onClose={() => {
             setShowCelebration(false);
             onBackToDashboard();
           }}
+        />
+      )}
+
+      {/* Toast de Conquista / Medalha Desbloqueada */}
+      {newlyUnlockedBadge && (
+        <BadgeUnlockedToast
+          badge={newlyUnlockedBadge}
+          onClose={() => setNewlyUnlockedBadge(null)}
         />
       )}
     </div>
