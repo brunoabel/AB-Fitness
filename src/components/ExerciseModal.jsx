@@ -14,33 +14,48 @@ import {
 import { EXERCISE_DATABASE } from '../data/workoutGenerator';
 import { getExerciseVisual } from '../data/exerciseVisuals';
 import { findExerciseIn100 } from '../data/exercises100';
+import { getBiomechanicsForExercise } from '../data/exerciseBiomechanics';
 
 export default function ExerciseModal({ exercise, onClose }) {
   const [activeTab, setActiveTab] = useState('biomechanics'); // 'biomechanics' | 'steps' | 'safety'
 
   if (!exercise) return null;
 
-  // Busca dados visuais exatos e verificados
+  // Busca dados biomecânicos auditados e exatos dos 320 exercícios
+  const bio = getBiomechanicsForExercise(exercise);
+
+  // Busca dados visuais com foto em alta resolução
   const visual = getExerciseVisual(exercise);
 
-  // Busca dados complementares do banco oficial de 100 exercícios
+  // Busca dados complementares do banco oficial de exercícios
   const official100 = findExerciseIn100(exercise.id || exercise.name || exercise.nome);
 
-  // Busca dados complementares do banco de dados anatômico
-  const dbEx = EXERCISE_DATABASE[exercise.id] || {};
-  const steps = dbEx.executionSteps || exercise.steps || [
-    'Posicione-se com alinhamento articular neutro e pés firmes no solo.',
-    'Execute a descida (fase excêntrica) de forma controlada em 2 a 3 segundos.',
-    'Suba com aceleração e contração máxima sem perder a postura correta.'
-  ];
-  const checkpoints = dbEx.postureCheckpoints || [
-    'Coluna vertebral mantida em curvatura neutra e abdômen contraído.',
-    'Trajetória de movimento controlada sem compensações nem impulsos.',
-    'Amplitude completa de movimento sem encurtamento precoce.'
-  ];
-  const breathingTip = dbEx.breathing || exercise.breathingTip || 'Inspire na fase excêntrica (descida); expire com força na fase concêntrica (subida).';
-  const commonMistake = dbEx.commonMistake || exercise.beginnerMistake || 'Usar cargas além do controle e balançar o corpo para completar repetições.';
-  const evidenceTip = dbEx.evidenceTip || exercise.soccerBenefit || 'A literatura científica demonstra que cadências excêntricas controladas (2-3s) maximizam a hipertrofia e previnem lesões tendíneas.';
+  // Passos de execução técnica
+  const steps = (bio?.passos && bio.passos.length > 0) 
+    ? bio.passos 
+    : (visual?.steps || exercise.steps || [
+        'Posicione-se com alinhamento articular neutro e pés firmes no solo.',
+        'Execute a descida (fase excêntrica) de forma controlada em 2 a 3 segundos.',
+        'Suba com aceleração e contração máxima sem perder a postura correta.'
+      ]);
+
+  // Checkpoints anatômicos
+  const checkpoints = (bio?.checkpoints && bio.checkpoints.length > 0)
+    ? bio.checkpoints
+    : (visual?.checkpoints || [
+        'Coluna vertebral mantida em curvatura neutra e abdômen contraído.',
+        'Trajetória de movimento controlada sem compensações nem impulsos.',
+        'Amplitude completa de movimento sem encurtamento precoce.'
+      ]);
+
+  // Padrão de respiração
+  const breathingTip = bio?.respiracao || visual?.breathing || exercise.breathingTip || 'Inspire na fase excêntrica (descida); expire com força na fase concêntrica (subida).';
+
+  // Erro comum a evitar
+  const commonMistake = bio?.erro_comum || visual?.safetyCheck || exercise.beginnerMistake || 'Usar cargas além do controle e balançar o corpo para completar repetições.';
+
+  // Benefício e para que serve
+  const evidenceTip = bio?.beneficio || visual?.evidenceTip || exercise.soccerBenefit || 'A literatura científica demonstra que cadências excêntricas controladas (2-3s) maximizam a hipertrofia e previnem lesões tendíneas.';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4 animate-fadeIn">
@@ -58,11 +73,11 @@ export default function ExerciseModal({ exercise, onClose }) {
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
                 <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest block">
-                  Guia Técnico • {official100?.grupo || exercise.target || visual?.targetGroup}
+                  Guia Técnico • {bio?.grupo || official100?.grupo || exercise.target || visual?.targetGroup}
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
-                {official100?.nome || exercise.name}
+                {bio?.nome || official100?.nome || exercise.name}
               </h2>
             </div>
           </div>
@@ -77,22 +92,22 @@ export default function ExerciseModal({ exercise, onClose }) {
         </div>
 
         {/* Barra de Especificações Biomecânicas (Oficial AB Fitness) */}
-        {official100 && (
+        {(official100 || bio) && (
           <div className="px-4 py-2 bg-zinc-100/90 dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-2 overflow-x-auto text-[11px] font-mono">
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="font-black text-zinc-900 dark:text-white uppercase">{official100.grupo}</span>
+              <span className="font-black text-zinc-900 dark:text-white uppercase">{bio?.grupo || official100?.grupo}</span>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-zinc-200 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 border border-zinc-300 dark:border-zinc-700">
-                {official100.mecanica}
+                {official100?.mecanica || 'Composto / Padrão'}
               </span>
             </div>
             <div className="flex items-center gap-2 shrink-0 text-zinc-600 dark:text-zinc-300 text-[10px]">
-              <span className="font-bold">{official100.series} séries</span>
+              <span className="font-bold">{official100?.series || 4} séries</span>
               <span>•</span>
-              <span className="font-bold">{official100.reps} reps</span>
+              <span className="font-bold">{official100?.reps || '8-12'} reps</span>
               <span>•</span>
               <span className="font-bold text-amber-500 dark:text-amber-400 flex items-center gap-0.5">
                 <Clock className="w-3 h-3" />
-                {official100.descanso_seg}s
+                {official100?.descanso_seg || exercise.restTime || 60}s
               </span>
             </div>
           </div>
@@ -135,7 +150,7 @@ export default function ExerciseModal({ exercise, onClose }) {
         {/* Conteúdo Rolável do Modal */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-4">
           
-          {/* ABA 1: BIOMECÂNICA & FASES DE MOVIMENTO (SEM FOTOS INCORRETAS) */}
+          {/* ABA 1: BIOMECÂNICA & FASES DE MOVIMENTO */}
           {activeTab === 'biomechanics' && (
             <div className="space-y-4 animate-fadeIn">
               
@@ -147,25 +162,25 @@ export default function ExerciseModal({ exercise, onClose }) {
                     MÚSCULO ALVO PRINCIPAL
                   </span>
                   <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-zinc-800 text-zinc-300 border border-zinc-700">
-                    {official100?.mecanica || 'Exercício Técnico'}
+                    {official100?.mecanica || 'Padrão Ouro'}
                   </span>
                 </div>
 
                 <h3 className="text-lg font-black text-white tracking-tight">
-                  {official100?.grupo || exercise.target || visual?.targetGroup}
+                  {bio?.alvo || official100?.grupo || exercise.target}
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
-                  {visual?.targetGroup ? `Ativação primária: ${visual.targetGroup}` : `Foco mecânico direcionado para hipertrofia e força muscular.`}
+                  {bio?.alvo ? `Ativação primária: ${bio.alvo}` : `Foco mecânico direcionado para hipertrofia e força muscular.`}
                 </p>
 
                 <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-zinc-800 text-xs">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-zinc-500 block">Equipamento</span>
-                    <span className="font-bold text-zinc-200 text-xs">{visual?.equipment || official100?.mecanica || 'Livre / Máquina'}</span>
+                    <span className="font-bold text-zinc-200 text-xs">{bio?.equipamento || visual?.equipment || 'Livre / Máquina'}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-bold text-zinc-500 block">Sinergistas</span>
-                    <span className="font-bold text-zinc-200 text-xs">{visual?.secondary || 'Cadeia de Estabilização'}</span>
+                    <span className="font-bold text-zinc-200 text-xs">{bio?.sinergistas || visual?.secondary || 'Cadeia de Estabilização'}</span>
                   </div>
                 </div>
               </div>
@@ -217,20 +232,20 @@ export default function ExerciseModal({ exercise, onClose }) {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                   <span className="text-zinc-400 block text-[10px] font-bold uppercase">Equipamento</span>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{visual.equipment}</span>
+                  <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{bio?.equipamento || visual?.equipment || 'Livre / Máquina'}</span>
                 </div>
                 <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                   <span className="text-zinc-400 block text-[10px] font-bold uppercase">Sinergistas</span>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{visual.secondary}</span>
+                  <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{bio?.sinergistas || visual?.secondary || 'Estabilizadores'}</span>
                 </div>
               </div>
 
-              {/* Dica Científica Baseada em Evidências */}
+              {/* Dica Científica Baseada em Evidências & Para Que Serve */}
               <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
                 <Award className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-zinc-900 dark:text-white font-bold mb-0.5 text-[11px]">
-                    Ciência & Rendimento Fisiológico:
+                    Finalidade & Propósito do Exercício (Para que serve):
                   </strong>
                   <p className="leading-relaxed text-[11px]">{evidenceTip}</p>
                 </div>

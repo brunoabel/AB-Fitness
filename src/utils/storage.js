@@ -243,18 +243,477 @@ export const saveUserProfileLocal = (profile) => {
 
 export const DEFAULT_CUSTOM_WORKOUTS = [
   {
+    id: 'template_push_hipertrofia',
+    dayId: 'template_push_hipertrofia',
+    name: 'Treino Personalizado',
+    shortName: 'Push',
+    title: 'Push Day — Peito, Deltoides & Tríceps',
+    level: 'Intermediário',
+    focus: 'Peitoral Maior, Deltoide Anterior/Lateral e Tríceps',
+    duration: '50 min',
+    intensity: 'Alta',
+    badge: 'Push Hipertrofia',
+    color: 'from-sky-500 to-blue-600',
+    description: 'Divisão Push focada em desenvolvimento da cadeia anterior de empurrar. Combina sobrecarga progressiva com alta ativação do peitoral e ombros 3D.',
+    trainerNotes: 'Inicie com o supino inclinado aproveitando o sistema neuromuscular descansado para construir o peitoral superior.',
+    isRestDay: false,
+    createdAt: '2026-01-01T10:00:00.000Z',
+    exercises: [
+      {
+        id: 'supino-inclinado-halteres',
+        name: 'Supino Inclinado com Halteres',
+        target: 'Peito (Superior)',
+        secondary: 'Deltoide Anterior e Tríceps',
+        equipment: 'Banco 30° + Halteres',
+        suggestedWeight: 18,
+        suggestedReps: 10,
+        defaultSets: 4,
+        restTime: 75,
+        badge: 'Composto',
+        notes: 'Banco a 30 graus para foco máximo no feixe clavicular do peitoral.'
+      },
+      {
+        id: 'supino-reto-barra',
+        name: 'Supino Reto com Barra',
+        target: 'Peito',
+        secondary: 'Tríceps e Deltoides',
+        equipment: 'Banco Reto + Barra',
+        suggestedWeight: 35,
+        suggestedReps: 8,
+        defaultSets: 3,
+        restTime: 90,
+        badge: 'Composto',
+        notes: 'Pés plantados no chão gerando leg drive estável.'
+      },
+      {
+        id: 'crossover-polia-alta',
+        name: 'Crossover na Polia Alta',
+        target: 'Peito (Inferior/Médio)',
+        secondary: 'Deltoides',
+        equipment: 'Polia Alta Dupla',
+        suggestedWeight: 15,
+        suggestedReps: 12,
+        defaultSets: 3,
+        restTime: 60,
+        badge: 'Isolado',
+        notes: 'Cruzar levemente as mãos no final da contração concêntrica.'
+      },
+      {
+        id: 'desenvolvimento-com-halteres',
+        name: 'Desenvolvimento com Halteres',
+        target: 'Ombros',
+        secondary: 'Tríceps e Trapézio',
+        equipment: 'Banco 75° + Halteres',
+        suggestedWeight: 14,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 75,
+        badge: 'Composto',
+        notes: 'Cotovelos a 75 graus no plano escapular.'
+      },
+      {
+        id: 'elevacao-lateral-polia',
+        name: 'Elevação Lateral na Polia',
+        target: 'Deltoide Lateral',
+        secondary: 'Trapézio',
+        equipment: 'Polia Baixa',
+        suggestedWeight: 7.5,
+        suggestedReps: 14,
+        defaultSets: 4,
+        restTime: 45,
+        badge: 'Isolado',
+        notes: 'Tensão contínua em todo o curso do movimento.'
+      },
+      {
+        id: 'triceps-corda-soccer',
+        name: 'Tríceps Pulley na Corda',
+        target: 'Tríceps',
+        secondary: 'Antebraço',
+        equipment: 'Polia Alta + Corda',
+        suggestedWeight: 15,
+        suggestedReps: 12,
+        defaultSets: 4,
+        restTime: 45,
+        badge: 'Isolado',
+        notes: 'Abrir as pontas da corda na contração máxima.'
+      }
+    ]
+  },
+  {
+    id: 'template_pull_hipertrofia',
+    dayId: 'template_pull_hipertrofia',
+    name: 'Treino Personalizado',
+    shortName: 'Pull',
+    title: 'Pull Day — Dorsais, Deltoide Posterior & Bíceps',
+    level: 'Intermediário',
+    focus: 'Dorsais (Largura & Espessura), Bíceps e Trapézio',
+    duration: '50 min',
+    intensity: 'Alta',
+    badge: 'Pull Hipertrofia',
+    color: 'from-sky-500 to-indigo-600',
+    description: 'Treino de tração completo para construção de costas em formato V, deltoides posteriores 3D e braços densos.',
+    trainerNotes: 'Puxe com os cotovelos e faça adução e depressão escapular consciente antes de dobrar os braços.',
+    isRestDay: false,
+    createdAt: '2026-01-01T10:00:00.000Z',
+    exercises: [
+      {
+        id: 'puxada-frontal-aberta',
+        name: 'Puxada Frontal Aberta',
+        target: 'Costas (Latíssimo)',
+        secondary: 'Bíceps e Trapézio',
+        equipment: 'Polia Alta (Lat Machine)',
+        suggestedWeight: 35,
+        suggestedReps: 10,
+        defaultSets: 4,
+        restTime: 75,
+        badge: 'Composto',
+        notes: 'Puxar até a altura da clavícula estufando o peito.'
+      },
+      {
+        id: 'remada-curvada-barra',
+        name: 'Remada Curvada com Barra',
+        target: 'Costas (Espessura)',
+        secondary: 'Bíceps e Antebraço',
+        equipment: 'Barra Olímpica',
+        suggestedWeight: 35,
+        suggestedReps: 8,
+        defaultSets: 4,
+        restTime: 90,
+        badge: 'Composto',
+        notes: 'Coluna travada a 45 graus, puxar em direção ao umbigo.'
+      },
+      {
+        id: 'remada-unilateral-serrote',
+        name: 'Remada Serrote Unilateral',
+        target: 'Costas',
+        secondary: 'Core e Antebraço',
+        equipment: 'Banco Reto + Halter',
+        suggestedWeight: 16,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 60,
+        badge: 'Composto',
+        notes: 'Movimento linear com o cotovelo rente ao tronco.'
+      },
+      {
+        id: 'face-pull',
+        name: 'Face Pull com Corda',
+        target: 'Deltoide Posterior & Manguito',
+        secondary: 'Trapézio e Romboides',
+        equipment: 'Polia Alta + Corda',
+        suggestedWeight: 12.5,
+        suggestedReps: 14,
+        defaultSets: 4,
+        restTime: 45,
+        badge: 'Saúde Articular',
+        notes: 'Puxar em direção aos olhos rotacionando externamente os ombros.'
+      },
+      {
+        id: 'rosca-direta-barra-w',
+        name: 'Rosca Direta com Barra W',
+        target: 'Bíceps',
+        secondary: 'Braquial e Antebraço',
+        equipment: 'Barra W + Anilhas',
+        suggestedWeight: 14,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 60,
+        badge: 'Isolado',
+        notes: 'Cotovelos fixos sem balanço de tronco.'
+      },
+      {
+        id: 'rosca-martelo-halteres',
+        name: 'Rosca Martelo com Halteres',
+        target: 'Braquial & Antebraço',
+        secondary: 'Bíceps',
+        equipment: 'Par de Halteres',
+        suggestedWeight: 10,
+        suggestedReps: 12,
+        defaultSets: 3,
+        restTime: 45,
+        badge: 'Pegada Forte',
+        notes: 'Pegada neutra controlando a descida em 3 segundos.'
+      }
+    ]
+  },
+  {
+    id: 'template_legs_completo',
+    dayId: 'template_legs_completo',
+    name: 'Treino Personalizado',
+    shortName: 'Legs',
+    title: 'Legs Day — Quadríceps, Isquiotibiais & Panturrilhas',
+    level: 'Intermediário',
+    focus: 'Membros Inferiores Completos & Cadeia Posterior',
+    duration: '55 min',
+    intensity: 'Alta Potência',
+    badge: 'Leg Day Pesado',
+    color: 'from-sky-500 to-teal-600',
+    description: 'Treino de pernas completo combinando movimentos multiarticulares pesados, agachamento búlgaro unilateral e isolamento de posteriores.',
+    trainerNotes: 'Priorize profundidade e alinhamento do joelho com a ponta dos pés em todas as repetições.',
+    isRestDay: false,
+    createdAt: '2026-01-01T10:00:00.000Z',
+    exercises: [
+      {
+        id: 'agachamento-livre-barra',
+        name: 'Agachamento Livre com Barra',
+        target: 'Quadríceps & Glúteos',
+        secondary: 'Core e Isquiotibiais',
+        equipment: 'Gaiola + Barra Olímpica',
+        suggestedWeight: 40,
+        suggestedReps: 8,
+        defaultSets: 4,
+        restTime: 120,
+        badge: 'Composto',
+        notes: 'Descer até as coxas quebrarem a linha paralela com o chão.'
+      },
+      {
+        id: 'leg-press-45',
+        name: 'Leg Press 45°',
+        target: 'Quadríceps',
+        secondary: 'Glúteos e Adutores',
+        equipment: 'Máquina Leg Press 45',
+        suggestedWeight: 100,
+        suggestedReps: 10,
+        defaultSets: 4,
+        restTime: 90,
+        badge: 'Composto',
+        notes: 'Não estender totalmente os joelhos no topo para manter a tensão.'
+      },
+      {
+        id: 'agachamento-bulgaro',
+        name: 'Agachamento Búlgaro com Halteres',
+        target: 'Quadríceps & Glúteo Médio',
+        secondary: 'Equilíbrio e Core',
+        equipment: 'Banco + Halteres',
+        suggestedWeight: 10,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 60,
+        badge: 'Unilateral',
+        notes: 'Tronco ligeiramente inclinado à frente para ativação glútea profunda.'
+      },
+      {
+        id: 'mesa-flexora',
+        name: 'Mesa Flexora',
+        target: 'Isquiotibiais (Posterior de Coxa)',
+        secondary: 'Panturrilha',
+        equipment: 'Máquina Mesa Flexora',
+        suggestedWeight: 30,
+        suggestedReps: 12,
+        defaultSets: 4,
+        restTime: 60,
+        badge: 'Isolado',
+        notes: 'Pausa de 1 segundo na contração máxima mantendo a bacia colada no banco.'
+      },
+      {
+        id: 'stiff-halteres',
+        name: 'Stiff / RDL com Halteres',
+        target: 'Isquiotibiais & Glúteo Máximo',
+        secondary: 'Lombar',
+        equipment: 'Par de Halteres',
+        suggestedWeight: 16,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 75,
+        badge: 'Cadeia Posterior',
+        notes: 'Quadril para trás com joelhos semiflexionados, coluna 100% neutra.'
+      },
+      {
+        id: 'panturrilha-em-pe',
+        name: 'Panturrilha em Pé no Step',
+        target: 'Gastrocnêmio & Tendão de Aquiles',
+        secondary: 'Sóleo',
+        equipment: 'Degrau / Step + Halteres',
+        suggestedWeight: 15,
+        suggestedReps: 15,
+        defaultSets: 4,
+        restTime: 45,
+        badge: 'Isolado',
+        notes: 'Alongamento profundo no fundo e 1 segundo de pico no topo.'
+      }
+    ]
+  },
+  {
+    id: 'template_gluteos_posterior',
+    dayId: 'template_gluteos_posterior',
+    name: 'Treino Personalizado',
+    shortName: 'Glúteo',
+    title: 'Glúteos & Cadeia Posterior — Escultura & Força',
+    level: 'Intermediário',
+    focus: 'Glúteo Máximo, Glúteo Médio & Isquiotibiais',
+    duration: '48 min',
+    intensity: 'Alta',
+    badge: 'Glúteos & Posterior',
+    color: 'from-amber-500 to-rose-600',
+    description: 'Protocolo desenhado para maximizar a hipertrofia do glúteo máximo e cadeia posterior com Hip Thrust pesado, flexões de joelho e estabilização pélvica.',
+    trainerNotes: 'Aperte os glúteos conscientemente no topo do Hip Thrust e controle rigorosamente a descida do Stiff.',
+    isRestDay: false,
+    createdAt: '2026-01-01T10:00:00.000Z',
+    exercises: [
+      {
+        id: 'elevacao-pelvica-barra',
+        name: 'Elevação Pélvica / Hip Thrust com Barra',
+        target: 'Glúteo Máximo',
+        secondary: 'Isquiotibiais e Core',
+        equipment: 'Banco + Barra Olímpica + Espuma',
+        suggestedWeight: 40,
+        suggestedReps: 10,
+        defaultSets: 4,
+        restTime: 90,
+        badge: 'Extensão de Quadril',
+        notes: 'Tíbias verticais no topo e retroversão pélvica sem hiperestender a coluna.'
+      },
+      {
+        id: 'stiff-barra',
+        name: 'Stiff com Barra',
+        target: 'Isquiotibiais & Glúteo',
+        secondary: 'Eretores da Espinha',
+        equipment: 'Barra Olímpica',
+        suggestedWeight: 30,
+        suggestedReps: 10,
+        defaultSets: 4,
+        restTime: 75,
+        badge: 'Cadeia Posterior',
+        notes: 'Descer rente às pernas sentindo o alongamento dos posteriores.'
+      },
+      {
+        id: 'agachamento-bulgaro',
+        name: 'Agachamento Búlgaro com Halteres',
+        target: 'Glúteo Máximo & Quadríceps',
+        secondary: 'Estabilizadores',
+        equipment: 'Banco + Halteres',
+        suggestedWeight: 10,
+        suggestedReps: 10,
+        defaultSets: 3,
+        restTime: 60,
+        badge: 'Unilateral',
+        notes: 'Passo mais longo para direcionar a sobrecarga para os glúteos.'
+      },
+      {
+        id: 'cadeira-flexora',
+        name: 'Cadeira Flexora',
+        target: 'Isquiotibiais',
+        secondary: 'Gastrocnêmio',
+        equipment: 'Máquina Cadeira Flexora',
+        suggestedWeight: 25,
+        suggestedReps: 12,
+        defaultSets: 4,
+        restTime: 60,
+        badge: 'Isolado',
+        notes: 'Músculo sob alongamento com o quadril flexionado a 90°.'
+      },
+      {
+        id: 'adutor-copenhagen',
+        name: 'Prancha Adutora Copenhagen',
+        target: 'Adutores da Coxa',
+        secondary: 'Core Lateral',
+        equipment: 'Banco ou Colchonete',
+        suggestedWeight: 0,
+        suggestedReps: 12,
+        defaultSets: 3,
+        restTime: 45,
+        badge: 'Estabilidade',
+        notes: 'Corpo reto e suspensão do quadril sem girar a pelve.'
+      }
+    ]
+  },
+  {
+    id: 'template_forca_5x5',
+    dayId: 'template_forca_5x5',
+    name: 'Treino Personalizado',
+    shortName: 'Força',
+    title: 'Força Bruta 5x5 — Sobrecarga Neural',
+    level: 'Avançado',
+    focus: 'Levantamentos Básicos, Cargas Máximas & Densidade',
+    duration: '60 min',
+    intensity: 'Muito Alta',
+    badge: 'Força 5x5',
+    color: 'from-amber-600 to-rose-700',
+    description: 'Protocolo clássico baseado no método 5x5 para elevação exponencial de cargas nos exercícios compostos soberanos.',
+    trainerNotes: 'Descanse 2 a 3 minutos completos entre séries para recuperação total do sistema fosfagênio (ATP-CP).',
+    isRestDay: false,
+    createdAt: '2026-01-01T10:00:00.000Z',
+    exercises: [
+      {
+        id: 'supino-reto-barra',
+        name: 'Supino Reto com Barra',
+        target: 'Peito',
+        secondary: 'Tríceps e Deltoides',
+        equipment: 'Banco Reto + Barra Olímpica',
+        suggestedWeight: 45,
+        suggestedReps: 5,
+        defaultSets: 5,
+        restTime: 120,
+        badge: 'Força Pura',
+        notes: 'Séries de força máxima com pausa controlada no peito.'
+      },
+      {
+        id: 'agachamento-livre-barra',
+        name: 'Agachamento Livre com Barra',
+        target: 'Quadríceps & Glúteos',
+        secondary: 'Core',
+        equipment: 'Gaiola de Agachamento',
+        suggestedWeight: 50,
+        suggestedReps: 5,
+        defaultSets: 5,
+        restTime: 120,
+        badge: 'Força Pura',
+        notes: 'Respiração diafragmática e abdômen pressurizado.'
+      },
+      {
+        id: 'levantamento-terra',
+        name: 'Levantamento Terra (Deadlift)',
+        target: 'Cadeia Posterior & Costas',
+        secondary: 'Glúteos e Trapézio',
+        equipment: 'Barra Olímpica no Solo',
+        suggestedWeight: 60,
+        suggestedReps: 5,
+        defaultSets: 4,
+        restTime: 150,
+        badge: 'Poder Absoluto',
+        notes: 'Puxar com a barra colada na canela e estender o quadril.'
+      },
+      {
+        id: 'desenvolvimento-militar',
+        name: 'Desenvolvimento Militar com Barra',
+        target: 'Ombros',
+        secondary: 'Tríceps e Core',
+        equipment: 'Barra Olímpica em Pé',
+        suggestedWeight: 25,
+        suggestedReps: 6,
+        defaultSets: 4,
+        restTime: 90,
+        badge: 'Composto',
+        notes: 'Corpo rígido sem inclinar a lombar para trás.'
+      },
+      {
+        id: 'remada-curvada-barra',
+        name: 'Remada Curvada com Barra',
+        target: 'Costas',
+        secondary: 'Bíceps e Lombar',
+        equipment: 'Barra Olímpica',
+        suggestedWeight: 40,
+        suggestedReps: 6,
+        defaultSets: 4,
+        restTime: 90,
+        badge: 'Composto',
+        notes: 'Pegada pronada com puxada explosiva.'
+      }
+    ]
+  },
+  {
     id: 'template_iniciante_fullbody',
     dayId: 'template_iniciante_fullbody',
     name: 'Treino Personalizado',
     shortName: 'Inic',
-    title: 'Treino Personal A — Adaptação & Força Básica',
+    title: 'Full Body 3x — Adaptação & Eficiência',
     level: 'Iniciante',
-    focus: 'Peito, Costas, Pernas & Core',
+    focus: 'Corpo Inteiro, Coordenação & Padrões Motores',
     duration: '40 min',
     intensity: 'Adaptação',
-    badge: 'Iniciante',
+    badge: 'Full Body Base',
     color: 'from-emerald-500 to-teal-600',
-    description: 'Rotina ideal para quem está iniciando na academia ou seguindo prescrição inicial do personal. Movimentos fundamentais com ênfase na execução correta.',
+    description: 'Rotina completa para quem está iniciando ou possui pouco tempo na semana. Estimula todos os grandes grupos musculares com técnica impecável.',
     trainerNotes: 'Mantenha cargas moderadas, priorize a técnica e descanse 60s entre as séries.',
     isRestDay: false,
     createdAt: '2026-01-01T10:00:00.000Z',
@@ -325,174 +784,6 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
         notes: 'Abdômen e glúteos contraídos sem descer a lombar.'
       }
     ]
-  },
-  {
-    id: 'template_intermediario_upper',
-    dayId: 'template_intermediario_upper',
-    name: 'Treino Personalizado',
-    shortName: 'Inter',
-    title: 'Treino Personal B — Upper Hipertrofia & Volume',
-    level: 'Intermediário',
-    focus: 'Peito, Dorsais, Deltoides & Braços',
-    duration: '50 min',
-    intensity: 'Alta',
-    badge: 'Intermediário',
-    color: 'from-sky-500 to-blue-600',
-    description: 'Prescrição focada em sobrecarga progressiva nos principais grupos do tronco, balanceando exercícios compostos e isolados para máxima densidade muscular.',
-    trainerNotes: 'Aumente as cargas quando atingir o topo das repetições com boa forma.',
-    isRestDay: false,
-    createdAt: '2026-01-01T10:00:00.000Z',
-    exercises: [
-      {
-        id: 'supino-inclinado-halteres',
-        name: 'Supino Inclinado com Halteres',
-        target: 'Peito (Superior)',
-        secondary: 'Deltoides e Tríceps',
-        equipment: 'Banco 30° + Halteres',
-        suggestedWeight: 18,
-        suggestedReps: 10,
-        defaultSets: 4,
-        restTime: 75,
-        badge: 'Composto',
-        notes: 'Foco na porção clavicular com amplitude máxima.'
-      },
-      {
-        id: 'remada-curvada-barra',
-        name: 'Remada Curvada com Barra',
-        target: 'Costas',
-        secondary: 'Bíceps e Antebraço',
-        equipment: 'Barra Olímpica',
-        suggestedWeight: 30,
-        suggestedReps: 8,
-        defaultSets: 4,
-        restTime: 90,
-        badge: 'Composto',
-        notes: 'Tronco a 45 graus, puxar a barra no umbigo.'
-      },
-      {
-        id: 'desenvolvimento-com-halteres',
-        name: 'Desenvolvimento com Halteres',
-        target: 'Ombros',
-        secondary: 'Tríceps',
-        equipment: 'Banco 75° + Halteres',
-        suggestedWeight: 14,
-        suggestedReps: 10,
-        defaultSets: 3,
-        restTime: 60,
-        badge: 'Composto',
-        notes: 'Empurrar para cima sem colidir os halteres.'
-      },
-      {
-        id: 'triceps-corda',
-        name: 'Tríceps Corda na Polia',
-        target: 'Tríceps',
-        secondary: 'Antebraço',
-        equipment: 'Polia Alta + Corda',
-        suggestedWeight: 15,
-        suggestedReps: 12,
-        defaultSets: 3,
-        restTime: 45,
-        badge: 'Isolado',
-        notes: 'Abrir a corda no final do movimento para contração máxima.'
-      },
-      {
-        id: 'rosca-direta-barra',
-        name: 'Rosca Direta com Barra',
-        target: 'Bíceps',
-        secondary: 'Antebraço',
-        equipment: 'Barra W / Barra Reta',
-        suggestedWeight: 15,
-        suggestedReps: 10,
-        defaultSets: 3,
-        restTime: 60,
-        badge: 'Isolado',
-        notes: 'Cotovelos junto ao corpo, sem balançar a lombar.'
-      }
-    ]
-  },
-  {
-    id: 'template_avancado_push',
-    dayId: 'template_avancado_push',
-    name: 'Treino Personalizado',
-    shortName: 'Avanç',
-    title: 'Treino Personal C — Heavy Push & Cargas Máximas',
-    level: 'Avançado',
-    focus: 'Peito, Ombros & Tríceps (Alta Potência)',
-    duration: '60 min',
-    intensity: 'Muito Alta',
-    badge: 'Avançado',
-    color: 'from-amber-500 to-rose-600',
-    description: 'Desenvolvido para atletas e praticantes experientes que buscam superação de marcas, trabalho pesado de força bruta e estímulo hipertrófico de ponta.',
-    trainerNotes: 'Treino de alta demanda do SNC. Faça aquecimento específico antes das séries pesadas.',
-    isRestDay: false,
-    createdAt: '2026-01-01T10:00:00.000Z',
-    exercises: [
-      {
-        id: 'supino-reto-barra',
-        name: 'Supino Reto com Barra',
-        target: 'Peito',
-        secondary: 'Tríceps e Deltoides',
-        equipment: 'Banco Reto + Barra Olímpica',
-        suggestedWeight: 40,
-        suggestedReps: 6,
-        defaultSets: 4,
-        restTime: 120,
-        badge: 'Força Máxima',
-        notes: 'Séries pesadas com controle rigoroso na descida.'
-      },
-      {
-        id: 'desenvolvimento-militar',
-        name: 'Desenvolvimento Militar com Barra',
-        target: 'Ombros',
-        secondary: 'Tríceps e Core',
-        equipment: 'Barra em Pé',
-        suggestedWeight: 25,
-        suggestedReps: 8,
-        defaultSets: 4,
-        restTime: 90,
-        badge: 'Composto',
-        notes: 'Tronco rígido, glúteos e abdômen ativos.'
-      },
-      {
-        id: 'paralelas-foco-peito',
-        name: 'Paralelas (Foco Peitoral)',
-        target: 'Peito',
-        secondary: 'Tríceps e Ombros',
-        equipment: 'Barras Paralelas',
-        suggestedWeight: 0,
-        suggestedReps: 10,
-        defaultSets: 3,
-        restTime: 90,
-        badge: 'Composto',
-        notes: 'Corpo inclinado para frente para enfatizar peitoral.'
-      },
-      {
-        id: 'elevacao-lateral-polia',
-        name: 'Elevação Lateral na Polia',
-        target: 'Ombros',
-        secondary: 'Trapézio',
-        equipment: 'Polia Baixa',
-        suggestedWeight: 7.5,
-        suggestedReps: 12,
-        defaultSets: 4,
-        restTime: 60,
-        badge: 'Isolado',
-        notes: 'Tensão contínua em toda a curva de resistência.'
-      },
-      {
-        id: 'triceps-testa-barra-w',
-        name: 'Tríceps Testa com Barra W',
-        target: 'Tríceps',
-        secondary: 'Cotovelos',
-        equipment: 'Banco Reto + Barra W',
-        suggestedWeight: 18,
-        suggestedReps: 10,
-        defaultSets: 4,
-        restTime: 60,
-        badge: 'Isolado',
-        notes: 'Descer a barra na linha da testa sem abrir os cotovelos.'
-      }
-    ]
   }
 ];
 
@@ -500,12 +791,25 @@ export const getCustomWorkouts = () => {
   try {
     const raw = localStorage.getItem(KEYS.CUSTOM_WORKOUTS);
     if (!raw) {
-      // Salva os templates iniciais para primeiro uso
       localStorage.setItem(KEYS.CUSTOM_WORKOUTS, JSON.stringify(DEFAULT_CUSTOM_WORKOUTS));
       return DEFAULT_CUSTOM_WORKOUTS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_CUSTOM_WORKOUTS;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(KEYS.CUSTOM_WORKOUTS, JSON.stringify(DEFAULT_CUSTOM_WORKOUTS));
+      return DEFAULT_CUSTOM_WORKOUTS;
+    }
+
+    // Incorpora suavemente novos templates padrão sem apagar os treinos criados pelo usuário
+    const existingIds = new Set(parsed.map(w => w.id));
+    const missingDefaults = DEFAULT_CUSTOM_WORKOUTS.filter(d => !existingIds.has(d.id));
+    if (missingDefaults.length > 0) {
+      const merged = [...parsed, ...missingDefaults];
+      localStorage.setItem(KEYS.CUSTOM_WORKOUTS, JSON.stringify(merged));
+      return merged;
+    }
+
+    return parsed;
   } catch {
     return DEFAULT_CUSTOM_WORKOUTS;
   }
