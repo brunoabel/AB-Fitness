@@ -24,7 +24,7 @@ import {
 } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 
-export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise }) {
+export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOpenAICoach }) {
   const [workouts, setWorkouts] = useState(() => getCustomWorkouts());
   const [selectedLevel, setSelectedLevel] = useState('Todos'); // 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado'
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,6 +154,33 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise }) {
             {workouts.length} {workouts.length === 1 ? 'treino cadastrado' : 'treinos cadastrados'}
           </span>
         </div>
+      </div>
+
+      {/* 1.1 BANNER DESTAQUE DO AB COACH IA */}
+      <div className="p-4 rounded-3xl bg-gradient-to-br from-sky-950/40 via-zinc-950 to-indigo-950/30 border border-sky-500/30 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-sky-400">
+            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            <span>AB COACH • INTELIGÊNCIA ARTIFICIAL</span>
+          </div>
+          <h2 className="text-sm font-extrabold text-white">
+            Treino Personalizado por Biomecânica
+          </h2>
+          <p className="text-[11px] text-zinc-400 leading-snug">
+            Peça ênfase específica (peito inferior, vasto medial, etc.) ou adapte para dores e tempo.
+          </p>
+        </div>
+
+        <button
+          onClick={() => {
+            if (onOpenAICoach) onOpenAICoach();
+            triggerHaptic(15);
+          }}
+          className="px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-sky-500/20 active:scale-95 transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Falar com o Coach</span>
+        </button>
       </div>
 
       {/* 2. BARRA DE PESQUISA E FILTRO POR NÍVEL */}

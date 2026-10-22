@@ -21,6 +21,7 @@ export default function Header({
   onOpenGuide, 
   onOpenCustomize,
   onOpenAdmin,
+  onOpenAICoach,
   soundEnabled = true, 
   onToggleSound,
   isDark = true,
@@ -68,6 +69,19 @@ export default function Header({
             ) : (
               <Moon className="w-4 h-4 text-zinc-700" />
             )}
+          </button>
+
+          {/* Botão AB Coach (IA) */}
+          <button
+            onClick={() => {
+              if (onOpenAICoach) onOpenAICoach();
+              triggerHaptic(15);
+            }}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-sky-500/15 via-cyan-500/10 to-indigo-500/15 hover:from-sky-500/25 hover:to-indigo-500/25 text-sky-500 dark:text-sky-300 border border-sky-500/40 px-2.5 py-1.5 rounded-xl text-xs font-extrabold active:scale-95 transition-all cursor-pointer group shadow-xs"
+            title="Abrir AB Coach (IA Especialista em Biomecânica)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:rotate-12 transition-transform animate-pulse" />
+            <span className="text-[11px] font-extrabold tracking-tight">Coach</span>
           </button>
 
           {/* Streak de Treinos */}

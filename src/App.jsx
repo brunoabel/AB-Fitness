@@ -14,6 +14,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AppSplashScreen from './components/AppSplashScreen';
 import RunningHub from './components/RunningHub';
 import CustomWorkoutsHub from './components/CustomWorkoutsHub';
+import AICoachModal from './components/AICoachModal';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan } from './services/workoutService';
 import { 
@@ -52,6 +53,7 @@ function AppContent() {
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [showAICoachModal, setShowAICoachModal] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => getSoundPreference());
   const [isDark, setIsDark] = useState(() => getThemePreference() === 'dark');
 
@@ -153,6 +155,34 @@ function AppContent() {
     }
   };
 
+  // Callback para aplicar treino do AB Coach em um dia específico da semana
+  const handleAssignToSchedule = async (dayNumber, workout) => {
+    const updated = schedule.map((d) => {
+      const match = d.dayId === dayNumber || d.dayNumber === dayNumber;
+      if (match) {
+        return {
+          ...d,
+          title: workout.title,
+          focus: workout.focus,
+          duration: workout.duration,
+          intensity: workout.intensity,
+          badge: workout.badge,
+          isRestDay: false,
+          exercises: workout.exercises
+        };
+      }
+      return d;
+    });
+    setSchedule(updated);
+    if (user?.id && user.id !== 'guest-local-user') {
+      try {
+        await saveCustomUserPlan(user.id, updated);
+      } catch (err) {
+        console.warn('Erro ao salvar plano customizado no Supabase:', err);
+      }
+    }
+  };
+
   // 1. Tela de Apresentação & Carregamento com Animação do Logo e Boas-Vindas
   if (showSplash) {
     return <AppSplashScreen onFinish={() => setShowSplash(false)} />;
@@ -199,6 +229,7 @@ function AppContent() {
                 completedCount={completedDays.length}
                 onOpenGuide={() => setShowGuideModal(true)}
                 onOpenCustomize={() => setShowOnboardingModal(true)}
+                onOpenAICoach={() => setShowAICoachModal(true)}
                 onOpenAdmin={() => {
                   setCurrentView('admin');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -227,6 +258,7 @@ function AppContent() {
                 <CustomWorkoutsHub
                   onStartWorkout={handleStartWorkout}
                   onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
+                  onOpenAICoach={() => setShowAICoachModal(true)}
                 />
               )}
 
@@ -270,6 +302,22 @@ function AppContent() {
           isOpen={showOnboardingModal}
           onClose={() => setShowOnboardingModal(false)}
           onComplete={handleOnboardingComplete}
+        />
+
+        {/* Modal do AB Coach IA — Treinador Biomecânico */}
+        <AICoachModal
+          isOpen={showAICoachModal}
+          onClose={() => setShowAICoachModal(false)}
+          onStartWorkout={handleStartWorkout}
+          onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
+          onSaveToSchedule={handleAssignToSchedule}
+          onOpenAuth={() => {
+            // Se o usuário estiver em modo convidado e quiser autenticar
+            try {
+              localStorage.removeItem('ab_fitness_guest_mode');
+              window.location.reload();
+            } catch {}
+          }}
         />
       </div>
     </div>
