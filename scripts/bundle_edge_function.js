@@ -297,8 +297,15 @@ export function buildCoachSystemInstruction(perfil?: any): string {
     if (perfil.dias_semana) parts.push(\`Frequência: \${perfil.dias_semana} dias/semana\`);
     if (perfil.equipamentos) parts.push(\`Equipamentos disponíveis: \${perfil.equipamentos}\`);
     if (perfil.lesoes) parts.push(\`Restrições/Dores/Lesões: \${perfil.lesoes}\`);
+    if (Array.isArray(perfil.recentWeights) && perfil.recentWeights.length > 0) {
+      parts.push(\`ÚLTIMAS CARGAS REGISTRADAS: \${perfil.recentWeights.join('; ')}\`);
+    }
+    if (Array.isArray(perfil.recentWorkouts) && perfil.recentWorkouts.length > 0) {
+      const wStr = perfil.recentWorkouts.map((w: any) => \`\${w.treino} (\${w.data})\`).join(', ');
+      parts.push(\`ÚLTIMOS TREINOS: \${wStr}\`);
+    }
     if (parts.length > 0) {
-      perfilContext = \`\\n\\nPERFIL ATUAL DO ATLETA (considere estritamente ao prescrever):\\n\${parts.join(' | ')}\`;
+      perfilContext = \`\\n\\nPERFIL & HISTÓRICO REAL DO ATLETA (considere estritamente ao prescrever cargas e fadiga):\\n\${parts.join(' | ')}\`;
     }
   }
 

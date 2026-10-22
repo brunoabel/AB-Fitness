@@ -137,3 +137,33 @@ export function formatCatalogForPrompt() {
     (e) => `${e.id}|${e.nome}|${e.grupo}|${e.porcao}|${e.equipamento}|${e.tipo}`
   ).join('\n');
 }
+
+/**
+ * Retorna uma lista de exercícios equivalentes para substituição biomecânica rápida (swap)
+ * Prioriza mesma porção anatômica e mesmo grupo, com equipamento alternativo.
+ */
+export function getBiomechanicalSubstitutes(exerciseIdentifier, excludeIds = new Set()) {
+  const current = findExerciseInCatalog(exerciseIdentifier);
+  if (!current) return [];
+
+  const currentId = current.id;
+  const currentGroup = (current.grupo || '').toLowerCase();
+  const currentPorcao = (current.porcao || '').toLowerCase();
+
+  const exactMatches = EXERCISE_CATALOG.filter(
+    (e) => e.id !== currentId && !excludeIds.has(e.id) &&
+           (e.grupo || '').toLowerCase() === currentGroup &&
+           (e.porcao || '').toLowerCase() === currentPorcao
+  );
+
+  if (exactMatches.length >= 3) return exactMatches.slice(0, 5);
+
+  const groupMatches = EXERCISE_CATALOG.filter(
+    (e) => e.id !== currentId && !excludeIds.has(e.id) &&
+           (e.grupo || '').toLowerCase() === currentGroup &&
+           !exactMatches.some((m) => m.id === e.id)
+  );
+
+  return [...exactMatches, ...groupMatches].slice(0, 5);
+}
+

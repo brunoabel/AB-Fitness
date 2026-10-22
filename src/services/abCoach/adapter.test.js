@@ -5,7 +5,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { EXERCISE_CATALOG, findExerciseInCatalog, findNearestExercise } from './catalog.js';
+import { EXERCISE_CATALOG, findExerciseInCatalog, findNearestExercise, getBiomechanicalSubstitutes } from './catalog.js';
 import { validateAndSanitizeCoachResponse } from './schema.js';
 import { toAppWorkout } from './adapter.js';
 
@@ -61,6 +61,14 @@ describe('AB Coach — FASE 1: Catálogo e Contrato de Dados', () => {
       const nearest = findNearestExercise('Peito', 'costal');
       assert.ok(nearest);
       assert.equal(nearest.grupo, 'Peito');
+    });
+
+    it('getBiomechanicalSubstitutes deve retornar exercícios equivalentes da mesma porção/grupo', () => {
+      const subs = getBiomechanicalSubstitutes('supino-reto-barra');
+      assert.ok(Array.isArray(subs));
+      assert.ok(subs.length > 0);
+      assert.ok(subs.every((s) => s.id !== 'supino-reto-barra'));
+      assert.ok(subs.every((s) => s.grupo === 'Peito'));
     });
   });
 

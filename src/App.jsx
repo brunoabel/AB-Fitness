@@ -30,6 +30,7 @@ import {
 import { WEEKLY_SCHEDULE } from './data/workouts';
 import { sound } from './utils/audio';
 import ABLogo from './components/ABLogo';
+import { Bot, Sparkles } from 'lucide-react';
 
 
 function AppContent() {
@@ -279,6 +280,24 @@ function AppContent() {
               activeTab={activeTab}
               onTabChange={handleTabChange}
             />
+
+            {/* Botão Flutuante Global do AB Coach IA (FAB) */}
+            <button
+              onClick={() => {
+                sound.playTick();
+                setShowAICoachModal(true);
+              }}
+              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-sky-500 via-cyan-500 to-indigo-600 text-white font-black text-xs sm:text-sm shadow-xl shadow-sky-500/35 hover:shadow-sky-500/50 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-white/20 backdrop-blur-md group"
+              aria-label="Abrir AB Coach IA"
+            >
+              <div className="relative flex items-center justify-center">
+                <Bot className="w-5 h-5 text-white" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-zinc-950 rounded-full animate-pulse" />
+              </div>
+              <span className="tracking-wide flex items-center gap-1">
+                AB Coach <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+              </span>
+            </button>
           </>
         )}
 

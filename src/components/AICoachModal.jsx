@@ -16,11 +16,15 @@ import {
   AlertCircle,
   LogIn,
   Dumbbell,
-  Calendar
+  Calendar,
+  RefreshCw,
+  Share2
 } from 'lucide-react';
 import { useAuth } from '../context';
 import { sendMessageToCoach } from '../services/abCoach/coachService';
 import { toAppWorkout } from '../services/abCoach/adapter';
+import { getBiomechanicalSubstitutes } from '../services/abCoach/catalog';
+import { generateAndShareWorkoutCard } from '../utils/shareCard';
 import { saveCustomWorkout, getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 
@@ -60,6 +64,8 @@ export default function AICoachModal({
   const [showDayPickerIndex, setShowDayPickerIndex] = useState(null);
   const [expandedCards, setExpandedCards] = useState({}); // { [msgIndex]: boolean }
   const [toastMessage, setToastMessage] = useState(null);
+  const [activeSwap, setActiveSwap] = useState(null); // { msgIndex, exIndex, exercise }
+  const [isSharing, setIsSharing] = useState(false);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -194,6 +200,58 @@ export default function AICoachModal({
       ...prev,
       [msgIndex]: !prev[msgIndex]
     }));
+  };
+
+  const handleSwapExercise = (msgIndex, exIndex, newEx) => {
+    triggerHaptic(15);
+    setMessages((prev) => {
+      const updated = [...prev];
+      const targetMsg = { ...updated[msgIndex] };
+      if (!targetMsg.treino || !targetMsg.treino.exercicios) return prev;
+
+      const newExercicios = [...targetMsg.treino.exercicios];
+      const oldEx = newExercicios[exIndex];
+
+      newExercicios[exIndex] = {
+        ...oldEx,
+        id: newEx.id,
+        nome: newEx.nome,
+        grupo: newEx.grupo || oldEx.grupo,
+        porcao: newEx.porcao || oldEx.porcao,
+        equipamento: newEx.equipamento || oldEx.equipamento,
+        series: oldEx.series,
+        reps: oldEx.reps,
+        descanso_seg: oldEx.descanso_seg,
+        cadencia: oldEx.cadencia,
+        dica: newEx.dica || oldEx.dica
+      };
+
+      targetMsg.treino = {
+        ...targetMsg.treino,
+        exercicios: newExercicios
+      };
+
+      updated[msgIndex] = targetMsg;
+      return updated;
+    });
+
+    setActiveSwap(null);
+    showToast(`Substituído por: ${newEx.nome}`);
+  };
+
+  const handleShareCard = async (treino) => {
+    if (!treino || isSharing) return;
+    triggerHaptic(15);
+    setIsSharing(true);
+    showToast('Gerando card 9:16 cinematográfico...');
+    try {
+      await generateAndShareWorkoutCard(treino);
+    } catch (err) {
+      console.error('Erro ao compartilhar:', err);
+      showToast('Não foi possível compartilhar a imagem.');
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   return (
@@ -397,50 +455,137 @@ export default function AICoachModal({
                         </div>
 
                         <div className="space-y-1.5">
-                          {(expandedCards[idx] ? msg.treino.exercicios : msg.treino.exercicios.slice(0, 3)).map((ex, exIdx) => (
-                            <div
-                              key={ex.id || exIdx}
-                              onClick={() => onViewExercise && onViewExercise(ex)}
-                              className="p-2.5 rounded-xl bg-zinc-950/90 border border-zinc-800/70 hover:border-sky-500/40 transition-colors cursor-pointer group"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="w-5 h-5 rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-400 flex items-center justify-center shrink-0">
-                                    {exIdx + 1}
-                                  </span>
-                                  <span className="text-xs font-bold text-zinc-100 group-hover:text-sky-300 transition-colors">
-                                    {ex.nome}
-                                  </span>
+                          {(expandedCards[idx] ? msg.treino.exercicios : msg.treino.exercicios.slice(0, 3)).map((ex, exIdx) => {
+                            const isThisSwapping = activeSwap?.msgIndex === idx && activeSwap?.exIndex === exIdx;
+                            return (
+                              <div
+                                key={ex.id || exIdx}
+                                onClick={() => onViewExercise && onViewExercise(ex)}
+                                className={`p-2.5 rounded-xl bg-zinc-950/90 border transition-all cursor-pointer group ${
+                                  isThisSwapping ? 'border-sky-500 shadow-md shadow-sky-950/40' : 'border-zinc-800/70 hover:border-sky-500/40'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="w-5 h-5 rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-400 flex items-center justify-center shrink-0">
+                                      {exIdx + 1}
+                                    </span>
+                                    <span className="text-xs font-bold text-zinc-100 group-hover:text-sky-300 transition-colors truncate">
+                                      {ex.nome}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    {ex.porcao && (
+                                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700 font-medium">
+                                        {ex.porcao}
+                                      </span>
+                                    )}
+
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        triggerHaptic(10);
+                                        setActiveSwap(
+                                          isThisSwapping
+                                            ? null
+                                            : { msgIndex: idx, exIndex: exIdx, exercise: ex }
+                                        );
+                                      }}
+                                      title="Trocar por exercício equivalente"
+                                      className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                        isThisSwapping
+                                          ? 'bg-sky-500/20 border-sky-400 text-sky-300'
+                                          : 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-400 hover:text-sky-400'
+                                      }`}
+                                    >
+                                      <RefreshCw className={`w-3.5 h-3.5 ${isThisSwapping ? 'animate-spin text-sky-400' : ''}`} />
+                                    </button>
+                                  </div>
                                 </div>
 
-                                {ex.porcao && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700 font-medium shrink-0">
-                                    {ex.porcao}
+                                <div className="flex items-center gap-3 mt-1.5 text-[11px] text-zinc-400 pl-7">
+                                  <span className="font-semibold text-zinc-300">
+                                    {ex.series} séries × {ex.reps} reps
                                   </span>
+                                  <span>•</span>
+                                  <span>{ex.descanso_seg}s descanso</span>
+                                  {ex.cadencia && (
+                                    <>
+                                      <span>•</span>
+                                      <span className="text-zinc-500">{ex.cadencia}</span>
+                                    </>
+                                  )}
+                                </div>
+
+                                {ex.dica && expandedCards[idx] && (
+                                  <p className="text-[10px] text-sky-400/90 pl-7 mt-1 italic">
+                                    💡 {ex.dica}
+                                  </p>
+                                )}
+
+                                {/* Menu de Troca Biomecânica Rápida */}
+                                {isThisSwapping && (
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()} 
+                                    className="mt-2.5 p-2.5 bg-zinc-900/95 border border-sky-500/40 rounded-xl space-y-2 animate-in fade-in"
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-1.5 text-[11px] font-bold text-sky-300">
+                                        <RefreshCw className="w-3 h-3 text-sky-400" />
+                                        <span>Substitutos Biomecânicos Equivalentes:</span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => setActiveSwap(null)}
+                                        className="text-[10px] text-zinc-400 hover:text-white px-1.5 py-0.5 rounded hover:bg-zinc-800 cursor-pointer"
+                                      >
+                                        ✕ Fechar
+                                      </button>
+                                    </div>
+
+                                    {(() => {
+                                      const usedIds = new Set((msg.treino.exercicios || []).map((item) => item.id));
+                                      const substitutes = getBiomechanicalSubstitutes(ex.id || ex.nome, usedIds);
+
+                                      if (substitutes.length === 0) {
+                                        return (
+                                          <p className="text-[11px] text-zinc-400 italic py-1">
+                                            Nenhum outro exercício equivalente encontrado no catálogo.
+                                          </p>
+                                        );
+                                      }
+
+                                      return (
+                                        <div className="space-y-1.5 pt-0.5">
+                                          {substitutes.map((sub) => (
+                                            <div
+                                              key={sub.id}
+                                              onClick={() => handleSwapExercise(idx, exIdx, sub)}
+                                              className="p-2 rounded-lg bg-zinc-950 hover:bg-sky-950/50 border border-zinc-800 hover:border-sky-500/60 flex items-center justify-between gap-2 cursor-pointer transition-all active:scale-[0.99] group/sub"
+                                            >
+                                              <div className="min-w-0">
+                                                <p className="text-xs font-bold text-zinc-200 group-hover/sub:text-sky-300 truncate">
+                                                  {sub.nome}
+                                                </p>
+                                                <p className="text-[10px] text-zinc-400">
+                                                  {sub.porcao || sub.grupo} • {sub.equipamento || 'Geral'}
+                                                </p>
+                                              </div>
+                                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 shrink-0 border border-sky-500/30 group-hover/sub:bg-sky-500 group-hover/sub:text-white transition-colors">
+                                                Trocar
+                                              </span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
                                 )}
                               </div>
-
-                              <div className="flex items-center gap-3 mt-1.5 text-[11px] text-zinc-400 pl-7">
-                                <span className="font-semibold text-zinc-300">
-                                  {ex.series} séries × {ex.reps} reps
-                                </span>
-                                <span>•</span>
-                                <span>{ex.descanso_seg}s descanso</span>
-                                {ex.cadencia && (
-                                  <>
-                                    <span>•</span>
-                                    <span className="text-zinc-500">{ex.cadencia}</span>
-                                  </>
-                                )}
-                              </div>
-
-                              {ex.dica && expandedCards[idx] && (
-                                <p className="text-[10px] text-sky-400/90 pl-7 mt-1 italic">
-                                  💡 {ex.dica}
-                                </p>
-                              )}
-                            </div>
-                          ))}
+                            );
+                          })}
 
                           {!expandedCards[idx] && msg.treino.exercicios.length > 3 && (
                             <button
@@ -486,6 +631,17 @@ export default function AICoachModal({
                             )}
                           </button>
                         </div>
+
+                        {/* Botão Compartilhar Stories 9:16 */}
+                        <button
+                          type="button"
+                          onClick={() => handleShareCard(msg.treino)}
+                          disabled={isSharing}
+                          className="w-full py-2 px-3 rounded-xl bg-zinc-950/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-sky-500/40 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+                        >
+                          <Share2 className="w-3.5 h-3.5 text-sky-400" />
+                          <span>{isSharing ? 'Gerando Stories 9:16...' : 'Compartilhar Treino (Stories 9:16)'}</span>
+                        </button>
 
                         {/* Botão Adicionar à Minha Semana */}
                         {onSaveToSchedule && (
@@ -534,10 +690,8 @@ export default function AICoachModal({
                           </div>
                         )}
                       </div>
-
                     </div>
                   )}
-
                 </div>
               </div>
             );

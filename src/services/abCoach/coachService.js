@@ -6,6 +6,41 @@
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { validateAndSanitizeCoachResponse } from './schema';
+import { getSavedWeights, getWorkoutHistory } from '../../utils/storage';
+
+/**
+ * Monta o contexto biométrico do atleta (cargas e histórico recente) para o AB Coach
+ */
+export function getAthleteContextSummary(perfil = null) {
+  try {
+    const weightsRaw = getSavedWeights() || {};
+    const historyRaw = getWorkoutHistory() || [];
+
+    // Top 10 exercícios recentes com cargas registradas
+    const recentWeights = Object.entries(weightsRaw)
+      .filter(([_, sets]) => Array.isArray(sets) && sets.some((s) => Number(s.weight) > 0))
+      .slice(0, 10)
+      .map(([exId, sets]) => {
+        const bestSet = sets.reduce((max, s) => (Number(s.weight) > Number(max?.weight || 0) ? s : max), sets[0]);
+        return `${exId}: ${bestSet.weight}kg (${bestSet.reps || 10} reps)`;
+      });
+
+    // Últimos 3 treinos concluídos para gestão de fadiga
+    const recentWorkouts = historyRaw.slice(0, 3).map((h) => ({
+      treino: h.title || h.name || 'Treino',
+      data: h.completedAt ? new Date(h.completedAt).toLocaleDateString('pt-BR') : 'recente'
+    }));
+
+    return {
+      ...(perfil || {}),
+      recentWeights,
+      recentWorkouts
+    };
+  } catch (err) {
+    console.warn('Erro ao montar contexto do atleta para o coach:', err);
+    return perfil;
+  }
+}
 
 /**
  * Envia o histórico da conversa e perfil do atleta para o AB Coach
@@ -24,11 +59,13 @@ export async function sendMessageToCoach(messages, perfil = null) {
     throw new Error('Você precisa estar conectado à sua conta para conversar com o AB Coach.');
   }
 
+  const enrichedPerfil = getAthleteContextSummary(perfil);
+
   // 2. Invocar a Edge Function com o JWT na sessão
   const { data, error } = await supabase.functions.invoke('ab-coach', {
     body: {
       messages,
-      perfil
+      perfil: enrichedPerfil
     }
   });
 
