@@ -63,9 +63,6 @@ import { useWakeLock } from '../hooks/useWakeLock';
 export default function RunningHub({ isDark = true }) {
   const { user } = useAuth();
 
-  // Mantém o ecrã ligado durante a corrida ativa
-  useWakeLock(sessionStatus === 'running');
-
   // Preferência de áudio / locução por voz nos fones
   const [voiceEnabled, setVoiceEnabled] = useState(() => getVoiceCuesPreference());
   const [isCloudSynced, setIsCloudSynced] = useState(false);
@@ -80,6 +77,9 @@ export default function RunningHub({ isDark = true }) {
       ? 'paused'
       : 'idle'
   ));
+
+  // Mantém o ecrã ligado durante a corrida ativa
+  useWakeLock(sessionStatus === 'running');
   const [countdown, setCountdown] = useState(3);
   const [isSimulation, setIsSimulation] = useState(() => initialDraft?.isSimulation ?? false);
 
