@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Plus, Minus, Bell, Volume2, VolumeX, ChevronUp, ChevronDown } from 'lucide-react';
+import { Play, Pause, RotateCcw, Bell, ChevronUp, ChevronDown } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
 
 export default function RestTimer({ 
@@ -12,11 +12,10 @@ export default function RestTimer({
   const [isActive, setIsActive] = useState(false);
   const [isAlerting, setIsAlerting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [soundOn, setSoundOn] = useState(true);
 
   const prevTriggerRef = useRef(autoStartTrigger);
 
-  // Auto-início quando autoStartTrigger muda (ex: usuário marcou série concluída)
+  // Início automático quando uma série é marcada como efetuada
   useEffect(() => {
     if (autoStartTrigger > 0 && autoStartTrigger !== prevTriggerRef.current) {
       prevTriggerRef.current = autoStartTrigger;
@@ -28,7 +27,7 @@ export default function RestTimer({
     }
   }, [autoStartTrigger, totalSeconds]);
 
-  // Contagem regressiva
+  // Contagem decrescente
   useEffect(() => {
     let interval = null;
 
@@ -97,63 +96,61 @@ export default function RestTimer({
     : 0;
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-300 ${
-      isAlerting ? 'animate-bounce-subtle' : ''
-    }`}>
-      {/* Alerta Visual de Fim de Descanso */}
+    <div className="fixed bottom-0 left-0 right-0 z-40 transition-all duration-200">
+      {/* Alerta de Fim de Descanso */}
       {isAlerting && (
-        <div className="mx-auto max-w-md px-4 pb-2 animate-fadeIn">
-          <div className="bg-black dark:bg-white text-white dark:text-black p-3.5 rounded-2xl shadow-2xl flex items-center justify-between border border-zinc-700/60 dark:border-zinc-300">
-            <div className="flex items-center gap-2.5">
-              <span className="p-2 bg-zinc-800 dark:bg-zinc-200 rounded-xl">
-                <Bell className="w-5 h-5 text-amber-400" />
-              </span>
+        <div className="mx-auto max-w-xl px-4 pb-2">
+          <div className="bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 p-4 rounded-xl shadow-xl flex items-center justify-between border border-zinc-800 dark:border-zinc-300">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-zinc-800 dark:bg-zinc-200 rounded-lg">
+                <Bell className="w-5 h-5 text-amber-400 stroke-[2]" />
+              </div>
               <div>
-                <strong className="block text-sm font-black leading-tight">
-                  Descanso Concluído! 🔔
+                <strong className="block text-sm font-semibold leading-tight">
+                  Descanso Concluído
                 </strong>
-                <span className="text-xs text-zinc-300 dark:text-zinc-600 font-medium">
-                  Hora da próxima série. Foco na execução técnica.
+                <span className="text-xs text-zinc-300 dark:text-zinc-600 font-normal">
+                  Inicia a série seguinte com postura neutra e cadência controlada.
                 </span>
               </div>
             </div>
             <button
               onClick={() => setIsAlerting(false)}
-              className="px-3 py-1.5 bg-white dark:bg-black text-black dark:text-white text-xs font-bold rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+              className="px-3.5 py-2 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white text-xs font-semibold rounded-lg shadow-xs hover:opacity-90 active:scale-95 transition-all cursor-pointer min-h-[40px]"
             >
-              Iniciar
+              Iniciar Série
             </button>
           </div>
         </div>
       )}
 
-      {/* Caixa do Temporizador */}
-      <div className="max-w-md mx-auto px-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]">
-        <div className={`rounded-3xl border shadow-xl backdrop-blur-xl transition-all duration-300 ${
+      {/* Caixa do Temporizador de Descanso */}
+      <div className="max-w-xl mx-auto px-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]">
+        <div className={`rounded-xl border shadow-lg backdrop-blur-md transition-all duration-200 ${
           isAlerting 
-            ? 'bg-zinc-900 border-zinc-700 text-white shadow-2xl' 
+            ? 'bg-zinc-950 border-zinc-700 text-white' 
             : isActive 
-              ? 'bg-white/95 dark:bg-[#121215]/95 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white' 
-              : 'bg-white/90 dark:bg-[#121215]/90 border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+              ? 'bg-white/95 dark:bg-[#141618]/95 border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50' 
+              : 'bg-white/95 dark:bg-[#141618]/95 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200'
         }`}>
-          {/* Barra de Progresso Superior */}
-          <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-t-3xl overflow-hidden">
+          {/* Barra Fina de Progresso */}
+          <div className="h-1 w-full bg-zinc-100 dark:bg-zinc-800 rounded-t-xl overflow-hidden">
             <div 
-              className="h-full bg-black dark:bg-white transition-all duration-1000"
+              className="h-full bg-zinc-950 dark:bg-zinc-100 transition-all duration-1000"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          {/* Cabeçalho Compacto do Timer */}
+          {/* Cabeçalho Compacto */}
           <div className="px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Botão Play / Pause */}
+              {/* Botão Play / Pausa */}
               <button
                 onClick={toggleTimer}
-                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm cursor-pointer ${
+                className={`w-11 h-11 rounded-lg flex items-center justify-center transition-all cursor-pointer select-none ${
                   isActive
-                    ? 'bg-black text-white dark:bg-white dark:text-black'
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                    ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950'
+                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                 } active:scale-95`}
                 aria-label={isActive ? 'Pausar Descanso' : 'Iniciar Descanso'}
               >
@@ -166,41 +163,41 @@ export default function RestTimer({
 
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold tracking-wider uppercase opacity-75">
-                    {isActive ? 'Recuperação...' : isAlerting ? 'Tempo Finalizado' : 'Descanso entre Séries'}
+                  <span className="text-[11px] font-semibold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">
+                    {isActive ? 'A descansar...' : isAlerting ? 'Tempo concluído' : 'Descanso'}
                   </span>
                   {isActive && (
-                    <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   )}
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-black tracking-tight">
+                  <span className="font-mono text-2xl font-bold tracking-tight tabular-nums">
                     {formatTime(timeLeft > 0 ? timeLeft : totalSeconds)}
                   </span>
-                  <span className="text-xs opacity-60">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums font-mono">
                     / {totalSeconds}s
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Ações Rápidas no Modo Compacto */}
+            {/* Ações Rápidas */}
             <div className="flex items-center gap-1.5">
               {isActive && (
                 <>
                   <button
                     onClick={() => addTime(15)}
-                    className="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold tabular-nums active:scale-95 transition-all cursor-pointer"
                     title="+15 segundos"
                   >
                     +15s
                   </button>
                   <button
                     onClick={resetTimer}
-                    className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 active:scale-95 transition-all cursor-pointer"
-                    title="Zerar"
+                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
+                    title="Reiniciar"
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCcw className="w-4 h-4 stroke-[1.8]" />
                   </button>
                 </>
               )}
@@ -208,81 +205,38 @@ export default function RestTimer({
               {/* Botão de Expandir / Recolher Presets */}
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 active:scale-95 transition-all cursor-pointer"
-                aria-label="Opções do timer"
+                className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
+                aria-label="Opções do temporizador"
               >
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 stroke-[1.8]" />
                 ) : (
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronUp className="w-4 h-4 stroke-[1.8]" />
                 )}
               </button>
             </div>
           </div>
 
-          {/* Área Expandida com Presets e Controles */}
+          {/* Painel Desdobrável com Tempos Pré-Definidos */}
           {isExpanded && (
-            <div className="px-4 pb-3 pt-1 border-t border-zinc-100 dark:border-zinc-800 space-y-2.5 animate-fadeIn">
-              <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-                <span className="font-bold text-zinc-700 dark:text-zinc-300">Tempo de Descanso Recomendado:</span>
-                <button
-                  onClick={() => {
-                    const next = sound.toggleSound();
-                    setSoundOn(next);
-                  }}
-                  className="flex items-center gap-1 text-[11px] text-zinc-800 dark:text-zinc-200 font-bold hover:underline cursor-pointer"
-                >
-                  {soundOn ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-                  {soundOn ? 'Sons ON' : 'Mudo'}
-                </button>
-              </div>
-
-              {/* Botões de Presets rápidos */}
-              <div className="grid grid-cols-4 gap-2">
-                {[
-                  { label: '30s', val: 30, desc: 'Rápido' },
-                  { label: '45s', val: 45, desc: 'Braços' },
-                  { label: '60s', val: 60, desc: 'Padrão' },
-                  { label: '90s', val: 90, desc: 'Pernas/RDL' },
-                ].map((item) => (
+            <div className="px-4 pb-3.5 pt-1 border-t border-zinc-100 dark:border-zinc-800/80">
+              <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block mb-2">
+                Tempos pré-definidos de descanso
+              </span>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[30, 45, 60, 90, 120].map((sec) => (
                   <button
-                    key={item.val}
-                    onClick={() => selectPreset(item.val)}
-                    className={`py-2 px-1 rounded-2xl text-center border transition-all active:scale-95 cursor-pointer ${
-                      totalSeconds === item.val
-                        ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-xs'
-                        : 'bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+                    key={sec}
+                    onClick={() => selectPreset(sec)}
+                    className={`py-2 px-1 rounded-lg text-xs font-semibold tabular-nums transition-all cursor-pointer border ${
+                      totalSeconds === sec
+                        ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-950 dark:border-zinc-100'
+                        : 'bg-zinc-50 dark:bg-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
                     }`}
                   >
-                    <div className="text-xs font-bold">{item.label}</div>
-                    <div className="text-[10px] opacity-70">{item.desc}</div>
+                    {sec}s
                   </button>
                 ))}
-              </div>
-
-              {/* Botões de micro-ajustes */}
-              <div className="flex items-center justify-between pt-1 text-xs">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => addTime(-15)}
-                    disabled={timeLeft <= 15}
-                    className="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 disabled:opacity-40 text-zinc-700 dark:text-zinc-300 flex items-center gap-1 font-bold cursor-pointer"
-                  >
-                    <Minus className="w-3 h-3" /> 15s
-                  </button>
-                  <button
-                    onClick={() => addTime(15)}
-                    className="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center gap-1 font-bold cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" /> 15s
-                  </button>
-                </div>
-                <button
-                  onClick={resetTimer}
-                  className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 font-bold cursor-pointer"
-                >
-                  Resetar Timer
-                </button>
               </div>
             </div>
           )}

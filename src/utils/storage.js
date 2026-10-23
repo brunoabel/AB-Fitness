@@ -196,7 +196,9 @@ export const deleteRunRecord = (runId) => {
   }
 };
 
-// Rascunho / Sessão Ativa de Corrida (para resiliência contra pausas, recarregamentos e troca de abas)
+// Rascunho / Sessão Ativa de Corrida (armazenado em IndexedDB para alta performance com milhares de pontos GPS)
+export { getRunDraftFromIDB, saveRunDraftToIDB, clearRunDraftFromIDB } from './idbDraft';
+
 export const getActiveRunDraft = () => {
   try {
     const raw = localStorage.getItem(KEYS.ACTIVE_RUN_DRAFT);
@@ -208,17 +210,15 @@ export const getActiveRunDraft = () => {
 
 export const saveActiveRunDraft = (draft) => {
   try {
-    if (!draft) {
-      localStorage.removeItem(KEYS.ACTIVE_RUN_DRAFT);
-      return;
-    }
-    localStorage.setItem(KEYS.ACTIVE_RUN_DRAFT, JSON.stringify(draft));
-  } catch {}
+    saveRunDraftToIDB(draft);
+  } catch (err) {
+    console.warn('Erro ao delegar gravação de rascunho de corrida:', err);
+  }
 };
 
 export const clearActiveRunDraft = () => {
   try {
-    localStorage.removeItem(KEYS.ACTIVE_RUN_DRAFT);
+    clearRunDraftFromIDB();
   } catch {}
 };
 

@@ -60,32 +60,142 @@ export function calculateRunningCalories(distanceKm, userWeightKg = 72) {
   return Math.round(distanceKm * (userWeightKg || 72) * 1.036);
 }
 
+const R = 6371000; // Raio da Terra em metros
+
 /**
- * Filtro de ruído do GPS para rejeitar pontos espúrios
+ * Fórmula de Haversine entre dois pontos {lat, lng}
+ */
+export function haversine(a, b) {
+  if (!a || !b) return 0;
+  const rad = (d) => (d * Math.PI) / 180;
+  const dLat = rad(b.lat - a.lat);
+  const dLng = rad(b.lng - a.lng);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Filtro rigoroso de pontos GPS:
+ * - Rejeita precisão fraca (acc > 25m)
+ * - Rejeita jitter parado (< 3m)
+ * - Rejeita saltos impossíveis (> 12 m/s ou > 43.2 km/h)
+ */
+export function accept(p, last) {
+  const acc = p.acc !== undefined ? p.acc : (p.accuracy ?? 0);
+  if (acc > 25) return false; // precisão fraca
+  if (!last) return true;
+  const d = haversine(last, p);
+  const pTime = p.t !== undefined ? p.t : (p.timestamp || Date.now());
+  const lastTime = last.t !== undefined ? last.t : (last.timestamp || Date.now());
+  const dt = (pTime - lastTime) / 1000;
+  if (d < 3) return false; // jitter parado
+  if (dt > 0 && d / dt > 12) return false; // salto impossível (> 43 km/h)
+  return true;
+}
+
+/**
+ * Alias retrocompatível com isValidGpsPoint
  */
 export function isValidGpsPoint(newCoord, prevCoord) {
-  if (!newCoord || isNaN(newCoord.lat) || isNaN(newCoord.lng)) return false;
-  if (newCoord.accuracy && newCoord.accuracy > 40) {
-    // Precisão muito baixa (>40 metros de margem de erro)
-    return false;
+  return accept(newCoord, prevCoord);
+}
+
+/**
+ * Interpolação precisa de Splits (parciais) por quilómetro
+ */
+export function computeSplits(points) {
+  if (!points || points.length < 2) {
+    return { splits: [], partial: { meters: 0, ms: 0 } };
   }
-  if (!prevCoord) return true;
 
-  const distM = haversineDistanceMeters(
-    prevCoord.lat,
-    prevCoord.lng,
-    newCoord.lat,
-    newCoord.lng
-  );
+  const normalized = points.map((p) => ({
+    lat: p.lat,
+    lng: p.lng,
+    t: p.t !== undefined ? p.t : (p.timestamp || Date.now())
+  }));
 
-  const timeDeltaSec = (newCoord.timestamp - prevCoord.timestamp) / 1000;
-  if (timeDeltaSec <= 0) return false;
+  const splits = [];
+  let dist = 0;
+  let nextKm = 1000;
+  let lastT = normalized[0].t;
 
-  const speedKmh = (distM / timeDeltaSec) * 3.6;
-  // Limite biológico humano para corrida (~40 km/h)
-  if (speedKmh > 42) return false;
+  for (let i = 1; i < normalized.length; i++) {
+    const seg = haversine(normalized[i - 1], normalized[i]);
+    while (dist + seg >= nextKm) {
+      const f = (nextKm - dist) / seg;
+      const t = normalized[i - 1].t + f * (normalized[i].t - normalized[i - 1].t);
+      const splitMs = Math.max(1000, Math.round(t - lastT));
+      const splitSec = Math.round(splitMs / 1000);
+      splits.push({
+        km: nextKm / 1000,
+        ms: splitMs,
+        durationSeconds: splitSec,
+        paceStr: formatPace(splitSec)
+      });
+      lastT = t;
+      nextKm += 1000;
+    }
+    dist += seg;
+  }
 
-  return distM >= 1.5; // Ignora jitter parado (< 1.5 metros)
+  const lastPoint = normalized[normalized.length - 1];
+  return {
+    splits,
+    partial: {
+      meters: Math.max(0, Math.round(dist - (nextKm - 1000))),
+      ms: Math.max(0, lastPoint.t - lastT)
+    }
+  };
+}
+
+/**
+ * Converte pontos para o formato padrão GPX 1.1 compatível com Strava, Garmin e Apple Health
+ */
+export function toGPX(points, name = 'Corrida AB Fitness') {
+  if (!points || points.length === 0) return '';
+  const pts = points.map((p) => {
+    const timeISO = new Date(p.t !== undefined ? p.t : (p.timestamp || Date.now())).toISOString();
+    const eleTag = p.altitude || p.alt ? `<ele>${(p.altitude || p.alt).toFixed(1)}</ele>` : '';
+    return `<trkpt lat="${p.lat}" lon="${p.lng}">${eleTag}<time>${timeISO}</time></trkpt>`;
+  }).join('');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="AB Fitness - https://ba-fitness.vercel.app"
+xmlns="http://www.topografix.com/GPX/1/1"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata>
+  <name>${name}</name>
+  <time>${new Date().toISOString()}</time>
+</metadata>
+<trk>
+  <name>${name}</name>
+  <type>running</type>
+  <trkseg>${pts}</trkseg>
+</trk>
+</gpx>`;
+}
+
+/**
+ * Dispara o download direto do ficheiro .gpx no browser
+ */
+export function downloadGPX(points, name = 'corrida-ab-fitness') {
+  try {
+    const xml = toGPX(points, name);
+    const blob = new Blob([xml], { type: 'application/gpx+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${name.replace(/[^a-zA-Z0-9_-]/g, '_')}.gpx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    console.error('Erro ao gerar download de GPX:', err);
+  }
 }
 
 /**

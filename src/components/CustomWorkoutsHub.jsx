@@ -3,7 +3,6 @@ import {
   Play, 
   Plus, 
   Dumbbell, 
-  Sparkles, 
   Clock, 
   Pencil, 
   Copy, 
@@ -12,7 +11,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   Zap,
-  RotateCcw
+  RotateCcw,
+  Bot
 } from 'lucide-react';
 import CustomWorkoutModal from './CustomWorkoutModal';
 import { 
@@ -26,10 +26,10 @@ import { triggerHaptic } from '../utils/audio';
 
 export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOpenAICoach }) {
   const [workouts, setWorkouts] = useState(() => getCustomWorkouts());
-  const [selectedLevel, setSelectedLevel] = useState('Todos'); // 'Todos' | 'Iniciante' | 'Intermediário' | 'Avançado'
+  const [selectedLevel, setSelectedLevel] = useState('Todos'); // 'Todos' | 'Iniciante' | 'Intermédio' | 'Avançado'
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Controle de expansão de detalhes de cada card
+  // Controlo de expansão de detalhes de cada cartão
   const [expandedCardIds, setExpandedCardIds] = useState({});
 
   // Modais de Criação e Edição
@@ -64,7 +64,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
   const handleDeleteWorkout = (workoutId, workoutTitle, e) => {
     e?.stopPropagation();
     triggerHaptic([30, 40]);
-    if (window.confirm(`Deseja excluir o treino "${workoutTitle}"?`)) {
+    if (window.confirm(`Tens a certeza de que desejas eliminar o treino "${workoutTitle}"?`)) {
       const updated = deleteCustomWorkout(workoutId);
       setWorkouts(updated);
     }
@@ -87,7 +87,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
 
   const handleResetTemplates = () => {
     triggerHaptic([20, 40]);
-    if (window.confirm('Deseja recarregar os modelos recomendados para Iniciante, Intermediário e Avançado?')) {
+    if (window.confirm('Desejas recarregar os modelos recomendados para Iniciante, Intermédio e Avançado?')) {
       DEFAULT_CUSTOM_WORKOUTS.forEach((tpl) => {
         saveCustomWorkout(tpl);
       });
@@ -97,7 +97,8 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
 
   // Filtragem
   const filteredWorkouts = workouts.filter((w) => {
-    const matchesLevel = selectedLevel === 'Todos' || w.level === selectedLevel;
+    const normLevel = w.level === 'Intermediário' ? 'Intermédio' : w.level;
+    const matchesLevel = selectedLevel === 'Todos' || normLevel === selectedLevel;
     const term = searchQuery.toLowerCase().trim();
     const matchesSearch = !term || 
       (w.title && w.title.toLowerCase().includes(term)) ||
@@ -110,64 +111,57 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
 
   // Contadores por nível
   const countIniciante = workouts.filter((w) => w.level === 'Iniciante').length;
-  const countIntermediario = workouts.filter((w) => w.level === 'Intermediário').length;
+  const countIntermedio = workouts.filter((w) => w.level === 'Intermédio' || w.level === 'Intermediário').length;
   const countAvancado = workouts.filter((w) => w.level === 'Avançado').length;
 
   return (
-    <div className="max-w-md mx-auto px-4 py-4 space-y-4 animate-fadeIn transition-colors">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fadeIn transition-colors">
       
-      {/* 1. CABEÇALHO EXECUTIVO DE TREINOS PERSONALIZADOS */}
-      <div className="p-5 rounded-3xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 shadow-sm transition-colors space-y-3">
+      {/* 1. CABEÇALHO TÉCNICO DE TREINOS PERSONALIZADOS */}
+      <div className="p-5 rounded-xl bg-white dark:bg-[#141618] border border-zinc-200 dark:border-zinc-800 shadow-xs transition-colors space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-sky-400" />
-            <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              AB Fitness • Treino Personalizado
-            </span>
-          </div>
+          <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            Gestão de Planos & Rotinas
+          </span>
 
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 px-3 py-1.5 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-zinc-950 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-white px-3 py-2 rounded-lg shadow-xs active:scale-95 transition-all cursor-pointer min-h-[40px]"
           >
-            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Novo Treino</span>
           </button>
         </div>
 
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight leading-snug">
-            Crie sua Rotina ou Siga seu Personal
+          <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-snug">
+            Planos Personalizados & Prescrições
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
-            Monte seus treinos com total flexibilidade, escolha da enciclopédia oficial de mais de 300 exercícios e grave séries, cargas e repetições na palma da mão.
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed max-w-2xl">
+            Cria os teus treinos com total flexibilidade, seleciona da biblioteca oficial de exercícios biomecânicos e regista séries, cargas e repetições na palma da mão.
           </p>
         </div>
 
-        {/* Banner de Níveis (Iniciante, Intermediário, Avançado) */}
-        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-600 dark:text-zinc-400 font-semibold">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-            <span>Disponível para todos os níveis</span>
-          </span>
-          <span className="text-zinc-400">
-            {workouts.length} {workouts.length === 1 ? 'treino cadastrado' : 'treinos cadastrados'}
+        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">
+          <span>Configuração flexível para todos os níveis</span>
+          <span className="tabular-nums font-semibold text-zinc-700 dark:text-zinc-300">
+            {workouts.length} {workouts.length === 1 ? 'treino registado' : 'treinos registados'}
           </span>
         </div>
       </div>
 
-      {/* 1.1 BANNER DESTAQUE DO AB COACH IA */}
-      <div className="p-4 rounded-3xl bg-gradient-to-br from-sky-950/40 via-zinc-950 to-indigo-950/30 border border-sky-500/30 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* 1.1 MÓDULO SÓBRIO DO AB COACH IA */}
+      <div className="p-4 sm:p-5 rounded-xl bg-zinc-50 dark:bg-[#1a1d20]/80 border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-sky-400">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span>AB COACH • INTELIGÊNCIA ARTIFICIAL</span>
+          <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <Bot className="w-3.5 h-3.5 stroke-[2]" />
+            <span>AB Coach • Treinador Biomecânico</span>
           </div>
-          <h2 className="text-sm font-extrabold text-white">
-            Treino Personalizado por Biomecânica
+          <h2 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100">
+            Prescrição com Ajuste Biomecânico Imediato
           </h2>
-          <p className="text-[11px] text-zinc-400 leading-snug">
-            Peça ênfase específica (peito inferior, vasto medial, etc.) ou adapte para dores e tempo.
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-normal max-w-xl">
+            Solicita ênfases específicas (peitoral costal, vasto medial, cadeia posterior) ou adaptação para desconfortos articulares e restrições de tempo.
           </p>
         </div>
 
@@ -176,34 +170,34 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
             if (onOpenAICoach) onOpenAICoach();
             triggerHaptic(15);
           }}
-          className="px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-sky-500/20 active:scale-95 transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+          className="px-4 py-2.5 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:opacity-90 font-semibold text-xs transition-all shrink-0 flex items-center justify-center gap-2 cursor-pointer border border-zinc-800 dark:border-zinc-200 min-h-[40px]"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Falar com o Coach</span>
+          <Bot className="w-4 h-4 stroke-[2]" />
+          <span>Abrir AB Coach</span>
         </button>
       </div>
 
-      {/* 2. BARRA DE PESQUISA E FILTRO POR NÍVEL */}
-      <div className="space-y-2">
-        {/* Campo de Busca Rápida */}
+      {/* 2. PESQUISA E FILTROS */}
+      <div className="space-y-3">
+        {/* Campo de Pesquisa */}
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 stroke-[1.8]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar por nome, foco muscular ou exercício..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 text-xs font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all shadow-xs"
+            placeholder="Pesquisar por nome, foco muscular ou exercício..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white dark:bg-[#141618] border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-950 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 transition-colors min-h-[44px]"
           />
         </div>
 
-        {/* Pílulas de Filtro por Nível */}
-        <div className="grid grid-cols-4 gap-1.5 text-center">
+        {/* Filtros de Nível */}
+        <div className="grid grid-cols-4 gap-2 text-center">
           {[
-            { id: 'Todos', label: 'Todos', count: workouts.length, color: 'zinc' },
-            { id: 'Iniciante', label: 'Iniciante', count: countIniciante, color: 'emerald' },
-            { id: 'Intermediário', label: 'Intermed.', count: countIntermediario, color: 'sky' },
-            { id: 'Avançado', label: 'Avançado', count: countAvancado, color: 'amber' }
+            { id: 'Todos', label: 'Todos', count: workouts.length },
+            { id: 'Iniciante', label: 'Iniciante', count: countIniciante },
+            { id: 'Intermédio', label: 'Intermédio', count: countIntermedio },
+            { id: 'Avançado', label: 'Avançado', count: countAvancado }
           ].map((tab) => {
             const isSelected = selectedLevel === tab.id;
             return (
@@ -213,17 +207,15 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                   setSelectedLevel(tab.id);
                   triggerHaptic(10);
                 }}
-                className={`py-2 px-1 rounded-2xl border text-xs font-bold transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center ${
+                className={`py-2 px-1 rounded-lg border text-xs font-semibold transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center min-h-[44px] ${
                   isSelected
-                    ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-xs'
-                    : 'bg-white dark:bg-[#121215] border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700'
+                    ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-950 dark:border-zinc-100 shadow-xs'
+                    : 'bg-white dark:bg-[#141618] border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] mt-0.5 ${
-                  isSelected 
-                    ? 'text-white/80 dark:text-black/80 font-normal' 
-                    : 'text-zinc-400 dark:text-zinc-500 font-normal'
+                <span className={`text-[10px] tabular-nums mt-0.5 ${
+                  isSelected ? 'text-white/80 dark:text-zinc-950/80 font-normal' : 'text-zinc-400 font-normal'
                 }`}>
                   ({tab.count})
                 </span>
@@ -233,195 +225,181 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
         </div>
       </div>
 
-      {/* 3. LISTAGEM DE CARDS DE TREINOS PERSONALIZADOS */}
-      <div className="space-y-3.5">
+      {/* 3. LISTAGEM DE TREINOS EM GRELHA ADAPTATIVA */}
+      <div>
         {filteredWorkouts.length === 0 ? (
-          <div className="p-8 rounded-3xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto">
-              <Dumbbell className="w-6 h-6" />
+          <div className="p-8 rounded-xl bg-white dark:bg-[#141618] border border-zinc-200 dark:border-zinc-800 text-center space-y-3">
+            <div className="w-12 h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto">
+              <Dumbbell className="w-6 h-6 stroke-[1.8]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                Nenhum treino encontrado
+              <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100">
+                Nenhum plano encontrado
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mt-0.5">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-1">
                 {searchQuery || selectedLevel !== 'Todos'
-                  ? 'Tente ajustar os filtros ou a pesquisa para encontrar o seu treino.'
-                  : 'Comece criando o seu primeiro treino personalizado ou carregue os modelos oficiais.'}
+                  ? 'Tenta ajustar os filtros de nível ou a pesquisa para encontrar o treino pretendido.'
+                  : 'Começa por criar o teu primeiro plano personalizado ou repõe os modelos oficiais.'}
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 pt-1">
+            <div className="flex items-center justify-center gap-2 pt-2">
               <button
                 onClick={handleOpenCreateModal}
-                className="px-4 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 text-xs font-semibold active:scale-95 transition-all cursor-pointer min-h-[40px]"
               >
                 Criar Treino
               </button>
               <button
                 onClick={handleResetTemplates}
-                className="px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-700 min-h-[40px]"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Restaurar Modelos</span>
+                <RotateCcw className="w-3.5 h-3.5 stroke-[1.8]" />
+                <span>Repor Modelos</span>
               </button>
             </div>
           </div>
         ) : (
-          filteredWorkouts.map((workout) => {
-            const isExpanded = !!expandedCardIds[workout.id];
-            const levelColor = workout.level === 'Iniciante' 
-              ? 'emerald' 
-              : workout.level === 'Avançado' 
-                ? 'amber' 
-                : 'sky';
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredWorkouts.map((workout) => {
+              const isExpanded = !!expandedCardIds[workout.id];
 
-            return (
-              <div
-                key={workout.id}
-                className="rounded-3xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 shadow-sm overflow-hidden transition-all hover:border-zinc-300 dark:hover:border-zinc-700"
-              >
-                {/* Topo do Card com Nível, Duração e Ações */}
-                <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/40 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    {/* Badge do Nível */}
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                        levelColor === 'emerald'
-                          ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200/80 dark:border-emerald-800'
-                          : levelColor === 'amber'
-                            ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200/80 dark:border-amber-800'
-                            : 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border-sky-200/80 dark:border-sky-800'
-                      }`}>
-                        {workout.level}
-                      </span>
+              return (
+                <div
+                  key={workout.id}
+                  className="rounded-xl bg-white dark:bg-[#141618] border border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden transition-all hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col justify-between"
+                >
+                  {/* Topo do Cartão */}
+                  <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/60 dark:bg-[#1a1d20]/50 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+                          {workout.level}
+                        </span>
 
-                      <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400 text-xs font-semibold">
-                        <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>{workout.duration}</span>
+                        <div className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400 text-xs font-medium tabular-nums">
+                          <Clock className="w-3.5 h-3.5 stroke-[1.8]" />
+                          <span>{workout.duration}</span>
+                        </div>
+                      </div>
+
+                      {/* Ações Técnicas */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => handleOpenEditModal(workout, e)}
+                          className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          title="Editar plano"
+                        >
+                          <Pencil className="w-3.5 h-3.5 stroke-[1.8]" />
+                        </button>
+
+                        <button
+                          onClick={(e) => handleDuplicate(workout.id, e)}
+                          className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          title="Duplicar plano"
+                        >
+                          <Copy className="w-3.5 h-3.5 stroke-[1.8]" />
+                        </button>
+
+                        <button
+                          onClick={(e) => handleDeleteWorkout(workout.id, workout.title, e)}
+                          className="p-1.5 rounded-md text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          title="Eliminar plano"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 stroke-[1.8]" />
+                        </button>
                       </div>
                     </div>
 
-                    {/* Ações Rápidas: Editar, Duplicar, Excluir */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={(e) => handleOpenEditModal(workout, e)}
-                        className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                        title="Editar treino"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={(e) => handleDuplicate(workout.id, e)}
-                        className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                        title="Duplicar treino"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={(e) => handleDeleteWorkout(workout.id, workout.title, e)}
-                        className="p-1.5 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                        title="Excluir treino"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Título e Foco Muscular */}
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
-                      {workout.title}
-                    </h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-semibold mt-0.5">
-                      {workout.focus}
-                    </p>
-                  </div>
-
-                  {/* Observação do Personal (se houver) */}
-                  {workout.trainerNotes && (
-                    <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/80 text-[11px] text-zinc-700 dark:text-zinc-300 font-medium flex items-start gap-2">
-                      <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                      <span className="leading-relaxed">
-                        <strong className="text-zinc-900 dark:text-white font-bold">Personal:</strong> {workout.trainerNotes}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Conteúdo do Card: Exercícios & Botão Iniciar */}
-                <div className="p-4 sm:p-5 space-y-4">
-                  {/* Prévia dos Exercícios */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider px-1">
-                      <span>Exercícios ({workout.exercises?.length || 0})</span>
-                      <button
-                        onClick={() => handleToggleExpand(workout.id)}
-                        className="text-sky-500 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>{isExpanded ? 'Ocultar detalhes' : 'Ver todos'}</span>
-                        {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                      </button>
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-950 dark:text-zinc-50 leading-tight">
+                        {workout.title}
+                      </h3>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">
+                        {workout.focus}
+                      </p>
                     </div>
 
-                    {/* Exibe lista compacta ou expandida */}
-                    {(isExpanded ? workout.exercises : workout.exercises.slice(0, 3)).map((ex, idx) => (
-                      <div
-                        key={ex.id || idx}
-                        onClick={() => onViewExercise && onViewExercise(ex)}
-                        className="p-2.5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-6 h-6 rounded-xl bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold text-[11px] flex items-center justify-center border border-zinc-200/80 dark:border-zinc-700 shrink-0">
-                            {idx + 1}
-                          </span>
-                          <div>
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-200 group-hover:text-black dark:group-hover:text-white transition-colors">
-                              {ex.name}
-                            </h4>
-                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                              {ex.target} {ex.suggestedWeight > 0 ? `• ${ex.suggestedWeight} kg` : ''}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 px-2 py-0.5 rounded-lg border border-zinc-200/80 dark:border-zinc-700">
-                            {ex.defaultSets}x {ex.suggestedReps}
-                          </span>
-                        </div>
+                    {workout.trainerNotes && (
+                      <div className="p-2.5 rounded-lg bg-white dark:bg-[#141618] border border-zinc-200 dark:border-zinc-700/80 text-[11px] text-zinc-700 dark:text-zinc-300 font-normal flex items-start gap-2">
+                        <Zap className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5 stroke-[2]" />
+                        <span className="leading-relaxed">
+                          <strong className="text-zinc-900 dark:text-zinc-100 font-semibold">Nota técnica:</strong> {workout.trainerNotes}
+                        </span>
                       </div>
-                    ))}
-
-                    {!isExpanded && workout.exercises.length > 3 && (
-                      <button
-                        onClick={() => handleToggleExpand(workout.id)}
-                        className="w-full py-1.5 text-center text-[11px] font-semibold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
-                      >
-                        + mais {workout.exercises.length - 3} exercícios
-                      </button>
                     )}
                   </div>
 
-                  {/* BOTÃO PRINCIPAL: INICIAR TREINO PERSONALIZADO */}
-                  <div className="pt-1">
-                    <button
-                      onClick={() => {
-                        triggerHaptic(20);
-                        onStartWorkout(workout);
-                      }}
-                      className="w-full py-3.5 rounded-2xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer"
-                    >
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>Iniciar Treino</span>
-                    </button>
+                  {/* Lista de Exercícios & Ação de Iniciar */}
+                  <div className="p-4 sm:p-5 space-y-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-wider px-1">
+                        <span>Exercícios ({workout.exercises?.length || 0})</span>
+                        <button
+                          onClick={() => handleToggleExpand(workout.id)}
+                          className="text-zinc-700 dark:text-zinc-300 hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                        >
+                          <span>{isExpanded ? 'Ocultar detalhes' : 'Ver todos'}</span>
+                          {isExpanded ? <ChevronUp className="w-3 h-3 stroke-[2]" /> : <ChevronDown className="w-3 h-3 stroke-[2]" />}
+                        </button>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        {(isExpanded ? workout.exercises : workout.exercises.slice(0, 3)).map((ex, idx) => (
+                          <div
+                            key={ex.id || idx}
+                            onClick={() => onViewExercise && onViewExercise(ex)}
+                            className="p-2.5 rounded-lg bg-zinc-50 dark:bg-[#1a1d20]/80 hover:bg-zinc-100 dark:hover:bg-[#22252a] border border-zinc-200 dark:border-zinc-800 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-5 h-5 rounded bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-[10px] flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0 tabular-nums">
+                                {idx + 1}
+                              </span>
+                              <div>
+                                <h4 className="text-xs font-semibold text-zinc-950 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
+                                  {ex.name}
+                                </h4>
+                                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 tabular-nums">
+                                  {ex.target} {ex.suggestedWeight > 0 ? `• ${ex.suggestedWeight} kg` : ''}
+                                </span>
+                              </div>
+                            </div>
+
+                            <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-800 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 tabular-nums">
+                              {ex.defaultSets} × {ex.suggestedReps}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {!isExpanded && workout.exercises.length > 3 && (
+                        <button
+                          onClick={() => handleToggleExpand(workout.id)}
+                          className="w-full py-1 text-center text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                        >
+                          + mais {workout.exercises.length - 3} exercícios
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Botão Iniciar Treino */}
+                    <div className="pt-2">
+                      <button
+                        onClick={() => {
+                          triggerHaptic(20);
+                          onStartWorkout(workout);
+                        }}
+                        className="w-full py-3 rounded-lg bg-zinc-950 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-white text-white font-semibold text-xs shadow-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer min-h-[44px]"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Iniciar Treino</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
 

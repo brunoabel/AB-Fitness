@@ -60,13 +60,13 @@ export default function ExerciseModal({ exercise, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4 animate-fadeIn">
       <div 
-        className="w-full sm:max-w-lg bg-white dark:bg-[#121215] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800 flex flex-col max-h-[92vh] animate-slideUp transition-colors"
+        className="w-full sm:max-w-lg bg-white dark:bg-zinc-950 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[92vh] animate-slideUp transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabeçalho do Modal */}
-        <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/70 dark:bg-zinc-900/60">
+        <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center font-bold border border-zinc-200/80 dark:border-zinc-700 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center font-bold border border-zinc-200 dark:border-zinc-700 shadow-xs">
               <Dumbbell className="w-5 h-5" />
             </div>
             <div>
@@ -84,7 +84,7 @@ export default function ExerciseModal({ exercise, onClose }) {
 
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-300 flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-300 flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
             title="Fechar"
           >
             <X className="w-5 h-5" />
@@ -93,10 +93,10 @@ export default function ExerciseModal({ exercise, onClose }) {
 
         {/* Barra de Especificações Biomecânicas (Oficial AB Fitness) */}
         {(official100 || bio) && (
-          <div className="px-4 py-2 bg-zinc-100/90 dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-2 overflow-x-auto text-[11px] font-mono">
+          <div className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-2 overflow-x-auto text-[11px] font-mono tabular-nums">
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="font-black text-zinc-900 dark:text-white uppercase">{bio?.grupo || official100?.grupo}</span>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-zinc-200 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 border border-zinc-300 dark:border-zinc-700">
+              <span className="font-bold text-zinc-900 dark:text-white uppercase">{bio?.grupo || official100?.grupo}</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 font-sans">
                 {official100?.mecanica || 'Composto / Padrão'}
               </span>
             </div>
@@ -114,12 +114,12 @@ export default function ExerciseModal({ exercise, onClose }) {
         )}
 
         {/* Abas Superiores de Navegação */}
-        <div className="flex border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#121215] px-4 text-xs font-semibold">
+        <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-xs font-semibold">
           <button
             onClick={() => setActiveTab('biomechanics')}
-            className={`flex-1 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'biomechanics' 
-                ? 'border-black dark:border-white text-zinc-900 dark:text-white' 
+                ? 'border-zinc-900 dark:border-white text-zinc-900 dark:text-white' 
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
             }`}
           >
@@ -127,9 +127,9 @@ export default function ExerciseModal({ exercise, onClose }) {
           </button>
           <button
             onClick={() => setActiveTab('steps')}
-            className={`flex-1 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'steps' 
-                ? 'border-black dark:border-white text-zinc-900 dark:text-white' 
+                ? 'border-zinc-900 dark:border-white text-zinc-900 dark:text-white' 
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
             }`}
           >
@@ -137,9 +137,9 @@ export default function ExerciseModal({ exercise, onClose }) {
           </button>
           <button
             onClick={() => setActiveTab('safety')}
-            className={`flex-1 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'safety' 
-                ? 'border-black dark:border-white text-zinc-900 dark:text-white' 
+                ? 'border-zinc-900 dark:border-white text-zinc-900 dark:text-white' 
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
             }`}
           >
@@ -154,14 +154,14 @@ export default function ExerciseModal({ exercise, onClose }) {
           {activeTab === 'biomechanics' && (
             <div className="space-y-4 animate-fadeIn">
               
-              {/* Card de Foco Anatômico Técnico */}
-              <div className="p-4 rounded-2xl bg-zinc-900 text-white border border-zinc-800 shadow-md relative overflow-hidden">
+              {/* Card de Foco Anatómico Técnico */}
+              <div className="p-4 rounded-xl bg-zinc-900 text-white border border-zinc-800 shadow-sm relative overflow-hidden">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold tracking-widest uppercase text-sky-400 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
                     MÚSCULO ALVO PRINCIPAL
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-zinc-800 text-zinc-300 border border-zinc-700">
+                  <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase bg-zinc-800 text-zinc-300 border border-zinc-700 font-sans">
                     {official100?.mecanica || 'Padrão Ouro'}
                   </span>
                 </div>
@@ -185,8 +185,8 @@ export default function ExerciseModal({ exercise, onClose }) {
                 </div>
               </div>
 
-              {/* Fases Anatômicas de Execução */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-3 shadow-xs">
+              {/* Fases Anatómicas de Execução */}
+              <div className="p-4 rounded-xl bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-xs">
                 <div className="flex items-center gap-2 text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
                   <Layers className="w-4 h-4 text-sky-400" />
                   <span>Fases Biomecânicas do Exercício</span>
@@ -211,7 +211,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                       <span>2. Pico de Contração (Fase Concêntrica):</span>
                     </div>
                     <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed pl-3.5">
-                      {visual?.phaseConcentric || 'Execute a fase positiva com aceleração consciente e aperte o músculo alvo no pico.'}
+                      {visual?.phaseConcentric || 'Execute a fase positiva com aceleração consciente e contraia o músculo alvo no pico.'}
                     </p>
                   </div>
 
@@ -222,26 +222,26 @@ export default function ExerciseModal({ exercise, onClose }) {
                       <span>3. Descida Excêntrica Controlada (2 a 3s):</span>
                     </div>
                     <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed pl-3.5">
-                      {visual?.phaseEccentric || 'Retorne de forma controlada resistindo ao peso para maximizar o dano mecânico e ganho muscular.'}
+                      {visual?.phaseEccentric || 'Retorne de forma controlada resistindo ao peso para maximizar o estímulo mecânico e hipertrofia.'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Informações Anatômicas de Apoio */}
+              {/* Informações Anatómicas de Apoio */}
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                   <span className="text-zinc-400 block text-[10px] font-bold uppercase">Equipamento</span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{bio?.equipamento || visual?.equipment || 'Livre / Máquina'}</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                   <span className="text-zinc-400 block text-[10px] font-bold uppercase">Sinergistas</span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 block">{bio?.sinergistas || visual?.secondary || 'Estabilizadores'}</span>
                 </div>
               </div>
 
               {/* Dica Científica Baseada em Evidências & Para Que Serve */}
-              <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
+              <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
                 <Award className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-zinc-900 dark:text-white font-bold mb-0.5 text-[11px]">
@@ -260,8 +260,8 @@ export default function ExerciseModal({ exercise, onClose }) {
                 Execução Técnica Padrão Ouro
               </h3>
               {steps.map((step, idx) => (
-                <div key={idx} className="flex gap-3 p-3.5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 items-start">
-                  <div className="w-6 h-6 rounded-full bg-black dark:bg-white text-white dark:text-black font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                <div key={idx} className="flex gap-3 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 items-start">
+                  <div className="w-6 h-6 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs font-mono tabular-nums">
                     {idx + 1}
                   </div>
                   <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-200 leading-relaxed font-medium">
@@ -276,7 +276,7 @@ export default function ExerciseModal({ exercise, onClose }) {
           {activeTab === 'safety' && (
             <div className="space-y-3.5 animate-fadeIn">
               {/* Checkpoints de Alinhamento */}
-              <div className="p-4 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-2">
                 <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xs uppercase tracking-wide">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                   <span>Checkpoints de Alinhamento e Postura</span>
@@ -292,7 +292,7 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Padrão de Respiração */}
-              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-bold text-xs uppercase tracking-wide">
                   <Wind className="w-4 h-4 text-sky-400" />
                   <span>Padrão de Respiração</span>
@@ -303,7 +303,7 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Erro Crítico a Evitar */}
-              <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 space-y-1">
+              <div className="p-4 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 space-y-1">
                 <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-bold text-xs uppercase tracking-wide">
                   <AlertCircle className="w-4 h-4 text-rose-500" />
                   <span>Erro Crítico a Evitar</span>
@@ -314,19 +314,19 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Intervalo de Descanso */}
-              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Intervalo ideal entre séries: <strong className="text-zinc-900 dark:text-white font-bold">{exercise.restTime || 60} segundos</strong>.</span>
+                <span>Intervalo ideal entre séries: <strong className="text-zinc-900 dark:text-white font-bold font-mono tabular-nums">{exercise.restTime || 60} segundos</strong>.</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Rodapé com Botão de Ação */}
-        <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/70">
+        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70">
           <button
             onClick={onClose}
-            className="w-full py-3.5 rounded-2xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white font-bold text-sm shadow-md transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full min-h-[48px] py-3.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white font-bold text-sm shadow-sm transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>Executar com Técnica Perfeita</span>
             <ArrowRight className="w-4 h-4" />

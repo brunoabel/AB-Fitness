@@ -25,6 +25,20 @@ export const saveVoiceCuesPreference = (enabled) => {
 };
 
 /**
+ * Desbloqueia o sintetizador de voz no iOS Safari (deve ser invocado em resposta a um gesto do utilizador)
+ */
+export const unlockSpeechIOS = () => {
+  if (!isSpeechSupported()) return;
+  try {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(' ');
+    utterance.volume = 0.01;
+    synth.speak(utterance);
+  } catch {}
+};
+
+
+/**
  * Fala uma mensagem de texto usando a melhor voz em Português disponível no dispositivo
  */
 export const speakText = (text) => {

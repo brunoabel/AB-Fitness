@@ -1,35 +1,58 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ChevronLeft, 
-  Check, 
-  Plus, 
-  Trash2, 
-  Eye, 
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import {
+  ChevronLeft,
+  Check,
+  Plus,
+  Trash2,
+  Eye,
   ChevronDown,
   ChevronUp,
-  Zap,
+  Info,
   TrendingUp,
-  CheckCircle2
+  CheckCircle2,
+  Dumbbell,
+  Sparkles,
+  ChevronRight,
+  Layers,
+  Flame,
+  ArrowRight
 } from 'lucide-react';
 import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
 import CelebrationModal from './CelebrationModal';
 import BadgeUnlockedToast from './BadgeUnlockedToast';
+import PlateCalculatorModal from './PlateCalculatorModal';
+import SetRow from './SetRow';
+import { useWakeLock } from '../hooks/useWakeLock';
 import { sound, triggerHaptic } from '../utils/audio';
-import { 
-  getSavedWeights, 
-  saveExerciseWeights, 
+import {
+  getSavedWeights,
+  saveExerciseWeights,
   markDayCompleted,
   saveActiveDraft,
-  getActiveDraft
+  getActiveDraft,
+  getWorkoutHistory,
+  addWorkoutToHistory
 } from '../utils/storage';
 import { recordWorkoutCompletion } from '../services/workoutService';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
+import {
+  buildPrevIndex,
+  getBestHistorical1RM,
+  e1RM
+} from '../utils/strengthMetrics';
+import {
+  buildWorkoutInsights,
+  fetchCoachNarrative
+} from '../services/abCoach/coachInsightsService';
 import { useAuth } from '../context';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
+
+  // Mantém ecrã ativo durante toda a sessão de treino
+  useWakeLock(true);
 
   // Recupera rascunho ativo se for do mesmo treino
   const currentWorkoutDayId = workout?.dayId || workout?.id;
@@ -38,6 +61,13 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return draft && draft.workoutDayId === currentWorkoutDayId ? draft : null;
   });
   const isResumed = Boolean(activeDraft);
+
+  // Histórico de treinos anteriores para cálculo de PRs e valores fantasma
+  const [pastHistory] = useState(() => getWorkoutHistory());
+  const prevIndex = useMemo(() => buildPrevIndex(pastHistory), [pastHistory]);
+
+  // Modo Foco (ativo por defeito para máxima concentração desportiva)
+  const [isFocusMode, setIsFocusMode] = useState(true);
 
   // Estado para armazenar as séries de cada exercício
   const [exercisesData, setExercisesData] = useState(() => {
@@ -52,26 +82,32 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       const prevSets = saved[ex.id];
       if (prevSets && prevSets.length > 0) {
         initial[ex.id] = prevSets.map((s) => ({
-          weight: s.weight ?? ex.suggestedWeight,
-          reps: s.reps ?? ex.suggestedReps,
+          weight: s.weight ?? ex.suggestedWeight ?? 10,
+          reps: s.reps ?? ex.suggestedReps ?? 10,
+          type: s.type || 'N',
+          rpe: s.rpe || null,
           completed: false,
+          done: false
         }));
       } else {
         const setsCount = ex.defaultSets || 3;
         initial[ex.id] = Array.from({ length: setsCount }, () => ({
-          weight: ex.suggestedWeight,
-          reps: ex.suggestedReps,
+          weight: ex.suggestedWeight ?? 10,
+          reps: ex.suggestedReps ?? 10,
+          type: 'N',
+          rpe: null,
           completed: false,
+          done: false
         }));
       }
     });
     return initial;
   });
 
-  // Histórico das cargas anteriores para comparativo discreto
+  // Histórico das cargas anteriores imediatas
   const [pastWeights] = useState(() => getSavedWeights());
 
-  // Cronômetro do treino
+  // Cronómetro do treino
   const [elapsedSeconds, setElapsedSeconds] = useState(() => {
     return activeDraft ? (activeDraft.elapsedSeconds || 0) : 0;
   });
@@ -84,10 +120,15 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
   // Modais
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
+  const [plateCalcWeight, setPlateCalcWeight] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [sessionNewPRs, setSessionNewPRs] = useState([]);
+  const [sessionFacts, setSessionFacts] = useState(null);
+  const [coachNarrative, setCoachNarrative] = useState(null);
 
-  // Exercício expandido
-  const [expandedExerciseId, setExpandedExerciseId] = useState(
+  // Exercício atualmente focado
+  const currentExercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
+  const [focusedExerciseId, setFocusedExerciseId] = useState(
     workout?.exercises?.[0]?.id || null
   );
 
@@ -96,7 +137,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     elapsedRef.current = elapsedSeconds;
   }, [elapsedSeconds]);
 
-  // Cronômetro (apenas atualiza estado numérico local)
+  // Cronómetro
   useEffect(() => {
     let interval = null;
     if (isTimerRunning) {
@@ -107,7 +148,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
-  // Debounced auto-save do rascunho quando as séries mudam (NÃO a cada segundo!)
+  // Gravação automática do rascunho ativo
   useEffect(() => {
     const timer = setTimeout(() => {
       saveActiveDraft({
@@ -137,50 +178,37 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // Atualizar carga
-  const handleWeightChange = (exId, setIndex, newWeight) => {
-    const val = Math.max(0, parseFloat(newWeight) || 0);
+  // Atualização unificada de série com suporte a SetRow
+  const handleSetUpdate = (exId, setIdx, updates) => {
     setExercisesData((prev) => {
-      const next = { ...prev };
-      if (!next[exId] || !next[exId][setIndex]) return prev;
-      next[exId] = [...next[exId]];
-      next[exId][setIndex] = { ...next[exId][setIndex], weight: val };
-      debouncedSaveWeights(exId, next[exId]);
-      return next;
-    });
-  };
+      const currentSets = prev[exId] || [];
+      const updatedSets = [...currentSets];
+      const prevSet = updatedSets[setIdx] || {};
+      const newSet = { ...prevSet, ...updates };
 
-  // Atualizar repetições
-  const handleRepsChange = (exId, setIndex, newReps) => {
-    const val = Math.max(0, parseInt(newReps, 10) || 0);
-    setExercisesData((prev) => {
-      const next = { ...prev };
-      if (!next[exId] || !next[exId][setIndex]) return prev;
-      next[exId] = [...next[exId]];
-      next[exId][setIndex] = { ...next[exId][setIndex], reps: val };
-      debouncedSaveWeights(exId, next[exId]);
-      return next;
-    });
-  };
+      // Se passou para concluída/feita, dispara tick auditivo, haptic e inicia temporizador
+      const wasCompleted = Boolean(prevSet.completed || prevSet.done);
+      const isNowCompleted = Boolean(newSet.completed || newSet.done);
 
-  // Marcar série concluída (haptic + timer imediato)
-  const toggleSetComplete = (exId, setIndex, suggestedRestTime = 60) => {
-    setExercisesData((prev) => {
-      const next = { ...prev };
-      if (!next[exId] || !next[exId][setIndex]) return prev;
-      next[exId] = [...next[exId]];
-      const isNowCompleted = !next[exId][setIndex].completed;
-      next[exId][setIndex] = { ...next[exId][setIndex], completed: isNowCompleted };
-
-      if (isNowCompleted) {
+      if (!wasCompleted && isNowCompleted) {
         sound.playTick();
         triggerHaptic(20);
-        setCurrentRestDefault(suggestedRestTime || 60);
+        const ex = currentExercisesList.find((e) => e.id === exId);
+        setCurrentRestDefault(ex?.restTime || 60);
         setRestTimerTrigger(Date.now());
       }
 
-      saveExerciseWeights(exId, next[exId]);
-      return next;
+      // Sincroniza os dois campos de conclusão para retrocompatibilidade
+      if ('done' in updates && !('completed' in updates)) {
+        newSet.completed = updates.done;
+      }
+      if ('completed' in updates && !('done' in updates)) {
+        newSet.done = updates.completed;
+      }
+
+      updatedSets[setIdx] = newSet;
+      debouncedSaveWeights(exId, updatedSets);
+      return { ...prev, [exId]: updatedSets };
     });
   };
 
@@ -193,7 +221,13 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         ...prev,
         [exId]: [
           ...current,
-          { weight: lastSet.weight, reps: lastSet.reps, completed: false },
+          {
+            weight: lastSet.weight,
+            reps: lastSet.reps,
+            type: 'N',
+            completed: false,
+            done: false
+          },
         ],
       };
       saveExerciseWeights(exId, next[exId]);
@@ -215,37 +249,96 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     triggerHaptic(10);
   };
 
-  // Métricas de progresso calculadas de forma leve
-  let totalSetsCount = 0;
-  let completedSetsCount = 0;
+  // Métricas de progresso calculadas:
+  // Volume efetivo e contagem de séries de trabalho EXCLUEM séries de aquecimento (type === 'W')
+  let totalWorkingSetsCount = 0;
+  let completedWorkingSetsCount = 0;
   let totalVolumeKg = 0;
 
-  const currentExercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
   currentExercisesList.forEach((ex) => {
     const sets = exercisesData[ex.id] || [];
     sets.forEach((s) => {
-      totalSetsCount++;
-      if (s.completed) {
-        completedSetsCount++;
-        totalVolumeKg += (s.weight || 0) * (s.reps || 0);
+      const isDone = Boolean(s.completed || s.done);
+      if (s.type !== 'W') {
+        totalWorkingSetsCount++;
+        if (isDone) {
+          completedWorkingSetsCount++;
+          totalVolumeKg += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+        }
       }
     });
   });
 
-  const completionPercentage = totalSetsCount > 0 
-    ? Math.round((completedSetsCount / totalSetsCount) * 100) 
+  const completionPercentage = totalWorkingSetsCount > 0
+    ? Math.round((completedWorkingSetsCount / totalWorkingSetsCount) * 100)
     : 0;
 
-  // Finalização instantânea e otimista (Zero Lag)
+  // Finalização do treino
   const handleFinishWorkout = () => {
     setIsTimerRunning(false);
     triggerHaptic([30, 80, 30]);
 
-    // 1. Gravação local e disparo visual imediato em 0ms
     markDayCompleted(currentWorkoutDayId);
     saveActiveDraft(null);
 
-    // Avaliação de Conquistas & Medalhas Gamificadas
+    // 1. Deteção de Novos Recordes Pessoais (PR)
+    const detectedPRs = [];
+    currentExercisesList.forEach((ex) => {
+      const sets = exercisesData[ex.id] || [];
+      const bestHistorical = getBestHistorical1RM(ex.id, pastHistory);
+      let sessionBestE1RM = 0;
+      let sessionBestSet = null;
+
+      sets.forEach((s) => {
+        if ((s.completed || s.done) && s.type !== 'W') {
+          const calc1RM = e1RM(s.weight, s.reps, s.rpe ? 10 - s.rpe : 0);
+          if (calc1RM && calc1RM > sessionBestE1RM) {
+            sessionBestE1RM = calc1RM;
+            sessionBestSet = s;
+          }
+        }
+      });
+
+      if (sessionBestE1RM > 0 && bestHistorical && sessionBestE1RM > bestHistorical) {
+        detectedPRs.push({
+          exerciseId: ex.id,
+          exerciseName: ex.name,
+          e1RM: sessionBestE1RM,
+          previous1RM: bestHistorical,
+          weight: sessionBestSet?.weight,
+          reps: sessionBestSet?.reps
+        });
+      }
+    });
+    setSessionNewPRs(detectedPRs);
+
+    // 2. Criação do registo local permanente para histórico offline
+    const finalSeconds = elapsedRef.current;
+    const workoutRecord = {
+      id: `workout_${Date.now()}`,
+      timestamp: Date.now(),
+      date: new Date().toISOString(),
+      workoutDayId: currentWorkoutDayId,
+      workoutTitle: workout?.title || workout?.name || 'Treino Concluído',
+      durationMinutes: Math.max(1, Math.round(finalSeconds / 60)),
+      durationSeconds: finalSeconds,
+      totalSetsCompleted: completedWorkingSetsCount,
+      totalVolumeKg,
+      exercisesData,
+      targetGroup: workout?.focus || 'Geral'
+    };
+    addWorkoutToHistory(workoutRecord);
+
+    // 3. Cálculo Determinístico de Insights Pós-Treino
+    const facts = buildWorkoutInsights(workoutRecord, pastHistory);
+    setSessionFacts(facts);
+
+    // 4. Chamada rápida à narrativa da IA do AB Coach (2 frases objetivas)
+    fetchCoachNarrative(facts, workout?.title || 'Treino').then((narrative) => {
+      if (narrative) setCoachNarrative(narrative);
+    }).catch(() => {});
+
+    // 5. Avaliação de medalhas
     try {
       const unlocked = evaluateAndUnlockBadges() || [];
       if (unlocked.length > 0) {
@@ -257,360 +350,489 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
     setShowCelebration(true);
 
-    // 2. Sincronização em nuvem desacoplada em background (sem bloquear o modal)
-    recordWorkoutCompletion({
-      userId: user?.id,
-      workout,
-      durationSeconds: elapsedRef.current,
-      exercisesData,
-      notes: `Treino finalizado com ${completedSetsCount} séries e volume total de ${totalVolumeKg} kg.`
-    }).catch((err) => {
-      console.warn('Sincronização em nuvem executada com aviso:', err);
-    });
+    // Sincronização assíncrona com nuvem Supabase se conectado
+    if (user?.id) {
+      const workoutDayIdNum = Number(workout?.dayId ?? workout?.dayNumber ?? 1);
+      const safeDayNumber = isNaN(workoutDayIdNum) ? 1 : workoutDayIdNum;
+
+      recordWorkoutCompletion({
+        userId: user.id,
+        workoutTitle: workout?.title || 'Treino Concluído',
+        dayNumber: safeDayNumber,
+        durationMinutes: Math.max(1, Math.round(finalSeconds / 60)),
+        durationSeconds: finalSeconds,
+        totalSetsCompleted: completedWorkingSetsCount,
+        totalVolumeKg,
+        exercisesData,
+        targetGroup: workout?.focus || 'Geral'
+      }).catch((syncErr) => {
+        console.warn('Sincronização em nuvem offline:', syncErr);
+      });
+    }
   };
 
   const handlePauseAndExit = () => {
-    // Salva o rascunho com o tempo atual e volta suavemente
     saveActiveDraft({
       workoutDayId: currentWorkoutDayId,
       elapsedSeconds: elapsedRef.current,
       exercisesData,
     });
+    triggerHaptic(15);
     onBackToDashboard();
   };
 
+  // Navegação entre exercícios no Modo Foco
+  const currentFocusedIndex = currentExercisesList.findIndex((e) => e.id === focusedExerciseId);
+  const activeExercise = currentExercisesList[currentFocusedIndex] || currentExercisesList[0];
+
+  const handlePrevExercise = () => {
+    if (currentFocusedIndex > 0) {
+      triggerHaptic(10);
+      setFocusedExerciseId(currentExercisesList[currentFocusedIndex - 1].id);
+    }
+  };
+
+  const handleNextExercise = () => {
+    if (currentFocusedIndex < currentExercisesList.length - 1) {
+      triggerHaptic(10);
+      setFocusedExerciseId(currentExercisesList[currentFocusedIndex + 1].id);
+    } else {
+      handleFinishWorkout();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-[#09090b] pb-36 transition-colors">
-      {/* Top Bar Fixa / Design Executivo */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-xl border-b border-zinc-200/80 dark:border-zinc-800/80 shadow-sm transition-colors pt-[env(safe-area-inset-top,0px)]">
-        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0A0A0B] text-zinc-100 pb-40 transition-colors">
+      {/* Barra Superior Fixa de Controlo da Sessão */}
+      <header className="sticky top-0 z-30 bg-[#111114]/95 backdrop-blur-md border-b border-white/[0.08] transition-colors pt-[env(safe-area-inset-top,0px)]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button
             onClick={handlePauseAndExit}
-            className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 active:scale-95 transition-all cursor-pointer"
-            title="Pausar e voltar ao painel"
+            className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/90 hover:bg-zinc-800 px-3 py-2 rounded-xl border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px]"
+            title="Pausar e regressar ao painel"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4 stroke-[2]" />
             <span>Pausar</span>
           </button>
 
-          {/* Cronômetro Central Monospaçado */}
-          <div className="flex items-center gap-2 bg-black dark:bg-zinc-900 text-white px-3.5 py-1.5 rounded-full border border-zinc-800 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-            <span className="font-mono text-xs font-bold tracking-wider">
+          {/* Cronómetro Central com Numerais Tabulares */}
+          <div className="flex items-center gap-2 bg-zinc-900 text-white px-3.5 py-1.5 rounded-xl border border-white/[0.08] shadow-xs tabular-nums">
+            <span className="w-2 h-2 rounded-full bg-[#c6f432] animate-pulse" />
+            <span className="font-mono text-xs font-bold tracking-wider tabular-nums text-zinc-100">
               {formatElapsed(elapsedSeconds)}
             </span>
           </div>
 
-          {/* Botão Finalizar Treino */}
-          <button
-            onClick={handleFinishWorkout}
-            className="px-3.5 py-1.5 rounded-xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white font-bold text-xs shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Concluir</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Alternar Modo Foco vs Lista Completa */}
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic(10);
+                setIsFocusMode(!isFocusMode);
+              }}
+              className={`p-2 rounded-xl border transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                isFocusMode
+                  ? 'bg-[#c6f432]/15 text-[#c6f432] border-[#c6f432]/30'
+                  : 'bg-zinc-900 text-zinc-400 border-white/[0.08] hover:text-white'
+              }`}
+              title={isFocusMode ? 'Modo Foco Ativo (Toque para ver lista completa)' : 'Mudar para Modo Foco'}
+            >
+              <Layers className="w-4 h-4" />
+            </button>
+
+            {/* Botão Concluir Treino */}
+            <button
+              onClick={handleFinishWorkout}
+              className="px-3.5 py-2 rounded-xl bg-[#c6f432] hover:bg-[#b2dc2b] text-zinc-950 font-bold text-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer min-h-[44px]"
+            >
+              <Check className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden sm:inline">Concluir</span>
+            </button>
+          </div>
         </div>
 
-        {/* Linha Fina de Progresso */}
-        <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1">
-          <div 
-            className="bg-black dark:bg-white h-full transition-all duration-300"
+        {/* Linha Fina de Progresso da Sessão */}
+        <div className="w-full bg-zinc-900 h-1">
+          <div
+            className="bg-[#c6f432] h-full transition-all duration-300"
             style={{ width: `${completionPercentage}%` }}
           />
         </div>
       </header>
 
       {/* Conteúdo Principal do Treino */}
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex items-center justify-between transition-colors">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-5 space-y-4">
+        {/* Cartão de Identificação da Sessão */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#111114] border border-white/[0.08] shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block">
-                Sessão Ativa • {workout.name}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
+                Sessão Ativa • {workout?.name || 'Treino'}
               </span>
               {isResumed && (
-                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#c6f432]/15 text-[#c6f432] border border-[#c6f432]/30 uppercase tracking-wider">
                   Recuperado
                 </span>
               )}
             </div>
-            <h1 className="text-base font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">
-              {workout.title}
+            <h1 className="text-base sm:text-lg font-bold text-zinc-50 leading-tight">
+              {workout?.title || 'Treino do Atleta'}
             </h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
-              {workout.focus}
+            <p className="text-xs text-zinc-400 font-medium mt-0.5">
+              {workout?.focus || 'Sobrecarga Progressiva'}
             </p>
           </div>
 
           <div className="text-right">
-            <div className="text-lg font-black text-zinc-900 dark:text-white">
+            <div className="text-xl font-black text-[#c6f432] font-mono tabular-nums">
               {completionPercentage}%
             </div>
-            <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase">
-              {completedSetsCount}/{totalSetsCount} séries
+            <div className="text-[11px] text-zinc-400 font-medium uppercase tabular-nums">
+              {completedWorkingSetsCount}/{totalWorkingSetsCount} séries
             </div>
           </div>
         </div>
 
-        {/* Dica Científica de Biomecânica */}
-        <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 flex items-start gap-2.5">
-          <Zap className="w-4 h-4 text-sky-400 shrink-0 mt-0.5 fill-sky-400" />
-          <div className="leading-relaxed text-[11px]">
-            <strong className="font-bold text-zinc-900 dark:text-white">Biomecânica:</strong> Cadência excêntrica de 2 a 3 segundos com amplitude articular completa estimula maior resposta hipertrófica e previne lesões.
+        {/* NAVEGAÇÃO RÁPIDA ENTRE EXERCÍCIOS (Carrossel Horizontal de Pílulas) */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+              Sequência de Exercícios ({currentExercisesList.length})
+            </span>
+            <span className="text-[10px] text-zinc-400 font-medium">
+              {isFocusMode ? 'Modo Foco' : 'Visão Geral'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
+            {currentExercisesList.map((ex, idx) => {
+              const sets = exercisesData[ex.id] || [];
+              const isAllDone = sets.length > 0 && sets.every((s) => s.completed || s.done);
+              const isCurrent = ex.id === (isFocusMode ? focusedExerciseId : null);
+              const doneCount = sets.filter((s) => s.completed || s.done).length;
+
+              return (
+                <button
+                  key={ex.id}
+                  type="button"
+                  onClick={() => {
+                    setFocusedExerciseId(ex.id);
+                    triggerHaptic(8);
+                  }}
+                  className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer min-h-[44px] ${
+                    isCurrent
+                      ? 'bg-zinc-800 text-white border-[#c6f432] shadow-xs'
+                      : isAllDone
+                        ? 'bg-zinc-900/80 text-emerald-400 border-emerald-500/30'
+                        : 'bg-zinc-900/60 text-zinc-400 border-white/[0.08] hover:border-zinc-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black ${
+                    isAllDone
+                      ? 'bg-emerald-500 text-zinc-950'
+                      : isCurrent
+                        ? 'bg-[#c6f432] text-zinc-950'
+                        : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    {isAllDone ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
+                  </div>
+                  <div className="text-left">
+                    <span className="block truncate max-w-[110px] leading-tight text-[11px]">
+                      {ex.name}
+                    </span>
+                    <span className="text-[9px] text-zinc-500 font-mono block">
+                      {doneCount}/{sets.length} séries
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Lista Sequencial de Exercícios */}
-        <div className="space-y-3">
-          {currentExercisesList.map((exercise, exIndex) => {
-            const sets = exercisesData[exercise.id] || [];
-            const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed);
-            const isExpanded = expandedExerciseId === exercise.id;
+        {/* MODO FOCO: Mostra o exercício atual em evidência */}
+        {isFocusMode && activeExercise && (
+          <div className="space-y-4 animate-fadeIn">
+            {(() => {
+              const sets = exercisesData[activeExercise.id] || [];
+              const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
+              const best1RM = getBestHistorical1RM(activeExercise.id, pastHistory);
 
-            return (
-              <div
-                key={exercise.id}
-                className={`rounded-2xl border transition-all duration-200 bg-white dark:bg-[#121215] shadow-xs overflow-hidden ${
-                  isCompletedAll 
-                    ? 'border-emerald-300 dark:border-emerald-900/50' 
-                    : isExpanded 
-                      ? 'border-zinc-400 dark:border-zinc-600 ring-1 ring-zinc-300/40 dark:ring-zinc-700/40' 
-                      : 'border-zinc-200/80 dark:border-zinc-800'
-                }`}
-              >
-                {/* Cabeçalho do Card */}
-                <div 
-                  className={`p-3.5 flex items-center justify-between cursor-pointer transition-colors ${
-                    isCompletedAll 
-                      ? 'bg-emerald-50/30 dark:bg-emerald-950/20' 
-                      : 'bg-white dark:bg-[#121215]'
-                  }`}
-                  onClick={() => setExpandedExerciseId(isExpanded ? null : exercise.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
-                      isCompletedAll
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
-                    }`}>
-                      {isCompletedAll ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : exIndex + 1}
-                    </div>
+              // Calcula contagem sequencial para séries de trabalho excluindo warmups
+              let workingCount = 0;
+              const displayIndices = sets.map((s) => {
+                if (s.type === 'W') return 'W';
+                workingCount += 1;
+                return workingCount;
+              });
 
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                          {exercise.target}
+              // Peso atual mais recente para a calculadora de anilhas
+              const latestWeight = sets.find(s => s.weight > 0)?.weight || activeExercise.suggestedWeight || 60;
+
+              return (
+                <div className={`rounded-2xl border transition-all duration-200 bg-[#111114] shadow-md overflow-hidden ${
+                  isCompletedAll ? 'border-emerald-500/40' : 'border-white/[0.08]'
+                }`}>
+                  {/* Cabeçalho do Exercício em Foco */}
+                  <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-[#c6f432] uppercase tracking-wider">
+                          Exercício #{currentFocusedIndex + 1} de {currentExercisesList.length} • {activeExercise.target}
                         </span>
-                        {exercise.badge && (
-                          <span className="px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[9px] font-medium">
-                            {exercise.badge}
+                        {activeExercise.badge && (
+                          <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[9px] font-medium border border-white/[0.08]">
+                            {activeExercise.badge}
                           </span>
                         )}
                       </div>
-                      <h2 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white leading-tight">
-                        {exercise.name}
+                      <h2 className="text-lg sm:text-xl font-black text-white leading-tight">
+                        {activeExercise.name}
                       </h2>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedExerciseForModal(exercise);
-                        triggerHaptic(10);
-                      }}
-                      className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1 border border-zinc-200/80 dark:border-zinc-700 active:scale-95 transition-all cursor-pointer"
-                      title="Ver demonstração técnica"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-zinc-500" />
-                      <span className="hidden sm:inline text-[10px]">Guia</span>
-                    </button>
-
-                    <div className="text-zinc-400">
-                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Corpo do Exercício: Tabela de Séries */}
-                {isExpanded && (
-                  <div className="px-3.5 pb-3.5 pt-1 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2.5">
-                    {/* Benefício Científico */}
-                    {exercise.soccerBenefit && (
-                      <div className="text-[11px] text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800 flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="text-zinc-900 dark:text-white font-semibold">Fisiologia:</strong> {exercise.soccerBenefit}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Cabeçalho da Tabela */}
-                    <div className="grid grid-cols-12 gap-2 text-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider px-1">
-                      <div className="col-span-2 text-left">Série</div>
-                      <div className="col-span-4">Carga (kg)</div>
-                      <div className="col-span-3">Reps</div>
-                      <div className="col-span-3">Status</div>
+                      {best1RM && (
+                        <p className="text-[11px] text-zinc-400 font-medium">
+                          Melhor 1RM Histórico: <strong className="text-zinc-200 font-mono">{best1RM} kg</strong>
+                        </p>
+                      )}
                     </div>
 
-                    {/* Linhas de Séries */}
-                    <div className="space-y-1.5">
-                      {sets.map((set, setIdx) => (
-                        <div
-                          key={setIdx}
-                          className={`grid grid-cols-12 gap-2 items-center p-2 rounded-xl border transition-all ${
-                            set.completed
-                              ? 'bg-zinc-100/80 dark:bg-zinc-800/60 border-zinc-300 dark:border-zinc-700'
-                              : 'bg-white dark:bg-[#121215] border-zinc-200/80 dark:border-zinc-800'
-                          }`}
-                        >
-                          {/* Número da Série */}
-                          <div className="col-span-2 flex items-center gap-1">
-                            <span className="font-bold text-xs text-zinc-700 dark:text-zinc-300">
-                              #{setIdx + 1}
-                            </span>
-                            {sets.length > 1 && !set.completed && (
-                              <button
-                                onClick={() => handleRemoveSet(exercise.id, setIdx)}
-                                className="text-zinc-300 dark:text-zinc-600 hover:text-rose-500 transition-colors p-0.5 cursor-pointer"
-                                title="Remover série"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Input de Carga (kg) */}
-                          <div className="col-span-4 flex flex-col items-center justify-center">
-                            <div className="relative w-full">
-                              <input
-                                type="number"
-                                inputMode="decimal"
-                                step="0.5"
-                                value={set.weight}
-                                onChange={(e) =>
-                                  handleWeightChange(exercise.id, setIdx, e.target.value)
-                                }
-                                disabled={set.completed}
-                                className={`w-full text-center font-bold text-sm py-1.5 px-1 rounded-lg border transition-all ${
-                                  set.completed
-                                    ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 opacity-90'
-                                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-400'
-                                }`}
-                              />
-                              <span className="absolute right-2 top-2 text-[10px] text-zinc-400 pointer-events-none">
-                                kg
-                              </span>
-                            </div>
-
-                            {/* Comparativo com Último Treino */}
-                            {(() => {
-                              const pastExercise = pastWeights[exercise.id];
-                              const pastSet = pastExercise && pastExercise[setIdx];
-                              const pastWeightVal = pastSet?.weight ?? exercise.suggestedWeight;
-                              const currentWeightVal = Number(set.weight) || 0;
-                              const diff = currentWeightVal - pastWeightVal;
-
-                              if (diff > 0) {
-                                return (
-                                  <div className="flex items-center gap-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 leading-none">
-                                    <TrendingUp className="w-2.5 h-2.5 shrink-0" />
-                                    <span>+{diff}kg evolução</span>
-                                  </div>
-                                );
-                              }
-
-                              return (
-                                <div className="text-[9px] font-medium text-zinc-400 dark:text-zinc-500 mt-0.5 leading-none text-center truncate w-full">
-                                  Anterior: {pastWeightVal}kg
-                                </div>
-                              );
-                            })()}
-                          </div>
-
-                          {/* Input de Repetições */}
-                          <div className="col-span-3 flex items-center justify-center">
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              value={set.reps}
-                              onChange={(e) =>
-                                handleRepsChange(exercise.id, setIdx, e.target.value)
-                              }
-                              disabled={set.completed}
-                              className={`w-full text-center font-bold text-sm py-1.5 px-1 rounded-lg border transition-all ${
-                                set.completed
-                                  ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 opacity-90'
-                                  : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-400'
-                              }`}
-                            />
-                          </div>
-
-                          {/* Botão de Checkbox */}
-                          <div className="col-span-3 flex justify-center">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                toggleSetComplete(exercise.id, setIdx, exercise.restTime)
-                              }
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 cursor-pointer ${
-                                set.completed
-                                  ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
-                                  : 'bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-700'
-                              }`}
-                              title={set.completed ? 'Desmarcar série' : 'Concluir série e disparar descanso'}
-                            >
-                              <Check className={`w-4 h-4 ${set.completed ? 'stroke-[3]' : 'stroke-2'}`} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Botão Adicionar Série */}
-                    <div className="pt-1 flex items-center justify-between">
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Calculadora de Anilhas */}
                       <button
                         type="button"
-                        onClick={() => handleAddSet(exercise.id)}
-                        className="py-1.5 px-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 border border-zinc-200/80 dark:border-zinc-700 cursor-pointer"
+                        onClick={() => {
+                          setPlateCalcWeight(latestWeight);
+                          triggerHaptic(10);
+                        }}
+                        className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-[#c6f432] border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        title="Abrir Calculadora de Anilhas para a Barra"
                       >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Dumbbell className="w-4 h-4 stroke-[2]" />
+                      </button>
+
+                      {/* Guia Biomecânico do Exercício */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedExerciseForModal(activeExercise);
+                          triggerHaptic(10);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
+                        title="Ver execução técnica"
+                      >
+                        <Eye className="w-4 h-4 stroke-[1.8]" />
+                        <span>Guia</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Benefício Anatómico / Desportivo */}
+                  {activeExercise.soccerBenefit && (
+                    <div className="mx-4 sm:mx-5 mt-4 p-3 rounded-xl bg-zinc-900/70 border border-white/[0.06] flex items-start gap-2.5 text-xs text-zinc-300">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5 stroke-[2]" />
+                      <div className="leading-relaxed">
+                        <strong className="text-zinc-100 font-semibold">Fisiologia do Atleta:</strong> {activeExercise.soccerBenefit}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Lista de Séries Ergonómicas */}
+                  <div className="p-4 sm:p-5 space-y-2.5">
+                    {sets.map((set, setIdx) => {
+                      const prevSet = prevIndex[activeExercise.id]?.[setIdx] || (setIdx === 0 ? pastWeights[activeExercise.id]?.[0] : null);
+
+                      return (
+                        <SetRow
+                          key={setIdx}
+                          exerciseId={activeExercise.id}
+                          index={setIdx}
+                          displayIndex={displayIndices[setIdx]}
+                          set={set}
+                          prev={prevSet}
+                          bestHistorical1RM={best1RM}
+                          onChange={(updates) => handleSetUpdate(activeExercise.id, setIdx, updates)}
+                          onRemove={() => handleRemoveSet(activeExercise.id, setIdx)}
+                          canRemove={sets.length > 1}
+                        />
+                      );
+                    })}
+
+                    {/* Botão de Adicionar Série */}
+                    <div className="pt-2 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => handleAddSet(activeExercise.id)}
+                        className="py-2 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 border border-white/[0.08] cursor-pointer min-h-[44px]"
+                      >
+                        <Plus className="w-4 h-4 stroke-[2.5]" />
                         <span>Adicionar Série</span>
                       </button>
 
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
-                        Descanso recomendado: <strong className="text-zinc-700 dark:text-zinc-300">{exercise.restTime}s</strong>
+                      <span className="text-[11px] text-zinc-500 font-mono">
+                        Descanso recomendado: <strong className="text-zinc-300 font-bold">{activeExercise.restTime || 60}s</strong>
                       </span>
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
 
-        {/* Botão Finalizar Treino */}
-        <div className="pt-2">
-          <button
-            onClick={handleFinishWorkout}
-            className="w-full py-3.5 rounded-2xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Finalizar Sessão de Treino</span>
-          </button>
-          <p className="text-center text-[11px] text-zinc-400 dark:text-zinc-500 mt-2 font-medium">
-            Cargas e histórico salvos automaticamente.
-          </p>
-        </div>
+        {/* VISÃO GERAL / LISTA COMPLETA: Mostra todos os exercícios em acordeão */}
+        {!isFocusMode && (
+          <div className="space-y-3 animate-fadeIn">
+            {currentExercisesList.map((exercise, exIndex) => {
+              const sets = exercisesData[exercise.id] || [];
+              const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
+              const isExpanded = focusedExerciseId === exercise.id;
+              const best1RM = getBestHistorical1RM(exercise.id, pastHistory);
+
+              let workingCount = 0;
+              const displayIndices = sets.map((s) => {
+                if (s.type === 'W') return 'W';
+                workingCount += 1;
+                return workingCount;
+              });
+
+              return (
+                <div
+                  key={exercise.id}
+                  className={`rounded-2xl border transition-all duration-200 bg-[#111114] shadow-xs overflow-hidden ${
+                    isCompletedAll
+                      ? 'border-emerald-500/40'
+                      : isExpanded
+                        ? 'border-zinc-500'
+                        : 'border-white/[0.08]'
+                  }`}
+                >
+                  {/* Cabeçalho */}
+                  <div
+                    className="p-4 flex items-center justify-between cursor-pointer transition-colors"
+                    onClick={() => setFocusedExerciseId(isExpanded ? null : exercise.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 tabular-nums ${
+                        isCompletedAll
+                          ? 'bg-emerald-500 text-zinc-950'
+                          : 'bg-zinc-800 text-zinc-200 border border-white/[0.08]'
+                      }`}>
+                        {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
+                          {exercise.target}
+                        </span>
+                        <h2 className="text-sm font-bold text-zinc-100 leading-tight">
+                          {exercise.name}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedExerciseForModal(exercise);
+                          triggerHaptic(10);
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium flex items-center gap-1.5 border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[38px]"
+                      >
+                        <Eye className="w-3.5 h-3.5 stroke-[1.8]" />
+                        <span>Guia</span>
+                      </button>
+
+                      <div className="text-zinc-500 p-1">
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tabela Aberta */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4 pt-1 border-t border-white/[0.06] space-y-2.5">
+                      {sets.map((set, setIdx) => {
+                        const prevSet = prevIndex[exercise.id]?.[setIdx] || (setIdx === 0 ? pastWeights[exercise.id]?.[0] : null);
+
+                        return (
+                          <SetRow
+                            key={setIdx}
+                            exerciseId={exercise.id}
+                            index={setIdx}
+                            displayIndex={displayIndices[setIdx]}
+                            set={set}
+                            prev={prevSet}
+                            bestHistorical1RM={best1RM}
+                            onChange={(updates) => handleSetUpdate(exercise.id, setIdx, updates)}
+                            onRemove={() => handleRemoveSet(exercise.id, setIdx)}
+                            canRemove={sets.length > 1}
+                          />
+                        );
+                      })}
+
+                      <div className="pt-2 flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => handleAddSet(exercise.id)}
+                          className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center gap-1.5 border border-white/[0.08] cursor-pointer min-h-[40px]"
+                        >
+                          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Adicionar Série</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </main>
 
-      {/* Temporizador de Descanso Fixo */}
-      <RestTimer 
-        initialTime={currentRestDefault} 
-        autoStartTrigger={restTimerTrigger} 
-      />
+      {/* DOCK INFERIOR FIXO PARA O MODO FOCO & REST TIMER */}
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#111114]/95 backdrop-blur-md border-t border-white/[0.08] p-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] transition-all">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+          {/* Botão Anterior */}
+          <button
+            type="button"
+            onClick={handlePrevExercise}
+            disabled={currentFocusedIndex <= 0}
+            className="py-3 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-30 disabled:pointer-events-none font-bold text-xs border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Anterior</span>
+          </button>
+
+          {/* Temporizador de Descanso Compacto no Centro */}
+          <div className="flex-1 flex justify-center">
+            <RestTimer
+              initialTime={currentRestDefault}
+              autoStartTrigger={restTimerTrigger}
+            />
+          </div>
+
+          {/* Botão Próximo ou Concluir */}
+          <button
+            type="button"
+            onClick={handleNextExercise}
+            className={`py-3 px-4 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shadow-sm ${
+              currentFocusedIndex >= currentExercisesList.length - 1
+                ? 'bg-[#c6f432] text-zinc-950 hover:bg-[#b2dc2b]'
+                : 'bg-white text-zinc-950 hover:bg-zinc-100'
+            }`}
+          >
+            <span>
+              {currentFocusedIndex >= currentExercisesList.length - 1
+                ? 'Concluir Treino'
+                : 'Próximo Exercício'}
+            </span>
+            <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+          </button>
+        </div>
+      </footer>
 
       {/* Modal de Demonstração Biomecânica */}
       {selectedExerciseForModal && (
@@ -620,14 +842,25 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         />
       )}
 
-      {/* Modal de Celebração */}
+      {/* Modal da Calculadora de Anilhas */}
+      {plateCalcWeight !== null && (
+        <PlateCalculatorModal
+          initialWeight={plateCalcWeight}
+          onClose={() => setPlateCalcWeight(null)}
+        />
+      )}
+
+      {/* Modal de Celebração e Conclusão de Treino com AB Coach */}
       {showCelebration && (
         <CelebrationModal
           workout={workout}
           durationMinutes={Math.max(1, Math.round(elapsedSeconds / 60))}
-          totalSetsCompleted={completedSetsCount}
+          totalSetsCompleted={completedWorkingSetsCount}
           totalVolumeKg={totalVolumeKg}
           unlockedBadge={newlyUnlockedBadge}
+          newPRs={sessionNewPRs}
+          insights={sessionFacts}
+          coachNarrative={coachNarrative}
           onClose={() => {
             setShowCelebration(false);
             onBackToDashboard();
@@ -635,7 +868,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         />
       )}
 
-      {/* Toast de Conquista / Medalha Desbloqueada */}
+      {/* Notificação de Conquista Desbloqueada */}
       {newlyUnlockedBadge && (
         <BadgeUnlockedToast
           badge={newlyUnlockedBadge}
@@ -644,5 +877,4 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       )}
     </div>
   );
-
 }

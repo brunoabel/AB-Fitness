@@ -16,7 +16,10 @@ import {
   Smartphone,
   Volume2,
   VolumeX,
-  Cloud
+  Cloud,
+  Satellite,
+  Flag,
+  Download
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import RunningMap from './RunningMap';
@@ -28,7 +31,9 @@ import {
   formatPace, 
   calculateRunningCalories, 
   isValidGpsPoint,
-  generateSimulatedStep 
+  generateSimulatedStep,
+  downloadGPX,
+  computeSplits
 } from '../utils/runningService';
 import { 
   getRunsHistory, 
@@ -36,7 +41,8 @@ import {
   deleteRunRecord,
   getActiveRunDraft,
   saveActiveRunDraft,
-  clearActiveRunDraft
+  clearActiveRunDraft,
+  getRunDraftFromIDB
 } from '../utils/storage';
 import { sound, triggerHaptic } from '../utils/audio';
 import { 
@@ -46,14 +52,19 @@ import {
   announceResume, 
   announceFinish, 
   getVoiceCuesPreference, 
-  saveVoiceCuesPreference 
+  saveVoiceCuesPreference,
+  unlockSpeechIOS
 } from '../utils/speech';
 import { syncRunToSupabase, syncUserRunsFromSupabase } from '../services/runningSyncService';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { useAuth } from '../context';
+import { useWakeLock } from '../hooks/useWakeLock';
 
 export default function RunningHub({ isDark = true }) {
   const { user } = useAuth();
+
+  // Mantém o ecrã ligado durante a corrida ativa
+  useWakeLock(sessionStatus === 'running');
 
   // Preferência de áudio / locução por voz nos fones
   const [voiceEnabled, setVoiceEnabled] = useState(() => getVoiceCuesPreference());
@@ -119,7 +130,31 @@ export default function RunningHub({ isDark = true }) {
         const lastSplitTime = initialDraft.splits.reduce((acc, s) => acc + (s.durationSeconds || 0), 0);
         currentKmStartSecondsRef.current = lastSplitTime;
       }
+      return;
     }
+
+    // Hidratação assíncrona do IndexedDB se não havia rascunho legado no LocalStorage
+    getRunDraftFromIDB().then((draft) => {
+      if (draft && (draft.sessionStatus === 'running' || draft.sessionStatus === 'paused')) {
+        setSessionStatus('paused');
+        setDistanceKm(draft.distanceKm ?? 0);
+        setElapsedSeconds(draft.elapsedSeconds ?? 0);
+        setAvgPaceSeconds(draft.avgPaceSeconds ?? 0);
+        setCalories(draft.calories ?? 0);
+        setElevationGainM(draft.elevationGainM ?? 0);
+        setCoordinates(draft.coordinates ?? []);
+        setSplits(draft.splits ?? []);
+        setIsSimulation(draft.isSimulation ?? false);
+        if (draft.coordinates && draft.coordinates.length > 0) {
+          lastCoordRef.current = draft.coordinates[draft.coordinates.length - 1];
+        }
+        simStepRef.current = draft.coordinates?.length || 0;
+        if (draft.splits && draft.splits.length > 0) {
+          const lastSplitTime = draft.splits.reduce((acc, s) => acc + (s.durationSeconds || 0), 0);
+          currentKmStartSecondsRef.current = lastSplitTime;
+        }
+      }
+    });
   }, [initialDraft]);
 
   // Limpeza geral ao desmontar componente
@@ -443,6 +478,7 @@ export default function RunningHub({ isDark = true }) {
 
     setSessionStatus('countdown');
     setCountdown(3);
+    try { unlockSpeechIOS(); } catch {}
     try { sound.playTap(); } catch {}
     try { triggerHaptic(15); } catch {}
 
@@ -469,6 +505,7 @@ export default function RunningHub({ isDark = true }) {
 
   // Pular contagem regressiva e iniciar imediatamente
   const handleSkipCountdown = () => {
+    try { unlockSpeechIOS(); } catch {}
     if (countdownIntervalRef.current) {
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
@@ -613,10 +650,10 @@ export default function RunningHub({ isDark = true }) {
     justResumedRef.current = false;
   };
 
-  // Excluir corrida do histórico
+  // Eliminar corrida do histórico
   const handleDeleteRun = (e, runId) => {
     e.stopPropagation();
-    if (window.confirm('Deseja excluir este registro de corrida?')) {
+    if (window.confirm('Deseja eliminar este registo de corrida?')) {
       deleteRunRecord(runId);
       reloadHistory();
       triggerHaptic(15);
@@ -624,32 +661,32 @@ export default function RunningHub({ isDark = true }) {
   };
 
   return (
-    <div className="p-4 space-y-5 animate-fadeIn pb-24">
+    <div className="p-4 sm:p-6 space-y-6 animate-fadeIn pb-24">
       
       {/* 1. Header do AB Running Club */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-            <span className="text-[10px] font-black tracking-widest uppercase text-sky-500">
+            <span className="text-[10px] font-bold tracking-widest uppercase text-sky-500">
               AB FITNESS • RUNNING CLUB
             </span>
             {isCloudSynced && (
-              <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20 flex items-center gap-1">
+              <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1 font-mono">
                 <Cloud className="w-2.5 h-2.5" />
                 Nuvem OK
               </span>
             )}
           </div>
-          <h1 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight mt-0.5">
             Running Club
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Rastreio GPS em tempo real, ritmo e cards de alta performance.
+            Rastreio GPS em tempo real, ritmo métrico e cartões de alta performance.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Toggle de Locução por Voz nos Fones */}
           <button
             onClick={() => {
@@ -658,7 +695,7 @@ export default function RunningHub({ isDark = true }) {
               saveVoiceCuesPreference(next);
               triggerHaptic(10);
             }}
-            className={`p-2 rounded-2xl border transition-all flex items-center gap-1 cursor-pointer active:scale-95 ${
+            className={`min-h-[44px] min-w-[44px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 ${
               voiceEnabled 
                 ? 'bg-sky-500/15 text-sky-400 border-sky-500/30' 
                 : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400 border-zinc-200 dark:border-zinc-800'
@@ -673,12 +710,12 @@ export default function RunningHub({ isDark = true }) {
           </button>
 
           {/* Badges de Totais Acumulados */}
-          <div className="text-right bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-2xl">
+          <div className="text-right bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-3.5 py-2 rounded-xl">
             <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
               Total ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
             </span>
-            <span className="text-sm font-black text-zinc-900 dark:text-white">
-              {totalKmsAccumulated.toFixed(1)} <span className="text-[10px] text-sky-500">KM</span>
+            <span className="text-sm font-black text-zinc-900 dark:text-white font-mono tabular-nums">
+              {totalKmsAccumulated.toFixed(1)} <span className="text-[10px] text-sky-500 font-sans">KM</span>
             </span>
           </div>
         </div>
@@ -688,38 +725,40 @@ export default function RunningHub({ isDark = true }) {
       {sessionStatus === 'countdown' && (
         <div 
           onClick={handleSkipCountdown}
-          className="rounded-3xl bg-black border border-sky-500/30 p-12 text-center flex flex-col items-center justify-center animate-scaleUp shadow-2xl shadow-sky-500/10 cursor-pointer"
+          className="rounded-2xl bg-zinc-950 border border-sky-500/30 p-12 text-center flex flex-col items-center justify-center animate-scaleUp shadow-xl cursor-pointer"
         >
           <span className="text-xs font-bold text-sky-400 uppercase tracking-widest">
-            PREPARAR...
+            A PREPARAR...
           </span>
-          <span className="text-7xl font-black text-white mt-2 tracking-tighter animate-pulse">
+          <span className="text-7xl font-black text-white mt-2 tracking-tighter animate-pulse font-mono tabular-nums">
             {countdown}
           </span>
           <span className="text-xs text-zinc-400 mt-2">
-            Calibrando GPS e preparando traçado
+            A calibrar o sinal GPS e a preparar o traçado
           </span>
-          <span className="text-[10px] text-sky-400/80 mt-4 underline font-medium">
-            Toque para começar já
+          <span className="text-xs text-sky-400 mt-4 underline font-semibold">
+            Tocar para iniciar imediatamente
           </span>
         </div>
       )}
 
       {/* 3. MODO AO VIVO (HUD DE CORRIDA ATIVA OU PAUSADA) */}
       {(sessionStatus === 'running' || sessionStatus === 'paused') && (
-        <div className="space-y-4">
+        <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
           
           {/* Mapa em Tempo Real (mantém o trajeto e corredor ativos mesmo em pausa) */}
-          <RunningMap 
-            coordinates={coordinates} 
-            splits={splits}
-            isLive={sessionStatus === 'running' || sessionStatus === 'paused'} 
-            isDark={isDark} 
-            height="240px" 
-          />
+          <div className="md:col-span-6 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <RunningMap 
+              coordinates={coordinates} 
+              splits={splits}
+              isLive={sessionStatus === 'running' || sessionStatus === 'paused'} 
+              isDark={isDark} 
+              height="340px" 
+            />
+          </div>
 
-          {/* Painel Principal de Métricas Strava */}
-          <div className="rounded-3xl bg-zinc-900 border border-zinc-800 p-5 text-white shadow-xl relative overflow-hidden">
+          {/* Painel Principal de Métricas */}
+          <div className="md:col-span-6 rounded-2xl bg-zinc-900 border border-zinc-800 p-5 text-white shadow-xl relative overflow-hidden">
             {/* Status do GPS no topo */}
             <div className="flex items-center justify-between mb-3 text-[11px]">
               <div className="flex items-center gap-1.5">
@@ -732,7 +771,7 @@ export default function RunningHub({ isDark = true }) {
                   {isSimulation ? 'Simulação Ativa (Teste)' : `GPS Ativo (±${gpsAccuracy || 5}m)`}
                 </span>
               </div>
-              <span className={`px-2 py-0.5 rounded-md font-black text-[10px] uppercase tracking-wider ${
+              <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] uppercase tracking-wider ${
                 sessionStatus === 'running' 
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                   : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
@@ -742,118 +781,154 @@ export default function RunningHub({ isDark = true }) {
             </div>
 
             {/* Distância Gigante de Alta Visibilidade */}
-            <div className="text-center py-2">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block">
+            <div className="text-center py-2 bg-black/40 rounded-xl border border-zinc-800/60 mb-4">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
                 Distância Percorrida
               </span>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-6xl font-black tracking-tighter text-white font-mono">
+              <div className="flex items-baseline justify-center gap-1.5">
+                <span className="text-6xl font-black tracking-tighter text-white font-mono tabular-nums">
                   {distanceKm.toFixed(2)}
                 </span>
-                <span className="text-xl font-black text-sky-400">
+                <span className="text-xl font-black text-sky-400 font-sans">
                   KM
                 </span>
               </div>
             </div>
 
-            {/* Grid 4 Métricas Esportivas */}
-            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-800/80">
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800">
+            {/* Grid 4 Métricas Técnicas */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Zap className="w-3.5 h-3.5 text-sky-400" />
-                  <span className="font-semibold text-[10px] uppercase">Ritmo / Pace</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">Ritmo / Pace</span>
                 </div>
-                <span className="text-2xl font-black text-white font-mono">
+                <span className="text-2xl font-black text-white font-mono tabular-nums">
                   {sessionStatus === 'paused'
                     ? (avgPaceSeconds > 0 ? formatPace(avgPaceSeconds) : "--'--\"")
                     : formatPace(currentPaceSeconds || avgPaceSeconds)}
                 </span>
-                <span className="text-[10px] text-zinc-500 block mt-0.5">
+                <span className="text-[10px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
                   {sessionStatus === 'paused' ? 'Pausado (Pace Médio)' : `Médio: ${formatPace(avgPaceSeconds)}`}
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Timer className="w-3.5 h-3.5 text-sky-400" />
-                  <span className="font-semibold text-[10px] uppercase">Tempo</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">Tempo</span>
                 </div>
-                <span className="text-2xl font-black text-white font-mono">
+                <span className="text-2xl font-black text-white font-mono tabular-nums">
                   {formatDuration(elapsedSeconds)}
                 </span>
-                <span className="text-[10px] text-zinc-500 block mt-0.5">
+                <span className="text-[10px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
                   {sessionStatus === 'paused' ? 'Treino Pausado' : `Velocidade: ${speedKmh} km/h`}
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Flame className="w-3.5 h-3.5 text-orange-400" />
-                  <span className="font-semibold text-[10px] uppercase">Calorias</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">Calorias</span>
                 </div>
-                <span className="text-2xl font-black text-white font-mono">
-                  {calories} <span className="text-xs font-bold text-zinc-400">kcal</span>
+                <span className="text-2xl font-black text-white font-mono tabular-nums">
+                  {calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="font-semibold text-[10px] uppercase">Elevação</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider">Elevação</span>
                 </div>
-                <span className="text-2xl font-black text-white font-mono">
-                  +{elevationGainM} <span className="text-xs font-bold text-zinc-400">m</span>
+                <span className="text-2xl font-black text-white font-mono tabular-nums">
+                  +{elevationGainM} <span className="text-xs font-normal text-zinc-400 font-sans">m</span>
                 </span>
               </div>
             </div>
 
-            {/* Splits / Parciais por KM */}
-            {splits.length > 0 && (
-              <div className="mt-4 pt-3 border-t border-zinc-800">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
-                  Parciais por KM (Splits)
-                </span>
-                <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-                  {splits.map((s) => (
-                    <div 
-                      key={s.km}
-                      className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-black/40 border border-zinc-800/60 font-mono"
-                    >
-                      <span className="font-bold text-sky-400">KM {s.km}</span>
-                      <span className="text-zinc-300">{s.pace}</span>
-                      <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
-                    </div>
-                  ))}
+            {/* Splits / Parciais por KM com Barras Proporcionais e Destaque da Mais Rápida */}
+            {splits.length > 0 && (() => {
+              const minSec = Math.min(...splits.map(s => Number(s.durationSeconds) || 999999));
+              const maxSec = Math.max(...splits.map(s => Number(s.durationSeconds) || 1));
+              return (
+                <div className="mt-4 pt-3 border-t border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      Parciais por KM (Splits)
+                    </span>
+                    <span className="text-[9px] text-[#c6f432] font-semibold">
+                      Ritmo Proporcional
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                    {splits.map((s) => {
+                      const isFastest = (Number(s.durationSeconds) || 0) === minSec && splits.length > 1;
+                      const barPct = maxSec > 0 ? Math.max(15, Math.min(100, (minSec / (Number(s.durationSeconds) || minSec)) * 100)) : 100;
+                      return (
+                        <div 
+                          key={s.km}
+                          className={`relative overflow-hidden py-1.5 px-3 rounded-lg border text-xs font-mono tabular-nums transition-colors ${
+                            isFastest
+                              ? 'bg-[#c6f432]/10 border-[#c6f432]/40 text-[#c6f432]'
+                              : 'bg-black/40 border-zinc-800/80 text-zinc-200'
+                          }`}
+                        >
+                          <div 
+                            className={`absolute left-0 top-0 bottom-0 opacity-15 pointer-events-none ${
+                              isFastest ? 'bg-[#c6f432]' : 'bg-sky-400'
+                            }`}
+                            style={{ width: `${barPct}%` }}
+                          />
+                          <div className="relative z-10 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className={`font-black ${isFastest ? 'text-[#c6f432]' : 'text-sky-400'}`}>
+                                KM {s.km}
+                              </span>
+                              {isFastest && (
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#c6f432]/20 text-[#c6f432] font-bold uppercase tracking-tighter">
+                                  Mais rápido
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-bold">{s.paceStr || s.pace}</span>
+                              <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Controles Principais de Corrida */}
-            <div className="mt-5 pt-3 border-t border-zinc-800 space-y-2">
+            <div className="mt-5 pt-3 border-t border-zinc-800 space-y-2.5">
               <div className="flex items-center gap-3">
                 {sessionStatus === 'running' ? (
                   <button
                     onClick={handlePause}
-                    className="flex-1 py-4 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                    className="flex-1 min-h-[48px] py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
                   >
-                    <Pause className="w-5 h-5 fill-current" />
+                    <Pause className="w-4 h-4 fill-current" />
                     <span>PAUSAR</span>
                   </button>
                 ) : (
                   <button
                     onClick={handleResume}
-                    className="flex-1 py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+                    className="flex-1 min-h-[48px] py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
                   >
-                    <Play className="w-5 h-5 fill-current" />
+                    <Play className="w-4 h-4 fill-current" />
                     <span>RETOMAR</span>
                   </button>
                 )}
 
                 <button
                   onClick={handleFinishRun}
-                  className="py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 active:scale-95 transition-all cursor-pointer"
+                  className="min-h-[48px] py-3.5 px-6 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
                 >
-                  <Square className="w-5 h-5 fill-current" />
+                  <Square className="w-4 h-4 fill-current" />
                   <span>CONCLUIR</span>
                 </button>
               </div>
@@ -865,7 +940,7 @@ export default function RunningHub({ isDark = true }) {
                       handleResetSession();
                     }
                   }}
-                  className="w-full py-2 text-center text-xs font-bold text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+                  className="w-full py-2.5 text-center text-xs font-semibold text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
                 >
                   Descartar e Cancelar Treino
                 </button>
@@ -879,44 +954,54 @@ export default function RunningHub({ isDark = true }) {
       {sessionStatus === 'completed' && lastCompletedRun && (
         <div className="space-y-4 animate-fadeIn pb-12">
           {/* Header de Celebração */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-black border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-            
+          <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl relative overflow-hidden">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
                 <Trophy className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  TREINO CONCLUÍDO • STRAVA ENGINE
+                  TREINO CONCLUÍDO • RUNNING CLUB
                 </span>
                 <h2 className="text-xl font-black text-white tracking-tight">
-                  Excelente Corrida, Atleta! 🏆
+                  Excelente Corrida, Atleta!
                 </h2>
               </div>
             </div>
             
             <p className="text-xs text-zinc-400 leading-relaxed">
-              O seu percurso, ritmo médio e parciais foram salvos com sucesso no seu perfil do Running Club.
+              O seu percurso, ritmo médio e parciais foram guardados com sucesso no seu perfil do Running Club.
             </p>
 
             {/* Ações Rápidas no Topo */}
-            <div className="mt-4 pt-3 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center gap-2">
+            <div className="mt-4 pt-3 border-t border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
               <button
                 onClick={() => {
                   setSelectedRunForShare(lastCompletedRun);
                   triggerHaptic(15);
                 }}
-                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 hover:opacity-95 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition-all cursor-pointer"
+                className="w-full sm:flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-white text-zinc-900 hover:bg-zinc-100 font-bold text-xs flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
               >
                 <Share2 className="w-4 h-4" />
-                <span>PARTILHAR (CARD INSTAGRAM)</span>
+                <span>PARTILHAR CARTÃO (INSTAGRAM)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  triggerHaptic(15);
+                  downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
+                }}
+                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                title="Descarregar ficheiro GPX compatível com Strava e Garmin"
+              >
+                <Download className="w-4 h-4 text-[#c6f432]" />
+                <span>Exportar GPX</span>
               </button>
 
               <button
                 onClick={handleResetSession}
-                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 text-zinc-400" />
                 <span>Nova Corrida</span>
@@ -924,125 +1009,128 @@ export default function RunningHub({ isDark = true }) {
             </div>
           </div>
 
-          {/* Mapa do Percurso Percorrido */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-[11px] font-black uppercase tracking-wider text-zinc-400">
-                Trajeto Oficial do Treino
-              </span>
-              <span className="text-[10px] text-sky-400 font-bold flex items-center gap-1">
-                <span>🛰️ Satélite HD</span>
-                <span>•</span>
-                <span>🏁 Chegada</span>
-              </span>
-            </div>
-            <RunningMap 
-              coordinates={lastCompletedRun.coordinates} 
-              splits={lastCompletedRun.splits}
-              isLive={false} 
-              isDark={isDark} 
-              height="260px" 
-            />
-          </div>
-
-          {/* Painel de Estatísticas Finais */}
-          <div className="p-5 rounded-3xl bg-zinc-900 border border-zinc-800 text-white shadow-xl space-y-4">
-            {/* Distância Gigante */}
-            <div className="text-center py-2 bg-black/40 rounded-2xl border border-zinc-800/60">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block">
-                Distância Total
-              </span>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-5xl font-black tracking-tighter text-white font-mono">
-                  {Number(lastCompletedRun.distanceKm).toFixed(2)}
+          {/* Grid de Mapa e Estatísticas */}
+          <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
+            {/* Mapa do Percurso Percorrido */}
+            <div className="md:col-span-6 space-y-1.5">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                  Trajeto Oficial do Treino
                 </span>
-                <span className="text-lg font-black text-sky-400">
-                  KM
+                <span className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+                  <span className="flex items-center gap-1"><Satellite className="w-3 h-3 text-sky-400" /> Satélite HD</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1"><Flag className="w-3 h-3 text-emerald-400" /> Chegada</span>
                 </span>
+              </div>
+              <div className="rounded-2xl overflow-hidden border border-zinc-800 shadow-sm">
+                <RunningMap 
+                  coordinates={lastCompletedRun.coordinates} 
+                  splits={lastCompletedRun.splits}
+                  isLive={false} 
+                  isDark={isDark} 
+                  height="300px" 
+                />
               </div>
             </div>
 
-            {/* Grid 4 Métricas */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
-                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
-                  <Zap className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Ritmo Médio</span>
-                </div>
-                <span className="text-xl font-black text-white font-mono">
-                  {lastCompletedRun.avgPace}
+            {/* Painel de Estatísticas Finais */}
+            <div className="md:col-span-6 p-5 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl space-y-4">
+              {/* Distância Gigante */}
+              <div className="text-center py-3 bg-black/40 rounded-xl border border-zinc-800/60">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
+                  Distância Total
                 </span>
-                <span className="text-[10px] text-zinc-500 block">Ritmo geral</span>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-black tracking-tighter text-white font-mono tabular-nums">
+                    {Number(lastCompletedRun.distanceKm).toFixed(2)}
+                  </span>
+                  <span className="text-lg font-black text-sky-400 font-sans">
+                    KM
+                  </span>
+                </div>
               </div>
 
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
-                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
-                  <Timer className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Tempo Total</span>
+              {/* Grid 4 Métricas */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                  <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                    <Zap className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Ritmo Médio</span>
+                  </div>
+                  <span className="text-xl font-black text-white font-mono tabular-nums">
+                    {lastCompletedRun.avgPace}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 block">Ritmo geral</span>
                 </div>
-                <span className="text-xl font-black text-white font-mono">
-                  {formatDuration(lastCompletedRun.durationSeconds)}
-                </span>
-                <span className="text-[10px] text-zinc-500 block">Tempo decorrido</span>
+
+                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                  <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                    <Timer className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Tempo Total</span>
+                  </div>
+                  <span className="text-xl font-black text-white font-mono tabular-nums">
+                    {formatDuration(lastCompletedRun.durationSeconds)}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 block">Tempo decorrido</span>
+                </div>
+
+                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                  <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                    <Flame className="w-3.5 h-3.5 text-orange-400" />
+                    <span>Calorias</span>
+                  </div>
+                  <span className="text-xl font-black text-white font-mono tabular-nums">
+                    {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
+                  </span>
+                  <span className="text-[10px] text-zinc-400 block">Energia queimada</span>
+                </div>
+
+                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                  <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
+                    <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Velocidade</span>
+                  </div>
+                  <span className="text-xl font-black text-white font-mono tabular-nums">
+                    {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400 font-sans">km/h</span>
+                  </span>
+                  <span className="text-[10px] text-zinc-400 block">Média horária</span>
+                </div>
               </div>
 
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
-                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
-                  <Flame className="w-3.5 h-3.5 text-orange-400" />
-                  <span>Calorias</span>
+              {/* Splits / KM a KM */}
+              {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
+                <div className="pt-2 border-t border-zinc-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
+                    Parciais por KM (Splits Registados)
+                  </span>
+                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    {lastCompletedRun.splits.map((s) => (
+                      <div 
+                        key={s.km}
+                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-black/40 border border-zinc-800/60 font-mono tabular-nums"
+                      >
+                        <span className="font-bold text-sky-400">KM {s.km}</span>
+                        <span className="text-zinc-200">{s.pace}</span>
+                        <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <span className="text-xl font-black text-white font-mono">
-                  {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400">kcal</span>
-                </span>
-                <span className="text-[10px] text-zinc-500 block">Energia queimada</span>
-              </div>
-
-              <div className="bg-black/50 p-3 rounded-2xl border border-zinc-800/80">
-                <div className="flex items-center gap-1 text-zinc-400 text-[10px] uppercase font-bold mb-1">
-                  <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Velocidade</span>
-                </div>
-                <span className="text-xl font-black text-white font-mono">
-                  {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400">km/h</span>
-                </span>
-                <span className="text-[10px] text-zinc-500 block">Média horária</span>
-              </div>
+              )}
             </div>
-
-            {/* Splits / KM a KM */}
-            {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
-              <div className="pt-2 border-t border-zinc-800/80">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
-                  Parciais por KM (Splits Registrados)
-                </span>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                  {lastCompletedRun.splits.map((s) => (
-                    <div 
-                      key={s.km}
-                      className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-black/40 border border-zinc-800/60 font-mono"
-                    >
-                      <span className="font-bold text-sky-400">KM {s.km}</span>
-                      <span className="text-zinc-200">{s.pace}</span>
-                      <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
 
       {/* 5. TELA INICIAL (PRONTO PARA CORRER) */}
       {sessionStatus === 'idle' && (
-        <div className="space-y-4">
+        <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
           
           {/* Card Principal: Iniciar Nova Corrida */}
-          <div className="rounded-3xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-36 h-36 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-
+          <div className="md:col-span-7 rounded-2xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-xl relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
-              <span className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <span className="p-2.5 rounded-xl bg-zinc-800 text-sky-400 border border-zinc-700/60">
                 <Footprints className="w-5 h-5" />
               </span>
 
@@ -1052,9 +1140,9 @@ export default function RunningHub({ isDark = true }) {
                   setIsSimulation(!isSimulation);
                   triggerHaptic(10);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                className={`min-h-[36px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
                   isSimulation 
-                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' 
+                    ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' 
                     : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white'
                 }`}
               >
@@ -1063,33 +1151,33 @@ export default function RunningHub({ isDark = true }) {
               </button>
             </div>
 
-            <h2 className="text-xl font-black tracking-tight text-white">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Pronto para Correr?
             </h2>
             <p className="text-xs text-zinc-400 mt-1 mb-6 leading-relaxed">
-              O GPS do seu telemóvel irá calcular distância, ritmo médio e gerar o mapa do seu percurso para compartilhar nas redes sociais.
+              O GPS do seu telemóvel calcula distância, ritmo métrico e gera o mapa do seu percurso para partilhar nas redes sociais.
             </p>
 
             {gpsError && !isSimulation && (
-              <div className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+              <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
                 {gpsError} (Ative a permissão de localização do seu navegador ou ative o botão de Simulação).
               </div>
             )}
 
-            {/* Botão Gigante de Começar Corrida */}
+            {/* Botão de Começar Corrida */}
             <button
               onClick={handleStartCountdown}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-sky-400 hover:opacity-95 text-white font-black text-base flex items-center justify-center gap-2.5 shadow-xl shadow-sky-500/30 active:scale-98 transition-all cursor-pointer"
+              className="w-full min-h-[48px] py-4 px-6 rounded-xl bg-white text-zinc-950 hover:bg-zinc-100 font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md active:scale-98 transition-all cursor-pointer"
             >
-              <Play className="w-6 h-6 fill-current" />
+              <Play className="w-5 h-5 fill-current" />
               <span>INICIAR CORRIDA</span>
             </button>
           </div>
 
           {/* Histórico Recente de Corridas */}
-          <div className="space-y-3">
+          <div className="md:col-span-5 space-y-3">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 Corridas Concluídas ({runsHistory.length})
               </h3>
             </div>
@@ -1097,8 +1185,8 @@ export default function RunningHub({ isDark = true }) {
             {runsHistory.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 p-8 text-center text-zinc-400 dark:text-zinc-500">
                 <Footprints className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-xs font-medium">Nenhuma corrida registrada ainda.</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">Faça a sua primeira corrida para desbloquear cards exclusivos de partilha!</p>
+                <p className="text-xs font-semibold">Nenhuma corrida registada ainda.</p>
+                <p className="text-[11px] text-zinc-400 mt-0.5">Faça a sua primeira corrida para desbloquear cartões exclusivos de partilha!</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -1106,24 +1194,24 @@ export default function RunningHub({ isDark = true }) {
                   <div
                     key={run.id}
                     onClick={() => setSelectedRunForShare(run)}
-                    className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between hover:border-sky-500/50 transition-all cursor-pointer shadow-sm group"
+                    className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between hover:border-zinc-400 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-xs group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 border border-sky-500/20 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60 flex items-center justify-center shrink-0">
                         <Footprints className="w-5 h-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-black text-zinc-900 dark:text-white">
+                          <span className="text-sm font-black text-zinc-900 dark:text-white font-mono tabular-nums">
                             {Number(run.distanceKm).toFixed(2)} km
                           </span>
                           {run.isSimulation && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 font-bold border border-amber-500/20">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-bold border border-amber-500/20">
                               Teste
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-mono">
+                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-mono tabular-nums">
                           <span>{run.avgPace}</span>
                           <span>•</span>
                           <span>{formatDuration(run.durationSeconds)}</span>
@@ -1134,23 +1222,38 @@ export default function RunningHub({ isDark = true }) {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {/* Botão de Compartilhar / Gerar Card */}
+                      {/* Botão de Exportar GPX */}
+                      {run.coordinates && run.coordinates.length > 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerHaptic(12);
+                            downloadGPX(run.coordinates, `corrida_${run.date?.split('T')[0] || 'ab_fitness'}`);
+                          }}
+                          className="min-h-[36px] min-w-[36px] p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-[#c6f432] transition-colors flex items-center justify-center cursor-pointer"
+                          title="Exportar GPX para Strava / Garmin"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Botão de Partilhar / Gerar Cartão */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedRunForShare(run);
                         }}
-                        className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-sky-500 transition-colors"
-                        title="Gerar Card para o Instagram"
+                        className="min-h-[36px] min-w-[36px] p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-sky-500 transition-colors flex items-center justify-center cursor-pointer"
+                        title="Gerar Cartão para o Instagram"
                       >
                         <Share2 className="w-4 h-4" />
                       </button>
 
-                      {/* Botão de Excluir */}
+                      {/* Botão de Eliminar */}
                       <button
                         onClick={(e) => handleDeleteRun(e, run.id)}
-                        className="p-2 rounded-xl text-zinc-400 hover:text-rose-500 transition-colors"
-                        title="Excluir"
+                        className="min-h-[36px] min-w-[36px] p-2 rounded-lg text-zinc-400 hover:text-rose-500 transition-colors flex items-center justify-center cursor-pointer"
+                        title="Eliminar"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

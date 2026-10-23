@@ -61,31 +61,82 @@ export async function sendMessageToCoach(messages, perfil = null) {
 
   const enrichedPerfil = getAthleteContextSummary(perfil);
 
-  // 2. Invocar a Edge Function com o JWT na sessão
-  const { data, error } = await supabase.functions.invoke('ab-coach', {
-    body: {
-      messages,
-      perfil: enrichedPerfil
-    }
-  });
+  // 2. Invocar a Edge Function com retry automático para falhas transitórias
+  let result = null;
+  let lastError = null;
 
-  if (error) {
-    // Tratar erros HTTP específicos retornados pela Edge Function
-    const status = error.status || error.context?.status;
-    if (status === 401) {
-      throw new Error('Sua sessão expirou. Por favor, faça login novamente.');
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const { data, error } = await supabase.functions.invoke('ab-coach', {
+        body: {
+          messages,
+          perfil: enrichedPerfil
+        }
+      });
+
+      if (!error && data) {
+        result = data;
+        lastError = null;
+        break;
+      }
+
+      lastError = error;
+
+      // Não faz retry se for erro de autenticação ou rate limit do utilizador
+      const status = error?.status || error?.context?.status;
+      if (status === 401 || status === 429) {
+        break;
+      }
+
+      if (attempt < 2) {
+        // Pausa breve e tenta novamente de forma silenciosa e resiliente
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+    } catch (err) {
+      lastError = err;
+      if (attempt < 2) {
+        await new Promise((r) => setTimeout(r, 1200));
+      }
     }
-    if (status === 429) {
-      throw new Error('Você atingiu o limite de 20 perguntas por hora. Aguarde alguns instantes.');
-    }
-    const errorMsg = error.message || 'Falha na comunicação com o assistente virtual.';
-    throw new Error(errorMsg);
   }
 
-  // 3. Validação pós-resposta de segurança no client
-  const validated = validateAndSanitizeCoachResponse(data);
+  if (lastError) {
+    let friendlyMessage = 'O motor de IA está momentaneamente indisponível. Por favor, tenta novamente dentro de instantes.';
+    
+    // O SDK da Supabase armazena o objeto Response original em error.context
+    if (lastError.context && typeof lastError.context.json === 'function') {
+      try {
+        const payload = await lastError.context.json();
+        if (payload?.mensagem) {
+          friendlyMessage = payload.mensagem;
+        } else if (payload?.error) {
+          friendlyMessage = payload.error;
+        }
+      } catch (_) {
+        // Ignora se o corpo já tiver sido consumido ou não for JSON
+      }
+    }
+
+    const status = lastError.status || lastError.context?.status;
+    if (status === 401) {
+      throw new Error('A tua sessão expirou ou não está autenticada. Por favor, inicia sessão novamente.');
+    }
+    if (status === 429) {
+      throw new Error('Atingiste o limite temporário de pedidos por hora (20/hora). Aguarda alguns instantes.');
+    }
+    if (status >= 500 || friendlyMessage.includes('non-2xx')) {
+      throw new Error('O motor de IA da Google está temporariamente com elevada procura. Por favor, aguarda alguns segundos e tenta novamente.');
+    }
+    throw new Error(friendlyMessage);
+  }
+
+  // 3. Validação pós-resposta de segurança no cliente
+  const validated = validateAndSanitizeCoachResponse(result);
   if (!validated.isValid) {
-    throw new Error('Resposta recebida em formato inconsistente. Tente novamente.');
+    if (result && typeof result.mensagem === 'string') {
+      return { mensagem: result.mensagem, treino: null };
+    }
+    throw new Error('A resposta recebida teve uma inconsistência de formatação. Por favor, tenta reformular a pergunta.');
   }
 
   return validated.data;

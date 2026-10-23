@@ -5,11 +5,83 @@
 
 @layer base {
   :root {
-    --bg-light: #f4f4f5;
-    --bg-dark: #09090b;
-    --card-dark: #121215;
-    --border-dark: #27272a;
-    --accent-blue: #38bdf8;
+    /* Tipografia */
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Superfícies — Modo Claro */
+    --app-bg: #f4f5f6;
+    --surface-primary: #ffffff;
+    --surface-secondary: #eef0f2;
+    --surface-tertiary: #e4e7ea;
+    --surface-hover: #dadfe3;
+
+    /* Linhas & Bordas */
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-medium: rgba(0, 0, 0, 0.15);
+    --border-strong: rgba(0, 0, 0, 0.25);
+
+    /* Tipografia & Contraste */
+    --text-primary: #0a0a0b;
+    --text-secondary: #52525b;
+    --text-muted: #71717a;
+    --text-inverse: #ffffff;
+
+    /* Destaque Dark Athletic: Lima de Alta Visibilidade */
+    --accent-brand: #c6f432;
+    --accent-brand-text: #0a0a0b;
+    --accent-brand-subtle: rgba(198, 244, 50, 0.15);
+    --accent-primary: #0a0a0b;
+    --accent-hover: #18181b;
+    --accent-text: #ffffff;
+
+    /* Estados Semânticos (Somente Dados & Feedback) */
+    --state-success: #10b981;
+    --state-success-subtle: rgba(16, 185, 129, 0.12);
+    --state-warning: #f59e0b;
+    --state-warning-subtle: rgba(245, 158, 11, 0.12);
+    --state-danger: #ef4444;
+    --state-danger-subtle: rgba(239, 68, 68, 0.12);
+    --state-warmup: #fbbf24;
+    --state-dropset: #38bdf8;
+  }
+
+  html.dark {
+    /* Superfícies — Modo Escuro ("Dark Athletic" puro: quase preto, sem saturação de IA) */
+    --app-bg: #0a0a0b;
+    --surface-primary: #111114;
+    --surface-secondary: #17171c;
+    --surface-tertiary: #202026;
+    --surface-hover: #272730;
+
+    /* Linhas & Bordas */
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-strong: rgba(255, 255, 255, 0.22);
+
+    /* Tipografia & Contraste */
+    --text-primary: #f4f5f6;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --text-inverse: #0a0a0b;
+
+    /* Destaque Dark Athletic: Lima #C6F432 usado exclusivamente em ações & progresso */
+    --accent-brand: #c6f432;
+    --accent-brand-text: #0a0a0b;
+    --accent-brand-subtle: rgba(198, 244, 50, 0.12);
+    --accent-primary: #c6f432;
+    --accent-hover: #d7fa5c;
+    --accent-text: #0a0a0b;
+
+    /* Estados Semânticos */
+    --state-success: #10b981;
+    --state-success-subtle: rgba(16, 185, 129, 0.12);
+    --state-warning: #f59e0b;
+    --state-warning-subtle: rgba(245, 158, 11, 0.12);
+    --state-danger: #ef4444;
+    --state-danger-subtle: rgba(239, 68, 68, 0.12);
+    --state-warmup: #fbbf24;
+    --state-dropset: #38bdf8;
   }
 
   * {
@@ -17,32 +89,64 @@
     box-sizing: border-box;
   }
 
+  /* Foco visível para acessibilidade por teclado (WCAG AA) */
+  :focus-visible {
+    outline: 2px solid var(--accent-brand);
+    outline-offset: 2px;
+  }
+
+  /* Prevenção obrigatória de auto-zoom no iOS (font-size >= 16px em inputs) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f4f4f5;
-    color: #09090b;
+    font-family: var(--font-sans);
+    background-color: var(--app-bg);
+    color: var(--text-primary);
     min-height: 100vh;
     min-height: 100dvh;
     overscroll-behavior-y: none;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  html.dark body {
-    background-color: #09090b;
-    color: #f4f4f5;
+  /* Números como protagonistas: Barlow Condensed + tabular-nums */
+  .font-display,
+  [data-display="true"] {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
   }
 
-  /* Suporte limpo para azulejos do mapa sem distorção de cores */
+  .tabular-numbers,
+  input[type="number"],
+  .font-mono,
+  [data-metric="true"] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Suporte limpo para mapa Leaflet */
   .leaflet-container {
     font-family: inherit;
-    background-color: #09090b !important;
+    background-color: var(--app-bg) !important;
   }
 }
 
+/* Redução de movimento para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
-/* Safe Area Insets para celulares com Notch / Ilha Dinâmica / Barra Home */
+/* Safe Area Insets para dispositivos móveis com Notch / Ilha Dinâmica */
 .safe-top {
   padding-top: max(env(safe-area-inset-top, 0px), 12px);
 }
@@ -59,10 +163,10 @@
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
 }
 
-/* Custom scrollbar for mobile feel */
+/* Scrollbar técnica e discreta */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -70,76 +174,21 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #38bdf8;
-  border-radius: 9999px;
+  background: var(--border-medium);
+  border-radius: 4px;
 }
 
-/* Animations for Mobile Experience */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(24px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+/* Micro-transições sóbrias e funcionais (sem bounces gratuitos) */
+.transition-surface {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-@keyframes scaleUp {
-  from {
-    transform: scale(0.92);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bounceSubtle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@keyframes spinSlow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.25s ease-out forwards;
-}
-
-.animate-slideUp {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scaleUp {
-  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-bounce-subtle {
-  animation: bounceSubtle 1.8s infinite ease-in-out;
-}
-
-.animate-spin-slow {
-  animation: spinSlow 8s linear infinite;
+/* Utilidades de Acessibilidade & Alvos de Toque */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
 }

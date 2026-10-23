@@ -11,9 +11,9 @@ export default function BadgeUnlockedToast({ badge, onClose }) {
       sound.playVictory();
       triggerHaptic(50);
       confetti({
-        particleCount: 70,
+        particleCount: 50,
         spread: 60,
-        origin: { y: 0.3 }
+        origin: { y: 0.25 }
       });
     } catch {}
 
@@ -27,31 +27,30 @@ export default function BadgeUnlockedToast({ badge, onClose }) {
   if (!badge) return null;
 
   return (
-    <div className="fixed top-5 left-4 right-4 z-50 max-w-sm mx-auto animate-bounceIn">
-      <div className="p-4 rounded-3xl bg-zinc-900 border-2 border-amber-500/80 text-white shadow-2xl relative overflow-hidden backdrop-blur-xl">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
-
+    <div className="fixed top-5 left-4 right-4 z-50 max-w-sm mx-auto animate-fadeIn">
+      <div className="p-4 rounded-2xl bg-zinc-950 text-white border border-zinc-800 shadow-2xl relative overflow-hidden">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-400 text-black flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/30">
-            <Trophy className="w-6 h-6 stroke-[2.5]" />
+          <div className="w-10 h-10 rounded-xl bg-zinc-800 text-amber-400 flex items-center justify-center shrink-0 border border-zinc-700">
+            <Trophy className="w-5 h-5 stroke-[2]" />
           </div>
 
           <div className="flex-1 min-w-0 pr-6">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" />
-              NOVA CONQUISTA DESBLOQUEADA!
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Nova Conquista Desbloqueada
             </span>
-            <h4 className="text-sm font-black text-white mt-0.5 truncate">
+            <h4 className="text-sm font-bold text-white mt-0.5 truncate">
               {badge.title}
             </h4>
-            <p className="text-xs text-zinc-300 mt-0.5 line-clamp-2">
+            <p className="text-xs text-zinc-400 mt-0.5 line-clamp-2">
               {badge.desc}
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-1 rounded-xl text-zinc-400 hover:text-white bg-black/40 hover:bg-black/60 transition-colors cursor-pointer"
+            className="absolute top-3 right-3 w-8 h-8 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Fechar notificação"
           >
             <X className="w-4 h-4" />
           </button>

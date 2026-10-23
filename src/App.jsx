@@ -203,11 +203,11 @@ function AppContent() {
     return <AuthScreen />;
   }
 
-  // 3. Aplicação Logada (Dashboard & Treinos)
+  // 3. Aplicação com Sessão Ativa (Dashboard & Treinos)
   return (
-    <div className={`${isDark ? 'dark' : ''} min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white dark:selection:bg-zinc-200 dark:selection:text-black antialiased flex flex-col justify-between transition-colors duration-200`}>
-      {/* Container Central com Proporção Mobile-First Premium */}
-      <div className="w-full max-w-md mx-auto min-h-screen bg-white dark:bg-[#09090b] shadow-2xl relative flex flex-col justify-between border-x border-zinc-200/80 dark:border-zinc-800/80 transition-colors duration-200">
+    <div className={`${isDark ? 'dark' : ''} min-h-screen bg-[#f8f9fa] dark:bg-[#0c0d0e] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white dark:selection:bg-zinc-200 dark:selection:text-black antialiased flex flex-col justify-between transition-colors duration-200`}>
+      {/* Contentor Principal Adaptativo (Mobile até Desktop) */}
+      <div className="w-full max-w-5xl mx-auto min-h-screen bg-white dark:bg-[#141618] sm:border-x border-zinc-200 dark:border-zinc-800/80 relative flex flex-col justify-between transition-colors duration-200">
         
         {/* Visualização de Treino Ativo */}
         {currentView === 'active-workout' && activeWorkout ? (
@@ -223,7 +223,7 @@ function AppContent() {
             }}
           />
         ) : (
-          /* Visualização do Dashboard Principal */
+          /* Visualização do Painel Principal */
           <>
             <div className="pb-24 flex-1">
               <Header
@@ -271,31 +271,31 @@ function AppContent() {
                 <HistoryView />
               )}
 
-              {/* Rodapé Elegante com 'Desenvolvido por Bruno Abel' */}
+              {/* Rodapé Institucional */}
               <Footer onOpenGuide={() => setShowGuideModal(true)} />
             </div>
 
-            {/* Barra de Navegação Inferior Mobile-First */}
+            {/* Barra de Navegação Inferior Ergonómica */}
             <Navigation
               activeTab={activeTab}
               onTabChange={handleTabChange}
             />
 
-            {/* Botão Flutuante Global do AB Coach IA (FAB) */}
+            {/* Botão Flutuante do AB Coach (Sóbrio & Técnico) */}
             <button
               onClick={() => {
                 sound.playTick();
                 setShowAICoachModal(true);
               }}
-              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-sky-500 via-cyan-500 to-indigo-600 text-white font-black text-xs sm:text-sm shadow-xl shadow-sky-500/35 hover:shadow-sky-500/50 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-white/20 backdrop-blur-md group"
+              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold text-xs shadow-lg hover:opacity-95 active:scale-95 transition-all cursor-pointer border border-zinc-800 dark:border-zinc-200 select-none"
               aria-label="Abrir AB Coach IA"
             >
               <div className="relative flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-zinc-950 rounded-full animate-pulse" />
+                <Bot className="w-4 h-4 stroke-[2]" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full" />
               </div>
-              <span className="tracking-wide flex items-center gap-1">
-                AB Coach <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+              <span className="tracking-tight text-xs font-semibold">
+                AB Coach
               </span>
             </button>
           </>

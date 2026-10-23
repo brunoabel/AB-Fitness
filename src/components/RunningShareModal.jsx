@@ -23,7 +23,7 @@ import {
 import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
 
-// Temas visuais esportivos de alto impacto
+// Temas visuais desportivos de alto impacto
 const THEMES = {
   'strava-orange': {
     id: 'strava-orange',
@@ -31,7 +31,7 @@ const THEMES = {
     accent: '#fc5200',
     glow: 'rgba(252, 82, 0, 0.85)',
     bgGrad: ['#1c0f08', '#0a0502'],
-    badge: '🧡 Strava'
+    badge: 'Strava'
   },
   'ab-cyan': {
     id: 'ab-cyan',
@@ -39,7 +39,7 @@ const THEMES = {
     accent: '#38bdf8',
     glow: 'rgba(56, 189, 248, 0.85)',
     bgGrad: ['#0c1524', '#04070e'],
-    badge: '⚡ Cyan'
+    badge: 'Cyan'
   },
   'satellite-map': {
     id: 'satellite-map',
@@ -47,7 +47,7 @@ const THEMES = {
     accent: '#34d399',
     glow: 'rgba(52, 211, 153, 0.85)',
     bgGrad: ['#0f1715', '#050a08'],
-    badge: '🛰️ Satélite'
+    badge: 'Satélite'
   }
 };
 
@@ -543,10 +543,10 @@ export default function RunningShareModal({
       link.download = `AB_Fitness_${sessionTitle.replace(/\s+/g, '_')}_${distanceKm}km.png`;
       link.href = dataUrl;
       link.click();
-      showToast('Card baixado com sucesso!');
+      showToast('Cartão descarregado com sucesso!');
     } catch (err) {
       console.error('Erro ao gerar imagem:', err);
-      showToast('Erro ao baixar imagem.');
+      showToast('Erro ao descarregar imagem.');
     } finally {
       setIsExporting(false);
     }
@@ -885,21 +885,21 @@ export default function RunningShareModal({
 
         {/* Rodapé Sticky com Botões de Ação */}
         <div className="shrink-0 p-3 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-800 flex flex-col gap-2">
-          {/* Botão Primário: Partilhar Card */}
+          {/* Botão Primário: Partilhar Cartão */}
           <button
             onClick={handleShare}
             disabled={isExporting}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 hover:opacity-95 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 active:scale-98 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-white text-zinc-950 hover:bg-zinc-100 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
           >
             <Share2 className="w-4 h-4" />
-            <span>{isExporting ? 'A Gerar Imagem HD...' : 'Partilhar Card (Instagram / Redes)'}</span>
+            <span>{isExporting ? 'A Gerar Imagem HD...' : 'Partilhar Cartão (Instagram / Redes)'}</span>
           </button>
 
-          {/* Grid Ações Rápidas: WhatsApp, Baixar e Copiar */}
+          {/* Grid Ações Rápidas: WhatsApp, Descarregar e Copiar */}
           <div className="grid grid-cols-3 gap-1.5">
             <button
               onClick={handleWhatsAppShare}
-              className="py-2 px-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-xs"
               title="Partilhar no WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -909,18 +909,18 @@ export default function RunningShareModal({
             <button
               onClick={handleDownload}
               disabled={isExporting}
-              className="py-2 px-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
-              title="Baixar Imagem HD"
+              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+              title="Descarregar Imagem HD"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Baixar HD</span>
+              <span>Descarregar HD</span>
             </button>
 
             {window.ClipboardItem ? (
               <button
                 onClick={handleCopyImage}
                 disabled={isExporting}
-                className="py-2 px-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
                 title="Copiar Imagem para a Área de Transferência"
               >
                 {imageCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <ImageIcon className="w-3.5 h-3.5" />}
@@ -929,7 +929,7 @@ export default function RunningShareModal({
             ) : (
               <button
                 onClick={handleCopyCaption}
-                className="py-2 px-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
                 title="Copiar Legenda"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -940,7 +940,7 @@ export default function RunningShareModal({
 
           <button
             onClick={onClose}
-            className="w-full py-1 text-zinc-400 hover:text-white text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+            className="w-full py-2 text-zinc-400 hover:text-white text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3 h-3" />
             <span>Voltar ao Resumo do Treino</span>

@@ -60,22 +60,22 @@ export default function InstallPrompt() {
 
   return (
     <div className="mx-4 mt-3 animate-slideUp">
-      <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-xs">
+      <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold shrink-0 shadow-xs">
+          <div className="w-9 h-9 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold shrink-0">
             <Download className="w-4 h-4" />
           </div>
           <div>
             <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
-              Instalar o App no Celular
+              Instalar a Aplicação no Telemóvel
             </h4>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-snug">
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal leading-snug">
               {isIos ? (
                 <span className="flex items-center gap-1">
-                  Toque em <Share className="w-3 h-3 inline text-sky-400" /> e depois em <PlusSquare className="w-3 h-3 inline text-sky-400" /> <strong>"Adicionar à Tela de Início"</strong>
+                  Toque em <Share className="w-3 h-3 inline text-zinc-700 dark:text-zinc-300" /> e depois em <PlusSquare className="w-3 h-3 inline text-zinc-700 dark:text-zinc-300" /> <strong>"Ecrã Principal"</strong>
                 </span>
               ) : (
-                'Abra em tela cheia como app nativo e use offline no treino!'
+                'Abra em ecrã inteiro como aplicação nativa e use offline no treino'
               )}
             </p>
           </div>
@@ -85,14 +85,14 @@ export default function InstallPrompt() {
           {!isIos && deferredPrompt && (
             <button
               onClick={handleInstallClick}
-              className="px-3 py-1.5 rounded-xl bg-black hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-white text-[11px] font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+              className="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-white text-xs font-bold active:scale-95 transition-colors cursor-pointer"
             >
               Instalar
             </button>
           )}
           <button
             onClick={handleDismiss}
-            className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
             title="Fechar"
             aria-label="Dispensar aviso"
           >
@@ -101,6 +101,5 @@ export default function InstallPrompt() {
         </div>
       </div>
     </div>
-
   );
 }
