@@ -417,7 +417,7 @@ Deno.serve(async (req: Request) => {
   }
 
   if (req.method === "GET") {
-    return new Response(JSON.stringify({ status: "healthy", service: "ab-coach", version: 15 }), {
+    return new Response(JSON.stringify({ status: "healthy", service: "ab-coach", version: 20 }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
@@ -511,13 +511,14 @@ Deno.serve(async (req: Request) => {
     }
 
     const configuredModel = Deno.env.get("GEMINI_MODEL");
-    // Modelos oficiais de alta performance suportados no Google Gemini v1beta
+    // Modelos oficiais ativos do Google Gemini v1beta (ordem: alta velocidade e capacidade)
     const candidateModels = [
-      configuredModel && configuredModel !== "gemini-flash-latest" ? configuredModel : null,
-      "gemini-2.5-flash",
-      "gemini-2.5-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-flash-latest"
+      configuredModel && configuredModel !== "gemini-flash-latest" && configuredModel !== "gemini-2.5-flash" ? configuredModel : null,
+      "gemini-3.7-flash",
+      "gemini-3.5-flash",
+      "gemini-3.8-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite"
     ].filter(Boolean) as string[];
     const modelsToTry = [...new Set(candidateModels)];
 
@@ -534,7 +535,7 @@ Deno.serve(async (req: Request) => {
       contents: geminiContents,
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 1200,
+        maxOutputTokens: 4096,
         responseMimeType: "application/json",
         responseSchema: GEMINI_RESPONSE_SCHEMA
       }
@@ -547,7 +548,7 @@ Deno.serve(async (req: Request) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(geminiPayload),
-          signal: AbortSignal.timeout(9000)
+          signal: AbortSignal.timeout(25000)
         }
       );
     }
@@ -562,7 +563,8 @@ Deno.serve(async (req: Request) => {
         if (geminiRes.ok) {
           break;
         }
-        console.warn(`Modelo ${m} retornou status ${geminiRes.status}. Tentando modelo alternativo imediatamente...`);
+        const errDetail = await geminiRes.text().catch(() => "");
+        console.warn(`Modelo ${m} retornou status ${geminiRes.status}: ${errDetail.slice(0, 180)}. Tentando modelo alternativo imediatamente...`);
       } catch (fetchErr) {
         console.warn(`Erro/timeout de rede ao contactar modelo ${m}:`, fetchErr);
       }
@@ -593,10 +595,17 @@ Deno.serve(async (req: Request) => {
     }
 
     let parsedJson = null;
+    let cleanedText = rawText.trim();
+    if (cleanedText.startsWith("```json")) {
+      cleanedText = cleanedText.replace(/^```json\s*/, "").replace(/```$/, "").trim();
+    } else if (cleanedText.startsWith("```")) {
+      cleanedText = cleanedText.replace(/^```\s*/, "").replace(/```$/, "").trim();
+    }
+
     try {
-      parsedJson = JSON.parse(rawText);
+      parsedJson = JSON.parse(cleanedText);
     } catch (parseErr) {
-      console.warn("Falha no JSON.parse da resposta do Gemini:", parseErr);
+      console.warn("Falha no JSON.parse da resposta do Gemini:", parseErr, "Trecho:", cleanedText.slice(0, 300));
       return new Response(
         JSON.stringify({
           mensagem: "Recebi a resposta, mas o formato foi inconsistente. Por favor, tente novamente.",
