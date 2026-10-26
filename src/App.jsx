@@ -227,6 +227,9 @@ function AppContent() {
           <>
             <div className="pb-24 flex-1">
               <Header
+                activeTab={activeTab}
+                currentView={currentView}
+                onNavigateTab={handleTabChange}
                 completedCount={completedDays.length}
                 onOpenGuide={() => setShowGuideModal(true)}
                 onOpenCustomize={() => setShowOnboardingModal(true)}

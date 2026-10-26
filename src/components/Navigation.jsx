@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dumbbell, ListPlus, Footprints, Trophy, BookOpen, Users } from 'lucide-react';
+import { Dumbbell, ListPlus, Footprints, Trophy, Users } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 
@@ -11,7 +11,6 @@ export default function Navigation({ activeTab, onTabChange }) {
     { id: 'custom-workouts', label: 'Criar Treino', icon: ListPlus },
     { id: 'running', label: 'Corrida', icon: Footprints },
     { id: 'history', label: 'Histórico', icon: Trophy },
-    { id: 'guide', label: 'Manuais', icon: BookOpen },
     ...(isAdmin ? [{ id: 'admin', label: 'Admin', icon: Users }] : []),
   ];
 
