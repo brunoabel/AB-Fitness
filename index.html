@@ -2,7 +2,7 @@
 <html lang="pt">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no" />
     
     <!-- PWA & Mobile Web App Meta Tags -->
     <meta name="theme-color" content="#0A0A0B" media="(prefers-color-scheme: dark)" />
@@ -12,6 +12,34 @@
     <meta name="apple-mobile-web-app-title" content="AB Fitness" />
     <meta name="application-name" content="AB Fitness" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <script>
+      // Prevenir gestos de pinça (pinch-to-zoom) no Safari iOS
+      document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+      }, { passive: false });
+      document.addEventListener('gesturechange', function (e) {
+        e.preventDefault();
+      }, { passive: false });
+      document.addEventListener('gestureend', function (e) {
+        e.preventDefault();
+      }, { passive: false });
+
+      // Prevenir duplo-toque para dar zoom no iOS
+      var lastTouchEnd = 0;
+      document.addEventListener('touchend', function (e) {
+        var now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          var target = e.target;
+          if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+            return;
+          }
+          e.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, { passive: false });
+    </script>
     
     <title>AB Fitness — Gestão & Performance de Treinos</title>
     

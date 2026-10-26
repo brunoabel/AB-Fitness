@@ -462,7 +462,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       </header>
 
       {/* Conteúdo Principal do Treino */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-5 space-y-4">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-5 pb-48 space-y-4">
         {/* Cartão de Identificação da Sessão */}
         <div className="p-4 sm:p-5 rounded-2xl bg-[#111114] border border-white/[0.08] shadow-xs flex items-center justify-between transition-colors">
           <div>
@@ -792,33 +792,41 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         )}
       </main>
 
-      {/* DOCK INFERIOR FIXO PARA O MODO FOCO & REST TIMER */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#111114]/95 backdrop-blur-md border-t border-white/[0.08] p-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] transition-all">
+      {/* Temporizador de Descanso Flutuante (Posicionado ACIMA da barra de navegação) */}
+      <RestTimer
+        initialTime={currentRestDefault}
+        autoStartTrigger={restTimerTrigger}
+      />
+
+      {/* DOCK INFERIOR FIXO PARA O MODO FOCO & AVANÇAR EXERCÍCIO (SEMPRE DESOBSTRUÍDO) */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#111114]/95 backdrop-blur-md border-t border-white/[0.08] p-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] transition-all">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           {/* Botão Anterior */}
           <button
             type="button"
             onClick={handlePrevExercise}
             disabled={currentFocusedIndex <= 0}
-            className="py-3 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-30 disabled:pointer-events-none font-bold text-xs border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1"
+            className="py-3 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-30 disabled:pointer-events-none font-bold text-xs border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shrink-0"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Anterior</span>
+            <span className="hidden xs:inline sm:inline">Anterior</span>
           </button>
 
-          {/* Temporizador de Descanso Compacto no Centro */}
-          <div className="flex-1 flex justify-center">
-            <RestTimer
-              initialTime={currentRestDefault}
-              autoStartTrigger={restTimerTrigger}
-            />
+          {/* Indicador Central: Exercício Atual e Total */}
+          <div className="flex-1 text-center truncate px-1">
+            <span className="text-[11px] font-bold text-zinc-300 font-mono tabular-nums block">
+              Exercício {currentFocusedIndex + 1} de {currentExercisesList.length}
+            </span>
+            <span className="text-[10px] text-zinc-500 font-medium truncate block max-w-[200px] mx-auto">
+              {activeExercise?.name || ''}
+            </span>
           </div>
 
           {/* Botão Próximo ou Concluir */}
           <button
             type="button"
             onClick={handleNextExercise}
-            className={`py-3 px-4 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shadow-sm ${
+            className={`py-3 px-4 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shadow-sm shrink-0 ${
               currentFocusedIndex >= currentExercisesList.length - 1
                 ? 'bg-[#c6f432] text-zinc-950 hover:bg-[#b2dc2b]'
                 : 'bg-white text-zinc-950 hover:bg-zinc-100'

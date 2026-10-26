@@ -96,151 +96,162 @@ export default function RestTimer({
     : 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 transition-all duration-200">
-      {/* Alerta de Fim de Descanso */}
-      {isAlerting && (
-        <div className="mx-auto max-w-xl px-4 pb-2">
-          <div className="bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 p-4 rounded-xl shadow-xl flex items-center justify-between border border-zinc-800 dark:border-zinc-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-zinc-800 dark:bg-zinc-200 rounded-lg">
-                <Bell className="w-5 h-5 text-amber-400 stroke-[2]" />
+    <div className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+88px)] left-0 right-0 z-30 pointer-events-none px-3 transition-all duration-200">
+      <div className="max-w-md mx-auto pointer-events-auto">
+        {/* Alerta de Fim de Descanso */}
+        {isAlerting && (
+          <div className="mb-2 animate-fadeIn">
+            <div className="bg-[#111114] text-white p-3.5 rounded-xl shadow-2xl flex items-center justify-between border border-amber-500/40">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-500/15 text-amber-400 rounded-lg shrink-0">
+                  <Bell className="w-4 h-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <strong className="block text-xs font-bold leading-tight text-zinc-100">
+                    Descanso Concluído!
+                  </strong>
+                  <span className="text-[11px] text-zinc-400 font-normal">
+                    Inicia a próxima série com carga e cadência controladas.
+                  </span>
+                </div>
               </div>
-              <div>
-                <strong className="block text-sm font-semibold leading-tight">
-                  Descanso Concluído
-                </strong>
-                <span className="text-xs text-zinc-300 dark:text-zinc-600 font-normal">
-                  Inicia a série seguinte com postura neutra e cadência controlada.
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsAlerting(false)}
-              className="px-3.5 py-2 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white text-xs font-semibold rounded-lg shadow-xs hover:opacity-90 active:scale-95 transition-all cursor-pointer min-h-[40px]"
-            >
-              Iniciar Série
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Caixa do Temporizador de Descanso */}
-      <div className="max-w-xl mx-auto px-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]">
-        <div className={`rounded-xl border shadow-lg backdrop-blur-md transition-all duration-200 ${
-          isAlerting 
-            ? 'bg-zinc-950 border-zinc-700 text-white' 
-            : isActive 
-              ? 'bg-white/95 dark:bg-[#141618]/95 border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50' 
-              : 'bg-white/95 dark:bg-[#141618]/95 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200'
-        }`}>
-          {/* Barra Fina de Progresso */}
-          <div className="h-1 w-full bg-zinc-100 dark:bg-zinc-800 rounded-t-xl overflow-hidden">
-            <div 
-              className="h-full bg-zinc-950 dark:bg-zinc-100 transition-all duration-1000"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-
-          {/* Cabeçalho Compacto */}
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* Botão Play / Pausa */}
               <button
-                onClick={toggleTimer}
-                className={`w-11 h-11 rounded-lg flex items-center justify-center transition-all cursor-pointer select-none ${
-                  isActive
-                    ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                } active:scale-95`}
-                aria-label={isActive ? 'Pausar Descanso' : 'Iniciar Descanso'}
+                onClick={() => setIsAlerting(false)}
+                className="ml-2 px-3 py-1.5 bg-[#c6f432] text-zinc-950 text-xs font-bold rounded-lg shadow-xs hover:bg-[#b5e028] active:scale-95 transition-all cursor-pointer shrink-0 min-h-[36px]"
               >
-                {isActive ? (
-                  <Pause className="w-5 h-5 fill-current" />
-                ) : (
-                  <Play className="w-5 h-5 fill-current ml-0.5" />
-                )}
+                Pronto
               </button>
+            </div>
+          </div>
+        )}
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold tracking-wider uppercase text-zinc-500 dark:text-zinc-400">
-                    {isActive ? 'A descansar...' : isAlerting ? 'Tempo concluído' : 'Descanso'}
-                  </span>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  )}
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-bold tracking-tight tabular-nums">
-                    {formatTime(timeLeft > 0 ? timeLeft : totalSeconds)}
-                  </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500 tabular-nums font-mono">
-                    / {totalSeconds}s
-                  </span>
-                </div>
-              </div>
+        {/* Temporizador Ativo / Em Contagem */}
+        {(isActive || timeLeft > 0) && (
+          <div className="rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-200 bg-[#141618]/95 border-zinc-700/80 text-zinc-100 overflow-hidden animate-fadeIn">
+            {/* Barra de Progresso Fina */}
+            <div className="h-1 w-full bg-zinc-800 rounded-t-xl overflow-hidden">
+              <div 
+                className="h-full bg-[#c6f432] transition-all duration-1000"
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
 
-            {/* Ações Rápidas */}
-            <div className="flex items-center gap-1.5">
-              {isActive && (
-                <>
+            {/* Cabeçalho Compacto do Temporizador */}
+            <div className="px-3.5 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                {/* Botão Play / Pausa */}
+                <button
+                  onClick={toggleTimer}
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer select-none shrink-0 ${
+                    isActive
+                      ? 'bg-[#c6f432] text-zinc-950 hover:bg-[#b5e028]'
+                      : 'bg-zinc-800 text-zinc-100 hover:bg-zinc-700'
+                  } active:scale-95`}
+                  aria-label={isActive ? 'Pausar Descanso' : 'Iniciar Descanso'}
+                >
+                  {isActive ? (
+                    <Pause className="w-4 h-4 fill-current" />
+                  ) : (
+                    <Play className="w-4 h-4 fill-current ml-0.5" />
+                  )}
+                </button>
+
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-400">
+                      {isActive ? 'A descansar...' : 'Em pausa'}
+                    </span>
+                    {isActive && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 leading-none">
+                    <span className="font-mono text-xl font-black text-white tabular-nums">
+                      {formatTime(timeLeft > 0 ? timeLeft : totalSeconds)}
+                    </span>
+                    <span className="text-[11px] text-zinc-500 tabular-nums font-mono">
+                      / {totalSeconds}s
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ações Rápidas */}
+              <div className="flex items-center gap-1">
+                {isActive && (
                   <button
                     onClick={() => addTime(15)}
-                    className="px-2.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold tabular-nums active:scale-95 transition-all cursor-pointer"
+                    className="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold tabular-nums active:scale-95 transition-all cursor-pointer"
                     title="+15 segundos"
                   >
                     +15s
                   </button>
-                  <button
-                    onClick={resetTimer}
-                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
-                    title="Reiniciar"
-                  >
-                    <RotateCcw className="w-4 h-4 stroke-[1.8]" />
-                  </button>
-                </>
-              )}
-
-              {/* Botão de Expandir / Recolher Presets */}
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
-                aria-label="Opções do temporizador"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 stroke-[1.8]" />
-                ) : (
-                  <ChevronUp className="w-4 h-4 stroke-[1.8]" />
                 )}
-              </button>
-            </div>
-          </div>
 
-          {/* Painel Desdobrável com Tempos Pré-Definidos */}
-          {isExpanded && (
-            <div className="px-4 pb-3.5 pt-1 border-t border-zinc-100 dark:border-zinc-800/80">
-              <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block mb-2">
-                Tempos pré-definidos de descanso
-              </span>
-              <div className="grid grid-cols-5 gap-1.5">
-                {[30, 45, 60, 90, 120].map((sec) => (
-                  <button
-                    key={sec}
-                    onClick={() => selectPreset(sec)}
-                    className={`py-2 px-1 rounded-lg text-xs font-semibold tabular-nums transition-all cursor-pointer border ${
-                      totalSeconds === sec
-                        ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-950 dark:border-zinc-100'
-                        : 'bg-zinc-50 dark:bg-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
-                    }`}
-                  >
-                    {sec}s
-                  </button>
-                ))}
+                <button
+                  onClick={resetTimer}
+                  className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
+                  title="Parar e ocultar temporizador"
+                  aria-label="Ocultar temporizador"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Botão de Expandir / Recolher Presets */}
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
+                  aria-label="Opções de presets"
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  )}
+                </button>
               </div>
             </div>
-          )}
-        </div>
+
+            {/* Painel Desdobrável com Tempos Pré-Definidos */}
+            {isExpanded && (
+              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80">
+                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block mb-1.5">
+                  Ajustar tempo de descanso
+                </span>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[30, 45, 60, 90, 120].map((sec) => (
+                    <button
+                      key={sec}
+                      onClick={() => selectPreset(sec)}
+                      className={`py-1.5 px-1 rounded-lg text-xs font-bold tabular-nums transition-all cursor-pointer border ${
+                        totalSeconds === sec
+                          ? 'bg-[#c6f432] text-zinc-950 border-[#c6f432]'
+                          : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-700'
+                      }`}
+                    >
+                      {sec}s
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Estado Ocioso: Pílula elegante e discreta que não obstrui nada */}
+        {!isActive && !isAlerting && timeLeft === 0 && (
+          <div className="flex justify-center">
+            <button
+              onClick={toggleTimer}
+              className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-[#111114]/90 hover:bg-[#17171c] text-zinc-300 hover:text-white border border-white/[0.12] shadow-lg backdrop-blur-md text-xs font-semibold active:scale-95 transition-all cursor-pointer select-none"
+              title="Iniciar descanso"
+            >
+              <Play className="w-3 h-3 text-[#c6f432] fill-current" />
+              <span>Descanso</span>
+              <span className="font-mono text-zinc-400 font-normal">({totalSeconds}s)</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
