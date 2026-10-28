@@ -4,7 +4,7 @@
  * Regra de Ouro:
  * NENHUM exercício pode apresentar demonstração com equipamento ou padrão de movimento divergente.
  * Cada registro é verificado individualmente contra o ID e características anatómicas do exercício.
- * Total de exercícios auditados: 67
+ * Total de exercícios auditados: 122
  */
 
 export const VERIFIED_EXERCISE_VIDEOS = {
@@ -1449,14 +1449,1169 @@ export const VERIFIED_EXERCISE_VIDEOS = {
       "lying-leg-raise",
       "81"
     ]
+  },
+  "supino-declinado-halteres": {
+    "canonicalId": "supino-declinado-halteres",
+    "name": "Supino Declinado com Halteres",
+    "equipment": "Banco Declinado + Halteres",
+    "movementType": "Empurrar Declinado • Halteres Livres",
+    "target": "Peitoral Maior (Fibras Inferiores)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/decline-dumbbell-bench-press-45-degree.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/decline-dumbbell-bench-press-45-degree.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/decline-dumbbell-bench-press-45-degree.jpg",
+    "keyCues": [
+      "Pés firmes sob as travas do banco declinado (-15° a -30°).",
+      "Desça os halteres alinhando com a linha mamilar inferior.",
+      "Empurre no vetor perpendicular ao tronco sem projetar os ombros."
+    ],
+    "aliases": [
+      "supino-declinado-halteres",
+      "104",
+      "supino-declinado-com-halteres",
+      "decline-dumbbell-bench-press"
+    ]
+  },
+  "crucifixo-declinado-halteres": {
+    "canonicalId": "crucifixo-declinado-halteres",
+    "name": "Crucifixo Declinado com Halteres",
+    "equipment": "Banco Declinado + Halteres",
+    "movementType": "Adução Horizontal Declinada • Peitoral Inferior",
+    "target": "Peitoral Maior (Fibras Inferiores)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-decline-fly-45-degree-1.mp4",
+    "videoFemale": null,
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-decline-fly-45-degree-1.jpg",
+    "keyCues": [
+      "Mantenha cotovelos levemente semi-flexionados e travados no mesmo ângulo.",
+      "Abra os braços em arco amplo até o alongamento máximo da porção costal.",
+      "Aduza contraindo a parte inferior do peitoral sem encostar os halteres."
+    ],
+    "aliases": [
+      "crucifixo-declinado-halteres",
+      "113",
+      "crucifixo-declinado-com-halteres",
+      "decline-dumbbell-fly"
+    ]
+  },
+  "crossover-polia-baixa": {
+    "canonicalId": "crossover-polia-baixa",
+    "name": "Crossover Polia Baixa",
+    "equipment": "Estação Crossover com Polias no Ponto Mais Baixo + Pegadores",
+    "movementType": "Adução Horizontal em Banco • Tensão Contínua",
+    "target": "Peitoral Maior (Porção Clavicular Superior)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-lying-fly-flat-bench-cable-fly.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-lying-fly-flat-bench-cable-fly.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-lying-fly-flat-bench-cable-fly.jpg",
+    "keyCues": [
+      "Deite-se no banco plano posicionado entre as duas polias baixas.",
+      "Mantenha os cotovelos fixos e conduza o movimento pelos peitorais.",
+      "Sinta o pico de contração constante mesmo na fase final do movimento."
+    ],
+    "aliases": [
+      "crossover-polia-baixa",
+      "8",
+      "flat-bench-cable-fly",
+      "crucifixo-cabo-banco-reto"
+    ]
+  },
+  "supino-articulado-maquina-inclinado": {
+    "canonicalId": "supino-articulado-maquina-inclinado",
+    "name": "Supino Articulado Máquina Inclinado",
+    "equipment": "Máquina Articulada Inclinada",
+    "movementType": "Empurrar Inclinado Convergente • Feixe Clavicular",
+    "target": "Peitoral Superior (Clavicular)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-incline-hammer-chest-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-incline-hammer-chest-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-incline-hammer-chest-press.jpg",
+    "keyCues": [
+      "Ajuste a altura do banco para que as manoplas comecem na linha clavicular.",
+      "Escápulas coladas no encosto e cotovelos no plano escapular.",
+      "Empurre acelerando no arco convergente da máquina sem hiperextender os cotovelos."
+    ],
+    "aliases": [
+      "supino-articulado-maquina-inclinado",
+      "110",
+      "lever-incline-hammer-chest-press",
+      "supino-inclinado-articulado-hammer"
+    ]
+  },
+  "supino-articulado-maquina-reto": {
+    "canonicalId": "supino-articulado-maquina-reto",
+    "name": "Supino Articulado Máquina Reto",
+    "equipment": "Máquina Articulada com Carga por Anilhas ou Placas",
+    "movementType": "Empurrar Horizontal Guiado • Peitoral Maior",
+    "target": "Peitoral Maior (Fibras Médias)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-lying-chest-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-lying-chest-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-lying-chest-press.jpg",
+    "keyCues": [
+      "Manoplas na altura da porção média do peitoral.",
+      "Peito estufado e ombros protegidos para trás durante toda a execução.",
+      "Cadencie a descida em 2 segundos e exploda na subida."
+    ],
+    "aliases": [
+      "supino-articulado-maquina-reto",
+      "109",
+      "lever-lying-chest-press",
+      "supino-reto-articulado"
+    ]
+  },
+  "paralelas-foco-peito": {
+    "canonicalId": "paralelas-foco-peito",
+    "name": "Paralelas (Foco Peito)",
+    "equipment": "Barras Paralelas (Dip Station)",
+    "movementType": "Mergulho com Tronco Inclinado • Peitoral Inferior",
+    "target": "Peitoral Maior (Fibras Inferiores e Médias)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/chest-dips.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/chest-dips.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/chest-dips.jpg",
+    "keyCues": [
+      "Incline o tronco para a frente a ~30° e mantenha o queixo recolhido.",
+      "Cotovelos abertos em ~45° para transferir a ênfase máxima ao peitoral.",
+      "Desça até 90° nos cotovelos e empurre contraindo os peitorais."
+    ],
+    "aliases": [
+      "paralelas-foco-peito",
+      "12",
+      "chest-dips",
+      "mergulho-paralelas-peito"
+    ]
+  },
+  "flexao-declinada-pes-elevados": {
+    "canonicalId": "flexao-declinada-pes-elevados",
+    "name": "Flexão Declinada com Pés Elevados",
+    "equipment": "Banco / Caixa + Chão",
+    "movementType": "Flexão com Pés Apoiados no Banco • Feixe Clavicular",
+    "target": "Peitoral Superior e Deltoide Anterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-push-ups.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-push-ups.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/incline-push-ups.jpg",
+    "keyCues": [
+      "Apoie as pontas dos pés no banco e mãos firmes no chão.",
+      "Core totalmente travado em linha reta sem deixar a bacia ceder.",
+      "Desça o tórax em direção ao chão e empurre com potência."
+    ],
+    "aliases": [
+      "flexao-declinada-pes-elevados",
+      "117",
+      "incline-push-up",
+      "flexao-pes-no-banco"
+    ]
+  },
+  "remada-articulada-maquina": {
+    "canonicalId": "remada-articulada-maquina",
+    "name": "Remada Articulada Máquina",
+    "equipment": "Máquina Articulada de Remada com Apoio no Peito",
+    "movementType": "Remada Sentada Guiada • Romboides e Latíssimo",
+    "target": "Grande Dorsal e Romboides",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-seated-row-wide-grip.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-seated-row-wide-grip.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-seated-row-wide-grip.jpg",
+    "keyCues": [
+      "Encosto peitoral ajustado para manter amplitude total de braços.",
+      "Puxe conduzindo pelos cotovelos e esmague as escápulas atrás.",
+      "Alongue totalmente as costas na volta sem perder o alinhamento espinhal."
+    ],
+    "aliases": [
+      "remada-articulada-maquina",
+      "21",
+      "seated-cable-row-wide-grip",
+      "remada-baixa-barra-aberta"
+    ]
+  },
+  "remada-baixa-unilateral-polia": {
+    "canonicalId": "remada-baixa-unilateral-polia",
+    "name": "Remada Baixa Unilateral na Polia",
+    "equipment": "Polia Baixa + Pegador Simples",
+    "movementType": "Remada Unilateral • Latíssimo Inferior Isolado",
+    "target": "Grande Dorsal (Porção Ilíaca)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-twisting-seated-row.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-twisting-seated-row.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-twisting-seated-row.jpg",
+    "keyCues": [
+      "Mantenha o quadril e tronco estáveis, puxando o cotovelo rente à cintura.",
+      "Permita ligeiro alcance escapular à frente para alongar o grande dorsal.",
+      "Finalize puxando até o quadril com pausa isométrica de 1 segundo."
+    ],
+    "aliases": [
+      "remada-baixa-unilateral-polia",
+      "130",
+      "cable-one-arm-seated-row",
+      "remada-unilateral-polia"
+    ]
+  },
+  "puxada-pegada-supinada": {
+    "canonicalId": "puxada-pegada-supinada",
+    "name": "Puxada com Pegada Supinada (Underhand)",
+    "equipment": "Polia Alta + Barra Reta",
+    "movementType": "Tração Vertical Supinada • Latíssimo & Braquial",
+    "target": "Grande Dorsal Inferior e Bíceps",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/reverse-grip-machine-lat-pulldown.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/reverse-grip-machine-lat-pulldown.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/reverse-grip-machine-lat-pulldown.jpg",
+    "keyCues": [
+      "Pegada na largura dos ombros com as palmas voltadas para você.",
+      "Inicie a tração deprimindo as escápulas antes de flexionar os braços.",
+      "Puxe a barra até a altura da fúrcula esternal mantendo o peito erguido."
+    ],
+    "aliases": [
+      "puxada-pegada-supinada",
+      "125",
+      "reverse-grip-lat-pulldown",
+      "underhand-lat-pulldown"
+    ]
+  },
+  "remada-apoiada-banco-inclinado-halteres": {
+    "canonicalId": "remada-apoiada-banco-inclinado-halteres",
+    "name": "Remada Apoiada no Banco Inclinado com Halteres",
+    "equipment": "Banco Inclinado (30°-45°) + Halteres",
+    "movementType": "Remada Livre com Peito Apoiado • Zero Sobrecarga Lombar",
+    "target": "Romboides, Trapézio Médio e Dorsais",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-row.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-row.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-row.jpg",
+    "keyCues": [
+      "Deite-se no banco a 30°-45° com peito firme no encosto.",
+      "Braços soltos no início; inicie aduzindo as escápulas.",
+      "Puxe os halteres trazendo os cotovelos em direção ao quadril."
+    ],
+    "aliases": [
+      "remada-apoiada-banco-inclinado-halteres",
+      "132",
+      "dumbbell-incline-row",
+      "chest-supported-dumbbell-row"
+    ]
+  },
+  "remada-kroc-row-halter": {
+    "canonicalId": "remada-kroc-row-halter",
+    "name": "Remada Kroc com Halter Pesado",
+    "equipment": "1 Halter Muito Pesado + Banco ou Apoio",
+    "movementType": "Remada Guiada High Row • Costas Médias",
+    "target": "Grande Dorsal, Trapézio, Romboides e Pegada",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-high-row.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-high-row.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-high-row.jpg",
+    "keyCues": [
+      "Posicione o banco para puxar no vetor diagonal alto-para-baixo.",
+      "Puxe com força abrindo o peito e fechando a musculatura interescapular.",
+      "Controle excêntrico estrito para ativação de espessura de tronco."
+    ],
+    "aliases": [
+      "remada-kroc-row-halter",
+      "138",
+      "lever-high-row",
+      "remada-articulada-high-row"
+    ]
+  },
+  "encolhimento-smith": {
+    "canonicalId": "encolhimento-smith",
+    "name": "Encolhimento no Smith",
+    "equipment": "Smith Machine",
+    "movementType": "Elevação Escapular Guiada • Trapézio Superior",
+    "target": "Trapézio Superior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-shrug.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-shrug.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-shrug.jpg",
+    "keyCues": [
+      "Barra do Smith ajustada na altura das coxas com pegada média.",
+      "Eleve os ombros diretamente em direção às orelhas sem girá-los.",
+      "Segure 2 segundos no topo contraindo o trapézio ao máximo."
+    ],
+    "aliases": [
+      "encolhimento-smith",
+      "167",
+      "lever-shrug",
+      "encolhimento-maquina-articulada"
+    ]
+  },
+  "encolhimento-barra-por-tras-haney": {
+    "canonicalId": "encolhimento-barra-por-tras-haney",
+    "name": "Encolhimento com Barra por Trás (Lee Haney Shrug)",
+    "equipment": "Barra Olímpica ou Smith por Trás do Corpo",
+    "movementType": "Elevação Escapular Inclinada • Trapézio Médio/Superior",
+    "target": "Trapézio Superior e Médio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-shrug.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-shrug.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-shrug.jpg",
+    "keyCues": [
+      "Incline-se no banco 45° com halteres firmes pendendo neutros.",
+      "Retraia e eleve as escápulas simultaneamente.",
+      "Proteção cervical total com olhar alinhado à espinha."
+    ],
+    "aliases": [
+      "encolhimento-barra-por-tras-haney",
+      "169",
+      "dumbbell-incline-shrug",
+      "encolhimento-inclinado-halteres"
+    ]
+  },
+  "desenvolvimento-smith": {
+    "canonicalId": "desenvolvimento-smith",
+    "name": "Desenvolvimento no Smith",
+    "equipment": "Smith Machine + Banco 75°",
+    "movementType": "Empurrar Vertical Guiado • Deltoide Anterior/Médio",
+    "target": "Deltoide Anterior e Médio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-seated-shoulder-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-seated-shoulder-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-seated-shoulder-press.jpg",
+    "keyCues": [
+      "Banco posicionado ligeiramente atrás da linha da barra (75°-80°).",
+      "Desça a barra controladamente até a linha do queixo/clavícula.",
+      "Empurre estendendo com segurança nos trilhos guiados."
+    ],
+    "aliases": [
+      "desenvolvimento-smith",
+      "148",
+      "smith-seated-shoulder-press",
+      "desenvolvimento-no-smith"
+    ]
+  },
+  "elevacao-lateral-maquina-articulada": {
+    "canonicalId": "elevacao-lateral-maquina-articulada",
+    "name": "Elevação Lateral na Máquina Articulada",
+    "equipment": "Máquina Lateral Raise Sentado",
+    "movementType": "Abdução de Braços na Máquina • Deltoide Lateral Isolado",
+    "target": "Deltoide Lateral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-lateral-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-lateral-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-lateral-raise.jpg",
+    "keyCues": [
+      "Alinhe o eixo de rotação da máquina exatamente com a articulação do ombro.",
+      "Cotovelos apoiados nas almofadas; empurre pelas almofadas, não com as mãos.",
+      "Suba até a linha horizontal com controle estrito sem encolher o pescoço."
+    ],
+    "aliases": [
+      "elevacao-lateral-maquina-articulada",
+      "154",
+      "lever-lateral-raise",
+      "elevacao-lateral-maquina"
+    ]
+  },
+  "remada-alta-halteres": {
+    "canonicalId": "remada-alta-halteres",
+    "name": "Remada Alta com Halteres",
+    "equipment": "Par de Halteres",
+    "movementType": "Puxada Vertical com Halteres • Deltoide Lateral & Trapézio",
+    "target": "Deltoide Lateral e Trapézio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-upright-row.mp4",
+    "videoFemale": null,
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-upright-row.jpg",
+    "keyCues": [
+      "Puxe os halteres rente ao corpo liderando com os cotovelos altos.",
+      "Pare na linha média do peito para evitar impacto subacromial.",
+      "Desça cadenciado mantendo a musculatura sob tensão."
+    ],
+    "aliases": [
+      "remada-alta-halteres",
+      "163",
+      "dumbbell-upright-row",
+      "remada-alta-com-halteres"
+    ]
+  },
+  "elevacao-frontal-polia": {
+    "canonicalId": "elevacao-frontal-polia",
+    "name": "Elevação Frontal na Polia",
+    "equipment": "Polia Baixa + Barra Reta ou Corda",
+    "movementType": "Flexão de Ombro na Polia • Deltoide Anterior",
+    "target": "Deltoide Anterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-forward-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-forward-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-forward-raise.jpg",
+    "keyCues": [
+      "De costas para a polia baixa, segurando o cabo entre as pernas ou unilateralmente.",
+      "Eleve o braço reto até a altura dos olhos com punho firme.",
+      "Resista à tração do cabo na descida em 3 segundos."
+    ],
+    "aliases": [
+      "elevacao-frontal-polia",
+      "33",
+      "cable-one-arm-front-raise",
+      "elevacao-frontal-cabo"
+    ]
+  },
+  "remada-alta-polia-baixa": {
+    "canonicalId": "remada-alta-polia-baixa",
+    "name": "Remada Alta na Polia Baixa",
+    "equipment": "Polia Baixa + Barra Reta ou Barra W",
+    "movementType": "Remada Curvada com Cotovelos Abertos • Deltoide Posterior",
+    "target": "Deltoide Lateral e Trapézio Superior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-rear-delt-row.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-rear-delt-row.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-rear-delt-row.jpg",
+    "keyCues": [
+      "Incline o tronco paralelo ao chão com coluna neutra.",
+      "Puxe os halteres com cotovelos abertos a 90° em relação ao tronco.",
+      "Foco total na contração da parte de trás dos ombros."
+    ],
+    "aliases": [
+      "remada-alta-polia-baixa",
+      "164",
+      "dumbbell-rear-delt-row",
+      "remada-posterior-ombro"
+    ]
+  },
+  "desenvolvimento-unilateral-em-pe-halter": {
+    "canonicalId": "desenvolvimento-unilateral-em-pe-halter",
+    "name": "Desenvolvimento Unilateral em Pé com Halter",
+    "equipment": "1 Halter",
+    "movementType": "Desenvolvimento Alternado • Estabilidade Escapular",
+    "target": "Deltoide Anterior/Médio e Core Anti-Flexão Lateral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-alternate-shoulder-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-alternate-shoulder-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-alternate-shoulder-press.jpg",
+    "keyCues": [
+      "Empurre um haltere enquanto o outro sustenta com controle no ombro.",
+      "Mantenha o tronco ereto sem balançar de lado.",
+      "Ritmo alternado contínuo e sincronizado."
+    ],
+    "aliases": [
+      "desenvolvimento-unilateral-em-pe-halter",
+      "150",
+      "dumbbell-alternating-shoulder-press",
+      "desenvolvimento-halteres-alternado"
+    ]
+  },
+  "elevacao-lateral-banco-inclinado": {
+    "canonicalId": "elevacao-lateral-banco-inclinado",
+    "name": "Elevação Lateral no Banco Inclinado",
+    "equipment": "Banco Inclinado (60°-75°) + Halteres",
+    "movementType": "Abdução Sentada • Eliminação Total de Impulso",
+    "target": "Deltoide Lateral (Hipertrofia no Alongamento)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-lateral-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-lateral-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-lateral-raise.jpg",
+    "keyCues": [
+      "Sentado na ponta do banco com tronco ereto e pés firmes.",
+      "Eleve os halteres em direção às paredes laterais.",
+      "Pequena rotação neutra sem elevar os polegares acima dos cotovelos."
+    ],
+    "aliases": [
+      "elevacao-lateral-banco-inclinado",
+      "151",
+      "dumbbell-seated-lateral-raise",
+      "elevacao-lateral-sentado"
+    ]
+  },
+  "rosca-drag-curl-barra": {
+    "canonicalId": "rosca-drag-curl-barra",
+    "name": "Rosca Drag com Barra (Drag Curl)",
+    "equipment": "Barra Olímpica ou Smith Machine",
+    "movementType": "Flexão de Cotovelo com Recuo de Cotovelos • Pico do Bíceps",
+    "target": "Bíceps Braquial (Pico da Cabeça Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-drag-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-drag-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-drag-curl.jpg",
+    "keyCues": [
+      "Puxe a barra raspando no abdômen e tórax enquanto puxa os cotovelos para trás.",
+      "Elimina o deltoide anterior e isola a cabeça longa do bíceps.",
+      "Aperte com força máxima no ponto mais alto."
+    ],
+    "aliases": [
+      "rosca-drag-curl-barra",
+      "175",
+      "barbell-drag-curl",
+      "rosca-drag-barra"
+    ]
+  },
+  "rosca-martelo-cruzada-cross-body": {
+    "canonicalId": "rosca-martelo-cruzada-cross-body",
+    "name": "Rosca Martelo Cruzada no Peito (Cross-Body)",
+    "equipment": "Par de Halteres",
+    "movementType": "Flexão com Pegada Neutra Cruzada • Braquial & Braquiorradial",
+    "target": "Braquial e Cabeça Longa do Bíceps",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-cross-body-hammer-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-cross-body-hammer-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-cross-body-hammer-curl.jpg",
+    "keyCues": [
+      "Suba o haltere em diagonal cruzando o peito em direção ao ombro oposto.",
+      "Mantenha a pegada neutra com o polegar sempre apontando para cima.",
+      "Ideal para construir densidade e espessura no braço."
+    ],
+    "aliases": [
+      "rosca-martelo-cruzada-cross-body",
+      "178",
+      "dumbbell-cross-body-hammer-curl",
+      "rosca-martelo-cruzada"
+    ]
+  },
+  "rosca-scott-maquina": {
+    "canonicalId": "rosca-scott-maquina",
+    "name": "Rosca Scott na Máquina",
+    "equipment": "Máquina Biceps Curl / Preacher Machine",
+    "movementType": "Flexão Guiada no Apoio Scott • Cabeça Curta do Bíceps",
+    "target": "Bíceps Braquial (Cabeça Curta)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-preacher-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-preacher-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-preacher-curl.jpg",
+    "keyCues": [
+      "Axilas perfeitamente encaixadas no topo do estofado.",
+      "Flexione os braços mantendo os cotovelos colados no suporte.",
+      "Desça sem permitir hiperextensão abrupta da articulação no final."
+    ],
+    "aliases": [
+      "rosca-scott-maquina",
+      "46",
+      "lever-preacher-curl",
+      "rosca-scott-articulada"
+    ]
+  },
+  "supino-declinado-barra": {
+    "canonicalId": "supino-declinado-barra",
+    "name": "Supino Declinado com Barra",
+    "equipment": "Banco Declinado (15°-30°) com Apoio de Pernas + Barra Olímpica",
+    "movementType": "Empurrar Declinado com Barra Olímpica • Peitoral Inferior",
+    "target": "Peitoral Maior (Porção Costal / Inferior)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-decline-bench-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-decline-bench-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-decline-bench-press.jpg",
+    "keyCues": [
+      "Pés firmemente travados no banco declinado e pegada um pouco mais larga que os ombros.",
+      "Desça a barra controladamente tocando suavemente a linha inferior do peitoral.",
+      "Empurre estendendo os cotovelos sem descolar as escápulas do banco."
+    ],
+    "aliases": [
+      "supino-declinado-barra",
+      "3",
+      "barbell-decline-bench-press",
+      "supino-declinado-com-barra"
+    ]
+  },
+  "rosca-martelo-banco-inclinado": {
+    "canonicalId": "rosca-martelo-banco-inclinado",
+    "name": "Rosca Martelo no Banco Inclinado",
+    "equipment": "Banco Inclinado 45°-60° + Halteres",
+    "movementType": "Flexão Sentada Alternada • Controle Bilateral",
+    "target": "Braquial e Cabeça Longa no Alongamento",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-alternate-seated-biceps-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-alternate-seated-biceps-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-alternate-seated-biceps-curl.jpg",
+    "keyCues": [
+      "Sentado no banco com halteres ao lado do quadril.",
+      "Suba um braço supinando enquanto o outro mantém o controle gravitacional.",
+      "Movimento estrito sem jogar os ombros para a frente."
+    ],
+    "aliases": [
+      "rosca-martelo-banco-inclinado",
+      "177",
+      "seated-alternating-dumbbell-curl",
+      "rosca-alternada-sentado"
+    ]
+  },
+  "rosca-zottman-halteres": {
+    "canonicalId": "rosca-zottman-halteres",
+    "name": "Rosca Zottman com Halteres",
+    "equipment": "Par de Halteres",
+    "movementType": "Flexão Supinada + Descida Pronada • Bíceps e Antebraço",
+    "target": "Bíceps Braquial na Subida e Braquiorradial na Descida",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-zottman-preacher-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-zottman-preacher-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-zottman-preacher-curl.jpg",
+    "keyCues": [
+      "Suba o haltere com as palmas voltadas para cima (supinação).",
+      "No topo, gire as mãos 180° com as palmas para baixo (pronação).",
+      "Desça lentamente contraindo intensamente os extensores do antebraço."
+    ],
+    "aliases": [
+      "rosca-zottman-halteres",
+      "176",
+      "dumbbell-one-arm-zottman-preacher-curl",
+      "rosca-zottman"
+    ]
+  },
+  "extensao-punho-barra": {
+    "canonicalId": "extensao-punho-barra",
+    "name": "Extensão de Punho com Barra",
+    "equipment": "Banco Reto + Barra Leve",
+    "movementType": "Extensão de Punho com Barra • Extensores Radiais do Carpo",
+    "target": "Extensores Radiais e Ulnar do Carpo (Face Posterior do Antebraço)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-reverse-wrist-curl-over-grip.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-reverse-wrist-curl-over-grip.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-reverse-wrist-curl-over-grip.jpg",
+    "keyCues": [
+      "Antebraços firmes no banco com os punhos projetados para fora.",
+      "Palmas voltadas para baixo; eleve a barra flexionando os punhos para cima.",
+      "Desça alongando o dorso do antebraço de forma controlada."
+    ],
+    "aliases": [
+      "extensao-punho-barra",
+      "100",
+      "barbell-reverse-wrist-curl",
+      "extensao-de-punho"
+    ]
+  },
+  "triceps-frances-corda-polia-baixa": {
+    "canonicalId": "triceps-frances-corda-polia-baixa",
+    "name": "Tríceps Francês com Corda na Polia Baixa",
+    "equipment": "Polia Baixa + Corda",
+    "movementType": "Extensão Overhead na Polia • Cabeça Longa em Máximo Alongamento",
+    "target": "Tríceps Braquial (Cabeça Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-rope-high-pulley-overhead-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-rope-high-pulley-overhead-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-rope-high-pulley-overhead-triceps-extension.jpg",
+    "keyCues": [
+      "Puxe a corda por trás da cabeça mantendo os cotovelos altos e fechados.",
+      "Estenda os braços à frente abrindo a corda no final.",
+      "Desça profundamente flexionando os cotovelos atrás da nuca."
+    ],
+    "aliases": [
+      "triceps-frances-corda-polia-baixa",
+      "200",
+      "cable-rope-overhead-triceps-extension",
+      "triceps-frances-polia-corda"
+    ]
+  },
+  "triceps-testa-polia-baixa-corda": {
+    "canonicalId": "triceps-testa-polia-baixa-corda",
+    "name": "Tríceps Testa na Polia Baixa com Corda",
+    "equipment": "Banco Reto em frente à Polia Baixa + Corda",
+    "movementType": "Extensão Deitada na Polia • Tensão Contínua no Topo",
+    "target": "Tríceps Braquial com Tensão Contínua",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-lying-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-lying-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-lying-triceps-extension.jpg",
+    "keyCues": [
+      "Deitado no banco de frente para a polia baixa segurando a corda/barra.",
+      "Cotovelos apontados para o teto e fixos durante todo o arco.",
+      "Estenda com potência sentindo a resistência constante do cabo."
+    ],
+    "aliases": [
+      "triceps-testa-polia-baixa-corda",
+      "197",
+      "cable-lying-triceps-extension",
+      "triceps-testa-polia"
+    ]
+  },
+  "triceps-testa-halteres-banco-reto": {
+    "canonicalId": "triceps-testa-halteres-banco-reto",
+    "name": "Tríceps Testa com Halteres no Banco Reto",
+    "equipment": "Banco Reto + Par de Halteres",
+    "movementType": "Extensão Deitada com Halteres • Trabalho Unilateral Livre",
+    "target": "Tríceps Braquial (Cabeça Medial e Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-triceps-extension.jpg",
+    "keyCues": [
+      "Halteres com pegada neutra paralelos um ao outro.",
+      "Desça os pesos ao lado das têmporas preservando os cotovelos.",
+      "Estenda até quase travar sem perder a tensão na cabeça lateral."
+    ],
+    "aliases": [
+      "triceps-testa-halteres-banco-reto",
+      "195",
+      "dumbbell-lying-triceps-extension",
+      "triceps-testa-halteres"
+    ]
+  },
+  "mergulho-maquina-articulada-triceps": {
+    "canonicalId": "mergulho-maquina-articulada-triceps",
+    "name": "Mergulho na Máquina Articulada de Tríceps",
+    "equipment": "Máquina Seated Dip Machine",
+    "movementType": "Mergulho Sentado Guiado • Tríceps sem Sobrecarga Escapular",
+    "target": "Tríceps Braquial",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-dips.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-dips.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-dips.jpg",
+    "keyCues": [
+      "Sente-se com cinto travado e manoplas firmes sob as palmas.",
+      "Empurre as manoplas para baixo estendendo totalmente os braços.",
+      "Retorne controlando em 3 segundos até a flexão de 90°."
+    ],
+    "aliases": [
+      "mergulho-maquina-articulada-triceps",
+      "212",
+      "lever-seated-dip",
+      "mergulho-maquina-triceps"
+    ]
+  },
+  "paralelas-foco-triceps-vertical": {
+    "canonicalId": "paralelas-foco-triceps-vertical",
+    "name": "Paralelas com Foco em Tríceps (Corpo Vertical)",
+    "equipment": "Barras Paralelas",
+    "movementType": "Mergulho com Tronco Vertical • Foco Exclusivo em Tríceps",
+    "target": "Tríceps Braquial (As Três Cabeças)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/triceps-dips.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/triceps-dips.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/triceps-dips.jpg",
+    "keyCues": [
+      "Mantenha o tronco estritamente na vertical e pernas retas ou cruzadas.",
+      "Cotovelos colados ao tronco e apontados para trás na descida.",
+      "Empurre com força total pelo calcanhar das mãos."
+    ],
+    "aliases": [
+      "paralelas-foco-triceps-vertical",
+      "207",
+      "triceps-dips",
+      "mergulho-paralelas-triceps"
+    ]
+  },
+  "triceps-frances-halter": {
+    "canonicalId": "triceps-frances-halter",
+    "name": "Tríceps Francês com Halter",
+    "equipment": "Banco com Encosto Baixo ou Reto + 1 Halter Pesado",
+    "movementType": "Extensão Acima da Cabeça • Isolamento Unilateral",
+    "target": "Tríceps Braquial (Cabeça Longa no Alongamento Superior)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-triceps-extension.jpg",
+    "keyCues": [
+      "Braço estendido verticalmente ao lado da orelha.",
+      "Desça o haltere por trás da cabeça dobrando o cotovelo.",
+      "Estenda sem abrir o cotovelo para o lado."
+    ],
+    "aliases": [
+      "triceps-frances-halter",
+      "54",
+      "dumbbell-one-arm-triceps-extension",
+      "triceps-frances-unilateral-halter"
+    ]
+  },
+  "triceps-coice-polia-unilateral": {
+    "canonicalId": "triceps-coice-polia-unilateral",
+    "name": "Tríceps Coice na Polia Baixa Unilateral sem Pegador",
+    "equipment": "Polia Baixa + Cabo Direto",
+    "movementType": "Empurrada Unilateral na Polia • Tensão Contínua",
+    "target": "Tríceps Braquial (Cabeça Lateral e Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-standing-one-arm-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-standing-one-arm-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-standing-one-arm-triceps-extension.jpg",
+    "keyCues": [
+      "Segure o cabo ou manopla com o cotovelo travado na cintura.",
+      "Estenda o braço para baixo até a contração de pico do tríceps.",
+      "Controle milimétrico no retorno excêntrico."
+    ],
+    "aliases": [
+      "triceps-coice-polia-unilateral",
+      "204",
+      "cable-standing-one-arm-triceps-extension",
+      "triceps-unilateral-polia-alta"
+    ]
+  },
+  "flexao-punho-halteres": {
+    "canonicalId": "flexao-punho-halteres",
+    "name": "Flexão de Punho com Halteres",
+    "equipment": "Par de Halteres + Banco",
+    "movementType": "Flexão de Punho por Trás • Flexores Profundos dos Dedos",
+    "target": "Flexores do Punho Unilaterais",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-standing-back-wrist-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-standing-back-wrist-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-standing-back-wrist-curl.jpg",
+    "keyCues": [
+      "Em pé segurando a barra por trás do corpo com palmas para trás.",
+      "Enrole os dedos e flexione os punhos para cima em direção às costas.",
+      "Excelente construtor de força de pegada e antebraço medial."
+    ],
+    "aliases": [
+      "flexao-punho-halteres",
+      "187",
+      "barbell-standing-back-wrist-curl",
+      "flexao-punho-por-tras-barra"
+    ]
+  },
+  "rosca-punho-inversa-banco-barra": {
+    "canonicalId": "rosca-punho-inversa-banco-barra",
+    "name": "Rosca de Punho Inversa no Banco com Barra",
+    "equipment": "Banco + Barra Reta",
+    "movementType": "Flexão com Halteres por Trás • Trabalho Unilateral",
+    "target": "Extensores do Punho e Braquiorradial",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-behind-back-wrist-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-behind-back-wrist-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-behind-back-wrist-curl.jpg",
+    "keyCues": [
+      "Segure halteres por trás do quadril com pegada pronada.",
+      "Flexione os punhos para cima com amplitude controlada.",
+      "Trabalho de fortalecimento das mãos e punhos."
+    ],
+    "aliases": [
+      "rosca-punho-inversa-banco-barra",
+      "189",
+      "dumbbell-behind-the-back-wrist-curl",
+      "flexao-punho-halteres-por-tras"
+    ]
+  },
+  "passada-barra-costas-walking-lunge": {
+    "canonicalId": "passada-barra-costas-walking-lunge",
+    "name": "Passada com Barra nas Costas (Walking Lunge)",
+    "equipment": "Barra Olímpica nos Ombros + Espaço para Caminhada",
+    "movementType": "Passada com Barra Olímpica • Força Unilateral Dinâmica",
+    "target": "Quadríceps, Glúteos e Força Funcional",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-lunge.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-lunge.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-lunge.jpg",
+    "keyCues": [
+      "Barra apoiada no trapézio com pegada firme.",
+      "Dê um passo à frente flexionando ambos os joelhos a 90°.",
+      "O joelho traseiro quase toca o solo mantendo o tronco ereto."
+    ],
+    "aliases": [
+      "passada-barra-costas-walking-lunge",
+      "221",
+      "barbell-lunge",
+      "passada-com-barra"
+    ]
+  },
+  "agachamento-sumo-halter-pesado": {
+    "canonicalId": "agachamento-sumo-halter-pesado",
+    "name": "Agachamento Sumô com Halter Pesado",
+    "equipment": "1 Halter Pesado pendendo entre as pernas",
+    "movementType": "Agachamento com Base Larga • Adutores & Glúteo Máximo",
+    "target": "Adutores, Glúteos e Quadríceps",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-bar-grip-sumo-squat.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-bar-grip-sumo-squat.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-bar-grip-sumo-squat.jpg",
+    "keyCues": [
+      "Pés afastados além da largura dos ombros com pontas rodadas a 45°.",
+      "Haltere pesado suspenso entre as pernas com braços estendidos.",
+      "Desça os quadris até ultrapassar a linha dos joelhos empurrando pelo calcanhar."
+    ],
+    "aliases": [
+      "agachamento-sumo-halter-pesado",
+      "218",
+      "dumbbell-sumo-squat",
+      "agachamento-sumo-halter"
+    ]
+  },
+  "cadeira-extensora-unilateral": {
+    "canonicalId": "cadeira-extensora-unilateral",
+    "name": "Cadeira Extensora Unilateral",
+    "equipment": "Cadeira Extensora",
+    "movementType": "Leg Press com Pés Fechados • Ênfase no Vasto Lateral",
+    "target": "Quadríceps (Isolamento Unilateral)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/close-feet-leg-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/close-feet-leg-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/close-feet-leg-press.jpg",
+    "keyCues": [
+      "Pés posicionados no centro da plataforma com distância de 10-15 cm.",
+      "Desça a plataforma controlando sem retirar o quadril do assento.",
+      "Empurre estendendo as pernas sem travar os joelhos no topo."
+    ],
+    "aliases": [
+      "cadeira-extensora-unilateral",
+      "227",
+      "close-feet-leg-press",
+      "leg-press-pes-juntos"
+    ]
+  },
+  "agachamento-pistola-pistol-squat": {
+    "canonicalId": "agachamento-pistola-pistol-squat",
+    "name": "Agachamento Pistola Unilateral (Pistol Squat)",
+    "equipment": "Peso Corporal (Chão ou Caixa)",
+    "movementType": "Agachamento com Halteres Livres • Quadríceps e Glúteos",
+    "target": "Quadríceps, Força Unilateral Pura e Equilíbrio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-squat.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-squat.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-squat.jpg",
+    "keyCues": [
+      "Halteres firmes ao lado do corpo com postura ereta.",
+      "Agache dobrando os joelhos e quadris simultaneamente.",
+      "Empurre contra o chão mantendo o peito elevado."
+    ],
+    "aliases": [
+      "agachamento-pistola-pistol-squat",
+      "220",
+      "dumbbell-squat",
+      "agachamento-livre-halteres"
+    ]
+  },
+  "flexora-bola-suica": {
+    "canonicalId": "flexora-bola-suica",
+    "name": "Flexora de Pernas com Bola Suíça",
+    "equipment": "Colchonete + Bola Suíça (Fitball)",
+    "movementType": "Flexão de Joelho Ajoelhada • Isolamento Unilateral dos Isquiotibiais",
+    "target": "Isquiotibiais e Glúteo Máximo com Instabilidade",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-kneeling-leg-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-kneeling-leg-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-kneeling-leg-curl.jpg",
+    "keyCues": [
+      "Apoie o joelho no acolchoado com o rolo posicionado atrás do tornozelo.",
+      "Puxe o rolo em direção ao glúteo com contração máxima.",
+      "Controle milimetricamente o retorno sem soltar o peso."
+    ],
+    "aliases": [
+      "flexora-bola-suica",
+      "242",
+      "lever-kneeling-leg-curl",
+      "flexora-ajoelhada-maquina"
+    ]
+  },
+  "panturrilha-agachamento-smith": {
+    "canonicalId": "panturrilha-agachamento-smith",
+    "name": "Panturrilha no Agachamento Smith",
+    "equipment": "Smith Machine + Bloco Elevado",
+    "movementType": "Elevação Plantar Guiada no Smith • Gastrocnêmio com Carga",
+    "target": "Gastrocnêmio com Sobrecarga Pesada",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-calf-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-calf-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-calf-raise.jpg",
+    "keyCues": [
+      "Barra nas costas e pontas dos pés sobre o degrau/bloco.",
+      "Desça os calcanhares sentindo o alongamento máximo da fáscia.",
+      "Suba na ponta dos pés sustentando o topo por 1 segundo."
+    ],
+    "aliases": [
+      "panturrilha-agachamento-smith",
+      "266",
+      "smith-machine-calf-raise",
+      "panturrilha-no-smith"
+    ]
+  },
+  "gemeos-unilateral-step-sem-carga": {
+    "canonicalId": "gemeos-unilateral-step-sem-carga",
+    "name": "Gêmeos Unilateral no Step sem Carga",
+    "equipment": "Degrau ou Step",
+    "movementType": "Elevação Plantar em Pé com Halteres • Trabalho Bilateral",
+    "target": "Gastrocnêmio (Resistência e Cadência Controlada)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-standing-calf-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-standing-calf-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-standing-calf-raise.jpg",
+    "keyCues": [
+      "Segure os halteres ao lado do corpo e equilibre sobre o bloco.",
+      "Eleve os calcanhares no ponto mais alto da contração.",
+      "Descida controlada em 3 segundos."
+    ],
+    "aliases": [
+      "gemeos-unilateral-step-sem-carga",
+      "264",
+      "dumbbell-standing-calf-raise",
+      "panturrilha-em-pe-halteres"
+    ]
+  },
+  "elevacao-pelvica-maquina": {
+    "canonicalId": "elevacao-pelvica-maquina",
+    "name": "Elevação Pélvica na Máquina",
+    "equipment": "Máquina Hip Thrust Machine",
+    "movementType": "Elevação Unilateral com Halter • Correção de Assimetrias",
+    "target": "Glúteo Máximo",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-single-leg-calf-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-single-leg-calf-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-single-leg-calf-raise.jpg",
+    "keyCues": [
+      "Apoie uma das mãos no suporte e segure o haltere com a outra.",
+      "Trabalhe a perna individual com amplitude articular completa.",
+      "Pausa no pico de contração antes de descer."
+    ],
+    "aliases": [
+      "elevacao-pelvica-maquina",
+      "79",
+      "dumbbell-single-leg-calf-raise",
+      "panturrilha-unilateral-degrau"
+    ]
+  },
+  "dorsiflexao-tibial-anterior-halter": {
+    "canonicalId": "dorsiflexao-tibial-anterior-halter",
+    "name": "Dorsiflexão Tibial Anterior com Halter",
+    "equipment": "Banco Reto + 1 Halter preso entre os Pés ou na Ponta do Pé",
+    "movementType": "Elevação Plantar com Tronco Flexionado • Foco nos Gêmeos",
+    "target": "Tibial Anterior (Frente da Canela)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/donkey-calf-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/donkey-calf-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/donkey-calf-raise.jpg",
+    "keyCues": [
+      "Tronco flexionado a 90° com apoio das mãos no suporte.",
+      "Quadris elevados para pré-alongar a musculatura posterior da perna.",
+      "Elevação potente dos calcanhares sem dobrar os joelhos."
+    ],
+    "aliases": [
+      "dorsiflexao-tibial-anterior-halter",
+      "267",
+      "donkey-calf-raise",
+      "panturrilha-burro"
+    ]
+  },
+  "maquina-abdominal": {
+    "canonicalId": "maquina-abdominal",
+    "name": "Máquina de Abdominal",
+    "equipment": "Máquina Abdominal Crunch Sentado",
+    "movementType": "Flexão de Tronco na Máquina • Reto Abdominal com Sobrecarga",
+    "target": "Reto Abdominal com Carga de Placas",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-crunch-1.mp4",
+    "videoFemale": null,
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-crunch-1.jpg",
+    "keyCues": [
+      "Apoie o peito ou segure as alças com os pés travados.",
+      "Enrole a coluna contraindo os gomos do abdômen, sem puxar com os braços.",
+      "Retorne resistindo até sentir o abdômen alongar."
+    ],
+    "aliases": [
+      "maquina-abdominal",
+      "98",
+      "lever-seated-crunch",
+      "abdominal-na-maquina"
+    ]
+  },
+  "pulo-corda-jump-rope": {
+    "canonicalId": "pulo-corda-jump-rope",
+    "name": "Pulo de Corda Rápido (Jump Rope)",
+    "equipment": "Corda de Pular (Speed Rope)",
+    "movementType": "Salto Contínuo com Corda • Resistência Cardiovascular e Perna",
+    "target": "Panturrilhas, Tendão de Aquiles e Resistência Aeróbica",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/jump-rope.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/jump-rope.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/jump-rope.jpg",
+    "keyCues": [
+      "Mantenha os cotovelos próximos às costelas e gire a corda com os punhos.",
+      "Salte na ponta dos pés flexionando levemente os joelhos no impacto.",
+      "Ritmo contínuo mantendo o abdômen firme e respiração constante."
+    ],
+    "aliases": [
+      "pulo-corda-jump-rope",
+      "303",
+      "jump-rope",
+      "pulo-de-corda"
+    ]
+  },
+  "knee-to-elbow-barra-fixa": {
+    "canonicalId": "knee-to-elbow-barra-fixa",
+    "name": "Knee to Elbow na Barra Fixa",
+    "equipment": "Barra Fixa",
+    "movementType": "Elevação de Pernas no Banco Inclinado • Porção Inferior do Abdômen",
+    "target": "Reto Abdominal e Oblíquos",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-leg-hip-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-leg-hip-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/incline-leg-hip-raise.jpg",
+    "keyCues": [
+      "Deite-se no banco inclinado segurando as travas superiores com as mãos.",
+      "Eleve as pernas e a bacia do banco enrolando a pelve em direção ao tórax.",
+      "Desça devagar sem deixar a lombar arquear."
+    ],
+    "aliases": [
+      "knee-to-elbow-barra-fixa",
+      "282",
+      "incline-leg-hip-raise",
+      "elevacao-pernas-banco-inclinado"
+    ]
+  },
+  "gemeos-hack": {
+    "canonicalId": "gemeos-hack",
+    "name": "Gêmeos no Hack",
+    "equipment": "Máquina Hack Squat",
+    "movementType": "Flexão Completa de Tronco Solo • Força Geral de Core",
+    "target": "Gastrocnêmio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sit-ups.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sit-ups.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sit-ups.jpg",
+    "keyCues": [
+      "Deite de costas no solo com joelhos dobrados e pés firmes no chão.",
+      "Suba o tronco completamente até encostar os cotovelos nos joelhos.",
+      "Desça desenrolando a coluna vértebra por vértebra."
+    ],
+    "aliases": [
+      "gemeos-hack",
+      "89",
+      "sit-up",
+      "sit-up-militar"
+    ]
+  },
+  "abdominal-infra-reverso": {
+    "canonicalId": "abdominal-infra-reverso",
+    "name": "Abdominal Infra Reverso",
+    "equipment": "Colchonete no Chão ou Banco Reto",
+    "movementType": "Flexão Simultânea de Tronco e Pernas • Reto Abdominal Total",
+    "target": "Reto Abdominal (Foco Pélvico Inferior)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/v-up.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/v-up.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/v-up.jpg",
+    "keyCues": [
+      "Deite reto no solo com braços esticados acima da cabeça.",
+      "Suba tronco e pernas retas ao mesmo tempo formando um \"V\".",
+      "Toque as pontas dos pés no topo e retorne com controle total."
+    ],
+    "aliases": [
+      "abdominal-infra-reverso",
+      "94",
+      "v-up",
+      "abdominal-canivete"
+    ]
+  },
+  "crunch-polia": {
+    "canonicalId": "crunch-polia",
+    "name": "Crunch na Polia",
+    "equipment": "Polia Alta + Corda + Colchonete",
+    "movementType": "Flexão Cruzada no Solo • Oblíquos Internos e Externos",
+    "target": "Reto Abdominal com Sobrecarga Progressiva",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/twisting-crunch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/twisting-crunch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/twisting-crunch.jpg",
+    "keyCues": [
+      "Mãos na cabeça sem puxar o pescoço; cotovelos abertos.",
+      "Suba o tronco rodando e apontando o ombro em direção ao joelho oposto.",
+      "Alterne os lados com contração deliberada dos oblíquos."
+    ],
+    "aliases": [
+      "crunch-polia",
+      "91",
+      "twisting-crunch",
+      "abdominal-obliquo-cruzado"
+    ]
+  },
+  "abdominal-declinado-anilha-peito": {
+    "canonicalId": "abdominal-declinado-anilha-peito",
+    "name": "Abdominal Declinado com Anilha no Peito",
+    "equipment": "Banco Declinado + Anilha de 5kg a 20kg",
+    "movementType": "Flexão Lateral com Halter • Oblíquos e Estabilizadores Laterais",
+    "target": "Reto Abdominal com Sobrecarga",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-side-bend.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-side-bend.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-side-bend.jpg",
+    "keyCues": [
+      "Em pé segurando um único haltere ao lado da coxa.",
+      "Incline o tronco lateralmente na direção do haltere com quadris parados.",
+      "Retorne estendendo até a vertical usando a musculatura oblíqua oposta."
+    ],
+    "aliases": [
+      "abdominal-declinado-anilha-peito",
+      "287",
+      "dumbbell-side-bend",
+      "flexao-lateral-halter"
+    ]
+  },
+  "corda-naval-ondas-alternadas": {
+    "canonicalId": "corda-naval-ondas-alternadas",
+    "name": "Corda Naval Ondas Alternadas (Battle Ropes)",
+    "equipment": "Corda Naval Ancorada",
+    "movementType": "Ondulação Rítmica Contínua • Potência de Ombros e Core",
+    "target": "Ombros, Braços, Core e Condicionamento Anaeróbico",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/battling-ropes.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/battling-ropes.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/battling-ropes.jpg",
+    "keyCues": [
+      "Posição semi-agachada estável com peito aberto e core contraído.",
+      "Mova os braços alternadamente para cima e para baixo gerando ondas velozes.",
+      "Mantenha a respiração compassada e ritmo constante."
+    ],
+    "aliases": [
+      "corda-naval-ondas-alternadas",
+      "301",
+      "battling-ropes",
+      "corda-naval"
+    ]
+  },
+  "burpee-completo-salto": {
+    "canonicalId": "burpee-completo-salto",
+    "name": "Burpee Completo com Salto",
+    "equipment": "Peso Corporal (Chão)",
+    "movementType": "Movimento Calistênico Dinâmico • Condicionamento Total",
+    "target": "Condicionamento Metabólico e Potência Corporal Global",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/burpee.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/burpee.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/burpee.jpg",
+    "keyCues": [
+      "Agache, apoie as mãos no chão e jogue os pés para trás.",
+      "Faça uma flexão completa tocando o peito no solo.",
+      "Puxe os pés de volta com explosão e salte estendendo os braços acima da cabeça."
+    ],
+    "aliases": [
+      "burpee-completo-salto",
+      "297",
+      "burpee",
+      "burpee-completo-com-salto"
+    ]
   }
 };
 
 /**
- * Normaliza strings para matching seguro (remove acentos e caracteres especiais)
+ * Função utilitária de normalização para busca case-insensitive e sem acentos
  */
 function normalizeString(str) {
-  if (!str || typeof str !== 'string') return '';
+  if (!str) return '';
   return str
     .toLowerCase()
     .normalize('NFD')
