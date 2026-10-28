@@ -15,7 +15,8 @@ import {
   ChevronRight,
   Layers,
   Flame,
-  ArrowRight
+  ArrowRight,
+  Play
 } from 'lucide-react';
 import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
@@ -23,6 +24,7 @@ import CelebrationModal from './CelebrationModal';
 import BadgeUnlockedToast from './BadgeUnlockedToast';
 import PlateCalculatorModal from './PlateCalculatorModal';
 import SetRow from './SetRow';
+import { hasVerifiedExerciseVideo } from '../data/exerciseVideos';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { sound, triggerHaptic } from '../utils/audio';
 import {
@@ -611,19 +613,37 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                         <Dumbbell className="w-4 h-4 stroke-[2]" />
                       </button>
 
-                      {/* Guia Biomecânico do Exercício */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedExerciseForModal(activeExercise);
-                          triggerHaptic(10);
-                        }}
-                        className="px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
-                        title="Ver execução técnica"
-                      >
-                        <Eye className="w-4 h-4 stroke-[1.8]" />
-                        <span>Guia</span>
-                      </button>
+                      {/* Guia Biomecânico do Exercício / Vídeo de Execução */}
+                      {(() => {
+                        const hasVideo = hasVerifiedExerciseVideo(activeExercise);
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedExerciseForModal(activeExercise);
+                              triggerHaptic(10);
+                            }}
+                            className={`px-3 py-2 rounded-xl active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold border ${
+                              hasVideo
+                                ? 'bg-zinc-900 hover:bg-zinc-800 text-[#c6f432] border-[#c6f432]/30 shadow-xs'
+                                : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border-white/[0.08]'
+                            }`}
+                            title={hasVideo ? 'Ver vídeo de execução técnica' : 'Ver guia biomecânico'}
+                          >
+                            {hasVideo ? (
+                              <>
+                                <Play className="w-3.5 h-3.5 fill-[#c6f432] text-[#c6f432]" />
+                                <span>Vídeo</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="w-4 h-4 stroke-[1.8]" />
+                                <span>Guia</span>
+                              </>
+                            )}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -732,18 +752,37 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedExerciseForModal(exercise);
-                          triggerHaptic(10);
-                        }}
-                        className="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium flex items-center gap-1.5 border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[38px]"
-                      >
-                        <Eye className="w-3.5 h-3.5 stroke-[1.8]" />
-                        <span>Guia</span>
-                      </button>
+                      {(() => {
+                        const hasVideo = hasVerifiedExerciseVideo(exercise);
+                        return (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedExerciseForModal(exercise);
+                              triggerHaptic(10);
+                            }}
+                            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border active:scale-95 transition-all cursor-pointer min-h-[38px] ${
+                              hasVideo
+                                ? 'bg-zinc-900 hover:bg-zinc-800 text-[#c6f432] border-[#c6f432]/30 shadow-xs'
+                                : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-white/[0.08]'
+                            }`}
+                            title={hasVideo ? 'Ver vídeo de execução técnica' : 'Ver guia biomecânico'}
+                          >
+                            {hasVideo ? (
+                              <>
+                                <Play className="w-3 h-3 fill-[#c6f432] text-[#c6f432]" />
+                                <span className="font-bold">Vídeo</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="w-3.5 h-3.5 stroke-[1.8]" />
+                                <span>Guia</span>
+                              </>
+                            )}
+                          </button>
+                        );
+                      })()}
 
                       <div className="text-zinc-500 p-1">
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}

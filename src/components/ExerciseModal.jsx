@@ -15,11 +15,16 @@ import { EXERCISE_DATABASE } from '../data/workoutGenerator';
 import { getExerciseVisual } from '../data/exerciseVisuals';
 import { findExerciseIn100 } from '../data/exercises100';
 import { getBiomechanicsForExercise } from '../data/exerciseBiomechanics';
+import { getVerifiedExerciseVideo } from '../data/exerciseVideos';
+import ExerciseVideoPlayer from './ExerciseVideoPlayer';
 
 export default function ExerciseModal({ exercise, onClose }) {
   const [activeTab, setActiveTab] = useState('biomechanics'); // 'biomechanics' | 'steps' | 'safety'
 
   if (!exercise) return null;
+
+  // Busca vídeo oficial verificado (garantia de zero mismatch)
+  const verifiedVideo = getVerifiedExerciseVideo(exercise);
 
   // Busca dados biomecânicos auditados e exatos dos 320 exercícios
   const bio = getBiomechanicsForExercise(exercise);
@@ -99,6 +104,12 @@ export default function ExerciseModal({ exercise, onClose }) {
               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 font-sans">
                 {official100?.mecanica || 'Composto / Padrão'}
               </span>
+              {verifiedVideo && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#c6f432]/10 text-[#c6f432] border border-[#c6f432]/30 flex items-center gap-1 font-sans">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#c6f432] animate-pulse" />
+                  Vídeo HD
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0 text-zinc-600 dark:text-zinc-300 text-[10px]">
               <span className="font-bold">{official100?.series || 4} séries</span>
@@ -150,6 +161,14 @@ export default function ExerciseModal({ exercise, onClose }) {
         {/* Conteúdo Rolável do Modal */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-4">
           
+          {/* Demonstração em Vídeo de Execução Técnica Auditada (quando disponível) */}
+          {verifiedVideo && (
+            <ExerciseVideoPlayer 
+              videoData={verifiedVideo} 
+              exerciseName={bio?.nome || official100?.nome || exercise.name} 
+            />
+          )}
+
           {/* ABA 1: BIOMECÂNICA & FASES DE MOVIMENTO */}
           {activeTab === 'biomechanics' && (
             <div className="space-y-4 animate-fadeIn">

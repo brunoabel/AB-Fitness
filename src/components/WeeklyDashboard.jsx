@@ -18,6 +18,7 @@ import { ATHLETE_MANUALS } from '../data/athleteManuals';
 import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 import MuscleRecoveryMap from './MuscleRecoveryMap';
+import { hasVerifiedExerciseVideo } from '../data/exerciseVideos';
 
 
 export default function WeeklyDashboard({ 
@@ -365,9 +366,17 @@ export default function WeeklyDashboard({
                               {index + 1}
                             </div>
                             <div>
-                              <h5 className="text-xs font-semibold text-zinc-950 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
-                                {ex.name}
-                              </h5>
+                              <div className="flex items-center gap-1.5">
+                                <h5 className="text-xs font-semibold text-zinc-950 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
+                                  {ex.name}
+                                </h5>
+                                {hasVerifiedExerciseVideo(ex) && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-[#c6f432]/10 text-[#c6f432] border border-[#c6f432]/30 flex items-center gap-0.5 shrink-0">
+                                    <Play className="w-2 h-2 fill-current" />
+                                    Vídeo
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                                 <span className="font-medium">{ex.badge || ex.target}</span>
                                 <span>•</span>
