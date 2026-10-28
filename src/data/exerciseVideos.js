@@ -4,7 +4,7 @@
  * Regra de Ouro:
  * NENHUM exercício pode apresentar demonstração com equipamento ou padrão de movimento divergente.
  * Cada registro é verificado individualmente contra o ID e características anatómicas do exercício.
- * Total de exercícios auditados: 122
+ * Total de exercícios auditados: 158
  */
 
 export const VERIFIED_EXERCISE_VIDEOS = {
@@ -586,24 +586,23 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   },
   "extensao-lombar-banco-romano": {
     "canonicalId": "extensao-lombar-banco-romano",
-    "name": "Extensão Lombar no Banco Romano 45°",
-    "equipment": "Banco Romano 45°",
-    "movementType": "Extensão de Tronco e Quadril",
-    "target": "Eretores da Espinha & Glúteos",
-    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-hyperextension.mp4",
-    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/45-degree-hyperextension.mp4",
-    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/45-degree-hyperextension.jpg",
+    "name": "Extensão Lombar (Banco Romano)",
+    "equipment": "Banco Romano / Hiperextensão 45°",
+    "movementType": "Extensão de Coluna Guiada • Eretor da Espinha",
+    "target": "Eretores da Espinha (Lombar)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-back-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-back-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-back-extension.jpg",
     "keyCues": [
-      "Ajuste o apoio do quadril logo abaixo da crista ilíaca.",
-      "Flexione o tronco para frente controlando pelo abdômen e lombar.",
-      "Suba até o alinhamento com as pernas sem hiperextender excessivamente."
+      "Ajuste o rolo na altura da escápula média.",
+      "Estenda a coluna empurrando o encosto para trás com suavidade.",
+      "Retorne controladamente sem perder a postura neutra lombar."
     ],
     "aliases": [
       "extensao-lombar-banco-romano",
-      "extensao-lombar",
-      "banco-romano",
-      "hyperextension",
-      "25"
+      "25",
+      "lever-back-extension",
+      "lombar-na-maquina"
     ]
   },
   "encolhimento-com-halteres": {
@@ -2603,6 +2602,794 @@ export const VERIFIED_EXERCISE_VIDEOS = {
       "297",
       "burpee",
       "burpee-completo-com-salto"
+    ]
+  },
+  "supino-pegada-neutra-halteres": {
+    "canonicalId": "supino-pegada-neutra-halteres",
+    "name": "Supino com Pegada Neutra com Halteres",
+    "equipment": "Banco Reto + Halteres",
+    "movementType": "Empurrar Horizontal com Pegada Neutra • Alívio Articular no Ombro",
+    "target": "Peitoral Maior e Tríceps Braquial",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-hammer-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-hammer-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-hammer-press.jpg",
+    "keyCues": [
+      "Halteres paralelos com palmas voltadas uma para a outra.",
+      "Desça mantendo os cotovelos a ~45° do tronco.",
+      "Excelente variação para proteção do manguito rotador e ativação esternal."
+    ],
+    "aliases": [
+      "supino-pegada-neutra-halteres",
+      "108",
+      "dumbbell-lying-hammer-press",
+      "supino-neutro-halteres"
+    ]
+  },
+  "supino-fechado-halteres": {
+    "canonicalId": "supino-fechado-halteres",
+    "name": "Chest Press Sentado Convergente",
+    "equipment": "Máquina Chest Press com Manoplas Convergentes",
+    "movementType": "Empurrar com Halteres Unidos • Miolo do Peitoral e Tríceps",
+    "target": "Peitoral Maior (Médio e Superior)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-close-grip-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-close-grip-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-close-grip-press.jpg",
+    "keyCues": [
+      "Pressione os halteres um contra o outro no centro do peito durante todo o movimento.",
+      "Desça os pesos unidos até encostar no esterno.",
+      "Empurre estendendo os braços mantendo a pressão adutora contínua."
+    ],
+    "aliases": [
+      "supino-fechado-halteres",
+      "chest-press-convergente",
+      "112",
+      "dumbbell-close-grip-press",
+      "crush-press-halteres"
+    ]
+  },
+  "flexao-deficit-blocos": {
+    "canonicalId": "flexao-deficit-blocos",
+    "name": "Flexão com Déficit em Blocos",
+    "equipment": "2 Blocos de Madeira / Anilhas / Parallettes",
+    "movementType": "Flexão com Maior Amplitude • Máximo Alongamento do Peitoral",
+    "target": "Peitoral Maior (Hipertrofia no Ponto de Alongamento Máximo)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/deep-push-ups.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/deep-push-ups.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/deep-push-ups.jpg",
+    "keyCues": [
+      "Mãos apoiadas sobre blocos, steps ou pegadores de flexão.",
+      "Desça o tórax ultrapassando a linha das mãos para amplitude profunda.",
+      "Empurre contraindo o peitoral com o core rigidamente travado."
+    ],
+    "aliases": [
+      "flexao-deficit-blocos",
+      "119",
+      "deep-push-up",
+      "flexao-profunda-solo"
+    ]
+  },
+  "barra-fixa-supinada-chin-up": {
+    "canonicalId": "barra-fixa-supinada-chin-up",
+    "name": "Barra Fixa Supinada",
+    "equipment": "Barra Fixa",
+    "movementType": "Tração Vertical Supinada • Latíssimo e Flexores do Cotovelo",
+    "target": "Grande Dorsal e Bíceps Braquial (Porção Curta e Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/reverse-grip-pull-up.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/reverse-grip-pull-up.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/reverse-grip-pull-up.jpg",
+    "keyCues": [
+      "Pegada com as palmas voltadas para você na largura dos ombros.",
+      "Puxe trazendo o peito em direção à barra com grande ativação de bíceps.",
+      "Desça com controle até a extensão quase completa dos braços."
+    ],
+    "aliases": [
+      "barra-fixa-supinada-chin-up",
+      "barra-fixa-supinada",
+      "14",
+      "reverse-grip-pull-up",
+      "chin-up-barra-fixa"
+    ]
+  },
+  "barra-australiana-inverted-row": {
+    "canonicalId": "barra-australiana-inverted-row",
+    "name": "Barra Australiana Invertida (Inverted Row)",
+    "equipment": "Barra no Smith / Fita de Suspensão TRX",
+    "movementType": "Remada Invertida com Fitas / Barra • Romboides e Latíssimo",
+    "target": "Romboides, Trapézio Médio e Grande Dorsal",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/inverted-row-with-straps.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/inverted-row-with-straps.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/inverted-row-with-straps.jpg",
+    "keyCues": [
+      "Corpo reto em prancha apoiando os calcanhares no chão.",
+      "Puxe o peito em direção às manoplas ou barra retraindo as escápulas.",
+      "Excelente exercício para construção de força de puxada horizontal."
+    ],
+    "aliases": [
+      "barra-australiana-inverted-row",
+      "145",
+      "inverted-row-with-straps",
+      "remada-australiana"
+    ]
+  },
+  "remada-cavalinho-apoiada-peito": {
+    "canonicalId": "remada-cavalinho-apoiada-peito",
+    "name": "Remada Seal Row no Banco Reto",
+    "equipment": "Banco Reto Elevado em Blocos + Barra ou Halteres",
+    "movementType": "Remada T-Bar Guiada com Apoio Peitoral • Densidade Dorsal",
+    "target": "Romboides, Trapézio Médio e Dorsal",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-reverse-t-bar-row.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-reverse-t-bar-row.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-reverse-t-bar-row.jpg",
+    "keyCues": [
+      "Peito totalmente apoiado na almofada inclinada da máquina.",
+      "Puxe as manoplas em direção ao abdômen fechando as costas.",
+      "Zero sobrecarga na região lombar."
+    ],
+    "aliases": [
+      "remada-cavalinho-apoiada-peito",
+      "remada-seal-row-banco",
+      "133",
+      "lever-reverse-t-bar-row",
+      "remada-t-bar-apoiada"
+    ]
+  },
+  "hiperextensao-lombar-45-peso": {
+    "canonicalId": "hiperextensao-lombar-45-peso",
+    "name": "Hiperextensão Lombar no Banco 45° com Peso",
+    "equipment": "Banco de Hiperextensão 45° + Anilha ou Halter no Peito",
+    "movementType": "Extensão de Quadril e Lombar • Cadeia Posterior e Glúteo",
+    "target": "Eretores da Espinha e Cadeia Posterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-hyperextension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/45-degree-hyperextension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/45-degree-hyperextension.jpg",
+    "keyCues": [
+      "Apoie a bacia na almofada superior com os tornozelos bem travados.",
+      "Desça o tronco flexionando o quadril com coluna alinhada.",
+      "Suba até a linha do corpo contraindo glúteos e paravertebrais."
+    ],
+    "aliases": [
+      "hiperextensao-lombar-45-peso",
+      "146",
+      "45-degree-hyperextension",
+      "banco-romano-45"
+    ]
+  },
+  "desenvolvimento-militar-em-pe-barra": {
+    "canonicalId": "desenvolvimento-militar-em-pe-barra",
+    "name": "Desenvolvimento Militar",
+    "equipment": "Barra Olímpica em Pé (Overhead Press)",
+    "movementType": "Empurrar Vertical Estrito • Força Bruta de Ombros e Core",
+    "target": "Deltoide Anterior e Médio (Cabeça Clavicular e Acromial)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/military-press.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/military-press.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/military-press.jpg",
+    "keyCues": [
+      "Em pé com pés na largura dos quadris, glúteos e abdômen contraídos.",
+      "Barra sai da clavícula e sobe em linha reta, passando rente ao rosto.",
+      "Bloqueie no topo com a cabeça passando levemente à frente da barra."
+    ],
+    "aliases": [
+      "desenvolvimento-militar-em-pe-barra",
+      "desenvolvimento-militar",
+      "27",
+      "military-press",
+      "overhead-press-barra"
+    ]
+  },
+  "elevacao-lateral-unilateral-halter": {
+    "canonicalId": "elevacao-lateral-unilateral-halter",
+    "name": "Elevação Frontal com Anilha (Plate Raise)",
+    "equipment": "1 Anilha de 10kg a 20kg",
+    "movementType": "Abdução Unilateral com Halter • Foco Puro no Deltoide Lateral",
+    "target": "Deltoide Anterior e Serrátil Anterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-lateral-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-lateral-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-lateral-raise.jpg",
+    "keyCues": [
+      "Segure um suporte estável com uma mão e o haltere com a outra.",
+      "Incline o tronco levemente na direção do movimento para melhor alinhamento.",
+      "Eleve o haltere no plano escapular até a altura do ombro."
+    ],
+    "aliases": [
+      "elevacao-lateral-unilateral-halter",
+      "elevacao-frontal-anilha-plate-raise",
+      "156",
+      "dumbbell-one-arm-lateral-raise",
+      "elevacao-lateral-1-braco"
+    ]
+  },
+  "elevacao-frontal-sentado-halteres": {
+    "canonicalId": "elevacao-frontal-sentado-halteres",
+    "name": "Elevação Frontal Alternada com Halteres",
+    "equipment": "Par de Halteres",
+    "movementType": "Flexão de Ombro Sentado • Deltoide Anterior Estrito",
+    "target": "Deltoide Anterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-front-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-front-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-front-raise.jpg",
+    "keyCues": [
+      "Sentado no banco com as costas firmes no encosto vertical.",
+      "Eleve os halteres à frente sem usar o balanço do tronco.",
+      "Desça resistindo à gravidade em 2 segundos."
+    ],
+    "aliases": [
+      "elevacao-frontal-sentado-halteres",
+      "elevacao-frontal-alternada-halteres",
+      "157",
+      "dumbbell-seated-front-raise",
+      "elevacao-frontal-sentado"
+    ]
+  },
+  "iron-cross-halteres": {
+    "canonicalId": "iron-cross-halteres",
+    "name": "Pássaro com Halteres em Pé",
+    "equipment": "Par de Halteres",
+    "movementType": "Sustentação e Abdução Isométrica • Deltoide Lateral e Manguito",
+    "target": "Deltoide Posterior e Romboides",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-iron-cross.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-iron-cross.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-iron-cross.jpg",
+    "keyCues": [
+      "Eleve os halteres lateralmente e sustente os braços em cruz.",
+      "Mantenha as escápulas deprimidas e postura ereta impecável.",
+      "Excelente construtor de estabilidade e resistência articular."
+    ],
+    "aliases": [
+      "iron-cross-halteres",
+      "passaro-halteres-em-pe",
+      "161",
+      "dumbbell-iron-cross",
+      "cruz-de-ferro-halteres"
+    ]
+  },
+  "rosca-biceps-deitado-halteres": {
+    "canonicalId": "rosca-biceps-deitado-halteres",
+    "name": "Rosca Direta com Halteres",
+    "equipment": "Par de Halteres",
+    "movementType": "Flexão Deitado no Banco • Tensão Contínua no Pico",
+    "target": "Bíceps Braquial Bilateral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-supine-dumbbell-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-supine-dumbbell-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-supine-dumbbell-curl.jpg",
+    "keyCues": [
+      "Deite-se no banco plano segurando os halteres com braços estendidos.",
+      "Flexione os cotovelos sem permitir que eles se movam para a frente.",
+      "Contração de pico intensa no bíceps."
+    ],
+    "aliases": [
+      "rosca-biceps-deitado-halteres",
+      "rosca-direta-halteres",
+      "171",
+      "supine-dumbbell-biceps-curl",
+      "rosca-deitado-banco"
+    ]
+  },
+  "rosca-spider-inclinada-halteres": {
+    "canonicalId": "rosca-spider-inclinada-halteres",
+    "name": "Rosca Scott Unilateral com Halter",
+    "equipment": "Banco Scott + 1 Halter",
+    "movementType": "Flexão no Banco Inclinado com Peito Apoiado • Braquial e Bíceps",
+    "target": "Bíceps Braquial (Cabeça Curta Unilateral)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-prone-incline-curl.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-prone-incline-curl.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-prone-incline-curl.jpg",
+    "keyCues": [
+      "Deite de bruços no banco inclinado a 45° com braços pendendo verticais.",
+      "Flexione os braços mantendo os cotovelos absolutamente estáticos.",
+      "Eliminação completa de qualquer auxílio dos deltoides ou lombar."
+    ],
+    "aliases": [
+      "rosca-spider-inclinada-halteres",
+      "rosca-scott-unilateral-halter",
+      "173",
+      "dumbbell-prone-incline-curl",
+      "rosca-spider-halteres"
+    ]
+  },
+  "triceps-testa-alternado-halteres": {
+    "canonicalId": "triceps-testa-alternado-halteres",
+    "name": "Tríceps Francês Sentado com Barra W",
+    "equipment": "Banco Vertical + Barra W",
+    "movementType": "Extensão Deitada Alternada • Equilíbrio de Força entre os Braços",
+    "target": "Tríceps Braquial (Cabeça Longa)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-alternate-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-alternate-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-alternate-extension.jpg",
+    "keyCues": [
+      "Deite-se no banco reto e estenda um braço enquanto o outro desce o haltere.",
+      "Mantenha o cotovelo apontado verticalmente para o teto.",
+      "Alterne com ritmo fluído e controle articular seguro."
+    ],
+    "aliases": [
+      "triceps-testa-alternado-halteres",
+      "triceps-frances-sentado-barra-w",
+      "198",
+      "dumbbell-lying-alternate-extension",
+      "triceps-testa-alternado"
+    ]
+  },
+  "triceps-extensao-maquina-articulada": {
+    "canonicalId": "triceps-extensao-maquina-articulada",
+    "name": "Tate Press no Banco Reto com Halteres",
+    "equipment": "Banco Reto + Halteres",
+    "movementType": "Extensão Sentada na Máquina • Cabeça Medial e Lateral do Tríceps",
+    "target": "Tríceps Braquial (Cabeça Lateral e Bloqueio Terminal)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-triceps-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-triceps-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-triceps-extension.jpg",
+    "keyCues": [
+      "Apoie os cotovelos nas almofadas da máquina ajustando o eixo anatômico.",
+      "Estenda os braços para a frente empurrando as manoplas.",
+      "Controle excêntrico estrito sentindo o tríceps arder."
+    ],
+    "aliases": [
+      "triceps-extensao-maquina-articulada",
+      "tate-press-banco-reto-halteres",
+      "209",
+      "lever-triceps-extension",
+      "triceps-maquina"
+    ]
+  },
+  "mesa-flexora-halteres": {
+    "canonicalId": "mesa-flexora-halteres",
+    "name": "Mesa Flexora Unilateral",
+    "equipment": "Mesa Flexora Deitada",
+    "movementType": "Flexão de Joelho com Haltere entre os Pés • Isquiotibiais",
+    "target": "Isquiotibiais Unilateral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-femoral.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-femoral.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-femoral.jpg",
+    "keyCues": [
+      "Deite de bruços no banco plano segurando um haltere preso entre os pés.",
+      "Flexione os joelhos trazendo o haltere em direção aos glúteos.",
+      "Desça controladamente sem deixar o haltere escapar."
+    ],
+    "aliases": [
+      "mesa-flexora-halteres",
+      "mesa-flexora-unilateral",
+      "240",
+      "dumbbell-lying-leg-curl",
+      "flexora-com-halter"
+    ]
+  },
+  "agachamento-livre-peso-corporal-air-squat": {
+    "canonicalId": "agachamento-livre-peso-corporal-air-squat",
+    "name": "Agachamento Livre",
+    "equipment": "Barra Olímpica na Gaiola de Agachamento + Anilhas",
+    "movementType": "Agachamento com Peso do Corpo • Padrão Motor Fundamental",
+    "target": "Quadríceps (Vasto Lateral, Medial, Intermédio e Reto Femoral) e Glúteo Máximo",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/squat.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/squat.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/squat.jpg",
+    "keyCues": [
+      "Pés na largura dos ombros com pontas ligeiramente para fora.",
+      "Desça os quadris para trás e para baixo mantendo o peito erguido.",
+      "Quebre a paralela de 90° e empurre com os calcanhares."
+    ],
+    "aliases": [
+      "agachamento-livre-peso-corporal-air-squat",
+      "agachamento-livre",
+      "61",
+      "squat",
+      "air-squat-solo"
+    ]
+  },
+  "agachamento-smith-pes-avancados": {
+    "canonicalId": "agachamento-smith-pes-avancados",
+    "name": "Afundo com Barra no Smith",
+    "equipment": "Smith Machine",
+    "movementType": "Agachamento no Smith com Pés à Frente • Ênfase em Quadríceps",
+    "target": "Quadríceps e Glúteos",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-chair-squat.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-chair-squat.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-chair-squat.jpg",
+    "keyCues": [
+      "Posicione os pés 20 a 30 cm à frente da linha vertical da barra.",
+      "Desça mantendo o tronco ereto e estável apoiado na barra guiada.",
+      "Isolamento potente de quadríceps sem sobrecarga excessiva na lombar."
+    ],
+    "aliases": [
+      "agachamento-smith-pes-avancados",
+      "afundo-barra-smith",
+      "222",
+      "smith-chair-squat",
+      "agachamento-hack-smith"
+    ]
+  },
+  "levantamento-terra-smith": {
+    "canonicalId": "levantamento-terra-smith",
+    "name": "Agachamento OverHead com Barra (Overhead Squat)",
+    "equipment": "Barra Olímpica Estendida Acima da Cabeça com Pegada Larga de Snatch",
+    "movementType": "Puxada do Solo Guiada no Smith • Força de Cadeia Posterior",
+    "target": "Membros Inferiores, Mobilidade Torácica, Ombros e Core",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-deadlift-deadlift-1.mp4",
+    "videoFemale": null,
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-deadlift-deadlift-1.jpg",
+    "keyCues": [
+      "Barra posicionada na altura dos joelhos ou canelas na trava de segurança.",
+      "Quadris para trás, coluna travada e empurre o solo com as pernas.",
+      "Estenda o quadril no topo travando os glúteos com segurança guiada."
+    ],
+    "aliases": [
+      "levantamento-terra-smith",
+      "agachamento-overhead-barra",
+      "234",
+      "smith-machine-deadlift",
+      "terra-no-smith"
+    ]
+  },
+  "stiff-unilateral-halter": {
+    "canonicalId": "stiff-unilateral-halter",
+    "name": "RDL Unilateral com Halter (Single-Leg RDL)",
+    "equipment": "1 Halter na Mão Contralateral",
+    "movementType": "Stiff Unilateral • Correção de Assimetrias nos Isquiotibiais",
+    "target": "Isquiotibiais, Glúteo Médio e Estabilidade Pélvica",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/single-dumbbell-stiff-leg-deadlift.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/single-dumbbell-stiff-leg-deadlift.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/single-dumbbell-stiff-leg-deadlift.jpg",
+    "keyCues": [
+      "Segure o haltere em uma mão e apoie o peso na perna oposta.",
+      "Estenda a perna livre para trás enquanto inclina o tronco à frente.",
+      "Sinta o alongamento potente do posterior da coxa de apoio antes de retornar."
+    ],
+    "aliases": [
+      "stiff-unilateral-halter",
+      "rdl-unilateral-halter-single-leg",
+      "236",
+      "single-dumbbell-stiff-leg-deadlift",
+      "rdl-unilateral-halter"
+    ]
+  },
+  "extensao-quadril-em-pe-maquina-gluteo": {
+    "canonicalId": "extensao-quadril-em-pe-maquina-gluteo",
+    "name": "Clamshell com Mini Band no Colchonete (Ostra)",
+    "equipment": "Colchonete + Mini Band acima dos Joelhos",
+    "movementType": "Extensão de Quadril em Pé • Isolamento do Glúteo Máximo",
+    "target": "Glúteo Médio, Mínimo e Rotadores Profundos do Quadril",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-standing-hip-extension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-standing-hip-extension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-standing-hip-extension.jpg",
+    "keyCues": [
+      "Apoie a perna de trabalho no rolo acolchoado da máquina de glúteo.",
+      "Empurre o rolo para trás e para cima contraindo o glúteo no topo.",
+      "Evite hiperarquear a lombar para compensar o movimento."
+    ],
+    "aliases": [
+      "extensao-quadril-em-pe-maquina-gluteo",
+      "clamshell-ostra-mini-band",
+      "257",
+      "lever-standing-hip-extension",
+      "gluteo-coice-maquina"
+    ]
+  },
+  "hiperextensao-reversa-maquina": {
+    "canonicalId": "hiperextensao-reversa-maquina",
+    "name": "Frog Pump no Colchonete com Halter",
+    "equipment": "Colchonete + Halter no Quadril",
+    "movementType": "Elevação de Pernas com Pelve Apoiada • Glúteos e Descompressão Lombar",
+    "target": "Glúteo Máximo (Pico de Oclusão)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-reverse-hyperextension.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-reverse-hyperextension.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-reverse-hyperextension.jpg",
+    "keyCues": [
+      "Tronco apoiado na mesa da máquina segurando as manoplas.",
+      "Eleve as pernas para trás e para cima acionando os glúteos.",
+      "Ajuda na descompressão dos discos lombares e hipertrofia da cadeia posterior."
+    ],
+    "aliases": [
+      "hiperextensao-reversa-maquina",
+      "frog-pump-colchonete-halter",
+      "259",
+      "lever-reverse-hyperextension",
+      "reverse-hyper"
+    ]
+  },
+  "panturrilha-sentado-halteres-joelhos": {
+    "canonicalId": "panturrilha-sentado-halteres-joelhos",
+    "name": "Gêmeos no Leg Press Horizontal",
+    "equipment": "Leg Press Horizontal",
+    "movementType": "Elevação Plantar Sentado com Halteres • Sóleo Isolado",
+    "target": "Gastrocnêmio",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-calf-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-calf-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-calf-raise.jpg",
+    "keyCues": [
+      "Sente-se no banco com as pontas dos pés sobre o bloco e halteres apoiados nas coxas.",
+      "Desça os calcanhares sentindo o alongamento profundo do sóleo.",
+      "Eleve na ponta dos pés sustentando a contração por 1 segundo."
+    ],
+    "aliases": [
+      "panturrilha-sentado-halteres-joelhos",
+      "gemeos-leg-press-horizontal",
+      "265",
+      "dumbbell-seated-calf-raise",
+      "panturrilha-sentado-halter"
+    ]
+  },
+  "levantamento-terra-kettlebell": {
+    "canonicalId": "levantamento-terra-kettlebell",
+    "name": "Kettlebell Snatch (Arranque)",
+    "equipment": "1 Kettlebell",
+    "movementType": "Puxada do Solo com Kettlebell • Padrão de Dobradiça de Quadril",
+    "target": "Cadeia Posterior, Ombros e Condicionamento Cardiovascular",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/kettlebell-deadlift.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/kettlebell-deadlift.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/kettlebell-deadlift.jpg",
+    "keyCues": [
+      "Kettlebell posicionado entre os pés com pegada firme na alça.",
+      "Projete os quadris para trás mantendo as costas totalmente retas.",
+      "Fique ereto estendendo quadris e joelhos simultaneamente."
+    ],
+    "aliases": [
+      "levantamento-terra-kettlebell",
+      "kettlebell-snatch-arranque",
+      "294",
+      "kettlebell-deadlift",
+      "terra-com-kettlebell"
+    ]
+  },
+  "elevacao-pernas-cadeira-capitao": {
+    "canonicalId": "elevacao-pernas-cadeira-capitao",
+    "name": "Elevação Unilateral de Panturrilha",
+    "equipment": "Degrau / Step + 1 Halter na Mão",
+    "movementType": "Elevação de Pernas com Apoio nos Antebraços • Reto Abdominal e Infra",
+    "target": "Gastrocnêmio Unilateral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/vertical-leg-raise-on-parallel-bars.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/vertical-leg-raise-on-parallel-bars.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/vertical-leg-raise-on-parallel-bars.jpg",
+    "keyCues": [
+      "Apoie os antebraços nas almofadas da cadeira do capitão mantendo as costas no encosto.",
+      "Eleve as pernas retas ou joelhos flexionados até a linha da cintura.",
+      "Enrole a pelve para cima no topo para máxima ativação muscular."
+    ],
+    "aliases": [
+      "elevacao-pernas-cadeira-capitao",
+      "elevacao-unilateral-panturrilha",
+      "88",
+      "vertical-leg-raise",
+      "paralelas-elevacao-pernas"
+    ]
+  },
+  "elevacao-pernas-deitado-solo": {
+    "canonicalId": "elevacao-pernas-deitado-solo",
+    "name": "Crunch (Abdominal Clássico)",
+    "equipment": "Colchonete no Chão",
+    "movementType": "Elevação de Pernas Deitado no Chão • Reto Abdominal Inferior",
+    "target": "Reto Abdominal (Fibras Superiores e Médias)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-straight-leg-raise.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-straight-leg-raise.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-straight-leg-raise.jpg",
+    "keyCues": [
+      "Deite de costas no solo com as mãos ao lado do quadril para estabilização.",
+      "Eleve as pernas juntas até a vertical mantendo a lombar colada no chão.",
+      "Desça lentamente sem permitir que a lombar descole do solo."
+    ],
+    "aliases": [
+      "elevacao-pernas-deitado-solo",
+      "crunch-abdominal-classico",
+      "90",
+      "lying-straight-leg-raise",
+      "elevacao-pernas-solo"
+    ]
+  },
+  "roda-abdominal-em-pe": {
+    "canonicalId": "roda-abdominal-em-pe",
+    "name": "Elevação de Pernas Deitado",
+    "equipment": "Colchonete no Chão",
+    "movementType": "Rollout com Roda Abdominal em Pé • Força Máxima de Core",
+    "target": "Reto Abdominal e Flexores do Quadril",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-standing-wheel-rollout.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-standing-wheel-rollout.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-standing-wheel-rollout.jpg",
+    "keyCues": [
+      "Comece em pé com a roda no chão e pernas ligeiramente afastadas.",
+      "Role a roda para a frente estendendo o corpo com core ultra travado.",
+      "Puxe de volta flexionando o abdômen sem deixar o quadril cair."
+    ],
+    "aliases": [
+      "roda-abdominal-em-pe",
+      "elevacao-pernas-deitado",
+      "93",
+      "standing-wheel-rollout",
+      "ab-wheel-em-pe"
+    ]
+  },
+  "landmine-rotational-twist-180": {
+    "canonicalId": "landmine-rotational-twist-180",
+    "name": "Stomach Vacuum (Vácuo Abdominal)",
+    "equipment": "Peso Corporal (Em Pé, 4 Apoios ou Deitado)",
+    "movementType": "Rotação Diagonal com Barra Ancorada • Oblíquos e Transverso",
+    "target": "Transverso do Abdômen (Cintura Fina e Pressão Intra-Abdominal)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/landmine-180.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/landmine-180.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/landmine-180.jpg",
+    "keyCues": [
+      "Segure a ponta da barra com os braços semi-estendidos na altura do peito.",
+      "Gire a barra em arco de um quadril ao outro usando a rotação do tronco.",
+      "Gire o pé de apoio acompanhando o movimento para proteger o joelho."
+    ],
+    "aliases": [
+      "landmine-rotational-twist-180",
+      "stomach-vacuum-vacuo-abdominal",
+      "288",
+      "landmine-180",
+      "rotacao-landmine"
+    ]
+  },
+  "corrida-estacionaria-joelho-alto-trote": {
+    "canonicalId": "corrida-estacionaria-joelho-alto-trote",
+    "name": "Salto na Caixa Pliométrica (Box Jump)",
+    "equipment": "Caixa Pliométrica de Madeira ou Espuma (50 a 75 cm)",
+    "movementType": "Corrida Estacionária Rítmica • Condicionamento Cardiovascular",
+    "target": "Potência Pliométrica, Quadríceps e Glúteos",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/running.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/running.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/running.jpg",
+    "keyCues": [
+      "Corra no lugar elevando os joelhos e coordenando o movimento dos braços.",
+      "Aterrissagem suave sobre o antepé.",
+      "Excelente para aquecimento sistêmico ou blocos de HIIT."
+    ],
+    "aliases": [
+      "corrida-estacionaria-joelho-alto-trote",
+      "salto-caixa-pliometrica-box-jump",
+      "298",
+      "running",
+      "corrida-estacionaria"
+    ]
+  },
+  "bicicleta-ergometrica-spinning": {
+    "canonicalId": "bicicleta-ergometrica-spinning",
+    "name": "Ativação Escapular na Barra Fixa (Scapular Pull-Up)",
+    "equipment": "Barra Fixa",
+    "movementType": "Pedalagem Contínua / Intervalada • Zero Impacto Articular",
+    "target": "Trapézio Inferior e Serrátil Anterior",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stationary-bike.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stationary-bike.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stationary-bike.jpg",
+    "keyCues": [
+      "Ajuste a altura do selim para que a perna fique levemente flexionada no ponto mais baixo.",
+      "Coluna neutra e empunhadura firme no guidão.",
+      "Cadência constante mantendo a frequência cardíaca na zona desejada."
+    ],
+    "aliases": [
+      "bicicleta-ergometrica-spinning",
+      "ativacao-escapular-barra-fixa",
+      "311",
+      "stationary-bike",
+      "bicicleta-ergometrica"
+    ]
+  },
+  "esteira-ergometrica-inclinada-caminhada": {
+    "canonicalId": "esteira-ergometrica-inclinada-caminhada",
+    "name": "Flexão Escapular no Chão (Scapular Push-Up)",
+    "equipment": "Colchonete",
+    "movementType": "Caminhada ou Corrida na Esteira • Gasto Calórico e Resistência",
+    "target": "Serrátil Anterior (Protração Escapular)",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/treadmill-running.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/treadmill-running.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/treadmill-running.jpg",
+    "keyCues": [
+      "Mantenha a postura ereta olhando para a frente sem se apoiar nas barras laterais.",
+      "Passada natural com braços ritmados a 90°.",
+      "Inclinação regulável para proteção articular dos joelhos e maior recrutamento glúteo."
+    ],
+    "aliases": [
+      "esteira-ergometrica-inclinada-caminhada",
+      "flexao-escapular-scapular-push-up",
+      "312",
+      "treadmill-running",
+      "esteira-ergometrica"
+    ]
+  },
+  "simulador-eliptico-transport": {
+    "canonicalId": "simulador-eliptico-transport",
+    "name": "Dislocação de Ombros com Bastão ou Elástico",
+    "equipment": "Bastão de PVC ou Elástico Longo",
+    "movementType": "Movimento Cíclico Elíptico • Cardio Total sem Choque Mecânico",
+    "target": "Mobilidade e Flexibilidade da Articulação Glenoumeral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/elliptical.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/elliptical.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/elliptical.jpg",
+    "keyCues": [
+      "Pés firmes nas plataformas sem levantar os calcanhares excessivamente.",
+      "Empurre e puxe as hastes sincronizando membros superiores e inferiores.",
+      "Excelente para queima calórica sem impacto articular na coluna e joelhos."
+    ],
+    "aliases": [
+      "simulador-eliptico-transport",
+      "deslocacao-ombros-bastao-elastico",
+      "313",
+      "elliptical-trainer",
+      "eliptico-transport"
+    ]
+  },
+  "alongamento-peitoral-ombros-parede": {
+    "canonicalId": "alongamento-peitoral-ombros-parede",
+    "name": "Alongamento de Peitoral e Bíceps na Parede",
+    "equipment": "Parede Lisa ou Batente de Porta",
+    "movementType": "Alongamento Estático de Peitoral • Abertura da Caixa Torácica",
+    "target": "Peitoral Maior, Menor e Cabeça Curta do Bíceps",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-above-head-chest-stretch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-above-head-chest-stretch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-above-head-chest-stretch.jpg",
+    "keyCues": [
+      "Apoie o antebraço ou mão na parede na altura dos ombros.",
+      "Gire o tronco suavemente para o lado oposto até sentir o estiramento do peitoral.",
+      "Respire fundo sustentando por 20 a 30 segundos."
+    ],
+    "aliases": [
+      "alongamento-peitoral-ombros-parede",
+      "alongamento-peitoral-biceps-parede",
+      "316",
+      "overhead-chest-stretch",
+      "alongamento-peitoral"
+    ]
+  },
+  "alongamento-flexores-quadril-psoas-solo": {
+    "canonicalId": "alongamento-flexores-quadril-psoas-solo",
+    "name": "Alongamento de Flexores de Quadril (Psoas) no Chão",
+    "equipment": "Colchonete",
+    "movementType": "Alongamento de Psoas e Ilíaco • Alívio da Tensão Lombar",
+    "target": "Iliopsoas e Reto Femoral",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-ceiling-look-stretch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-ceiling-look-stretch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-ceiling-look-stretch.jpg",
+    "keyCues": [
+      "Posição de afundo com o joelho traseiro apoiado no chão.",
+      "Projete o quadril suavemente à frente mantendo o tronco ereto.",
+      "Libera a fáscia dos flexores de quadril encurtados por horas sentado."
+    ],
+    "aliases": [
+      "alongamento-flexores-quadril-psoas-solo",
+      "alongamento-flexores-quadril-psoas",
+      "317",
+      "standing-hip-flexor-stretch",
+      "alongamento-psoas"
+    ]
+  },
+  "alongamento-isquiotibiais-em-pe": {
+    "canonicalId": "alongamento-isquiotibiais-em-pe",
+    "name": "Alongamento Dinâmico de Isquiotibiais em Movimento",
+    "equipment": "Peso Corporal (Chão)",
+    "movementType": "Alongamento dos Posteriores de Coxa • Mobilidade da Cadeia Posterior",
+    "target": "Cadeia Posterior e Fáscia Plantar Dinâmica",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-hamstring-stretch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-hamstring-stretch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-hamstring-stretch.jpg",
+    "keyCues": [
+      "Uma perna estendida à frente com o calcanhar no solo e ponta do pé para cima.",
+      "Incline o tronco reto dobrando a partir do quadril sem curvar as costas.",
+      "Sinta o alongamento limpo da musculatura isquiotibial."
+    ],
+    "aliases": [
+      "alongamento-isquiotibiais-em-pe",
+      "alongamento-dinamico-isquiotibiais",
+      "318",
+      "standing-hamstring-stretch",
+      "alongamento-posterior-pe"
+    ]
+  },
+  "alongamento-panturrilha-tornozelo-degrau": {
+    "canonicalId": "alongamento-panturrilha-tornozelo-degrau",
+    "name": "Mobilidade de Tornozelo na Parede com Joelho à Frente",
+    "equipment": "Parede Lisa",
+    "movementType": "Alongamento da Fáscia Plantar e Tríceps Sural • Dorsiflexão de Tornozelo",
+    "target": "Dorsiflexão do Tornozelo e Tendão de Aquiles",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-stairs-calf-stretch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-stairs-calf-stretch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-stairs-calf-stretch.jpg",
+    "keyCues": [
+      "Apoie o antepé na beirada de um degrau e deixe o calcanhar descer suavemente.",
+      "Joelho estendido para foco nos gastrocnêmios.",
+      "Melhora crucial na mobilidade de tornozelo para agachamentos profundos."
+    ],
+    "aliases": [
+      "alongamento-panturrilha-tornozelo-degrau",
+      "mobilidade-tornozelo-parede-dorsiflexao",
+      "320",
+      "stairs-calf-stretch",
+      "alongamento-panturrilha-degrau"
     ]
   }
 };
