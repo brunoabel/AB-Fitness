@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-const TOKEN = 'YOUR_SUPABASE_ACCESS_TOKEN';
+const TOKEN = process.env.SUPABASE_ACCESS_TOKEN || '';
 const PROJECT_REF = 'tegdtjmglvrvgerrtivx';
 
 async function main() {
