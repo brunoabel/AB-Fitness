@@ -32,3 +32,4 @@ supabase/.temp/
 
 # Cópia local da mídia de exercícios (scripts/mirror_exercise_media.mjs)
 media/
+.env*
