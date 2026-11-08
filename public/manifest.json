@@ -1,0 +1,19 @@
+{
+  "name": "AB Fitness — Gestão de Treinos",
+  "short_name": "AB Fitness",
+  "description": "Gestão Inteligente de Treinos de Academia, Cargas & Performance de Atleta",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050608",
+  "theme_color": "#050608",
+  "categories": ["fitness", "sports", "health"],
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

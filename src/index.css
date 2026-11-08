@@ -1,0 +1,292 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens expostos como utilitários Tailwind: bg-app, bg-surface, bg-surface-2, text-accent, bg-accent/15 ... */
+@theme {
+  --color-app: #050608;
+  --color-surface: #0b0d12;
+  --color-surface-2: #11141b;
+  --color-surface-3: #171b24;
+  --color-accent: #00f0ff;
+  --color-accent-hover: #5cf6ff;
+  --color-accent-strong: #00c8d6;
+  /* zinc-500 clareado: o original (#71717a) fica abaixo de 4.5:1 sobre #050608 */
+  --color-zinc-500: #80808a;
+}
+
+@layer base {
+  /* Design System AB Fitness — exclusivamente escuro.
+     Base #050608, superfícies #0B0D12, bordas brancas a 10%, destaque Neon Cyan #00F0FF. */
+  :root {
+    color-scheme: dark;
+
+    /* Tipografia */
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Superfícies */
+    --app-bg: #050608;
+    --surface-primary: #0b0d12;
+    --surface-secondary: #11141b;
+    --surface-tertiary: #171b24;
+    --surface-hover: #1d2230;
+
+    /* Linhas & Bordas */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-medium: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    /* Texto (todos ≥ 4.5:1 sobre as superfícies) */
+    --text-primary: #f4f5f6;
+    --text-secondary: #a1a1aa;
+    --text-muted: #80808a;
+    --text-inverse: #050608;
+
+    /* Destaque: Neon Cyan — ações principais, progresso e dados em foco */
+    --accent-brand: #00f0ff;
+    --accent-brand-text: #050608;
+    --accent-brand-subtle: rgba(0, 240, 255, 0.12);
+    --accent-primary: #00f0ff;
+    --accent-hover: #5cf6ff;
+    --accent-text: #050608;
+
+    /* Estados Semânticos */
+    --state-success: #10b981;
+    --state-success-subtle: rgba(16, 185, 129, 0.12);
+    --state-warning: #f59e0b;
+    --state-warning-subtle: rgba(245, 158, 11, 0.12);
+    --state-danger: #ef4444;
+    --state-danger-subtle: rgba(239, 68, 68, 0.12);
+    --state-warmup: #fbbf24;
+    --state-dropset: #a78bfa; /* violeta: não competir com o cyan da marca */
+  }
+
+  body {
+    background-color: var(--app-bg);
+    color: var(--text-primary);
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  /* Foco visível para acessibilidade por teclado (WCAG AA) */
+  :focus-visible {
+    outline: 2px solid var(--accent-brand);
+    outline-offset: 2px;
+  }
+
+  /* Prevenção de auto-zoom no iOS e toque estático de app nativo */
+  html {
+    height: 100%;
+    height: 100dvh;
+    overflow-x: clip;
+    /* manipulation: permite zoom com pinça (acessibilidade) e evita o zoom por duplo toque */
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    background-color: var(--app-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    overflow-x: clip;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    /* manipulation: permite zoom com pinça (acessibilidade) e evita o zoom por duplo toque */
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  #root {
+    min-height: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    /* clip (e não hidden): hidden transforma o #root num contentor de scroll e quebra todos os position: sticky */
+    overflow-x: clip;
+  }
+
+  /* Permitir seleção e digitação suave em campos de texto */
+  input, select, textarea {
+    font-size: 16px !important; /* Previne auto-zoom no iOS */
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    touch-action: manipulation !important;
+  }
+
+  button, a, select {
+    touch-action: manipulation;
+  }
+
+  /* Números como protagonistas: Barlow Condensed + tabular-nums */
+  .font-display,
+  [data-display="true"] {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabular-numbers,
+  input[type="number"],
+  .font-mono,
+  [data-metric="true"] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Suporte limpo para mapa Leaflet */
+  .leaflet-container {
+    font-family: inherit;
+    background-color: var(--app-bg) !important;
+  }
+}
+
+/* Redução de movimento para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Safe Area Insets para dispositivos móveis com Notch / Ilha Dinâmica */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+
+.safe-top-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+
+.safe-bottom-nav {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+/* Scrollbar técnica e discreta */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Micro-transições sóbrias e funcionais (sem bounces gratuitos) */
+.transition-surface {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Utilidades de Acessibilidade & Alvos de Toque */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Animações fluidas do Menu Lateral (Drawer) */
+@keyframes drawerSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes drawerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-drawer-in {
+  animation: drawerSlideIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-backdrop-in {
+  animation: drawerFadeIn 0.2s ease-out forwards;
+}
+
+/* Slider do onboarding: polegar grande (28px) com brilho cyan */
+.ob-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #00f0ff;
+  border: 4px solid #050608;
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.6), 0 0 18px rgba(0, 240, 255, 0.55);
+}
+.ob-range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #00f0ff;
+  border: 4px solid #050608;
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.6), 0 0 18px rgba(0, 240, 255, 0.55);
+}
+
+/* Skeleton do player: brilho subtil que atravessa a superfície #0B0D12 */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+.skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer { animation: none; }
+}
+
+/* Área de toque mínima de 44×44 sem mudar o tamanho visual (ícones pequenos) */
+@layer components {
+  .tap-44 { position: relative; }
+  .tap-44::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedOrigins": ["https://ba-fitness.vercel.app", "http://localhost:5173", "http://localhost:4173"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["Range"],
+    "ExposeHeaders": ["Content-Length", "Content-Range", "Accept-Ranges"],
+    "MaxAgeSeconds": 86400
+  }
+]

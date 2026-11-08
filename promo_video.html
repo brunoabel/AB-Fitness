@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AB FITNESS • Vídeo de Lançamento (GSAP 30s)</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background-color: #030305;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #stage-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 70px);
+      overflow: hidden;
+    }
+
+    /* Container 1920x1080 proporcional escalonado */
+    #stage-container {
+      position: absolute;
+      width: 1920px;
+      height: 1080px;
+      background: #050608;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9);
+      transform-origin: center center;
+    }
+
+    /* Fundo com gradientes e glows coloridos dinâmicos */
+    .bg-mesh {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, #0c1017 0%, #040507 100%);
+      z-index: 1;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .glow-cyan {
+      top: 10%;
+      left: 15%;
+      background: radial-gradient(circle, #00f0ff 0%, transparent 70%);
+    }
+
+    .glow-blue {
+      bottom: 10%;
+      right: 15%;
+      background: radial-gradient(circle, #0066ff 0%, transparent 70%);
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      z-index: 3;
+      opacity: 0.6;
+    }
+
+    /* Header e HUD do Vídeo */
+    .brand-hud {
+      position: absolute;
+      top: 50px;
+      left: 80px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+    }
+
+    .brand-hud img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #000;
+    }
+
+    .brand-hud .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .brand-hud .brand-sub {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #00f0ff;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .timecode-hud {
+      position: absolute;
+      top: 55px;
+      right: 80px;
+      font-family: monospace;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.4);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .timecode-badge {
+      padding: 4px 10px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #00f0ff;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ÁREA PRINCIPAL: HEADLINES + IPHONE 3D */
+    .stage-content {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      padding: 0 100px;
+    }
+
+    .headlines-wrapper {
+      width: 52%;
+      position: relative;
+      height: 400px;
+    }
+
+    .headline-scene {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(30px);
+      pointer-events: none;
+    }
+
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #00f0ff;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      background: rgba(0, 240, 255, 0.08);
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+
+    .headline-scene h1 {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .highlight-cyan {
+      color: #00f0ff;
+      text-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
+    }
+
+    .headline-scene p {
+      font-size: 20px;
+      color: #94a3b8;
+      margin-top: 24px;
+      max-width: 620px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ÁREA DO IPHONE 3D */
+    .phone-viewport {
+      width: 48%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1600px;
+      position: relative;
+    }
+
+    .phone-container-3d {
+      position: relative;
+      width: 375px;
+      height: 760px;
+      transform-style: preserve-3d;
+      transform: rotateY(-18deg) rotateX(8deg) rotateZ(-2deg);
+    }
+
+    /* Mockup iPhone Físico */
+    .iphone-device {
+      position: absolute;
+      inset: 0;
+      background: #000000;
+      border-radius: 54px;
+      box-shadow: 
+        0 40px 100px rgba(0, 0, 0, 0.95),
+        0 15px 40px rgba(0, 240, 255, 0.15),
+        inset 0 0 0 3px #27272a,
+        inset 0 0 0 6px #09090b;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    /* Brilho de reflexo no vidro */
+    .iphone-device::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.04) 40%,
+        transparent 60%
+      );
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Notch Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .island-lens {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #0c1017;
+      border: 1px solid #1e293b;
+    }
+
+    .island-sensor {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0f172a;
+    }
+
+    /* Tela Interna do iPhone */
+    .screen-viewport {
+      width: 100%;
+      height: 100%;
+      border-radius: 44px;
+      background: #0a0a0c;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screen-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.05);
+      transition: filter 0.5s ease;
+    }
+
+    /* CARDS SALTANDO EM 3D */
+    .floating-badge-card {
+      position: absolute;
+      z-index: 80;
+      background: rgba(18, 18, 24, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 16px 22px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      transform: translateZ(90px) scale(0.85);
+      pointer-events: none;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #00f0ff;
+    }
+
+    .card-info h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .card-info p {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* CENA FINAL: LEQUE DE CELULARES (FAN-OUT) */
+    .fan-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      perspective: 2000px;
+    }
+
+    .fan-device {
+      position: absolute;
+      width: 290px;
+      height: 590px;
+      border-radius: 42px;
+      background: #000;
+      border: 2px solid #27272a;
+      overflow: hidden;
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95);
+      transform-origin: bottom center;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .fan-device img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* CENA FINAL: LOGO + TAGLINE */
+    .final-logo-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .final-logo-glow {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 30px;
+    }
+
+    .final-logo-glow::before {
+      content: '';
+      position: absolute;
+      inset: -25px;
+      background: radial-gradient(circle, #00f0ff 0%, transparent 70%);
+      filter: blur(40px);
+      opacity: 0.8;
+      border-radius: 50%;
+    }
+
+    .final-logo-glow img {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 36px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      background: #000;
+    }
+
+    .final-title {
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .final-tagline {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      color: #00f0ff;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+    }
+
+    .final-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 26px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      font-size: 15px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .final-badge span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00f0ff;
+      box-shadow: 0 0 12px #00f0ff;
+    }
+
+    /* Barra de Controle Inferior (Player) */
+    #player-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(14, 15, 22, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 10px 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      background: #00f0ff;
+      color: #000;
+    }
+
+    .progress-bar-container {
+      width: 480px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00f0ff, #0077ff);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="stage-wrapper">
+    <!-- Container do Vídeo 1920x1080 -->
+    <div id="stage-container">
+    <div class="bg-mesh"></div>
+    <div class="ambient-glow glow-cyan" id="glow1"></div>
+    <div class="ambient-glow glow-blue" id="glow2"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- HUD Header -->
+    <div class="brand-hud">
+      <img src="https://ba-fitness.vercel.app/ab-logo.png" alt="AB Fitness Logo">
+      <div>
+        <div class="brand-title">AB FITNESS</div>
+        <div class="brand-sub">Scientific Training & Performance</div>
+      </div>
+    </div>
+
+    <div class="timecode-hud">
+      <div class="timecode-badge">PROMO 30S</div>
+      <span id="timecode-display">00:00.00</span>
+    </div>
+
+    <!-- Conteúdo Principal com iPhone e Headlines -->
+    <div class="stage-content" id="main-content">
+      
+      <!-- Textos / Headlines por cena -->
+      <div class="headlines-wrapper">
+        
+        <!-- CENA 1 (0s - 5s) -->
+        <div class="headline-scene" id="h-scene-1">
+          <div class="scene-tag">Fase 01 • Estrutura Semanal</div>
+          <h1>ESTRUTURE CADA DIA DE TREINO COM <span class="highlight-cyan">PRECISÃO CIENTÍFICA</span></h1>
+          <p>Cronograma inteligente por grupos musculares, periodização atlética e divisão de sobrecarga progressiva.</p>
+        </div>
+
+        <!-- CENA 2 (5s - 10s) -->
+        <div class="headline-scene" id="h-scene-2">
+          <div class="scene-tag">Fase 02 • Biomecânica de Elite</div>
+          <h1>DOMINE A <span class="highlight-cyan">BIOMECÂNICA</span> E EXECUÇÃO PERFEITA</h1>
+          <p>Análise de alinhamento articular, fases concêntricas e cadência excêntrica para máximo recrutamento de fibras.</p>
+        </div>
+
+        <!-- CENA 3 (10s - 15s) -->
+        <div class="headline-scene" id="h-scene-3">
+          <div class="scene-tag">Fase 03 • Sobrecarga Progressiva</div>
+          <h1>APLIQUE <span class="highlight-cyan">SOBRECARGA REAL</span> COM CONTROLE DE CARGA E DESCANSO</h1>
+          <p>Registro rigoroso de quilos, repetições e cronômetro fisiológico entre séries para quebrar estagnações.</p>
+        </div>
+
+        <!-- CENA 4 (15s - 20s) -->
+        <div class="headline-scene" id="h-scene-4">
+          <div class="scene-tag">Fase 04 • Running Club</div>
+          <h1>EVOLUA SEU RITMO CARDIOVASCULAR COM O <span class="highlight-cyan">RUNNING CLUB</span></h1>
+          <p>Métricas de pace em tempo real, distância GPS e feedbacks por áudio diretamente durante a corrida.</p>
+        </div>
+
+        <!-- CENA 5 (20s - 25s) -->
+        <div class="headline-scene" id="h-scene-5">
+          <div class="scene-tag">Fase 05 • Hall da Fama</div>
+          <h1>CONQUISTE MEDALHAS E TRANSFORME DISCIPLINA EM <span class="highlight-cyan">HÁBITO INQUEBRÁVEL</span></h1>
+          <p>Desbloqueie conquistas, acompanhe consistência semanal e eleve sua performance ao nível de atleta.</p>
+        </div>
+
+      </div>
+
+      <!-- iPhone 3D com Telas Reais em Dark Mode -->
+      <div class="phone-viewport">
+        <div class="phone-container-3d" id="phone3d">
+          
+          <div class="iphone-device">
+            <div class="dynamic-island">
+              <div class="island-lens"></div>
+              <div class="island-sensor"></div>
+            </div>
+
+            <div class="screen-viewport">
+              <img src="https://ba-fitness.vercel.app/screens/1-dashboard.png" class="screen-img" id="screen-1" alt="Dashboard">
+              <img src="https://ba-fitness.vercel.app/screens/2-biomechanics.png" class="screen-img" id="screen-2" alt="Biomechanics">
+              <img src="https://ba-fitness.vercel.app/screens/3-workout.png" class="screen-img" id="screen-3" alt="Workout">
+              <img src="https://ba-fitness.vercel.app/screens/4-running.png" class="screen-img" id="screen-4" alt="Running">
+              <img src="https://ba-fitness.vercel.app/screens/5-badges.png" class="screen-img" id="screen-5" alt="Badges">
+            </div>
+          </div>
+
+          <!-- Card Pop-up Saltando da tela -->
+          <div class="floating-badge-card" id="pop-card-1" style="top: 15%; left: -140px;">
+            <div class="card-icon">⚡</div>
+            <div class="card-info">
+              <h4>Cronograma Ativado</h4>
+              <p>Seg • Superior & Peitoral</p>
+            </div>
+          </div>
+
+          <div class="floating-badge-card" id="pop-card-2" style="top: 38%; right: -120px;">
+            <div class="card-icon">🎯</div>
+            <div class="card-info">
+              <h4>Padrão Ouro</h4>
+              <p>Supino Inclinado c/ Halteres</p>
+            </div>
+          </div>
+
+          <div class="floating-badge-card" id="pop-card-3" style="bottom: 22%; left: -150px;">
+            <div class="card-icon">⏱️</div>
+            <div class="card-info">
+              <h4>Descanso 60s</h4>
+              <p>Série #1 Concluída (10kg)</p>
+            </div>
+          </div>
+
+          <div class="floating-badge-card" id="pop-card-4" style="top: 25%; right: -130px;">
+            <div class="card-icon">🏃</div>
+            <div class="card-info">
+              <h4>Pace Sub-5</h4>
+              <p>GPS & Áudio Ativo</p>
+            </div>
+          </div>
+
+          <div class="floating-badge-card" id="pop-card-5" style="bottom: 28%; right: -140px;">
+            <div class="card-icon">🏆</div>
+            <div class="card-info">
+              <h4>Medalha Desbloqueada</h4>
+              <p>Clube dos 10K Conquistado</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CENA FINAL (25s - 27.5s): LEQUE 3D DE IPHONES -->
+    <div class="fan-scene" id="fan-scene">
+      <div class="fan-device" id="fan-1"><img src="https://ba-fitness.vercel.app/screens/1-dashboard.png"></div>
+      <div class="fan-device" id="fan-2"><img src="https://ba-fitness.vercel.app/screens/2-biomechanics.png"></div>
+      <div class="fan-device" id="fan-3"><img src="https://ba-fitness.vercel.app/screens/3-workout.png"></div>
+      <div class="fan-device" id="fan-4"><img src="https://ba-fitness.vercel.app/screens/4-running.png"></div>
+      <div class="fan-device" id="fan-5"><img src="https://ba-fitness.vercel.app/screens/5-badges.png"></div>
+    </div>
+
+    <!-- CENA FINAL (27.5s - 30s): LOGO + TAGLINE -->
+    <div class="final-logo-scene" id="final-scene">
+      <div class="final-logo-glow" id="final-logo">
+        <img src="https://ba-fitness.vercel.app/ab-logo.png" alt="AB Fitness Logo">
+      </div>
+      <div class="final-title" id="final-title">AB FITNESS</div>
+      <div class="final-tagline" id="final-tagline">ENGENHARIA CORPORAL & ALTA PERFORMANCE</div>
+      <div class="final-badge" id="final-badge">
+        <span class="dot"></span>
+        <span>Acesse agora: ba-fitness.vercel.app</span>
+      </div>
+    </div> <!-- fim stage-container -->
+  </div> <!-- fim stage-wrapper -->
+
+  <!-- Player Controls -->
+  <div id="player-controls">
+    <button class="ctrl-btn" id="btn-toggle">Pausar</button>
+    <button class="ctrl-btn" id="btn-restart">Reiniciar</button>
+    <div class="progress-bar-container" id="progress-container">
+      <div class="progress-fill" id="progress-bar"></div>
+    </div>
+    <span id="player-time" style="font-family: monospace; font-size: 13px; color: #94a3b8;">00:00 / 00:30</span>
+  </div>
+
+  <script>
+    // Ajuste responsivo de escala para caber em qualquer monitor
+    function fitStage() {
+      const stage = document.getElementById('stage-container');
+      const wrapper = document.getElementById('stage-wrapper');
+      const w = wrapper.clientWidth || window.innerWidth;
+      const h = wrapper.clientHeight || (window.innerHeight - 70);
+      const scaleX = (w - 20) / 1920;
+      const scaleY = (h - 20) / 1080;
+      const scale = Math.min(scaleX, scaleY, 1);
+      stage.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', fitStage);
+    setTimeout(fitStage, 50);
+    fitStage();
+
+    // Timeline Mestre GSAP (30 Segundos Exatos)
+    const tl = gsap.timeline({
+      paused: false,
+      onUpdate: updatePlayer
+    });
+    window.tl = tl;
+
+    const timeDisplay = document.getElementById('timecode-display');
+    const playerTime = document.getElementById('player-time');
+    const progressFill = document.getElementById('progress-bar');
+
+    function updatePlayer() {
+      const cur = tl.time();
+      const dur = tl.duration() || 30;
+      const progress = (cur / dur) * 100;
+      progressFill.style.width = `${progress}%`;
+
+      const sec = Math.floor(cur);
+      const ms = Math.floor((cur - sec) * 100);
+      const formatted = `00:${sec < 10 ? '0' : ''}${sec}.${ms < 10 ? '0' : ''}${ms}`;
+      timeDisplay.textContent = formatted;
+      playerTime.textContent = `00:${sec < 10 ? '0' : ''}${sec} / 00:30`;
+    }
+
+    // ANIMAÇÃO DETALHADA COM GSAP
+    
+    // Configurações Iniciais
+    gsap.set("#screen-1", { opacity: 1, scale: 1 });
+    gsap.set("#phone3d", { 
+      rotateY: -22, 
+      rotateX: 10, 
+      rotateZ: -3, 
+      y: 0, 
+      z: 0 
+    });
+
+    // ==========================================
+    // CENA 1: 0s -> 5s (Dashboard & Estrutura)
+    // ==========================================
+    tl.to("#h-scene-1", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2);
+    tl.fromTo("#pop-card-1", 
+      { opacity: 0, scale: 0.7, x: -50 },
+      { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: "back.out(1.7)" }, 
+      1.2
+    );
+    tl.to("#phone3d", { 
+      rotateY: -14, 
+      rotateX: 6, 
+      y: -15, 
+      duration: 4.8, 
+      ease: "sine.inOut" 
+    }, 0);
+    
+    // Saída Cena 1
+    tl.to("#h-scene-1", { opacity: 0, y: -20, filter: "blur(8px)", duration: 0.5 }, 4.5);
+    tl.to("#pop-card-1", { opacity: 0, scale: 0.8, duration: 0.4 }, 4.5);
+    tl.to("#screen-1", { opacity: 0, duration: 0.5 }, 4.6);
+
+    // ==========================================
+    // CENA 2: 5s -> 10s (Biomecânica & Padrão Ouro)
+    // ==========================================
+    tl.set("#screen-2", { opacity: 1, scale: 1.05 }, 5.0);
+    tl.to("#screen-2", { scale: 1, duration: 0.8, ease: "power2.out" }, 5.0);
+    tl.to("#glow1", { x: 300, y: 100, backgroundColor: "#00f0ff", duration: 3 }, 5.0);
+    tl.to("#h-scene-2", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 5.1);
+    tl.fromTo("#pop-card-2", 
+      { opacity: 0, scale: 0.7, x: 50 },
+      { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: "back.out(1.7)" }, 
+      6.2
+    );
+    tl.to("#phone3d", { 
+      rotateY: 15, 
+      rotateX: 8, 
+      rotateZ: 2, 
+      y: 10, 
+      duration: 4.8, 
+      ease: "sine.inOut" 
+    }, 5.0);
+
+    // Saída Cena 2
+    tl.to("#h-scene-2", { opacity: 0, y: -20, filter: "blur(8px)", duration: 0.5 }, 9.5);
+    tl.to("#pop-card-2", { opacity: 0, scale: 0.8, duration: 0.4 }, 9.5);
+    tl.to("#screen-2", { opacity: 0, duration: 0.5 }, 9.6);
+
+    // ==========================================
+    // CENA 3: 10s -> 15s (Treino Ativo & Sobrecarga)
+    // ==========================================
+    tl.set("#screen-3", { opacity: 1, scale: 1.05 }, 10.0);
+    tl.to("#screen-3", { scale: 1, duration: 0.8, ease: "power2.out" }, 10.0);
+    tl.to("#glow2", { x: -200, y: -150, backgroundColor: "#00ff88", duration: 3 }, 10.0);
+    tl.to("#h-scene-3", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 10.1);
+    tl.fromTo("#pop-card-3", 
+      { opacity: 0, scale: 0.7, x: -60 },
+      { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: "back.out(1.7)" }, 
+      11.2
+    );
+    tl.to("#phone3d", { 
+      rotateY: -8, 
+      rotateX: -4, 
+      rotateZ: -1, 
+      scale: 1.06, 
+      duration: 4.8, 
+      ease: "sine.inOut" 
+    }, 10.0);
+
+    // Saída Cena 3
+    tl.to("#h-scene-3", { opacity: 0, y: -20, filter: "blur(8px)", duration: 0.5 }, 14.5);
+    tl.to("#pop-card-3", { opacity: 0, scale: 0.8, duration: 0.4 }, 14.5);
+    tl.to("#screen-3", { opacity: 0, duration: 0.5 }, 14.6);
+
+    // ==========================================
+    // CENA 4: 15s -> 20s (Running Club)
+    // ==========================================
+    tl.set("#screen-4", { opacity: 1, scale: 1.05 }, 15.0);
+    tl.to("#screen-4", { scale: 1, duration: 0.8, ease: "power2.out" }, 15.0);
+    tl.to("#glow1", { x: 100, y: -80, backgroundColor: "#00aaff", duration: 3 }, 15.0);
+    tl.to("#h-scene-4", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 15.1);
+    tl.fromTo("#pop-card-4", 
+      { opacity: 0, scale: 0.7, x: 60 },
+      { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: "back.out(1.7)" }, 
+      16.2
+    );
+    tl.to("#phone3d", { 
+      rotateY: 18, 
+      rotateX: 10, 
+      rotateZ: 3, 
+      scale: 1, 
+      duration: 4.8, 
+      ease: "sine.inOut" 
+    }, 15.0);
+
+    // Saída Cena 4
+    tl.to("#h-scene-4", { opacity: 0, y: -20, filter: "blur(8px)", duration: 0.5 }, 19.5);
+    tl.to("#pop-card-4", { opacity: 0, scale: 0.8, duration: 0.4 }, 19.5);
+    tl.to("#screen-4", { opacity: 0, duration: 0.5 }, 19.6);
+
+    // ==========================================
+    // CENA 5: 20s -> 24.5s (Hall da Fama & Medalhas)
+    // ==========================================
+    tl.set("#screen-5", { opacity: 1, scale: 1.05 }, 20.0);
+    tl.to("#screen-5", { scale: 1, duration: 0.8, ease: "power2.out" }, 20.0);
+    tl.to("#glow2", { x: 50, y: 50, backgroundColor: "#f59e0b", duration: 3 }, 20.0);
+    tl.to("#h-scene-5", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 20.1);
+    tl.fromTo("#pop-card-5", 
+      { opacity: 0, scale: 0.7, x: 70 },
+      { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: "back.out(1.7)" }, 
+      21.2
+    );
+    tl.to("#phone3d", { 
+      rotateY: -10, 
+      rotateX: 5, 
+      rotateZ: -1, 
+      duration: 4.3, 
+      ease: "sine.inOut" 
+    }, 20.0);
+
+    // Saída Cena 5 e transição para o Leque
+    tl.to("#main-content", { opacity: 0, scale: 0.95, duration: 0.6, ease: "power2.in" }, 24.2);
+
+    // ==========================================
+    // CENA 6: 24.5s -> 27.2s (CELULARES EM LEQUE / FAN-OUT)
+    // ==========================================
+    tl.to("#fan-scene", { opacity: 1, duration: 0.4 }, 24.5);
+    tl.fromTo("#fan-1", 
+      { x: 0, y: 100, rotateZ: 0, opacity: 0 },
+      { x: -520, y: 30, rotateZ: -24, opacity: 1, duration: 0.8, ease: "back.out(1.4)" }, 
+      24.6
+    );
+    tl.fromTo("#fan-2", 
+      { x: 0, y: 100, rotateZ: 0, opacity: 0 },
+      { x: -260, y: -10, rotateZ: -12, opacity: 1, duration: 0.8, ease: "back.out(1.4)" }, 
+      24.7
+    );
+    tl.fromTo("#fan-3", 
+      { x: 0, y: 100, rotateZ: 0, opacity: 0 },
+      { x: 0, y: -30, rotateZ: 0, scale: 1.08, opacity: 1, duration: 0.8, ease: "back.out(1.4)" }, 
+      24.8
+    );
+    tl.fromTo("#fan-4", 
+      { x: 0, y: 100, rotateZ: 0, opacity: 0 },
+      { x: 260, y: -10, rotateZ: 12, opacity: 1, duration: 0.8, ease: "back.out(1.4)" }, 
+      24.9
+    );
+    tl.fromTo("#fan-5", 
+      { x: 0, y: 100, rotateZ: 0, opacity: 0 },
+      { x: 520, y: 30, rotateZ: 24, opacity: 1, duration: 0.8, ease: "back.out(1.4)" }, 
+      25.0
+    );
+
+    // Leque expande e some com blur
+    tl.to("#fan-scene", { 
+      opacity: 0, 
+      scale: 1.15, 
+      filter: "blur(15px)", 
+      duration: 0.6, 
+      ease: "power2.in" 
+    }, 27.0);
+
+    // ==========================================
+    // CENA 7: 27.2s -> 30.0s (LOGO + TAGLINE + CTA)
+    // ==========================================
+    tl.to("#final-scene", { opacity: 1, duration: 0.4 }, 27.2);
+    tl.fromTo("#final-logo", 
+      { scale: 0.5, opacity: 0, y: 30 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: "back.out(2)" }, 
+      27.3
+    );
+    tl.fromTo("#final-title", 
+      { opacity: 0, y: 25, letterSpacing: "8px" },
+      { opacity: 1, y: 0, letterSpacing: "-1.5px", duration: 0.7, ease: "power3.out" }, 
+      27.6
+    );
+    tl.fromTo("#final-tagline", 
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 
+      27.8
+    );
+    tl.fromTo("#final-badge", 
+      { opacity: 0, scale: 0.9 },
+      { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.5)" }, 
+      28.1
+    );
+
+    // Fim da Timeline (exatos 30s)
+    tl.duration(30);
+
+    // Controles do Player
+    const toggleBtn = document.getElementById('btn-toggle');
+    const restartBtn = document.getElementById('btn-restart');
+    const progressContainer = document.getElementById('progress-container');
+
+    toggleBtn.addEventListener('click', () => {
+      if (tl.paused()) {
+        tl.play();
+        toggleBtn.textContent = 'Pausar';
+      } else {
+        tl.pause();
+        toggleBtn.textContent = 'Continuar';
+      }
+    });
+
+    restartBtn.addEventListener('click', () => {
+      tl.restart();
+      toggleBtn.textContent = 'Pausar';
+    });
+
+    progressContainer.addEventListener('click', (e) => {
+      const rect = progressContainer.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+      tl.seek(pct * 30);
+    });
+
+  </script>
+</body>
+</html>
