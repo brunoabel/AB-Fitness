@@ -60,6 +60,9 @@ async function main() {
   const report = { verified: 0, auto: [], missing: [] };
   const catalog = {};
 
+  // Regra: cada vídeo pertence a um único exercício. Os do lote de casa ficam reservados ao dono exato.
+  for (const h of HOME_BATCH) usedKeys.add(h.source);
+
   // 1. Exercícios atuais
   for (const ex of app.base) {
     const bio = app.getBio(ex) || {};
@@ -71,12 +74,18 @@ async function main() {
     let source = null;
     let cues = null;
 
-    if (verified) {
+    const takenKey = (m) => {
+      const k = fileKey(m?.video_url);
+      return k && usedKeys.has(k);
+    };
+    if (verified && takenKey(mediaFromVerified(verified))) {
+      report.missing.push(`${ex.grupo} · ${ex.nome} _(vídeo já usado por outro exercício)_`);
+    } else if (verified) {
       report.verified += 1;
       mediaFields = mediaFromVerified(verified);
       source = 'verified';
       cues = verified.keyCues;
-    } else if (manual) {
+    } else if (manual && !takenKey(mediaFromDataset(manual))) {
       mediaFields = mediaFromDataset(manual);
       source = 'dataset';
       cues = manual.formCues;
@@ -107,18 +116,17 @@ async function main() {
     };
   }
 
-  // 2. Lote de casa (só vídeos ainda não usados)
+  // 2. Lote de casa
   const homeExercises = [];
   HOME_BATCH.forEach((h, i) => {
     const d = dsByKey.get(h.source);
-    if (!d || usedKeys.has(h.source)) return report.missing.push(`(lote casa ignorado) ${h.nome}`);
-    usedKeys.add(h.source);
+    if (!d) return report.missing.push(`(lote casa ignorado) ${h.nome}`);
     const id = FIRST_HOME_ID + i;
     homeExercises.push({ id, nome: h.nome, grupo: h.grupo, mecanica: h.mecanica, series: 3, reps: h.mecanica === 'Composto' ? '8-12' : '12-15', descanso_seg: h.mecanica === 'Composto' ? 75 : 45, slug: h.slug });
     catalog[h.slug] = {
       id: h.slug, legacy_id: id, name: h.nome, primary_muscle: h.grupo,
       secondary_muscles: (d.secondaryMuscles || []).slice(0, 4),
-      environment: h.environment, equipment: h.equipment, ...mediaFromDataset(d), video_source: 'dataset',
+      environment: h.environment, equipment: h.equipment, ...mediaFromDataset(d), video_source: 'verified',
       form_cues: h.cues || cues3(d.formCues), home_alternative_id: null
     };
   });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SkeletonList } from './ui/Skeleton';
 import { 
   Users, 
   Dumbbell, 
@@ -10,9 +11,11 @@ import {
   Activity,
   ArrowLeft,
   CheckCircle2,
-  ChevronRight
+  ChevronRight,
+  ShieldPlus,
+  ShieldMinus
 } from 'lucide-react';
-import { fetchAdminAthletesData, fetchAthleteDetails } from '../services/workoutService';
+import { fetchAdminAthletesData, fetchAthleteDetails, promoteToCoach, demoteToAthlete } from '../services/workoutService';
 import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
 
@@ -27,6 +30,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const [selectedAthlete, setSelectedAthlete] = useState(null);
   const [athleteDetailsLoading, setAthleteDetailsLoading] = useState(false);
   const [athleteDetails, setAthleteDetails] = useState(null);
+  const [roleActionLoading, setRoleActionLoading] = useState(false);
+  const [roleActionError, setRoleActionError] = useState('');
 
   const loadData = async () => {
     try {
@@ -83,6 +88,25 @@ export default function AdminDashboard({ onBackToWorkout }) {
     const details = await fetchAthleteDetails(ath.id);
     setAthleteDetails(details);
     setAthleteDetailsLoading(false);
+    setRoleActionError('');
+  };
+
+  const handleToggleCoachRole = async () => {
+    if (!selectedAthlete) return;
+    triggerHaptic(15);
+    setRoleActionLoading(true);
+    setRoleActionError('');
+    const isCoach = selectedAthlete.role === 'coach';
+    const { data, error } = isCoach
+      ? await demoteToAthlete(selectedAthlete.id)
+      : await promoteToCoach(selectedAthlete.id);
+    setRoleActionLoading(false);
+    if (error) {
+      setRoleActionError(error);
+      return;
+    }
+    setSelectedAthlete((prev) => ({ ...prev, role: data.role }));
+    setAthletes((prev) => prev.map((a) => (a.id === data.id ? { ...a, role: data.role } : a)));
   };
 
   // Filtragem de atletas por nome ou e-mail
@@ -123,16 +147,16 @@ export default function AdminDashboard({ onBackToWorkout }) {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 flex flex-col justify-between transition-colors animate-fadeIn">
-      <div className="w-full max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 shadow-2xl relative flex flex-col justify-between border-x border-zinc-200 dark:border-white/10">
+    <div className="min-h-screen bg-black text-zinc-100 flex flex-col justify-between transition-colors animate-fadeIn">
+      <div className="w-full max-w-5xl mx-auto min-h-screen bg-zinc-950 shadow-2xl relative flex flex-col justify-between border-x border-white/10">
         
         {/* Top Header do Painel de Admin */}
-        <header className="sticky top-0 z-20 w-full bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-white/10 transition-colors pt-[max(env(safe-area-inset-top,0px),12px)]">
+        <header className="sticky top-0 z-20 w-full bg-zinc-950/95 backdrop-blur-md border-b border-white/10 transition-colors pt-[max(env(safe-area-inset-top,0px),12px)]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-2.5 pb-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 onClick={onBackToWorkout}
-                className="w-11 h-11 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-zinc-200 dark:border-zinc-700"
+                className="w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-zinc-700"
                 title="Voltar aos Treinos"
                 aria-label="Voltar aos Treinos"
               >
@@ -142,14 +166,14 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 <ABLogo size={36} showText={false} />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h1 className="text-xs sm:text-sm font-bold tracking-tight text-zinc-900 dark:text-white uppercase leading-none">
+                    <h1 className="text-xs sm:text-sm font-bold tracking-tight text-white uppercase leading-none">
                       Painel do Treinador
                     </h1>
-                    <span className="px-1.5 py-0.5 rounded-md bg-zinc-950 text-white dark:bg-accent dark:text-app text-[11px] font-bold uppercase tracking-wider leading-none">
+                    <span className="px-1.5 py-0.5 rounded-md bg-primary text-app text-[11px] font-bold uppercase tracking-wider leading-none">
                       ADMIN
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">
+                  <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
                     Gestão Geral de Atletas & Treinos
                   </p>
                 </div>
@@ -159,7 +183,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className={`w-11 h-11 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 ${
+              className={`w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-zinc-700 ${
                 refreshing ? 'opacity-50' : ''
               }`}
               title="Atualizar dados"
@@ -175,34 +199,34 @@ export default function AdminDashboard({ onBackToWorkout }) {
           
           {/* Cartões com Métricas Globais */}
           <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
               <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Users className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+                <Users className="w-3.5 h-3.5 text-zinc-300" />
                 <span>Atletas</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-zinc-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
                 {athletes.length}
               </div>
               <div className="text-[11px] text-zinc-400 mt-0.5">registados</div>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
               <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Dumbbell className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+                <Dumbbell className="w-3.5 h-3.5 text-zinc-300" />
                 <span>Treinos</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-zinc-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
                 {sessions.length}
               </div>
               <div className="text-[11px] text-zinc-400 mt-0.5">concluídos</div>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
               <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Trophy className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+                <Trophy className="w-3.5 h-3.5 text-zinc-300" />
                 <span>Volume</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-zinc-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
                 {stats.totalVolume > 999 ? `${(stats.totalVolume / 1000).toFixed(1)}t` : `${stats.totalVolume} kg`}
               </div>
               <div className="text-[11px] text-zinc-400 mt-0.5">levantados</div>
@@ -210,7 +234,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
           </div>
 
           {/* Abas: Atletas / Histórico Geral */}
-          <div className="grid grid-cols-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-white/10 text-xs font-bold">
+          <div className="grid grid-cols-2 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold">
             <button
               onClick={() => {
                 setActiveTab('athletes');
@@ -218,8 +242,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
               }}
               className={`min-h-[40px] py-2 rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'athletes'
-                  ? 'bg-white text-zinc-950 dark:bg-zinc-800 dark:text-white shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                  ? 'bg-zinc-800 text-white shadow-xs'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               Atletas ({athletes.length})
@@ -231,8 +255,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
               }}
               className={`min-h-[40px] py-2 rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'sessions'
-                  ? 'bg-white text-zinc-950 dark:bg-zinc-800 dark:text-white shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                  ? 'bg-zinc-800 text-white shadow-xs'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               Histórico Geral ({sessions.length})
@@ -248,7 +272,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 placeholder="Pesquisar por nome ou e-mail..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-medium text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-medium text-white placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-colors"
               />
             </div>
           )}
@@ -257,12 +281,9 @@ export default function AdminDashboard({ onBackToWorkout }) {
           {activeTab === 'athletes' && (
             <div className="space-y-2">
               {loading ? (
-                <div className="p-8 text-center text-xs text-zinc-400">
-                  <div className="w-6 h-6 border-2 border-zinc-400 border-t-zinc-950 dark:border-t-white rounded-full animate-spin mx-auto mb-2" />
-                  A carregar lista de atletas...
-                </div>
+                <SkeletonList rows={4} label="A carregar lista de atletas" />
               ) : filteredAthletes.length === 0 ? (
-                <div className="p-8 rounded-xl border border-dashed border-zinc-200 dark:border-white/10 text-center text-xs text-zinc-400">
+                <div className="p-8 rounded-xl border border-dashed border-white/10 text-center text-xs text-zinc-400">
                   Nenhum atleta encontrado para esta pesquisa.
                 </div>
               ) : (
@@ -281,32 +302,37 @@ export default function AdminDashboard({ onBackToWorkout }) {
                       <div
                         key={ath.id}
                         onClick={() => handleViewAthlete(ath)}
-                        className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors cursor-pointer flex items-center justify-between active:scale-[0.99]"
+                        className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 hover:border-zinc-700 transition-colors cursor-pointer flex items-center justify-between active:scale-[0.99]"
                       >
                         <div className="flex items-center gap-3">
                           {/* Avatar com Iniciais */}
-                          <div className="w-10 h-10 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold text-xs shrink-0">
                             {initials}
                           </div>
 
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
+                              <h4 className="text-xs font-bold text-white leading-tight">
                                 {ath.full_name || ath.email.split('@')[0]}
                               </h4>
                               {isCurrentAdmin && (
-                                <span className="px-1.5 py-0.5 rounded-md bg-zinc-200 dark:bg-zinc-800 text-[11px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                                <span className="px-1.5 py-0.5 rounded-md bg-zinc-800 text-[11px] font-bold uppercase tracking-wider text-zinc-300">
                                   Treinador
                                 </span>
                               )}
+                              {ath.role === 'coach' && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-accent border border-accent-hover text-[11px] font-bold uppercase tracking-wider text-white">
+                                  Personal Trainer
+                                </span>
+                              )}
                             </div>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate max-w-[180px]">
+                            <p className="text-[11px] text-zinc-400 font-medium truncate max-w-[180px]">
                               {ath.email}
                             </p>
-                            <div className="flex items-center gap-2 mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 font-mono tabular-nums">
+                            <div className="flex items-center gap-2 mt-1 text-[11px] text-zinc-400 font-mono tabular-nums">
                               <span>Desde: {formatDate(ath.created_at)}</span>
                               <span>•</span>
-                              <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                              <span className="font-semibold text-zinc-300">
                                 {athSessionsCount} {athSessionsCount === 1 ? 'treino concluído' : 'treinos concluídos'}
                               </span>
                             </div>
@@ -326,9 +352,9 @@ export default function AdminDashboard({ onBackToWorkout }) {
           {activeTab === 'sessions' && (
             <div className="space-y-2">
               {sessions.length === 0 ? (
-                <div className="p-8 rounded-xl border border-dashed border-zinc-200 dark:border-white/10 text-center space-y-2">
+                <div className="p-8 rounded-xl border border-dashed border-white/10 text-center space-y-2">
                   <Activity className="w-6 h-6 text-zinc-400 mx-auto" />
-                  <h4 className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                  <h4 className="text-xs font-bold text-zinc-300">
                     Nenhum treino registado ainda
                   </h4>
                   <p className="text-[11px] text-zinc-500 max-w-xs mx-auto">
@@ -345,10 +371,10 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     return (
                       <div
                         key={sess.id}
-                        className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 space-y-2"
+                        className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="px-2 py-0.5 rounded-md bg-zinc-200 dark:bg-zinc-800 text-[11px] font-bold text-zinc-800 dark:text-zinc-200">
+                          <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-[11px] font-bold text-zinc-200">
                             {sess.workout_day_name}
                           </span>
                           <span className="text-[11px] text-zinc-500 font-mono tabular-nums font-medium">
@@ -357,7 +383,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-zinc-900 dark:text-white">
+                          <h4 className="text-xs font-bold text-white">
                             {sess.workout_title}
                           </h4>
                           <div className="flex items-center gap-1 text-[11px] text-zinc-500 font-semibold font-mono tabular-nums">
@@ -366,9 +392,9 @@ export default function AdminDashboard({ onBackToWorkout }) {
                           </div>
                         </div>
 
-                        <div className="pt-1.5 border-t border-zinc-200 dark:border-white/10 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
-                          <span>Atleta: <strong className="text-zinc-800 dark:text-zinc-200">{athleteName}</strong></span>
-                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-[11px] text-zinc-400">
+                          <span>Atleta: <strong className="text-zinc-200">{athleteName}</strong></span>
+                          <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Concluído
                           </span>
                         </div>
@@ -386,17 +412,17 @@ export default function AdminDashboard({ onBackToWorkout }) {
         {selectedAthlete && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 animate-fadeIn">
             <div 
-              className="w-full sm:max-w-lg bg-white dark:bg-zinc-950 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-white/10 flex flex-col max-h-[85vh] animate-slideUp"
+              className="w-full sm:max-w-lg bg-zinc-950 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-white/10 flex flex-col max-h-[85vh] animate-slideUp"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header do Modal */}
-              <div className="p-4 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900">
+              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-zinc-900">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs">
+                  <div className="w-9 h-9 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold text-xs">
                     {(selectedAthlete.full_name || selectedAthlete.email).slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
+                    <h3 className="text-xs font-bold text-white leading-tight">
                       {selectedAthlete.full_name || 'Atleta'}
                     </h3>
                     <p className="text-[11px] text-zinc-500">{selectedAthlete.email}</p>
@@ -408,7 +434,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     setSelectedAthlete(null);
                     setAthleteDetails(null);
                   }}
-                  className="w-10 h-10 rounded-xl text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Fechar"
                 >
                   <X className="w-5 h-5" />
@@ -418,28 +444,25 @@ export default function AdminDashboard({ onBackToWorkout }) {
               {/* Corpo com Histórico do Atleta */}
               <div className="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
                 {athleteDetailsLoading ? (
-                  <div className="p-6 text-center text-zinc-400">
-                    <div className="w-5 h-5 border-2 border-zinc-400 border-t-zinc-950 dark:border-t-white rounded-full animate-spin mx-auto mb-2" />
-                    A carregar histórico do atleta...
-                  </div>
+                  <SkeletonList rows={3} label="A carregar histórico do atleta" />
                 ) : (
                   <>
-                    <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 space-y-2">
-                      <div className="flex justify-between text-zinc-500 dark:text-zinc-400">
+                    <div className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-2">
+                      <div className="flex justify-between text-zinc-400">
                         <span>Perfil Desportivo:</span>
-                        <strong className="text-zinc-800 dark:text-zinc-200 uppercase">
+                        <strong className="text-zinc-200 uppercase">
                           {selectedAthlete.athlete_type || 'Futebol & Musculação'}
                         </strong>
                       </div>
-                      <div className="flex justify-between text-zinc-500 dark:text-zinc-400 font-mono tabular-nums">
+                      <div className="flex justify-between text-zinc-400 font-mono tabular-nums">
                         <span>Data de Início:</span>
-                        <strong className="text-zinc-800 dark:text-zinc-200">
+                        <strong className="text-zinc-200">
                           {formatDate(selectedAthlete.created_at)}
                         </strong>
                       </div>
-                      <div className="flex justify-between text-zinc-500 dark:text-zinc-400 font-mono tabular-nums">
+                      <div className="flex justify-between text-zinc-400 font-mono tabular-nums">
                         <span>Total de Sessões:</span>
-                        <strong className="text-zinc-800 dark:text-zinc-200 font-bold">
+                        <strong className="text-zinc-200 font-bold">
                           {athleteDetails?.sessions?.length || 0} treinos
                         </strong>
                       </div>
@@ -450,17 +473,17 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     </h4>
 
                     {athleteDetails?.sessions?.length === 0 ? (
-                      <div className="p-6 rounded-xl border border-dashed border-zinc-200 dark:border-white/10 text-center text-zinc-400 text-xs">
+                      <div className="p-6 rounded-xl border border-dashed border-white/10 text-center text-zinc-400 text-xs">
                         Este atleta ainda não registou sessões na base de dados.
                       </div>
                     ) : (
                       (athleteDetails?.sessions || []).map((s) => (
                         <div
                           key={s.id}
-                          className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 flex items-center justify-between"
+                          className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-between"
                         >
                           <div>
-                            <div className="font-bold text-zinc-900 dark:text-white">
+                            <div className="font-bold text-white">
                               {s.workout_title}
                             </div>
                             <div className="text-[11px] text-zinc-500 font-mono tabular-nums">
@@ -477,14 +500,45 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 )}
               </div>
 
+              {/* Promover/remover papel de Trainer */}
+              {selectedAthlete && selectedAthlete.role !== 'admin' && selectedAthlete.email !== 'brunoaaraujo2005@gmail.com' && (
+                <div className="px-4 pt-3.5 border-t border-white/10 bg-zinc-900 space-y-2">
+                  {roleActionError && (
+                    <p className="text-[11px] text-red-400">{roleActionError}</p>
+                  )}
+                  <button
+                    onClick={handleToggleCoachRole}
+                    disabled={roleActionLoading}
+                    className={`w-full min-h-[44px] rounded-xl font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60 ${
+                      selectedAthlete.role === 'coach'
+                        ? 'bg-zinc-800 text-zinc-300 border border-white/10 hover:bg-zinc-700'
+                        : 'bg-white text-zinc-950 hover:bg-zinc-200'
+                    }`}
+                  >
+                    {selectedAthlete.role === 'coach' ? (
+                      <>
+                        <ShieldMinus className="w-4 h-4" />
+                        {roleActionLoading ? 'A remover...' : 'Remover papel de Trainer'}
+                      </>
+                    ) : (
+                      <>
+                        <ShieldPlus className="w-4 h-4" />
+                        {roleActionLoading ? 'A promover...' : 'Promover a Trainer'}
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
               {/* Botão Fechar */}
-              <div className="p-3.5 border-t border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900">
+              <div className="p-3.5 border-t border-white/10 bg-zinc-900">
                 <button
                   onClick={() => {
                     setSelectedAthlete(null);
                     setAthleteDetails(null);
+                    setRoleActionError('');
                   }}
-                  className="w-full min-h-[48px] py-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 font-bold text-xs active:scale-[0.99] transition-colors cursor-pointer"
+                  className="w-full min-h-[48px] py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs active:scale-[0.99] transition-colors cursor-pointer"
                 >
                   Fechar Detalhes
                 </button>

@@ -1,44 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  Play, 
-  Pause, 
-  Square, 
-  RotateCcw, 
-  Share2, 
-  Flame, 
-  Timer, 
-  Zap, 
-  Navigation2, 
-  Trophy, 
-  Footprints, 
-  Trash2,
-  CheckCircle2,
-  Smartphone,
-  Volume2,
-  VolumeX,
-  Cloud,
-  Satellite,
-  Flag,
-  Download,
-  AlertTriangle,
-  ShieldCheck,
-  Settings
-} from 'lucide-react';
+
 import confetti from 'canvas-confetti';
-import RunningMap from './RunningMap';
 import RunningShareModal from './RunningShareModal';
 import BadgeUnlockedToast from './BadgeUnlockedToast';
-import { 
+import {
   DEFAULT_TRACKING_CONFIG,
-  haversineDistanceMeters, 
-  formatDuration, 
-  formatPace, 
-  calculateRunningCalories, 
+  haversineDistanceMeters,
+  formatPace,
+  calculateRunningCalories,
   validateAndFilterGpsPoint,
   GpsKalmanFilter2D,
   calculateRollingPace,
   generateSimulatedStep,
-  downloadGPX,
   computeSplits,
   simplifyRoute
 } from '../utils/runningService';
@@ -52,23 +25,26 @@ import {
   getRunDraftFromIDB
 } from '../utils/storage';
 import { sound, triggerHaptic } from '../utils/audio';
-import { 
-  announceSplit, 
-  announceStart, 
-  announcePause, 
-  announceResume, 
-  announceFinish, 
-  getVoiceCuesPreference, 
-  saveVoiceCuesPreference,
+import {
+  announceSplit,
+  announceStart,
+  announcePause,
+  announceResume,
+  announceFinish,
+  getVoiceCuesPreference,
   unlockSpeechIOS
 } from '../utils/speech';
 import { syncRunToSupabase, syncUserRunsFromSupabase } from '../services/runningSyncService';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { useAuth } from '../context';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { AUTO_PAUSE_PREF_KEY, PERMISSION_EXPLAINED_KEY } from './running/runPrefs';
+import RunHeader from './running/RunHeader';
+import RunPermissionModal from './running/RunPermissionModal';
+import RunLiveHud from './running/RunLiveHud';
+import RunSummary from './running/RunSummary';
+import RunHome from './running/RunHome';
 
-const AUTO_PAUSE_PREF_KEY = 'ab_fitness_autopause_v1';
-const PERMISSION_EXPLAINED_KEY = 'ab_fitness_gps_explained_v1';
 
 export default function RunningHub({ isDark = true }) {
   const { user } = useAuth();
@@ -118,7 +94,9 @@ export default function RunningHub({ isDark = true }) {
   const [splits, setSplits] = useState(() => initialDraft?.splits ?? []);
 
   // Estado de Permissões, Aquecimento (Warm-up) e Diagnóstico GPS
-  const [permissionState, setPermissionState] = useState('prompt'); // 'prompt' | 'granted' | 'denied' | 'unsupported'
+  const [permissionState, setPermissionState] = useState(() =>
+    typeof navigator === 'undefined' || !('geolocation' in navigator) ? 'unsupported' : 'prompt'
+  ); // 'prompt' | 'granted' | 'denied' | 'unsupported'
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [gpsAccuracy, setGpsAccuracy] = useState(null); // Em metros
   const [gpsError, setGpsError] = useState(null);
@@ -169,10 +147,7 @@ export default function RunningHub({ isDark = true }) {
 
   // Consultar estado da permissão de Geolocalização via Permissions API
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
-      setPermissionState('unsupported');
-      return;
-    }
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) return undefined;
     if (!('permissions' in navigator) || typeof navigator.permissions.query !== 'function') {
       return;
     }
@@ -286,10 +261,11 @@ export default function RunningHub({ isDark = true }) {
   };
 
   // Sincronizar corridas com o Supabase quando o utilizador estiver autenticado
+  const syncUserId = user?.id;
   useEffect(() => {
     let active = true;
-    if (user && user.id && user.id !== 'guest-local-user') {
-      syncUserRunsFromSupabase(user.id)
+    if (syncUserId && syncUserId !== 'guest-local-user') {
+      syncUserRunsFromSupabase(syncUserId)
         .then((merged) => {
           if (active && Array.isArray(merged) && merged.length > 0) {
             setRunsHistory(merged);
@@ -303,7 +279,7 @@ export default function RunningHub({ isDark = true }) {
     return () => {
       active = false;
     };
-  }, [user?.id]);
+  }, [syncUserId]);
 
   // 1. Cronómetro de Corrida Baseado em Timestamps Reais (Date.now())
   // Sobrevive a bloqueio de ecrã e suspensão de abas em segundo plano no iOS/Android
@@ -375,13 +351,9 @@ export default function RunningHub({ isDark = true }) {
     };
   }, [sessionStatus, syncElapsedTime]);
 
-  // 1b. Cálculo Reativo e Estável do Pace Médio Geral
-  useEffect(() => {
-    if (distanceKm > 0.03 && elapsedSeconds > 0) {
-      const avg = Math.round(elapsedSeconds / distanceKm);
-      setAvgPaceSeconds(avg);
-    }
-  }, [elapsedSeconds, distanceKm]);
+  // 1b. Pace médio derivado (sem estado duplicado): com distância suficiente calcula ao vivo,
+  // senão usa o último valor conhecido (ex.: hidratado do rascunho)
+  const livePaceSeconds = distanceKm > 0.03 && elapsedSeconds > 0 ? Math.round(elapsedSeconds / distanceKm) : avgPaceSeconds;
 
   // 1c. Persistência com Throttling no IndexedDB (grava imediatamente em mudanças de rota/estado ou a cada 5s)
   useEffect(() => {
@@ -394,7 +366,7 @@ export default function RunningHub({ isDark = true }) {
           sessionStatus,
           distanceKm,
           elapsedSeconds,
-          avgPaceSeconds,
+          avgPaceSeconds: livePaceSeconds,
           calories,
           elevationGainM,
           coordinates,
@@ -404,7 +376,7 @@ export default function RunningHub({ isDark = true }) {
         });
       }
     }
-  }, [sessionStatus, distanceKm, elapsedSeconds, avgPaceSeconds, calories, elevationGainM, coordinates, splits, isSimulation]);
+  }, [sessionStatus, distanceKm, elapsedSeconds, livePaceSeconds, calories, elevationGainM, coordinates, splits, isSimulation]);
 
   // Função central pura para processar um novo ponto válido (real ou simulado)
   const processAcceptedPoint = useCallback((rawPoint, gnssSpeedMs = null) => {
@@ -892,7 +864,7 @@ export default function RunningHub({ isDark = true }) {
 
     const finalDistance = Number(distanceKmRef.current.toFixed(2));
     const finalSeconds = elapsedSecondsRef.current;
-    const computedAvgPaceSec = avgPaceSeconds || (finalDistance > 0 ? Math.round(finalSeconds / finalDistance) : 0);
+    const computedAvgPaceSec = livePaceSeconds || (finalDistance > 0 ? Math.round(finalSeconds / finalDistance) : 0);
     const avgSpeed = finalDistance > 0 && finalSeconds > 0 
       ? Number((finalDistance / (finalSeconds / 3600)).toFixed(1))
       : 0;
@@ -1018,122 +990,15 @@ export default function RunningHub({ isDark = true }) {
   return (
     <div className="p-4 sm:p-6 space-y-6 animate-fadeIn pb-24">
       
-      {/* 1. Header do AB Running Club */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-[11px] font-bold tracking-widest uppercase text-accent">
-              AB FITNESS • RUNNING CLUB
-            </span>
-            {isCloudSynced && (
-              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1 font-mono">
-                <Cloud className="w-2.5 h-2.5" />
-                Nuvem OK
-              </span>
-            )}
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight mt-0.5">
-            Running Club
-          </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Rastreio GPS com filtro de Kalman 2D, janela móvel de pace e Auto-Pause inteligente.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Toggle de Locução por Voz nos Fones */}
-          <button
-            onClick={() => {
-              const next = !voiceEnabled;
-              setVoiceEnabled(next);
-              saveVoiceCuesPreference(next);
-              triggerHaptic(10);
-            }}
-            className={`min-h-[44px] min-w-[44px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 ${
-              voiceEnabled 
-                ? 'bg-accent/15 text-accent border-accent/30' 
-                : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400 border-zinc-200 dark:border-white/10'
-            }`}
-            title={voiceEnabled ? 'Locução por voz ativada nos fones' : 'Locução por voz desativada'}
-          >
-            {voiceEnabled ? (
-              <Volume2 className="w-4 h-4 text-accent" />
-            ) : (
-              <VolumeX className="w-4 h-4 text-zinc-400" />
-            )}
-          </button>
-
-          {/* Badges de Totais Acumulados */}
-          <div className="text-right bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 px-3.5 py-2 rounded-xl">
-            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
-              Total ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
-            </span>
-            <span className="text-sm font-black text-zinc-900 dark:text-white font-mono tabular-nums">
-              {totalKmsAccumulated.toFixed(1)} <span className="text-[11px] text-accent font-sans">KM</span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal Explicativo de Permissão Progressiva */}
-      {showPermissionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-2xl space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
-                  Permissão de Geolocalização
-                </span>
-                <h3 className="text-lg font-black text-white">
-                  Ativar GPS de Alta Precisão
-                </h3>
-              </div>
-            </div>
-
-            <p className="text-xs text-zinc-300 leading-relaxed">
-              Para desenhar o seu percurso em tempo real, medir cada quilómetro com precisão e calcular o seu ritmo (pace), o <strong>AB Fitness</strong> precisa de acesso à sua <strong>Localização Precisa</strong> durante o treino.
-            </p>
-
-            <div className="p-3.5 rounded-2xl bg-black/50 border border-zinc-800 text-[11px] text-zinc-400 space-y-1.5">
-              <div className="flex items-center gap-2 text-zinc-200 font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Selecione &ldquo;Permitir durante o uso da app&rdquo;</span>
-              </div>
-              <div className="flex items-center gap-2 text-zinc-200 font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Mantenha a opção &ldquo;Localização Precisa&rdquo; ligada (iOS/Android)</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                onClick={() => setShowPermissionModal(false)}
-                className="flex-1 py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs cursor-pointer transition-colors"
-              >
-                Agora Não
-              </button>
-              <button
-                onClick={handleStartCountdown}
-                className="flex-1 py-3 px-4 rounded-xl bg-accent hover:bg-accent text-zinc-950 font-black text-xs cursor-pointer transition-colors"
-              >
-                Continuar e Permitir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      <RunHeader {...{ isCloudSynced, setVoiceEnabled, totalKmsAccumulated, totalRunsCount, voiceEnabled }} />
+      <RunPermissionModal {...{ handleStartCountdown, setShowPermissionModal, showPermissionModal }} />
       {/* 2. CONTAGEM REGRESSIVA 3.. 2.. 1.. (COM PRÉ-AQUECIMENTO DE GPS ATIVO) */}
       {sessionStatus === 'countdown' && (
         <div 
           onClick={handleSkipCountdown}
-          className="rounded-2xl bg-zinc-950 border border-accent/30 p-12 text-center flex flex-col items-center justify-center animate-scaleUp shadow-xl cursor-pointer"
+          className="rounded-2xl bg-zinc-950 border border-accent-hover p-12 text-center flex flex-col items-center justify-center animate-scaleUp shadow-xl cursor-pointer"
         >
-          <span className="text-xs font-bold text-accent uppercase tracking-widest">
+          <span className="text-xs font-bold text-white uppercase tracking-widest">
             A PREPARAR E PRÉ-AQUECER GPS...
           </span>
           <span className="text-7xl font-black text-white mt-2 tracking-tighter animate-pulse font-mono tabular-nums">
@@ -1142,626 +1007,15 @@ export default function RunningHub({ isDark = true }) {
           <span className="text-xs text-zinc-400 mt-2">
             {gpsAccuracy ? `Sinal GPS detetado (±${gpsAccuracy}m)` : 'A sincronizar satélites GNSS e filtro Kalman 2D'}
           </span>
-          <span className="text-xs text-accent mt-4 underline font-semibold">
+          <span className="text-xs text-white mt-4 underline font-semibold">
             Tocar para iniciar imediatamente
           </span>
         </div>
       )}
 
-      {/* 3. MODO AO VIVO (HUD DE CORRIDA ATIVA OU PAUSADA) */}
-      {(sessionStatus === 'running' || sessionStatus === 'paused') && (
-        <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
-          
-          {/* Mapa em Tempo Real (mantém o trajeto e corredor ativos mesmo em pausa) */}
-          <div className="md:col-span-6 rounded-2xl overflow-hidden border border-zinc-200 dark:border-white/10 shadow-sm">
-            <RunningMap 
-              coordinates={coordinates} 
-              splits={splits}
-              currentPosition={currentFix}
-              isLive={sessionStatus === 'running' || sessionStatus === 'paused'} 
-              isDark={isDark} 
-              height="340px" 
-            />
-          </div>
-
-          {/* Painel Principal de Métricas */}
-          <div className="md:col-span-6 rounded-2xl bg-zinc-900 border border-zinc-800 p-5 text-white shadow-xl relative overflow-hidden">
-            {/* Status do GPS e Auto-Pause no topo */}
-            <div className="flex items-center justify-between mb-3 text-[11px] gap-2">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className={`w-2 h-2 rounded-full shrink-0 ${signalBadge.color} animate-pulse`} />
-                <span className={`font-bold truncate ${signalBadge.text}`}>
-                  {signalBadge.label}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => {
-                    const next = !autoPauseEnabled;
-                    setAutoPauseEnabled(next);
-                    if (!next && isAutoPausedRef.current) {
-                      handleResume();
-                    }
-                    try { localStorage.setItem(AUTO_PAUSE_PREF_KEY, String(next)); } catch {}
-                    triggerHaptic(8);
-                  }}
-                  className={`px-2 py-0.5 rounded-md font-bold text-[11px] border transition-colors cursor-pointer ${
-                    autoPauseEnabled
-                      ? 'bg-accent/15 text-accent border-accent/30'
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                  }`}
-                  title="Pausar automaticamente quando parado em semáforos"
-                >
-                  Auto-Pause: {autoPauseEnabled ? 'ON' : 'OFF'}
-                </button>
-
-                <span className={`px-2 py-0.5 rounded-md font-bold text-[11px] uppercase tracking-wider ${
-                  sessionStatus === 'running' && !isAutoPaused
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
-                    : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                }`}>
-                  {sessionStatus === 'paused'
-                    ? 'PAUSADO'
-                    : isAutoPaused
-                      ? 'AUTO-PAUSE'
-                      : 'EM CORRIDA'}
-                </span>
-              </div>
-            </div>
-
-            {/* Alerta de Erro de Permissão / Localização Aproximada durante a corrida */}
-            {gpsError && !isSimulation && (
-              <div className="mb-3 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-semibold">{gpsError}</p>
-                  {(gpsErrorCode === 'DENIED' || gpsErrorCode === 'COARSE') && (
-                    <p className="text-[11px] text-rose-300/80">
-                      iOS: Definições &gt; Privacidade &gt; Serviços de Localização &gt; Safari (ativar Localização Precisa). Android: Cadeado na barra de endereço &gt; Permissões &gt; Localização.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Distância Gigante de Alta Visibilidade */}
-            <div className="text-center py-2 bg-black/40 rounded-xl border border-zinc-800/60 mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
-                Distância Percorrida
-              </span>
-              <div className="flex items-baseline justify-center gap-1.5">
-                <span className="text-6xl font-black tracking-tighter text-white font-mono tabular-nums">
-                  {distanceKm.toFixed(2)}
-                </span>
-                <span className="text-xl font-black text-accent font-sans">
-                  KM
-                </span>
-              </div>
-            </div>
-
-            {/* Grid 4 Métricas Técnicas */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                  <Zap className="w-3.5 h-3.5 text-accent" />
-                  <span className="font-bold text-[11px] uppercase tracking-wider">Ritmo / Pace</span>
-                </div>
-                <span className="text-2xl font-black text-white font-mono tabular-nums">
-                  {sessionStatus === 'paused' || isAutoPaused
-                    ? (avgPaceSeconds > 0 ? formatPace(avgPaceSeconds) : "--:--")
-                    : formatPace(currentPaceSeconds || avgPaceSeconds)}
-                </span>
-                <span className="text-[11px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
-                  {sessionStatus === 'paused' || isAutoPaused
-                    ? 'Pausado (Pace Médio)'
-                    : `Médio: ${formatPace(avgPaceSeconds)}`}
-                </span>
-              </div>
-
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                  <Timer className="w-3.5 h-3.5 text-accent" />
-                  <span className="font-bold text-[11px] uppercase tracking-wider">Tempo</span>
-                </div>
-                <span className="text-2xl font-black text-white font-mono tabular-nums">
-                  {formatDuration(elapsedSeconds)}
-                </span>
-                <span className="text-[11px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
-                  {sessionStatus === 'paused'
-                    ? 'Treino Pausado'
-                    : isAutoPaused
-                      ? 'Auto-Pause (Parado)'
-                      : `Velocidade: ${speedKmh} km/h`}
-                </span>
-              </div>
-
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                  <Flame className="w-3.5 h-3.5 text-orange-400" />
-                  <span className="font-bold text-[11px] uppercase tracking-wider">Calorias</span>
-                </div>
-                <span className="text-2xl font-black text-white font-mono tabular-nums">
-                  {calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
-                </span>
-              </div>
-
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                  <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="font-bold text-[11px] uppercase tracking-wider">Elevação</span>
-                </div>
-                <span className="text-2xl font-black text-white font-mono tabular-nums">
-                  +{elevationGainM} <span className="text-xs font-normal text-zinc-400 font-sans">m</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Splits / Parciais por KM com Barras Proporcionais e Destaque da Mais Rápida */}
-            {splits.length > 0 && (() => {
-              const minSec = Math.min(...splits.map((s) => Number(s.durationSeconds) || 999999));
-              const maxSec = Math.max(...splits.map((s) => Number(s.durationSeconds) || 1));
-              return (
-                <div className="mt-4 pt-3 border-t border-zinc-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                      Parciais por KM (Splits Interpolados)
-                    </span>
-                    <span className="text-[11px] text-accent font-semibold">
-                      Ritmo Proporcional
-                    </span>
-                  </div>
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                    {splits.map((s) => {
-                      const isFastest = (Number(s.durationSeconds) || 0) === minSec && splits.length > 1;
-                      const barPct = maxSec > 0 ? Math.max(15, Math.min(100, (minSec / (Number(s.durationSeconds) || minSec)) * 100)) : 100;
-                      return (
-                        <div 
-                          key={s.km}
-                          className={`relative overflow-hidden py-1.5 px-3 rounded-lg border text-xs font-mono tabular-nums transition-colors ${
-                            isFastest
-                              ? 'bg-accent/10 border-accent/40 text-accent'
-                              : 'bg-black/40 border-zinc-800/80 text-zinc-200'
-                          }`}
-                        >
-                          <div 
-                            className={`absolute left-0 top-0 bottom-0 opacity-15 pointer-events-none ${
-                              isFastest ? 'bg-accent' : 'bg-accent'
-                            }`}
-                            style={{ width: `${barPct}%` }}
-                          />
-                          <div className="relative z-10 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-black ${isFastest ? 'text-accent' : 'text-accent'}`}>
-                                KM {s.km}
-                              </span>
-                              {isFastest && (
-                                <span className="text-[11px] px-1.5 py-0.2 rounded bg-accent/20 text-accent font-bold uppercase tracking-tighter">
-                                  Mais rápido
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span className="font-bold">{s.paceStr || s.pace}</span>
-                              <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Controles Principais de Corrida */}
-            <div className="mt-5 pt-3 border-t border-zinc-800 space-y-2.5">
-              <div className="flex items-center gap-3">
-                {sessionStatus === 'running' ? (
-                  <button
-                    onClick={handlePause}
-                    className="flex-1 min-h-[48px] py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
-                  >
-                    <Pause className="w-4 h-4 fill-current" />
-                    <span>PAUSAR</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleResume}
-                    className="flex-1 min-h-[48px] py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
-                  >
-                    <Play className="w-4 h-4 fill-current" />
-                    <span>RETOMAR</span>
-                  </button>
-                )}
-
-                <button
-                  onClick={handleFinishRun}
-                  className="min-h-[48px] py-3.5 px-6 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
-                >
-                  <Square className="w-4 h-4 fill-current" />
-                  <span>CONCLUIR</span>
-                </button>
-              </div>
-
-              {sessionStatus === 'paused' && (
-                <button
-                  onClick={() => {
-                    if (window.confirm('Deseja descartar este treino? Os dados da sessão atual serão cancelados.')) {
-                      handleResetSession();
-                    }
-                  }}
-                  className="w-full py-2.5 text-center text-xs font-semibold text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
-                >
-                  Descartar e Cancelar Treino
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. TELA DE PÓS-CORRIDA / RESUMO CELEBRATÓRIO (COMPLETED) */}
-      {sessionStatus === 'completed' && lastCompletedRun && (
-        <div className="space-y-4 animate-fadeIn pb-12">
-          {/* Header de Celebração */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl relative overflow-hidden">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <Trophy className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  TREINO CONCLUÍDO • RUNNING CLUB
-                </span>
-                <h2 className="text-xl font-black text-white tracking-tight">
-                  Excelente Corrida, Atleta!
-                </h2>
-              </div>
-            </div>
-            
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              O seu percurso suavizado, ritmo médio e parciais foram guardados com sucesso no seu perfil do Running Club.
-            </p>
-
-            {/* Ações Rápidas no Topo */}
-            <div className="mt-4 pt-3 border-t border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
-              <button
-                onClick={() => {
-                  setSelectedRunForShare(lastCompletedRun);
-                  triggerHaptic(15);
-                }}
-                className="w-full sm:flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-accent text-app hover:bg-accent-hover font-bold text-xs flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>PARTILHAR CARTÃO (INSTAGRAM)</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  triggerHaptic(15);
-                  downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
-                }}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
-                title="Descarregar ficheiro GPX compatível com Strava e Garmin"
-              >
-                <Download className="w-4 h-4 text-accent" />
-                <span>Exportar GPX</span>
-              </button>
-
-              <button
-                onClick={handleResetSession}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4 text-zinc-400" />
-                <span>Nova Corrida</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Grid de Mapa e Estatísticas */}
-          <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
-            {/* Mapa do Percurso Percorrido */}
-            <div className="md:col-span-6 space-y-1.5">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                  Trajeto Oficial do Treino
-                </span>
-                <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5">
-                  <span className="flex items-center gap-1"><Satellite className="w-3 h-3 text-accent" /> Satélite HD</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1"><Flag className="w-3 h-3 text-emerald-400" /> Chegada</span>
-                </span>
-              </div>
-              <div className="rounded-2xl overflow-hidden border border-zinc-800 shadow-sm">
-                <RunningMap 
-                  coordinates={lastCompletedRun.coordinates} 
-                  splits={lastCompletedRun.splits}
-                  isLive={false} 
-                  isDark={isDark} 
-                  height="300px" 
-                />
-              </div>
-            </div>
-
-            {/* Painel de Estatísticas Finais */}
-            <div className="md:col-span-6 p-5 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl space-y-4">
-              {/* Distância Gigante */}
-              <div className="text-center py-3 bg-black/40 rounded-xl border border-zinc-800/60">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
-                  Distância Total
-                </span>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-black tracking-tighter text-white font-mono tabular-nums">
-                    {Number(lastCompletedRun.distanceKm).toFixed(2)}
-                  </span>
-                  <span className="text-lg font-black text-accent font-sans">
-                    KM
-                  </span>
-                </div>
-              </div>
-
-              {/* Grid 4 Métricas */}
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Zap className="w-3.5 h-3.5 text-accent" />
-                    <span>Ritmo Médio</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.avgPace}
-                  </span>
-                  <span className="text-[11px] text-zinc-400 block">Ritmo geral</span>
-                </div>
-
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Timer className="w-3.5 h-3.5 text-accent" />
-                    <span>Tempo Total</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {formatDuration(lastCompletedRun.durationSeconds)}
-                  </span>
-                  <span className="text-[11px] text-zinc-400 block">Tempo decorrido</span>
-                </div>
-
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Flame className="w-3.5 h-3.5 text-orange-400" />
-                    <span>Calorias</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
-                  </span>
-                  <span className="text-[11px] text-zinc-400 block">Energia queimada</span>
-                </div>
-
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Velocidade</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400 font-sans">km/h</span>
-                  </span>
-                  <span className="text-[11px] text-zinc-400 block">Média horária</span>
-                </div>
-              </div>
-
-              {/* Splits / KM a KM */}
-              {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
-                <div className="pt-2 border-t border-zinc-800">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
-                    Parciais por KM (Splits Registados)
-                  </span>
-                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                    {lastCompletedRun.splits.map((s) => (
-                      <div 
-                        key={s.km}
-                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-black/40 border border-zinc-800/60 font-mono tabular-nums"
-                      >
-                        <span className="font-bold text-accent">KM {s.km}</span>
-                        <span className="text-zinc-200">{s.pace || s.paceStr}</span>
-                        <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. TELA INICIAL (PRONTO PARA CORRER) */}
-      {sessionStatus === 'idle' && (
-        <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
-          
-          {/* Card Principal: Iniciar Nova Corrida */}
-          <div className="md:col-span-7 rounded-2xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-xl relative overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="p-2.5 rounded-xl bg-zinc-800 text-accent border border-zinc-700/60">
-                  <Footprints className="w-5 h-5" />
-                </span>
-
-                {/* Botão de Calibrar / Pré-aquecer GPS antes de correr */}
-                {!isSimulation && (
-                  <button
-                    onClick={handlePrewarmGps}
-                    className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
-                      isGpsWarmedUp
-                        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                        : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:text-white'
-                    }`}
-                    title="Verificar permissão e adquirir sinal de satélite antes de iniciar"
-                  >
-                    <Satellite className="w-3.5 h-3.5" />
-                    <span>
-                      {isGpsWarmedUp && gpsAccuracy
-                        ? `GPS Pronto (±${gpsAccuracy}m)`
-                        : 'Calibrar Sinal GPS'}
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {/* Botões de Simulação de Teste / Debug */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => {
-                    setIsSimulation(!isSimulation);
-                    triggerHaptic(10);
-                  }}
-                  className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
-                    isSimulation 
-                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' 
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>{isSimulation ? 'Simulação Ativa' : 'Simulação de Teste'}</span>
-                </button>
-
-                {isSimulation && (
-                  <button
-                    onClick={() => {
-                      setSimulationMode((prev) => (prev === 'normal' ? 'noisy' : 'normal'));
-                      triggerHaptic(8);
-                    }}
-                    className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white text-[11px] font-bold cursor-pointer"
-                    title="Alternar entre simulação limpa ou com picos de ruído GPS para testar o filtro"
-                  >
-                    <Settings className="w-3 h-3" />
-                    <span>{simulationMode === 'noisy' ? 'Modo: Com Ruído' : 'Modo: Limpo'}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Pronto para Correr?
-            </h2>
-            <p className="text-xs text-zinc-400 mt-1 mb-6 leading-relaxed">
-              O motor GPS de alta precisão aplica filtragem Kalman 2D contra desvios, janela móvel de ritmo, Auto-Pause inteligente e guarda rascunhos locais automaticamente.
-            </p>
-
-            {/* Diagnóstico de Erro de GPS / Permissões com guia de resolução */}
-            {(gpsError || permissionState === 'denied') && !isSimulation && (
-              <div className="mb-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs space-y-1.5">
-                <div className="flex items-center gap-2 font-bold text-rose-400">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  <span>{gpsError || 'Permissão de localização bloqueada no navegador.'}</span>
-                </div>
-                <p className="text-[11px] text-zinc-300 leading-relaxed">
-                  <strong>Como ativar nas definições:</strong> No iPhone (Safari), aceda a <em>Definições &gt; Privacidade e Segurança &gt; Serviços de Localização &gt; Sites do Safari</em> e ative a <strong>Localização Precisa</strong>. No Android (Chrome), toque no ícone de cadeado ao lado do URL &gt; <em>Permissões &gt; Localização</em>.
-                </p>
-              </div>
-            )}
-
-            {/* Botão de Começar Corrida */}
-            <button
-              onClick={handleRequestStartRun}
-              className="w-full min-h-[48px] py-4 px-6 rounded-xl bg-accent text-app hover:bg-accent-hover font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md active:scale-98 transition-all cursor-pointer"
-            >
-              <Play className="w-5 h-5 fill-current" />
-              <span>INICIAR CORRIDA</span>
-            </button>
-          </div>
-
-          {/* Histórico Recente de Corridas */}
-          <div className="md:col-span-5 space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                Corridas Concluídas ({runsHistory.length})
-              </h3>
-            </div>
-
-            {runsHistory.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-200 dark:border-white/10 p-8 text-center text-zinc-400 dark:text-zinc-500">
-                <Footprints className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-xs font-semibold">Nenhuma corrida registada ainda.</p>
-                <p className="text-[11px] text-zinc-400 mt-0.5">Faça a sua primeira corrida para desbloquear cartões exclusivos de partilha!</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {runsHistory.map((run) => (
-                  <div
-                    key={run.id}
-                    onClick={() => setSelectedRunForShare(run)}
-                    className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 flex items-center justify-between hover:border-zinc-400 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-xs group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60 flex items-center justify-center shrink-0">
-                        <Footprints className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-black text-zinc-900 dark:text-white font-mono tabular-nums">
-                            {Number(run.distanceKm).toFixed(2)} km
-                          </span>
-                          {run.isSimulation && (
-                            <span className="text-[11px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-bold border border-amber-500/20">
-                              Teste
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 font-mono tabular-nums">
-                          <span>{run.avgPace}</span>
-                          <span>•</span>
-                          <span>{formatDuration(run.durationSeconds)}</span>
-                          <span>•</span>
-                          <span>{run.calories} kcal</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {/* Botão de Exportar GPX */}
-                      {run.coordinates && run.coordinates.length > 0 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            triggerHaptic(12);
-                            downloadGPX(run.coordinates, `corrida_${run.date?.split('T')[0] || 'ab_fitness'}`);
-                          }}
-                          className="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-accent transition-colors flex items-center justify-center cursor-pointer"
-                          title="Exportar GPX para Strava / Garmin"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-                      )}
-
-                      {/* Botão de Partilhar / Gerar Cartão */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedRunForShare(run);
-                        }}
-                        className="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-accent transition-colors flex items-center justify-center cursor-pointer"
-                        title="Gerar Cartão para o Instagram"
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </button>
-
-                      {/* Botão de Eliminar */}
-                      <button
-                        onClick={(e) => handleDeleteRun(e, run.id)}
-                        className="min-h-[44px] min-w-[44px] p-2 rounded-lg text-zinc-400 hover:text-rose-500 transition-colors flex items-center justify-center cursor-pointer"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
+      <RunLiveHud {...{ isDark, autoPauseEnabled, avgPaceSeconds, calories, coordinates, currentFix, currentPaceSeconds, distanceKm, elapsedSeconds, elevationGainM, gpsError, gpsErrorCode, handleFinishRun, handlePause, handleResetSession, handleResume, isAutoPaused, isAutoPausedRef, isSimulation, livePaceSeconds, sessionStatus, setAutoPauseEnabled, signalBadge, speedKmh, splits }} />
+      <RunSummary {...{ isDark, coordinates, handleResetSession, lastCompletedRun, sessionStatus, setSelectedRunForShare, splits }} />
+      <RunHome {...{ gpsAccuracy, gpsError, handleDeleteRun, handlePrewarmGps, handleRequestStartRun, isGpsWarmedUp, isSimulation, permissionState, runsHistory, sessionStatus, setIsSimulation, setSelectedRunForShare, setSimulationMode, simulationMode }} />
       {/* 5. MODAL DE COMPARTILHAMENTO ESTILO STRAVA */}
       {selectedRunForShare && (
         <RunningShareModal

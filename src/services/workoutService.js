@@ -192,7 +192,9 @@ export async function recordWorkoutCompletion({
   durationSeconds,
   exercisesData,
   notes = '',
-  persistLocally = true
+  persistLocally = true,
+  assignedProgramId = null,
+  sessionId: presetSessionId = null
 }) {
   // 1. Calcular métricas precisas da sessão
   let totalSets = 0;
@@ -244,18 +246,19 @@ export async function recordWorkoutCompletion({
   if (!canSyncUser(userId)) return { synced: false, summary };
 
   const job = {
-    sessionId: newSessionId(),
+    sessionId: presetSessionId || newSessionId(),
     userId,
     workoutName: summary.workoutName,
     workoutTitle: summary.workoutTitle,
     durationSeconds: durationSeconds || 0,
     notes,
     exercisesData,
+    assignedProgramId,
     queuedAt: Date.now()
   };
   const result = await syncSessionToCloud(job);
   if (!result.synced) enqueueSync(job);
-  return { ...result, summary };
+  return { ...result, summary, sessionId: job.sessionId };
 }
 
 /* ------------------------------------------------------------------------------------------
@@ -266,7 +269,7 @@ export async function recordWorkoutCompletion({
 const SYNC_QUEUE_KEY = 'ab_fitness_sync_queue_v1';
 const canSyncUser = (userId) => Boolean(isSupabaseConfigured() && supabase && userId && userId !== 'guest-local-user');
 
-function newSessionId() {
+export function newSessionId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -307,7 +310,8 @@ async function syncSessionToCloud(job) {
           workout_day_name: job.workoutName,
           workout_title: job.workoutTitle,
           duration_seconds: job.durationSeconds,
-          notes: job.notes || 'Treino finalizado com sucesso no AB Fitness'
+          notes: job.notes || 'Treino finalizado com sucesso no AB Fitness',
+          assigned_program_id: job.assignedProgramId || null
         },
         { onConflict: 'id', ignoreDuplicates: true }
       );
@@ -413,12 +417,32 @@ export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitne
       const { data: oldDays, error: oldErr } = await supabase.from('workout_days').select('id').eq('user_id', userId);
       if (oldErr) throw oldErr;
 
-      const { data: planRow, error: planErr } = await supabase
+      const { data: existingPlans } = await supabase
         .from('workout_plans')
-        .upsert({ user_id: userId, title: planTitle, is_active: true })
-        .select()
-        .single();
-      if (planErr) throw planErr;
+        .select('id')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      let planRow = null;
+      if (existingPlans && existingPlans.length > 0) {
+        const { data: updatedPlan, error: updErr } = await supabase
+          .from('workout_plans')
+          .update({ title: planTitle, is_active: true, updated_at: new Date().toISOString() })
+          .eq('id', existingPlans[0].id)
+          .select()
+          .single();
+        if (updErr) throw updErr;
+        planRow = updatedPlan;
+      } else {
+        const { data: insertedPlan, error: insErr } = await supabase
+          .from('workout_plans')
+          .insert({ user_id: userId, title: planTitle, is_active: true })
+          .select()
+          .single();
+        if (insErr) throw insErr;
+        planRow = insertedPlan;
+      }
 
       const { data: dayRows, error: daysErr } = await supabase
         .from('workout_days')
@@ -581,5 +605,21 @@ export async function fetchAthleteDetails(athleteId) {
     console.error('Erro ao buscar detalhes do atleta:', err);
     return null;
   }
+}
+
+/** Promove um atleta comum a personal trainer (role = 'coach'). Só um admin pode chamar. */
+export async function promoteToCoach(userId) {
+  if (!isSupabaseConfigured() || !supabase || !userId) return { data: null, error: 'Sem sessão' };
+  const { data, error } = await supabase.rpc('promote_to_coach', { p_user_id: userId });
+  if (error) return { data: null, error: error.message };
+  return { data: data?.[0] || null, error: null };
+}
+
+/** Reverte um trainer de volta a atleta comum (role = 'athlete'). Só um admin pode chamar. */
+export async function demoteToAthlete(userId) {
+  if (!isSupabaseConfigured() || !supabase || !userId) return { data: null, error: 'Sem sessão' };
+  const { data, error } = await supabase.rpc('demote_to_athlete', { p_user_id: userId });
+  if (error) return { data: null, error: error.message };
+  return { data: data?.[0] || null, error: null };
 }
 

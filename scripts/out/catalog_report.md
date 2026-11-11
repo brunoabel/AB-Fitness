@@ -1,62 +1,55 @@
 # Catálogo de exercícios — relatório
 
 - Total: 347 (320 atuais + 27 de casa)
-- Com vídeo: 207 (60%) · auditados: 167 · ligados à mão: 13
-- Sem vídeo: 140 · exercícios de ginásio sem alternativa de casa: 0
+- Com vídeo: 168 (48%) · auditados: 141 · ligados à mão: 0
+- Sem vídeo: 179 · exercícios de ginásio sem alternativa de casa: 0
 
 ## Vídeos do dataset ligados por revisão manual
-- Crucifixo Invertido na Polia → Cable Crossover Reverse Fly
-- Mergulho no Banco → Bench Dips
-- Prancha Isométrica → Front Plank
-- Crucifixo Reto na Polia no Banco → Flat Bench Cable Fly
-- Puxada Unilateral na Polia Alta → Cable One Arm Lateral Pulldown
-- Remada Curvada com Halteres → Dumbbell Bent-Over Row
-- Elevação Lateral Unilateral na Polia por Trás → Cable One Arm Lateral Raise
-- Elevação Frontal com Barra Reta → Barbell Front Raise
-- Crucifixo Invertido no Banco Inclinado com Halteres → Dumbbell Incline Rear Lateral Raise
-- Rosca no Banco Inclinado 45° com Halteres → Dumbbell Incline Curl
-- Rosca 21 com Barra W → EZ Bar Biceps Curl
-- Tríceps Francês Unilateral com Halter → Dumbbell One-Arm Triceps Extension
-- Stiff com Déficit sobre Bloco de Madeira → Barbell Straight Leg Deadlift
 
 ## Sem vídeo (lista de gravação)
+- Abdômen · Abdominal Declinado com Anilha no Peito
 - Abdômen · Abdominal Russo (Russian Twist)
 - Abdômen · Bird-Dog (Perdigueiro com Isometria)
+- Abdômen · Crunch Bicicleta no Chão (Bicycle Crunch)
+- Abdômen · Crunch na Bola Suíça com Extensão Lombar
 - Abdômen · Deadbug com Controle Respiratório
 - Abdômen · Dragon Flag no Banco Reto
-- Abdômen · Elevação de Pernas em Suspensão
 - Abdômen · Hollow Body Hold (Canoa Isométrica)
+- Abdômen · Knee to Elbow na Barra Fixa _(sugestão a rever: Pull-Up / Chin-Up)_
 - Abdômen · Limpador de Pára-brisa na Barra (Windshield Wipers)
 - Abdômen · Pallof Press na Polia com Isometria
 - Abdômen · Prancha Lateral com Elevação de Perna _(sugestão a rever: Front Plank)_
 - Abdômen · Prancha Spiderman com Joelho no Cotovelo
 - Abdômen · Prancha com Toque nos Ombros (Shoulder Taps) _(sugestão a rever: Front Plank)_
 - Abdômen · Roda Abdominal (Ab Wheel) _(sugestão a rever: Floor Crunch)_
-- Abdômen · Roda Abdominal em Pé (Advanced Ab Wheel)
+- Abdômen · Stomach Vacuum (Vácuo Abdominal) _(sugestão a rever: Floor Crunch)_
 - Abdômen · Toes to Bar na Barra Fixa (Pés na Barra)
-- Abdômen · Woodchopper na Polia Alta (Lenhador Diagonal)
-- Abdômen · Woodchopper na Polia Baixa
 - Adutores · Adução de Quadril na Polia Baixa em Pé
 - Adutores · Agachamento Sumô no Step com Déficit
+- Adutores · Cadeira Adutora com Isometria no Final
 - Adutores · Prancha Copenhagen _(sugestão a rever: Front Plank)_
 - Antebraços · Caminhada do Fazendeiro com Halteres (Farmer's Walk)
+- Antebraços · Extensão de Punho com Halteres
 - Antebraços · Flexão de Punho com Barra
 - Antebraços · Flexão de Punho na Polia Baixa com Barra
 - Antebraços · Pinçamento de Dedos com Anilhas (Pinch Grip)
 - Antebraços · Rolo de Punho com Peso (Wrist Roller)
+- Antebraços · Rosca de Punho Inversa no Banco com Barra _(sugestão a rever: Barbell Reverse Wrist Curl)_
 - Antebraços · Suspensão Isométrica na Barra Fixa (Dead Hang) _(sugestão a rever: Pull-Up / Chin-Up)_
-- Bíceps · Rosca Aranha (Spider Curl)
 - Bíceps · Rosca Bayesiana na Polia Baixa (Bayesian Curl)
 - Bíceps · Rosca Concentrada na Polia Baixa
-- Bíceps · Rosca Garçom com Anilha (Waiter Curl)
 - Bíceps · Rosca Inversa
 - Bíceps · Rosca Inversa na Polia com Barra
+- Bíceps · Rosca Martelo com Halteres _(sugestão a rever: Dumbbell Incline Hammer Curl)_
+- Bíceps · Rosca Martelo na Corda
+- Bíceps · Rosca Scott com Barra W _(sugestão a rever: Barbell Curl)_
 - Bíceps · Rosca Scott na Polia com Barra
+- Bíceps · Rosca Zottman com Halteres _(sugestão a rever: Dumbbell Biceps Curl)_
 - Bíceps · Rosca com Barra Reta Pegada Aberta
 - Bíceps · Rosca com Barra Reta Pegada Fechada _(sugestão a rever: Barbell Drag Curl)_
-- Bíceps · Rosca na Polia Baixa
 - Bíceps · Rosca no Crossover Duplo Bíceps (High Cable Curl)
-- Costas · Barra Fixa com Pegada Neutra _(sugestão a rever: Pull-Up / Chin-Up)_
+- Costas · Barra Fixa com Carga Adicional
+- Costas · Levantamento Terra (Deadlift)
 - Costas · Levantamento Terra Sumô
 - Costas · Levantamento Terra com Barra Hexagonal (Trap Bar)
 - Costas · Puxada Articulada Unilateral na Máquina
@@ -68,56 +61,72 @@
 - Costas · Remada Articulada Pegada Neutra
 - Costas · Remada Cavalinho Unilateral
 - Costas · Remada Curvada no Smith
+- Costas · Remada Kroc com Halter Pesado _(sugestão a rever: Dumbbell Bent-Over Row)_
 - Costas · Remada Meadows com Barra T
 - Costas · Remada Pendlay do Solo
 - Costas · Remada Yates Supinada com Barra
 - Funcional & Cardio · Assault Bike (Air Bike em Alta Intensidade)
+- Funcional & Cardio · Corda Naval Batida Dupla (Double Slam)
 - Funcional & Cardio · Empurrar Trenó de Carga (Prowler Sled Push)
 - Funcional & Cardio · Kettlebell Clean and Press
+- Funcional & Cardio · Kettlebell Snatch (Arranque)
 - Funcional & Cardio · Kettlebell Swing Russo
 - Funcional & Cardio · Levantamento Turco com Kettlebell (Turkish Get-Up)
 - Funcional & Cardio · Mountain Climbers no Solo (Escalador)
 - Funcional & Cardio · Puxar Trenó com Corda (Sled Pull)
 - Funcional & Cardio · Remo Seco Ergômetro (Rowing Machine)
+- Funcional & Cardio · Salto na Caixa Pliométrica (Box Jump)
 - Funcional & Cardio · Slam Ball com Bola Medicinal Pesada
 - Funcional & Cardio · Wall Ball com Medicine Ball
 - Glúteos · Abdução de Quadril na Polia Baixa em Pé
 - Glúteos · Agachamento Búlgaro com Foco em Glúteo (Tronco Inclinado)
-- Glúteos · Agachamento Sumô
+- Glúteos · Cadeira Abdutora com Tronco Inclinado à Frente
+- Glúteos · Clamshell com Mini Band no Colchonete (Ostra)
 - Glúteos · Coice no Smith (Donkey Kick no Smith)
+- Glúteos · Elevação Pélvica (Hip Thrust)
 - Glúteos · Elevação Pélvica (Hip Thrust) com Halter Pesado
+- Glúteos · Elevação Pélvica na Máquina
 - Glúteos · Frog Pump no Colchonete com Halter
 - Glúteos · Glúteo 4 Apoios com Caneleira Pesada
 - Glúteos · Glúteo Coice no Cabo com Caneleira (Cable Kickback)
+- Glúteos · Glúteo na Polia Baixa
 - Glúteos · Hip Thrust Unilateral no Chão ou Banco
 - Glúteos · Hip Thrust no Smith
+- Glúteos · Hiperextensão 45° com Foco em Glúteo (Arredondamento Lombar)
 - Glúteos · Monster Walk Lateral com Mini Band
 - Glúteos · Ponte de Glúteos Unilateral
-- Glúteos · Ponte de Glúteos no Solo com Barra (Glute Bridge)
 - Mobilidade · Agachamento Cócoras Isométrico (Deep Squat Hold) _(sugestão a rever: Squat)_
+- Mobilidade · Alongamento de Peitoral e Bíceps na Parede
+- Mobilidade · Ativação Escapular na Barra Fixa (Scapular Pull-Up) _(sugestão a rever: Pull-Up / Chin-Up)_
+- Mobilidade · Dislocação de Ombros com Bastão ou Elástico
+- Mobilidade · Flexão Escapular no Chão (Scapular Push-Up) _(sugestão a rever: Push-Up)_
 - Mobilidade · Maior Alongamento do Mundo (World's Greatest Stretch)
 - Mobilidade · Mobilidade de Quadril 90/90 com Transição Dinâmica
+- Mobilidade · Mobilidade de Tornozelo na Parede com Joelho à Frente
 - Mobilidade · Rolo de Liberação Miofascial em Quadríceps (Foam Roller)
-- Mobilidade · Rotação Torácica em 4 Apoios
+- Ombros · Crucifixo Invertido com Halteres _(sugestão a rever: Dumbbell Incline Rear Lateral Raise)_
 - Ombros · Desenvolvimento na Máquina _(sugestão a rever: Smith Seated Shoulder Press)_
-- Ombros · Elevação Frontal com Corda na Polia Baixa _(sugestão a rever: Cable One Arm Front Raise)_
+- Ombros · Elevação Frontal Alternada com Halteres _(sugestão a rever: Dumbbell Front Raise)_
+- Ombros · Elevação Frontal com Anilha (Plate Raise) _(sugestão a rever: Barbell Front Raise)_
 - Ombros · Elevação Lateral Deitado de Lado no Banco
+- Ombros · Elevação Lateral no Banco Inclinado
 - Ombros · Elevação Y no Banco Inclinado (Y-Raise)
-- Ombros · Face Pull
 - Ombros · Face Pull na Polia Alta com Pegada Neutra Dupla
 - Ombros · Push Press com Barra
+- Ombros · Pássaro com Halteres em Pé
+- Ombros · Remada Alta na Polia Baixa
 - Ombros · Rotação Externa de Ombro na Polia (Manguito Rotador)
 - Ombros · Rotação Interna de Ombro na Polia (Manguito Rotador)
-- Panturrilhas · Gêmeos Sentado
-- Panturrilhas · Gêmeos Sentado com Halter sobre os Joelhos
-- Panturrilhas · Gêmeos em Pé na Máquina
-- Panturrilhas · Gêmeos no Leg Press
-- Panturrilhas · Gêmeos no Smith
-- Panturrilhas · Gêmeos no Step com Halteres
+- Panturrilhas · Dorsiflexão Tibial Anterior com Halter
+- Panturrilhas · Gêmeos Unilateral no Step sem Carga
+- Panturrilhas · Gêmeos no Hack
+- Panturrilhas · Gêmeos no Leg Press Horizontal
+- Panturrilhas · Panturrilha no Agachamento Smith _(sugestão a rever: Smith Machine Calf Raise)_
 - Panturrilhas · Tibial Anterior na Polia com Alça
+- Peito · Crossover Polia Baixa
 - Peito · Crossover Polia Média
 - Peito · Crucifixo Inclinado na Polia
-- Peito · Flexão Inclinada com Mãos Elevadas _(sugestão a rever: Push-Up)_
+- Peito · Flexão Declinada com Pés Elevados _(sugestão a rever: Push-Up)_
 - Peito · Larsen Press (Supino sem Apoio dos Pés) _(sugestão a rever: Barbell Bench Press)_
 - Peito · Pullover com Halter
 - Peito · Spoto Press com Pausa no Supino _(sugestão a rever: Barbell Bench Press)_
@@ -132,29 +141,46 @@
 - Posteriores · Flexora na Polia Baixa Unilateral em Pé
 - Posteriores · Flexão Nórdica para Isquiotibiais (Nordic Hamstring) _(sugestão a rever: Push-Up)_
 - Posteriores · Glute Ham Raise (GHR Máquina)
+- Posteriores · Good Morning
 - Posteriores · Good Morning Sentado no Banco
+- Posteriores · Levantamento Terra Romeno (RDL)
 - Posteriores · Levantamento Terra Romeno (RDL) com Halteres _(sugestão a rever: Dumbbell Deadlift)_
+- Posteriores · Mesa Flexora Unilateral
 - Posteriores · RDL no Smith com Calço nos Calcanhares
+- Posteriores · Stiff com Déficit sobre Bloco de Madeira _(sugestão a rever: Barbell Straight Leg Deadlift)_
 - Quadríceps · Afundo Lateral (Cossack Squat)
 - Quadríceps · Afundo Reverso com Halteres (Reverse Lunge) _(sugestão a rever: Dumbbell Lunge)_
+- Quadríceps · Afundo com Barra no Smith
+- Quadríceps · Afundo com Halteres _(sugestão a rever: Dumbbell Lunge)_
+- Quadríceps · Agachamento Búlgaro
 - Quadríceps · Agachamento Búlgaro no Smith
 - Quadríceps · Agachamento Isométrico na Parede (Wall Sit) _(sugestão a rever: Squat)_
+- Quadríceps · Agachamento OverHead com Barra (Overhead Squat) _(sugestão a rever: Barbell Back Squat)_
+- Quadríceps · Agachamento Pistola Unilateral (Pistol Squat)
+- Quadríceps · Agachamento Sumô com Halter Pesado _(sugestão a rever: Dumbbell Goblet Squat)_
 - Quadríceps · Agachamento Zercher com Barra _(sugestão a rever: Barbell Back Squat)_
 - Quadríceps · Agachamento com Pausa de 3s no Fundo (Pause Squat)
 - Quadríceps · Belt Squat (Agachamento com Cinto)
+- Quadríceps · Cadeira Extensora Unilateral
 - Quadríceps · Leg Press 45° Unilateral
 - Quadríceps · Leg Press Vertical na Máquina
-- Quadríceps · Passada (Walking Lunges)
+- Quadríceps · Sissy Squat com Carga no Peito
 - Quadríceps · Step-Up na Caixa com Halteres (Subida no Banco)
 - Quadríceps · Step-Up no Smith
+- Trapézio · Encolhimento com Barra por Trás (Lee Haney Shrug)
 - Trapézio · Encolhimento na Barra Hexagonal Trap Bar _(sugestão a rever: Barbell Shrug)_
 - Trapézio · Encolhimento na Polia Baixa
+- Trapézio · Encolhimento no Smith
 - Tríceps · California Press no Banco Reto com Barra _(sugestão a rever: Barbell Bench Press)_
-- Tríceps · Extensão Unilateral de Tríceps com Halter Deitado
+- Tríceps · Flexão Fechada no Chão com Isometria _(sugestão a rever: Push-Up)_
 - Tríceps · JM Press com Barra W Livre
 - Tríceps · JM Press com Barra no Smith
 - Tríceps · Paralelas com Carga Adicional no Cinto
+- Tríceps · Tate Press no Banco Reto com Halteres
 - Tríceps · Tríceps Coice na Polia
+- Tríceps · Tríceps Coice na Polia Baixa Unilateral sem Pegador _(sugestão a rever: Cable Standing One Arm Triceps Extension)_
+- Tríceps · Tríceps Francês Sentado com Barra W
+- Tríceps · Tríceps Francês com Corda na Polia Baixa _(sugestão a rever: Cable Rope Overhead Triceps Extension)_
 - Tríceps · Tríceps Katana na Polia (Overhead Cable Extension)
 - Tríceps · Tríceps Pulley Inverso com Pegada Supinada
 - Tríceps · Tríceps Pulley com Barra V

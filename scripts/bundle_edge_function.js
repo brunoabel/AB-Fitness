@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { EXERCISE_CATALOG } from '../src/services/abCoach/catalog.js';
+import { describeGuidelinesForPrompt } from '../src/data/trainingGuidelines.js';
 
 const rawTuples = EXERCISE_CATALOG.map((e) => [
   e.id,
@@ -273,7 +274,7 @@ Montar treinos personalizados e responder dúvidas de treino usando EXCLUSIVAMEN
 METODOLOGIA AB FITNESS
 - Subdivisões anatômicas: Peitoral (clavicular/superior, esternocostal/médio, costal/inferior); Pernas (quadríceps com ênfase em vasto medial e reto femoral vs. posteriores e glúteos); e demais grupos conforme o catálogo. Quando o usuário pedir ênfase em uma porção, priorize exercícios cujo vetor de força e ângulo ativem aquela porção e explique o porquê.
 - Estrutura: comece por compostos mais pesados, depois secundários, e termine com isoladores. Evite exercícios redundantes no mesmo treino.
-- Prescrição de referência (ajuste ao nível): 12 a 18 séries semanais por grupo muscular para intermediários, 8 a 12 para iniciantes; 6 a 15 reps (compostos 6-10, isoladores 10-15); cadência excêntrica de 2 a 3 segundos; descanso de 90-120s em compostos e 60-75s em isoladores; proximidade da falha de 0-3 RIR.
+- ${describeGuidelinesForPrompt()}
 - Progressão: sugira progressão de carga ou reps de forma simples.
 - Sem informações de nível/objetivo/tempo disponível, assuma intermediário e 45-60 min, e informe a suposição em uma frase. Faça no máximo UMA pergunta curta de esclarecimento, e só se for realmente necessária.
 
@@ -303,6 +304,13 @@ export function buildCoachSystemInstruction(perfil?: any): string {
     if (Array.isArray(perfil.recentWorkouts) && perfil.recentWorkouts.length > 0) {
       const wStr = perfil.recentWorkouts.map((w: any) => \`\${w.treino} (\${w.data})\`).join(', ');
       parts.push(\`ÚLTIMOS TREINOS: \${wStr}\`);
+    }
+    if (Array.isArray(perfil.fadigaMuscular) && perfil.fadigaMuscular.length > 0) {
+      const fadigaTexto = perfil.fadigaMuscular
+        .filter((m: any) => Number(m.fatigue) >= 60)
+        .map((m: any) => \`\${m.muscle_id} (\${Math.round(m.fatigue)}% fadiga, \${Math.round(m.hours_to_recovered ?? 0)}h p/ recuperar)\`)
+        .join(', ');
+      if (fadigaTexto) parts.push(\`Grupos em fadiga aguda agora (evite trabalho pesado nestes a menos que o usuário peça): \${fadigaTexto}\`);
     }
     if (parts.length > 0) {
       perfilContext = \`\\n\\nPERFIL & HISTÓRICO REAL DO ATLETA (considere estritamente ao prescrever cargas e fadiga):\\n\${parts.join(' | ')}\`;
@@ -439,7 +447,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const model = Deno.env.get("GEMINI_MODEL") || "gemini-flash-latest";
+    const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite";
     const systemInstructionText = buildCoachSystemInstruction(perfil);
 
     const geminiPayload = {

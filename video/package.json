@@ -1,0 +1,28 @@
+{
+  "name": "ab-coach-video",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio",
+    "voice:candidates": "node --env-file=.env scripts/voice-candidates.mjs",
+    "voice": "node --env-file=.env scripts/generate-voiceover.mjs",
+    "still": "remotion still",
+    "render:vertical": "remotion render AbCoachVertical out/ab-coach-vertical.mp4 --codec=h264 --crf=18 --audio-codec=aac",
+    "render:wide": "remotion render AbCoachWide out/ab-coach-wide.mp4 --codec=h264 --crf=18 --audio-codec=aac",
+    "music": "node --env-file=.env scripts/generate-music.mjs",
+    "storyboard": "node scripts/storyboard.mjs",
+    "storyboard:wide": "node scripts/storyboard.mjs wide"
+  },
+  "dependencies": {
+    "@remotion/captions": "4.0.541",
+    "@remotion/cli": "4.0.541",
+    "@remotion/fonts": "^4.0.541",
+    "@remotion/google-fonts": "4.0.541",
+    "@remotion/media": "4.0.541",
+    "@remotion/transitions": "4.0.541",
+    "mediabunny": "^1.64.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.541"
+  }
+}

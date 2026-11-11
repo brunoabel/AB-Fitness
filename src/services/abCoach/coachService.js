@@ -1,3 +1,4 @@
+import { getCheckinContext } from '../../utils/sessionCheckin';
 /**
  * coachService.js — AB Coach
  * Serviço cliente para comunicação com a Supabase Edge Function 'ab-coach'.
@@ -9,9 +10,21 @@ import { validateAndSanitizeCoachResponse } from './schema';
 import { getSavedWeights, getWorkoutHistory } from '../../utils/storage';
 
 /**
- * Monta o contexto biométrico do atleta (cargas e histórico recente) para o AB Coach
+ * Monta o contexto biométrico do atleta (cargas e histórico recente) para o AB Coach.
+ * Inclui a fadiga muscular atual (get_muscle_fatigue, RLS: sempre a do próprio utilizador
+ * autenticado) para o coach evitar prescrever volume pesado em grupos ainda não recuperados.
  */
-export function getAthleteContextSummary(perfil = null) {
+export async function getAthleteContextSummary(perfil = null) {
+  let fadigaMuscular = [];
+  try {
+    if (isSupabaseConfigured() && supabase) {
+      const { data } = await supabase.rpc('get_muscle_fatigue');
+      fadigaMuscular = data || [];
+    }
+  } catch {
+    // Mapa de fadiga é um extra opcional pro prompt — nunca bloqueia a conversa com o coach
+  }
+
   try {
     const weightsRaw = getSavedWeights() || {};
     const historyRaw = getWorkoutHistory() || [];
@@ -32,9 +45,12 @@ export function getAthleteContextSummary(perfil = null) {
     }));
 
     return {
-      ...(perfil || {}),
+      ...perfil,
       recentWeights,
-      recentWorkouts
+      recentWorkouts,
+      // Check-ins pós-treino (carga percebida, desconforto, o que mudar)
+      recentCheckins: getCheckinContext(3),
+      fadigaMuscular
     };
   } catch (err) {
     console.warn('Erro ao montar contexto do atleta para o coach:', err);
@@ -48,7 +64,7 @@ export function getAthleteContextSummary(perfil = null) {
  * @param {Object} [perfil] Dados de treino do atleta (nível, objetivo, lesões, etc.)
  * @returns {Promise<{mensagem: string, treino: Object|null}>}
  */
-const CHAT_TIMEOUT_MS = 18000;
+const CHAT_TIMEOUT_MS = 35000;
 
 /** Pedido abortado por tempo (opção `timeout` do functions.invoke ou AbortController). */
 function isTimeoutError(err) {
@@ -68,7 +84,7 @@ export async function sendMessageToCoach(messages, perfil = null) {
     throw new Error('Você precisa estar conectado à sua conta para conversar com o AB Coach.');
   }
 
-  const enrichedPerfil = getAthleteContextSummary(perfil);
+  const enrichedPerfil = await getAthleteContextSummary(perfil);
 
   // 2. Invocar a Edge Function com retry automático para falhas transitórias
   let result = null;

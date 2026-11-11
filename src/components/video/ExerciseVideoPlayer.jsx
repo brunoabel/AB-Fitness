@@ -37,7 +37,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
         onToggleHome?.();
       }}
       aria-pressed={homeMode}
-      className={`${pill} ${homeMode ? 'bg-accent/20 text-accent border-accent/50' : 'bg-black/50 text-zinc-100 border-white/15'}`}
+      className={`${pill} ${homeMode ? 'bg-accent/70 text-white border-accent-hover' : 'bg-black/50 text-zinc-100 border-white/15'}`}
     >
       <House className="w-3.5 h-3.5" />
       {homeMode ? 'Modo casa' : 'Sem ginásio hoje?'}
@@ -55,7 +55,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
         </div>
         <ul className="flex flex-wrap gap-2">
           {media.cues.map((c) => (
-            <li key={c} className="px-2.5 py-1.5 rounded-lg bg-accent/10 border border-accent/25 text-accent text-xs font-semibold">{c}</li>
+            <li key={c} className="px-2.5 py-1.5 rounded-lg bg-accent/70 border border-accent-hover text-white text-xs font-semibold">{c}</li>
           ))}
         </ul>
       </div>
@@ -86,7 +86,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
         {isMini ? (
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-white truncate">{name}</p>
-            <p className="text-xs text-accent truncate">{media.cues[0]}</p>
+            <p className="text-xs text-white truncate">{media.cues[0]}</p>
           </div>
         ) : (
           <>
@@ -96,7 +96,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
                   <Users className="w-3.5 h-3.5" />
                   {gender === 'male' ? '♂' : '♀'}
                 </button>
-                <button type="button" onClick={() => setRate(!slow)} aria-pressed={slow} className={`${pill} ${slow ? 'bg-accent/20 text-accent border-accent/50' : 'bg-black/50 text-zinc-100 border-white/15'}`}>
+                <button type="button" onClick={() => setRate(!slow)} aria-pressed={slow} className={`${pill} ${slow ? 'bg-accent/70 text-white border-accent-hover' : 'bg-black/50 text-zinc-100 border-white/15'}`}>
                   <Gauge className="w-3.5 h-3.5" />
                   {slow ? '0.5x' : '1x'}
                 </button>

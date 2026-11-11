@@ -5,11 +5,10 @@
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { simplifyRoute } from '../utils/runningService';
-import { 
-  getRunsHistory, 
-  saveRunRecord, 
-  getWorkoutHistory, 
-  getSavedWeights, 
+import {
+  getRunsHistory,
+  getWorkoutHistory,
+  getSavedWeights,
   getCompletedDays,
   getSavedUserProfile
 } from '../utils/storage';

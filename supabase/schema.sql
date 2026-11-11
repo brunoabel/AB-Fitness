@@ -121,39 +121,51 @@ ALTER TABLE public.workout_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.exercise_logs ENABLE ROW LEVEL SECURITY;
 
 -- Políticas para PROFILES
+DROP POLICY IF EXISTS "Usuário pode visualizar seu próprio perfil" ON public.profiles;
 CREATE POLICY "Usuário pode visualizar seu próprio perfil" 
 ON public.profiles FOR SELECT 
 USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Usuário pode inserir seu próprio perfil" ON public.profiles;
+CREATE POLICY "Usuário pode inserir seu próprio perfil" 
+ON public.profiles FOR INSERT 
+WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Usuário pode atualizar seu próprio perfil" ON public.profiles;
 CREATE POLICY "Usuário pode atualizar seu próprio perfil" 
 ON public.profiles FOR UPDATE 
 USING (auth.uid() = id);
 
 -- Políticas para WORKOUT_PLANS
+DROP POLICY IF EXISTS "Usuário gerencia seus próprios planos de treino" ON public.workout_plans;
 CREATE POLICY "Usuário gerencia seus próprios planos de treino" 
 ON public.workout_plans FOR ALL 
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
 -- Políticas para WORKOUT_DAYS
+DROP POLICY IF EXISTS "Usuário gerencia seus próprios dias de treino" ON public.workout_days;
 CREATE POLICY "Usuário gerencia seus próprios dias de treino" 
 ON public.workout_days FOR ALL 
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
 -- Políticas para EXERCISES
+DROP POLICY IF EXISTS "Usuário gerencia seus próprios exercícios" ON public.exercises;
 CREATE POLICY "Usuário gerencia seus próprios exercícios" 
 ON public.exercises FOR ALL 
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
 -- Políticas para WORKOUT_SESSIONS
+DROP POLICY IF EXISTS "Usuário gerencia suas próprias sessões concluídas" ON public.workout_sessions;
 CREATE POLICY "Usuário gerencia suas próprias sessões concluídas" 
 ON public.workout_sessions FOR ALL 
 USING (auth.uid() = user_id) 
 WITH CHECK (auth.uid() = user_id);
 
 -- Políticas para EXERCISE_LOGS
+DROP POLICY IF EXISTS "Usuário gerencia seus próprios logs de séries e cargas" ON public.exercise_logs;
 CREATE POLICY "Usuário gerencia seus próprios logs de séries e cargas" 
 ON public.exercise_logs FOR ALL 
 USING (auth.uid() = user_id) 
@@ -180,6 +192,7 @@ COMMENT ON TABLE public.runs IS 'Registos de corridas com trajeto GPS, parciais 
 
 ALTER TABLE public.runs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Usuário gerencia suas próprias corridas" ON public.runs;
 CREATE POLICY "Usuário gerencia suas próprias corridas"
 ON public.runs FOR ALL
 USING (auth.uid() = user_id)
@@ -198,10 +211,11 @@ BEGIN
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
     NEW.raw_user_meta_data->>'avatar_url'
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Disparador que escuta novas inserções em auth.users
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

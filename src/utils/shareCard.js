@@ -23,7 +23,7 @@ export async function generateAndShareWorkoutCard(treino) {
 
   // 2. Brilho Ciano no Topo
   const glow = ctx.createRadialGradient(540, 250, 50, 540, 250, 500);
-  glow.addColorStop(0, 'rgba(0, 240, 255, 0.18)');
+  glow.addColorStop(0, 'rgba(43, 74, 122, 0.18)');
   glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, 1080, 800);
@@ -34,7 +34,7 @@ export async function generateAndShareWorkoutCard(treino) {
   ctx.strokeRect(60, 60, 960, 1800);
 
   // 4. Marca Superior AB Fitness
-  ctx.fillStyle = '#00f0ff';
+  ctx.fillStyle = '#ffffff';
   ctx.font = '900 36px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('AB FITNESS  •  COACH IA', 540, 170);
@@ -45,7 +45,7 @@ export async function generateAndShareWorkoutCard(treino) {
 
   // 5. Card Central de Destaque
   ctx.fillStyle = 'rgba(11, 13, 18, 0.85)';
-  ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+  ctx.strokeStyle = 'rgba(43, 74, 122, 0.35)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.roundRect(100, 280, 880, 240, 32);
@@ -58,7 +58,7 @@ export async function generateAndShareWorkoutCard(treino) {
   ctx.fillText(treino.nome || 'Treino Personalizado', 540, 375);
 
   // Metadados (Foco & Duração)
-  ctx.fillStyle = '#00f0ff';
+  ctx.fillStyle = '#ffffff';
   ctx.font = '700 28px sans-serif';
   ctx.fillText(`FOCO: ${(treino.foco || 'Hipertrofia').toUpperCase()}`, 540, 435);
 
@@ -81,7 +81,7 @@ export async function generateAndShareWorkoutCard(treino) {
     ctx.stroke();
 
     // Número
-    ctx.fillStyle = '#00f0ff';
+    ctx.fillStyle = '#ffffff';
     ctx.font = '900 32px sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`${idx + 1}.`, 135, startY + 58);
@@ -94,12 +94,12 @@ export async function generateAndShareWorkoutCard(treino) {
 
     // Porção Muscular Badge
     if (ex.porcao) {
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
+      ctx.fillStyle = 'rgba(43, 74, 122, 0.12)';
       ctx.beginPath();
       ctx.roundRect(760, startY + 28, 190, 42, 10);
       ctx.fill();
 
-      ctx.fillStyle = '#5cf6ff';
+      ctx.fillStyle = '#c9d3e6';
       ctx.font = '700 20px sans-serif';
       ctx.textAlign = 'center';
       const porcaoText = ex.porcao.length > 12 ? ex.porcao.slice(0, 10) + '..' : ex.porcao;

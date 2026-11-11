@@ -6,7 +6,7 @@
  * Envia apenas o JSON sintetizado (poucas centenas de bytes) para o AB Coach gerar 2 frases rigorosas.
  */
 
-import { e1RM } from '../../utils/strengthMetrics';
+
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 /**

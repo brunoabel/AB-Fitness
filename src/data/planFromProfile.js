@@ -2,9 +2,9 @@
  * Converte o perfil do Onboarding do AB Coach num plano semanal.
  * Usa o gerador científico existente e depois adapta: local de treino, lesões, músculos prioritários e condicionamento.
  */
-import { generatePersonalizedWorkoutPlan } from './workoutGenerator';
-import { EXERCISES_100, findExerciseIn100 } from './exercises100';
-import { SPLIT_BY_DAYS } from '../components/onboarding/profileSchema';
+import { generatePersonalizedWorkoutPlan } from './workoutGenerator.js';
+import { EXERCISES_100, findExerciseIn100 } from './exercises100.js';
+import { SPLIT_BY_DAYS, TRAINING_DAYS, WEEK_DAYS } from '../components/onboarding/profileSchema.js';
 
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[-_]+/g, ' ');
 
@@ -86,24 +86,99 @@ function adaptExercise(ex, profile, usedIds) {
  */
 export function buildPlanFromProfile(profile) {
   const notes = [];
-  const plan = generatePersonalizedWorkoutPlan({
+  const defaultSplit = SPLIT_BY_DAYS[profile.daysPerWeek];
+  const appliedSplit =
+    profile.splitPreference === 'arnold' && profile.daysPerWeek === 6
+      ? 'arnold'
+      : defaultSplit;
+
+  const rawPlan = generatePersonalizedWorkoutPlan({
     goal: GOAL_MAP[profile.primaryGoal] || 'hypertrophy',
     experience: profile.experienceLevel || 'beginner',
     frequencyDays: profile.daysPerWeek,
-    focusMuscle: FOCUS_BY_PRIORITY[profile.priorityMuscles[0]] || 'balanced',
-    duration: DURATION_MAP[profile.sessionMinutes] || 'standard'
+    focusMuscle: FOCUS_BY_PRIORITY[profile.priorityMuscles?.[0]] || 'balanced',
+    duration: DURATION_MAP[profile.sessionMinutes] || 'standard',
+    splitPreference: appliedSplit
   });
 
-  const appliedSplit = SPLIT_BY_DAYS[profile.daysPerWeek];
   if (profile.splitPreference !== 'auto' && profile.splitPreference !== appliedSplit) {
     notes.push(`Com ${profile.daysPerWeek} dias por semana, ${SPLIT_LABEL[appliedSplit]} distribui melhor o volume do que ${SPLIT_LABEL[profile.splitPreference]}, por isso usei-o.`);
   }
 
-  const priorityGroups = new Set(profile.priorityMuscles.flatMap((m) => PRIORITY_GROUPS[m] || []));
+  // Se o utilizador personalizou os dias de treino, remapeamos as sessões ativas para esses dias
+  const activeSessions = rawPlan.filter((d) => !d.isRestDay && Array.isArray(d.exercises) && d.exercises.length > 0);
+  const targetIndices =
+    Array.isArray(profile.trainingDays) && profile.trainingDays.length === profile.daysPerWeek
+      ? [...profile.trainingDays].sort((a, b) => a - b)
+      : (TRAINING_DAYS[profile.daysPerWeek] || [0, 2, 4]);
+
+  const restDayTemplates = [
+    {
+      title: 'Recuperação Ativa & Mobilidade',
+      focus: 'Regeneração Muscular & Descanso',
+      duration: '20 min',
+      intensity: 'Baixa',
+      badge: 'Regeneração',
+      color: 'from-emerald-400 to-teal-500',
+      description: 'O músculo cresce durante o descanso. Hidrate-se e faça uma caminhada leve.'
+    },
+    {
+      title: 'Descanso e Síntese Proteica',
+      focus: 'Recuperação Neuromuscular',
+      duration: '20 min',
+      intensity: 'Baixa',
+      badge: 'Descanso',
+      color: 'from-emerald-400 to-teal-500',
+      description: 'Priorize sono de qualidade e ingestão proteica para reconstrução muscular.'
+    },
+    {
+      title: 'Regeneração & Preparação',
+      focus: 'Mobilidade Articular',
+      duration: '15 min',
+      intensity: 'Baixa',
+      badge: 'Mobilidade',
+      color: 'from-teal-400 to-emerald-500',
+      description: 'Alongamento suave e descanso mental para a próxima sessão.'
+    }
+  ];
+
+  let restCount = 0;
+  const remappedPlan = WEEK_DAYS.map((w, idx) => {
+    const isTraining = targetIndices.includes(idx);
+    if (isTraining) {
+      const sessionIdx = targetIndices.indexOf(idx);
+      const session = activeSessions[sessionIdx] || activeSessions[0] || rawPlan[idx];
+      return {
+        ...session,
+        dayId: w.dayId,
+        name: w.name,
+        shortName: w.short,
+        isRestDay: false
+      };
+    }
+    const tpl = restDayTemplates[restCount % restDayTemplates.length];
+    restCount += 1;
+    return {
+      dayId: w.dayId,
+      name: w.name,
+      shortName: w.short,
+      title: tpl.title,
+      focus: tpl.focus,
+      duration: tpl.duration,
+      intensity: tpl.intensity,
+      badge: tpl.badge,
+      color: tpl.color,
+      description: tpl.description,
+      isRestDay: true,
+      exercises: []
+    };
+  });
+
+  const priorityGroups = new Set((profile.priorityMuscles || []).flatMap((m) => PRIORITY_GROUPS[m] || []));
   let swapped = 0;
   let removed = 0;
 
-  const adapted = plan.map((day) => {
+  const adapted = remappedPlan.map((day) => {
     if (!Array.isArray(day.exercises) || day.exercises.length === 0) return day;
     const usedIds = new Set(day.exercises.flatMap((e) => [e.id, norm(e.name)]));
     const exercises = day.exercises
@@ -143,7 +218,8 @@ export function toLegacyProfile(profile) {
     goal: GOAL_MAP[profile.primaryGoal] || 'hypertrophy',
     experience: profile.experienceLevel,
     frequencyDays: profile.daysPerWeek,
-    focusMuscle: FOCUS_BY_PRIORITY[profile.priorityMuscles[0]] || 'balanced',
+    trainingDays: profile.trainingDays,
+    focusMuscle: FOCUS_BY_PRIORITY[profile.priorityMuscles?.[0]] || 'balanced',
     createdAt: new Date().toISOString(),
     fitnessProfile: profile
   };

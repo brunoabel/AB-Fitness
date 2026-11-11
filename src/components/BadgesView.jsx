@@ -95,7 +95,7 @@ export default function BadgesView() {
       </div>
 
       {/* 2. Filtros de Categoria */}
-      <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-900 p-1 border border-zinc-200 dark:border-white/10 text-xs font-bold shadow-xs">
+      <div className="flex rounded-xl bg-zinc-900 p-1 border border-white/10 text-xs font-bold shadow-xs">
         {[
           { id: 'all', label: 'Todas' },
           { id: 'running', label: 'Corrida' },
@@ -110,8 +110,8 @@ export default function BadgesView() {
             }}
             className={`flex-1 min-h-[44px] py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
               filter === f.id
-                ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
-                : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                ? 'bg-zinc-800 text-white shadow-xs'
+                : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             {f.label}
@@ -131,8 +131,8 @@ export default function BadgesView() {
               key={badge.id}
               className={`p-3.5 rounded-xl border transition-all relative overflow-hidden flex items-start gap-3 ${
                 isUnlocked
-                  ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 shadow-sm'
-                  : 'bg-zinc-50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 opacity-70'
+                  ? 'bg-zinc-900 border-zinc-700 shadow-sm'
+                  : 'bg-zinc-900/40 border-zinc-800/80 opacity-70'
               }`}
             >
               {/* Ícone */}
@@ -140,7 +140,7 @@ export default function BadgesView() {
                 className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
                   isUnlocked
                     ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 border-zinc-300 dark:border-zinc-700'
+                    : 'bg-zinc-800 text-zinc-600 border-zinc-700'
                 }`}
               >
                 {isUnlocked ? (
@@ -154,7 +154,7 @@ export default function BadgesView() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1 mb-0.5">
                   <h3 className={`text-xs font-bold truncate ${
-                    isUnlocked ? 'text-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400'
+                    isUnlocked ? 'text-white' : 'text-zinc-400'
                   }`}>
                     {badge.title}
                   </h3>
@@ -167,12 +167,12 @@ export default function BadgesView() {
                   )}
                 </div>
 
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">
+                <p className="text-[11px] text-zinc-400 leading-tight">
                   {badge.desc}
                 </p>
 
                 {isUnlocked && unlockedInfo?.unlockedAt && (
-                  <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-mono tabular-nums mt-1.5 block">
+                  <span className="text-[11px] text-zinc-500 font-mono tabular-nums mt-1.5 block">
                     Conquistada em {new Date(unlockedInfo.unlockedAt).toLocaleDateString('pt-PT')}
                   </span>
                 )}

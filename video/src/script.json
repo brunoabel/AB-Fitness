@@ -1,0 +1,111 @@
+{
+  "voiceId": null,
+  "voiceName": null,
+  "model": "eleven_multilingual_v2",
+  "voiceSettings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.3, "use_speaker_boost": true},
+  "music": {"file": null, "bpm": 110},
+  "scenes": [
+    {
+      "id": "s01-hello",
+      "component": "Hello",
+      "pose": "hello",
+      "avatar": "hero",
+      "lines": ["Olá! Eu sou o AB Coach."],
+      "keyword": "AB Coach",
+      "screen": null,
+      "extraFrames": 10
+    },
+    {
+      "id": "s02-duvidas",
+      "component": "Doubts",
+      "pose": "thinking",
+      "avatar": "hero",
+      "lines": ["Queres treinar, mas não sabes por onde começar?"],
+      "keyword": "começar",
+      "cards": ["Que exercício?", "Quanto peso?", "Estou a evoluir?"],
+      "screen": null,
+      "extraFrames": 20
+    },
+    {
+      "id": "s03-plano",
+      "component": "Plan",
+      "pose": "wide",
+      "avatar": "hero",
+      "lines": ["Eu monto o teu plano em menos de um minuto."],
+      "keyword": "plano",
+      "screen": null,
+      "extraFrames": 30
+    },
+    {
+      "id": "s04-treino",
+      "component": "Workout",
+      "pose": "wide",
+      "avatar": "compact",
+      "lines": ["Abres o treino e eu mostro-te cada exercício.", "Fazes, carregas no visto, e fica registado."],
+      "keyword": "exercício",
+      "screen": "screens/3-workout.png",
+      "extraFrames": 10
+    },
+    {
+      "id": "s05-tecnica",
+      "component": "Biomechanics",
+      "pose": "wide",
+      "avatar": "compact",
+      "lines": ["Vês o movimento certo, para não te lesionares."],
+      "keyword": "movimento certo",
+      "screen": "screens/2-biomechanics.png",
+      "extraFrames": 45
+    },
+    {
+      "id": "s06-descanso",
+      "component": "Rest",
+      "pose": "rest",
+      "avatar": "hero",
+      "lines": ["Série é cada vez que repetes o exercício seguido.", "Entre séries, eu conto o descanso por ti."],
+      "keyword": "descanso",
+      "screen": null,
+      "extraFrames": 0
+    },
+    {
+      "id": "s07-corrida",
+      "component": "Running",
+      "pose": "wide",
+      "avatar": "compact",
+      "lines": ["Também gostas de correr? Eu registo a tua corrida."],
+      "keyword": "corrida",
+      "screen": "screens/4-running.png",
+      "extraFrames": 45
+    },
+    {
+      "id": "s08-checkin",
+      "component": "Checkin",
+      "pose": "checkin",
+      "avatar": "hero",
+      "lines": ["Pergunto como te sentes e ajusto o treino."],
+      "keyword": "ajusto",
+      "screen": null,
+      "extraFrames": 75
+    },
+    {
+      "id": "s09-conquistas",
+      "component": "Achievements",
+      "pose": "celebrate",
+      "avatar": "compact",
+      "lines": ["Cada evolução vira conquista.", "Bates recordes pessoais: o teu melhor de sempre."],
+      "keyword": "conquista",
+      "screen": "screens/5-badges.png",
+      "extraFrames": 20
+    },
+    {
+      "id": "s10-cta",
+      "component": "Outro",
+      "pose": "hello",
+      "avatar": "hero",
+      "lines": ["Eu sou o AB Coach. Bora começar?"],
+      "keyword": "Bora começar?",
+      "cta": "Experimenta grátis",
+      "screen": null,
+      "extraFrames": 75
+    }
+  ]
+}

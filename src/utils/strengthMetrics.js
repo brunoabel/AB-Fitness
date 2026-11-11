@@ -100,6 +100,72 @@ export function getBestHistorical1RM(exId, history = [], fallbackWeights = {}) {
 }
 
 /**
+ * Motor de progressão (dupla progressão autorregulada por RIR) — Helms et al. 2018/2020.
+ * Olha pra última sessão completa de um exercício e sugere o próximo passo: subir carga
+ * (quando o topo da faixa de reps foi batido com folga), subir reps (dentro da faixa, ainda
+ * com reserva), manter (perto da falha) ou reduzir carga (falhou abaixo da faixa com RIR 0).
+ * `prevSets`: array de sets da última sessão (vindo de buildPrevIndex). `exerciseConfig`:
+ * { repRange: [min,max], progressionIncrementKg }, ambos opcionais (fallback pra exercícios
+ * sem esses campos, ex. catálogo de treinos personalizados).
+ */
+export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}) {
+  const repRange = Array.isArray(exerciseConfig.repRange) && exerciseConfig.repRange.length === 2
+    ? exerciseConfig.repRange
+    : [8, 12];
+  const increment = Number(exerciseConfig.progressionIncrementKg) || 2.5;
+
+  const working = (prevSets || []).filter((s) => (s.completed || s.done) && s.type !== 'W' && Number(s.weight) > 0);
+  if (working.length === 0) return null;
+
+  // RIR = 10 - RPE quando registado; sem RPE assume-se RIR 2 (não penaliza nem assume falha)
+  const rirOf = (s) => (s.rpe ? Math.max(0, 10 - Number(s.rpe)) : 2);
+  const avgRir = working.reduce((sum, s) => sum + rirOf(s), 0) / working.length;
+  const prevWeight = Number(working[0].weight) || 0;
+  const maxReps = Math.max(...working.map((s) => Number(s.reps) || 0));
+
+  const failedBelowRangeAtLimit = working.some((s) => Number(s.reps) < repRange[0] && rirOf(s) <= 0);
+  const allAtTopOfRange = working.every((s) => Number(s.reps) >= repRange[1]);
+
+  if (failedBelowRangeAtLimit) {
+    return {
+      type: 'DELOAD',
+      suggestedWeight: Math.round(prevWeight * 0.95 * 2) / 2,
+      suggestedReps: repRange[0],
+      badge: 'DELOAD -5%',
+      rationale: 'Ficaste abaixo da faixa de reps sem reserva (RIR 0) — reduz a carga pra recuperar a técnica.'
+    };
+  }
+
+  if (allAtTopOfRange && avgRir >= 2) {
+    return {
+      type: 'OVERLOAD',
+      suggestedWeight: Math.round((prevWeight + increment) * 2) / 2,
+      suggestedReps: repRange[0],
+      badge: `SUBIR +${increment}KG`,
+      rationale: `Bateste o topo da faixa com folga (RIR ${avgRir.toFixed(1)}) — hora de subir carga.`
+    };
+  }
+
+  if (maxReps < repRange[1] && avgRir >= 1) {
+    return {
+      type: 'REP_BUMP',
+      suggestedWeight: prevWeight,
+      suggestedReps: Math.min(repRange[1], maxReps + 1),
+      badge: '+1 REP',
+      rationale: 'Ainda há reserva nesta carga — soma mais uma rep antes de subir peso.'
+    };
+  }
+
+  return {
+    type: 'MAINTAIN',
+    suggestedWeight: prevWeight,
+    suggestedReps: working[0].reps,
+    badge: 'MANTER',
+    rationale: 'Perto da falha na última sessão — repete carga e reps pra consolidar.'
+  };
+}
+
+/**
  * Calculadora de anilhas por lado para barra
  * Devolve lista de anilhas a colocar em cada lado e o remanescente se não for atingível
  */

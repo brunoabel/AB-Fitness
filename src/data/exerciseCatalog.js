@@ -163,10 +163,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-lying-fly-flat-bench-cable-fly.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-lying-fly-flat-bench-cable-fly.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-lying-fly-flat-bench-cable-fly.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Trajetória de baixo para cima e para o centro",
    "Não erguer os ombros em direção às orelhas",
@@ -277,9 +277,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/chin-ups-narrow-parallel-grip.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/chin-ups-narrow-parallel-grip.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/chin-ups-narrow-parallel-grip.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/pull-up-wide-front-grip.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/pull-up-wide-front-grip.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/pull-up-wide-front-grip.jpg",
   "video_source": "verified",
   "form_cues": [
    "Iniciar a puxada pela depressão das escápulas…",
@@ -460,9 +460,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-seated-row-wide-grip.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-seated-row-wide-grip.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-seated-row-wide-grip.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-high-row.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-high-row.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-high-row.jpg",
   "video_source": "verified",
   "form_cues": [
    "Peito 100% apoiado durante toda a repetição",
@@ -505,9 +505,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-straight-arm-pulldown.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-straight-arm-pulldown.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-straight-arm-pulldown.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-pulldown.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-pulldown.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-pulldown.jpg",
   "video_source": "verified",
   "form_cues": [
    "Braços quase retos",
@@ -529,10 +529,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-deadlift.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-deadlift.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-deadlift.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Barra sobe em linha vertical reta rente ao corpo",
    "Quadril e ombros sobem na mesma velocidade…",
@@ -694,7 +694,7 @@ export const EXERCISE_CATALOG = {
    "Subir até a linha do ombro",
    "Manter o tronco imóvel"
   ],
-  "home_alternative_id": "elevacao-lateral-banco-inclinado"
+  "home_alternative_id": "elevacao-lateral-halteres"
  },
  "elevacao-frontal-halteres": {
   "id": "elevacao-frontal-halteres",
@@ -751,10 +751,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-rear-lateral-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tronco bem inclinado",
    "Foco em afastar as mãos para os lados e não…",
@@ -798,7 +798,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-crossover-reverse-fly.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-crossover-reverse-fly.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-crossover-reverse-fly.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Braços abrem na horizontal",
    "Tronco estável",
@@ -817,10 +817,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-rear-delt-row-with-rope.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-rear-delt-row-with-rope.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-rear-delt-row-with-rope.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos altos e mãos terminam na linha das…",
    "Rotação externa completa no final",
@@ -929,9 +929,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-biceps-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-biceps-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-biceps-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-alternate-seated-biceps-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-alternate-seated-biceps-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-alternate-seated-biceps-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Supinação ativa",
@@ -951,10 +951,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-hammer-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-hammer-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-hammer-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Palmas sempre paralelas",
    "Cotovelos firmes ao lado do corpo",
@@ -972,10 +972,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tensão do cabo contínua",
    "Cotovelos travados",
@@ -994,10 +994,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-preacher-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-preacher-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-preacher-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Axilas coladas no topo do banco Scott durante…",
    "Não descer até o estalo de hiperextensão…",
@@ -1080,10 +1080,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-standing-inner-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-standing-inner-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-standing-inner-curl.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Tração contínua no início e no fim",
    "Tronco reto",
@@ -1101,10 +1101,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-prone-incline-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-prone-incline-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-prone-incline-curl.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Braços estritamente verticais",
    "Peito apoiado",
@@ -1167,9 +1167,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/bench-dips.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/bench-dips.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/bench-dips.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-pushdown-rope-attachment.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-pushdown-rope-attachment.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-pushdown-rope-attachment.jpg",
   "video_source": "verified",
   "form_cues": [
    "Abertura das pontas da corda no ponto…",
@@ -1189,9 +1189,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-triceps-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-triceps-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-triceps-extension.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-triceps-extension.jpg",
   "video_source": "verified",
   "form_cues": [
    "Manter os cotovelos o mais fechados possível",
@@ -1211,9 +1211,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-kickback.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-kickback.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-kickback.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-rope-high-pulley-overhead-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-rope-high-pulley-overhead-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-rope-high-pulley-overhead-triceps-extension.jpg",
   "video_source": "verified",
   "form_cues": [
    "Cotovelos fixos apontando para a frente",
@@ -1232,16 +1232,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-biceps-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-biceps-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-biceps-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-standing-one-arm-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-standing-one-arm-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-standing-one-arm-triceps-extension.jpg",
   "video_source": "verified",
   "form_cues": [
    "Cotovelo colado ao corpo",
    "Foco unilateral sem assimetria",
    "Bloqueio estrito"
   ],
-  "home_alternative_id": "triceps-frances-unilateral-halter"
+  "home_alternative_id": "extensao-unilateral-triceps-halter-deitado"
  },
  "triceps-coice-halter": {
   "id": "triceps-coice-halter",
@@ -1253,9 +1253,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-over-bench-wrist-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-over-bench-wrist-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-over-bench-wrist-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-kickback.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-kickback.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-kickback.jpg",
   "video_source": "verified",
   "form_cues": [
    "Cotovelo permanece alto e congelado durante…",
@@ -1321,7 +1321,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/bench-dips.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/bench-dips.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/bench-dips.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Costas raspam no banco",
    "Descer apenas até 90° nos cotovelos…",
@@ -1342,9 +1342,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/squat.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/classic-barbell-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/classic-barbell-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/classic-barbell-squat.jpg",
   "video_source": "verified",
   "form_cues": [
    "Joelhos apontam para fora na mesma linha dos pés",
@@ -1364,9 +1364,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-front-chest-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-front-chest-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-front-chest-squat.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-chair-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-chair-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-chair-squat.jpg",
   "video_source": "verified",
   "form_cues": [
    "Pés ligeiramente adiantados",
@@ -1387,9 +1387,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-leg-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-leg-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-leg-extension.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-front-chest-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-front-chest-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-front-chest-squat.jpg",
   "video_source": "verified",
   "form_cues": [
    "Cotovelos apontam rigorosamente para a frente",
@@ -1410,10 +1410,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-goblet-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-goblet-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-goblet-squat.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Joelho da frente permanece alinhado com…",
    "Descida profunda com o joelho de trás…",
@@ -1432,9 +1432,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sled-hack-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sled-hack-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sled-hack-squat.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sled-45-degree-leg-wide-press.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sled-45-degree-leg-wide-press.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sled-45-degree-leg-wide-press.jpg",
   "video_source": "verified",
   "form_cues": [
    "Lombar e glúteos NUNCA descolam do encosto",
@@ -1475,9 +1475,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-hip-adduction.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-hip-adduction.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-hip-adduction.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-leg-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-leg-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-leg-extension.jpg",
   "video_source": "verified",
   "form_cues": [
    "Quadril permanece colado no assento",
@@ -1498,10 +1498,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lunge.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lunge.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lunge.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Joelho dianteiro alinhado com o pé",
    "Passos consistentes em linha reta",
@@ -1520,10 +1520,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-lying-leg-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-lying-leg-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-lying-leg-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pés permanecem no mesmo lugar durante toda…",
    "Descida vertical",
@@ -1542,9 +1542,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-leg-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-leg-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-leg-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/weighted-sissy-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/weighted-sissy-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/weighted-sissy-squat.jpg",
   "video_source": "verified",
   "form_cues": [
    "Manter linha reta entre tronco e coxas",
@@ -1585,9 +1585,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lunge.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lunge.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lunge.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-stiff-leg-deadlift.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-stiff-leg-deadlift.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-stiff-leg-deadlift.jpg",
   "video_source": "verified",
   "form_cues": [
    "Halteres colados às pernas",
@@ -1607,10 +1607,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-hip-abduction.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-hip-abduction.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-hip-abduction.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Movimento focado na dobradiça de quadril",
    "A barra desce logo abaixo dos joelhos",
@@ -1628,9 +1628,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-standing-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-standing-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-standing-calf-raise.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-leg-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-leg-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-leg-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Coxas perfeitamente travadas pela almofada…",
@@ -1649,9 +1649,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-calf-raise.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-lying-leg-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-lying-leg-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-lying-leg-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Pelve colada no banco",
@@ -1670,9 +1670,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sled-45-degree-calf-press.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sled-45-degree-calf-press.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sled-45-degree-calf-press.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-kneeling-leg-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-kneeling-leg-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-kneeling-leg-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Perna de apoio firme",
@@ -1692,10 +1692,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/crunch-on-bench.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/crunch-on-bench.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/crunch-on-bench.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Coluna estritamente neutra",
    "Movimento do quadril e não da coluna",
@@ -1715,10 +1715,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-kneeling-crunch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-kneeling-crunch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-kneeling-crunch.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Canelas rigorosamente verticais",
    "Queixo mantido colado ao peito e olhar…",
@@ -1736,10 +1736,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-single-leg-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-single-leg-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-single-leg-calf-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cinto bem ajustado",
    "Pausa no topo",
@@ -1757,10 +1757,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/side-bridge-side-plank.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/side-bridge-side-plank.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/side-bridge-side-plank.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "O movimento ocorre exclusivamente no quadril",
    "Pausa de contração isométrica no topo",
@@ -1778,9 +1778,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-floor-leg-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-floor-leg-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-floor-leg-raise.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-hip-abduction.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-hip-abduction.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-hip-abduction.jpg",
   "video_source": "verified",
   "form_cues": [
    "Força exercida a partir dos joelhos e não dos…",
@@ -1820,10 +1820,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-bar-grip-sumo-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-bar-grip-sumo-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-bar-grip-sumo-squat.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Joelhos abertos na direção dos pés",
    "Tronco vertical",
@@ -1842,16 +1842,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-standing-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-standing-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-standing-calf-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Joelhos mantidos retos",
    "Pausa de 1 segundo no fundo",
    "Pausa de 2 segundos no pico da contração no topo"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "gemeos-sentado": {
   "id": "gemeos-sentado",
@@ -1863,16 +1863,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-calf-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Com joelhos a 90°",
    "Descida profunda sem quicar",
    "Pausa no topo"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-sentado-halter-joelhos"
  },
  "gemeos-leg-press": {
   "id": "gemeos-leg-press",
@@ -1884,16 +1884,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sled-45-degree-calf-press.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sled-45-degree-calf-press.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sled-45-degree-calf-press.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Travas de segurança sempre acionadas",
    "Joelhos quase retos com microflexão fixa",
    "Pés firmes sem escorregar"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "gemeos-smith": {
   "id": "gemeos-smith",
@@ -1905,16 +1905,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-calf-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Step firme e colado no chão",
    "Amplitude máxima",
    "Pausa no topo"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "elevacao-unilateral-panturrilha": {
   "id": "elevacao-unilateral-panturrilha",
@@ -1926,9 +1926,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/vertical-leg-raise-on-parallel-bars.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/vertical-leg-raise-on-parallel-bars.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/vertical-leg-raise-on-parallel-bars.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-single-leg-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-single-leg-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-single-leg-calf-raise.jpg",
   "video_source": "verified",
   "form_cues": [
    "Equilíbrio com apoio suave da mão livre",
@@ -1947,16 +1947,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sit-ups.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sit-ups.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sit-ups.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pés firmes",
    "Travas ajustadas",
    "Sem dobrar os joelhos"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "crunch-abdominal-classico": {
   "id": "crunch-abdominal-classico",
@@ -1969,9 +1969,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-straight-leg-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-straight-leg-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-straight-leg-raise.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/crunch-floor-female.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/crunch-floor-female.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/female/crunch-floor-female.jpg",
   "video_source": "verified",
   "form_cues": [
    "Apenas as escápulas saem do solo",
@@ -1990,16 +1990,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/twisting-crunch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/twisting-crunch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/twisting-crunch.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-kneeling-crunch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-kneeling-crunch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-kneeling-crunch.jpg",
   "video_source": "verified",
   "form_cues": [
    "O movimento é de flexão da coluna",
    "Quadris permanecem imóveis durante toda a série",
    "Mãos nunca se afastam da cabeça"
   ],
-  "home_alternative_id": "crunch-bicicleta-bicycle-crunch"
+  "home_alternative_id": "crunch-abdominal-classico"
  },
  "elevacao-pernas-suspensao": {
   "id": "elevacao-pernas-suspensao",
@@ -2012,10 +2012,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/hanging-straight-leg-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/hanging-straight-leg-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/hanging-straight-leg-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Enrolar a pelve para cima",
    "Zero balanço pendular do corpo",
@@ -2033,9 +2033,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-standing-wheel-rollout.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-standing-wheel-rollout.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-standing-wheel-rollout.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-floor-leg-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-floor-leg-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-floor-leg-raise.jpg",
   "video_source": "verified",
   "form_cues": [
    "Lombar nunca descola do chão",
@@ -2054,9 +2054,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/v-up.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/v-up.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/v-up.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/reverse-crunch-female.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/reverse-crunch-female.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/female/reverse-crunch-female.jpg",
   "video_source": "verified",
   "form_cues": [
    "Movimento de enrolamento da pelve",
@@ -2081,7 +2081,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/front-plank-female.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/front-plank-female.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/female/front-plank-female.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Coluna neutra sem deixar a lombar desabar nem…",
    "Escápulas ativas empurrando o chão",
@@ -2195,7 +2195,7 @@ export const EXERCISE_CATALOG = {
    "Punhos se movem em linha reta",
    "Braços colados no banco"
   ],
-  "home_alternative_id": "extensao-punho-halteres"
+  "home_alternative_id": "flexao-punho-halteres"
  },
  "supino-inclinado-barra": {
   "id": "supino-inclinado-barra",
@@ -2445,9 +2445,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-close-grip-press.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-close-grip-press.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-close-grip-press.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/videos/male/lever-chest-press.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/videos/female/lever-chest-press.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/thumbnails/male/lever-chest-press.jpg",
   "video_source": "verified",
   "form_cues": [
    "Acompanhe a curva convergente da máquina",
@@ -2511,7 +2511,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-lying-fly-flat-bench-cable-fly.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-lying-fly-flat-bench-cable-fly.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-lying-fly-flat-bench-cable-fly.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Banco perfeitamente centralizado",
    "Tensão ininterrupta",
@@ -2552,10 +2552,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-push-ups.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-push-ups.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/incline-push-ups.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pés elevados a 30-40cm",
    "Core contraído sem deixar a pelve cair",
@@ -2574,10 +2574,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-push-ups.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-push-ups.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/incline-push-ups.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Corpo rígido",
    "Mãos firmes na borda",
@@ -2605,7 +2605,7 @@ export const EXERCISE_CATALOG = {
    "Core ativado",
    "Movimento sem pressa"
   ],
-  "home_alternative_id": "flexao-declinada-pes-elevados"
+  "home_alternative_id": "flexao-inclinada-maos-elevadas"
  },
  "spoto-press-supino": {
   "id": "spoto-press-supino",
@@ -2683,10 +2683,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/chin-ups-narrow-parallel-grip.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/chin-ups-narrow-parallel-grip.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/chin-ups-narrow-parallel-grip.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Palmas voltadas uma para a outra",
    "Cotovelos junto ao corpo",
@@ -2706,10 +2706,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-seated-high-row-v-bar.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-seated-high-row-v-bar.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-seated-high-row-v-bar.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Carga estável sem balançar",
    "Subida completa do queixo",
@@ -2728,9 +2728,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/reverse-grip-machine-lat-pulldown.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/reverse-grip-machine-lat-pulldown.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/reverse-grip-machine-lat-pulldown.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-bar-lateral-pulldown-reverse-grip.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-bar-lateral-pulldown-reverse-grip.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-bar-lateral-pulldown-reverse-grip.jpg",
   "video_source": "verified",
   "form_cues": [
    "Pegada na largura dos ombros",
@@ -2759,7 +2759,7 @@ export const EXERCISE_CATALOG = {
    "Movimento suave",
    "Sem solavanco no início"
   ],
-  "home_alternative_id": "puxada-unilateral-elastico"
+  "home_alternative_id": "barra-fixa-pegada-neutra"
  },
  "puxada-unilateral-polia-alta": {
   "id": "puxada-unilateral-polia-alta",
@@ -2775,7 +2775,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-lateral-pulldown.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-lateral-pulldown.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-lateral-pulldown.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelo direcionado para o bolso da calça",
    "Tronco firme sem inclinação lateral",
@@ -2861,10 +2861,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-bent-over-row.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-bent-over-row.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-bent-over-row.jpg",
-  "video_source": "dataset",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-palm-rotational-bent-over-row.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-palm-rotational-bent-over-row.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-palm-rotational-bent-over-row.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Coluna neutra",
    "Pescoço alinhado com a espinha",
@@ -2905,9 +2905,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-reverse-t-bar-row.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-reverse-t-bar-row.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-reverse-t-bar-row.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cambered-bar-lying-row.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cambered-bar-lying-row.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cambered-bar-lying-row.jpg",
   "video_source": "verified",
   "form_cues": [
    "Corpo horizontal estritamente apoiado",
@@ -3016,10 +3016,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-high-row.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-high-row.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-high-row.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Séries de alta repetição pesada",
    "Pegada poderosa",
@@ -3069,7 +3069,7 @@ export const EXERCISE_CATALOG = {
    "Peito apoiado",
    "Contração de 1s"
   ],
-  "home_alternative_id": "remada-sentada-elastico"
+  "home_alternative_id": "barra-fixa-pegada-neutra"
  },
  "remada-articulada-pegada-aberta": {
   "id": "remada-articulada-pegada-aberta",
@@ -3305,10 +3305,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-lateral-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-lateral-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-lateral-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Costas coladas no encosto eliminando impulsos",
    "Cotovelos destravados",
@@ -3350,7 +3350,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-lateral-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-lateral-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-lateral-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cabo por trás sem atrito na roupa",
    "Subir até 90°",
@@ -3377,7 +3377,7 @@ export const EXERCISE_CATALOG = {
    "Eixo da máquina alinhado ao ombro",
    "Pés apoiados"
   ],
-  "home_alternative_id": "elevacao-lateral-banco-inclinado"
+  "home_alternative_id": "elevacao-lateral-halteres"
  },
  "elevacao-frontal-barra-reta": {
   "id": "elevacao-frontal-barra-reta",
@@ -3393,7 +3393,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-front-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-front-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-front-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Braços paralelos",
    "Coluna firme sem balanço",
@@ -3411,10 +3411,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-lateral-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-lateral-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-lateral-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Mãos nas laterais da anilha",
    "Tronco imóvel",
@@ -3433,10 +3433,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-front-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-front-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-front-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Subir um braço por vez com controle",
    "Sem torcer o tronco",
@@ -3454,10 +3454,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/videos/male/cable-front-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/videos/female/cable-front-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/thumbnails/male/cable-front-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Cabo entre as pernas",
    "Afastamento sutil das mãos no topo",
@@ -3500,7 +3500,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-rear-lateral-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Peito colado no apoio",
    "Cotovelos destravados",
@@ -3518,10 +3518,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-iron-cross.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-iron-cross.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-iron-cross.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tronco inclinado estável",
    "Movimento amplo lateral",
@@ -3584,10 +3584,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-rear-delt-row.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-rear-delt-row.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-rear-delt-row.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tensão constante do cabo",
    "Cotovelos altos",
@@ -3648,10 +3648,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-shrug.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-shrug.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-shrug.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Movimento estritamente vertical",
    "Sem dobrar os braços",
@@ -3690,10 +3690,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-shrug.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-shrug.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-shrug.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Barra posicionada atrás dos glúteos",
    "Elevação vertical para cima e para trás",
@@ -3734,9 +3734,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lying-supine-dumbbell-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lying-supine-dumbbell-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lying-supine-dumbbell-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-biceps-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-biceps-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-biceps-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Movimento simétrico dos dois braços",
@@ -3758,7 +3758,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-curl.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-curl.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-curl.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos permanecem atrás do tronco durante…",
    "Alongamento seguro no fundo",
@@ -3776,9 +3776,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-prone-incline-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-prone-incline-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-prone-incline-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-preacher-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-preacher-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-preacher-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Braço totalmente apoiado",
@@ -3801,7 +3801,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/ez-barbell-biceps-curl.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/ez-barbell-biceps-curl.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/ez-barbell-biceps-curl.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "7 reps inferiores + 7 reps superiores + 7…",
    "Sem descansar entre as fases",
@@ -3841,10 +3841,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-zottman-preacher-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-zottman-preacher-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-zottman-preacher-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Subida supinada",
    "Rotação suave no topo",
@@ -3862,9 +3862,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-alternate-seated-biceps-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-alternate-seated-biceps-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-alternate-seated-biceps-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-hammer-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-hammer-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-hammer-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Palmas paralelas",
@@ -4053,10 +4053,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/weighted-standing-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/weighted-standing-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/weighted-standing-curl.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Palmas das mãos sustentam o peso por baixo",
    "Anilha mantida na horizontal",
@@ -4074,9 +4074,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-standing-back-wrist-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-standing-back-wrist-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-standing-back-wrist-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-over-bench-wrist-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-over-bench-wrist-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-over-bench-wrist-curl.jpg",
   "video_source": "verified",
   "form_cues": [
    "Liberdade de movimento individual para cada…",
@@ -4095,10 +4095,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-neutral-wrist-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-neutral-wrist-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-neutral-wrist-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pesos leves",
    "Antebraços fixos",
@@ -4116,16 +4116,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-behind-back-wrist-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-behind-back-wrist-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-behind-back-wrist-curl.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Braços descansando nas coxas",
    "Mãos pronadas",
    "Cadência de 3s"
   ],
-  "home_alternative_id": "extensao-punho-halteres"
+  "home_alternative_id": "flexao-punho-halteres"
  },
  "rolo-punho-wrist-roller": {
   "id": "rolo-punho-wrist-roller",
@@ -4146,7 +4146,7 @@ export const EXERCISE_CATALOG = {
    "Descida controlada sem soltar a corda",
    "Postura ereta"
   ],
-  "home_alternative_id": "extensao-punho-halteres"
+  "home_alternative_id": "flexao-punho-halteres"
  },
  "suspensao-dead-hang-barra-fixa": {
   "id": "suspensao-dead-hang-barra-fixa",
@@ -4191,7 +4191,7 @@ export const EXERCISE_CATALOG = {
    "Sem apoiar as anilhas na perna",
    "Piso protegido"
   ],
-  "home_alternative_id": "extensao-punho-halteres"
+  "home_alternative_id": "flexao-punho-halteres"
  },
  "caminhada-fazendeiro-farmers-walk": {
   "id": "caminhada-fazendeiro-farmers-walk",
@@ -4312,10 +4312,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-alternate-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-alternate-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-alternate-extension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Costas apoiadas no encosto",
    "Cotovelos o mais fechados possível",
@@ -4336,7 +4336,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-one-arm-triceps-extension.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-one-arm-triceps-extension.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-one-arm-triceps-extension.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Braço vertical",
    "Mão livre pode apoiar o cotovelo ativo",
@@ -4355,10 +4355,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-rope-high-pulley-overhead-triceps-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-rope-high-pulley-overhead-triceps-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-rope-high-pulley-overhead-triceps-extension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tração vertical do cabo",
    "Abertura das mãos no topo",
@@ -4441,16 +4441,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-standing-one-arm-triceps-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-standing-one-arm-triceps-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-standing-one-arm-triceps-extension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Sem pegador rígido permitindo rotação livre",
    "Cotovelo alto",
    "Contração de 1s"
   ],
-  "home_alternative_id": "triceps-frances-unilateral-halter"
+  "home_alternative_id": "extensao-unilateral-triceps-halter-deitado"
  },
  "jm-press-barra-smith": {
   "id": "jm-press-barra-smith",
@@ -4472,7 +4472,7 @@ export const EXERCISE_CATALOG = {
    "Barra desce no queixo com segurança nos trilhos",
    "Cotovelos a 45°"
   ],
-  "home_alternative_id": "tate-press-banco-reto-halteres"
+  "home_alternative_id": "triceps-pulley-elastico"
  },
  "jm-press-barra-w-livre": {
   "id": "jm-press-barra-w-livre",
@@ -4493,7 +4493,7 @@ export const EXERCISE_CATALOG = {
    "Descida direcionada ao queixo",
    "Pés firmes"
   ],
-  "home_alternative_id": "tate-press-banco-reto-halteres"
+  "home_alternative_id": "triceps-pulley-elastico"
  },
  "paralelas-foco-triceps-vertical": {
   "id": "paralelas-foco-triceps-vertical",
@@ -4549,10 +4549,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-triceps-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-triceps-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-triceps-extension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cotovelos permanecem abertos para fora…",
    "Anilhas se tocam no ponto de descida no peito",
@@ -4580,7 +4580,7 @@ export const EXERCISE_CATALOG = {
    "Controle da barra",
    "Pés apoiados"
   ],
-  "home_alternative_id": "tate-press-banco-reto-halteres"
+  "home_alternative_id": "triceps-testa-halteres-banco-reto"
  },
  "extensao-unilateral-triceps-halter-deitado": {
   "id": "extensao-unilateral-triceps-halter-deitado",
@@ -4592,10 +4592,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-alternate-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-alternate-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-alternate-extension.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Braço vertical fixo",
    "Descida até a orelha oposta",
@@ -4658,10 +4658,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/close-grip-push-ups.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/close-grip-push-ups.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/close-grip-push-ups.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cotovelos colados às costelas durante toda…",
    "Pausa isométrica de 2s no fundo",
@@ -4689,7 +4689,7 @@ export const EXERCISE_CATALOG = {
    "Joelhos acompanham os dedos dos pés",
    "Profundidade máxima segura"
   ],
-  "home_alternative_id": "agachamento-pistola-pistol-squat"
+  "home_alternative_id": "agachamento-taca-goblet-squat"
  },
  "agachamento-zercher-barra": {
   "id": "agachamento-zercher-barra",
@@ -4746,10 +4746,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-bar-grip-sumo-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-bar-grip-sumo-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-bar-grip-sumo-squat.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Joelhos acompanham os pés para fora",
    "Tronco reto",
@@ -4776,7 +4776,7 @@ export const EXERCISE_CATALOG = {
    "Descida profunda",
    "Estabilidade total"
   ],
-  "home_alternative_id": "agachamento-bulgaro"
+  "home_alternative_id": "agachamento-unilateral-halteres"
  },
  "agachamento-pistola-pistol-squat": {
   "id": "agachamento-pistola-pistol-squat",
@@ -4790,10 +4790,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-squat.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Calcanhar nunca sai do chão",
    "Perna livre não toca o solo",
@@ -4821,7 +4821,7 @@ export const EXERCISE_CATALOG = {
    "Passadas ritmadas",
    "Tronco reto"
   ],
-  "home_alternative_id": "agachamento-unilateral-halteres"
+  "home_alternative_id": "passada-walking-lunges"
  },
  "afundo-barra-smith": {
   "id": "afundo-barra-smith",
@@ -4833,16 +4833,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-chair-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-chair-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-chair-squat.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Base estática",
    "Trilhos guiam o movimento",
    "Tronco reto"
   ],
-  "home_alternative_id": "afundo-com-halteres"
+  "home_alternative_id": "agachamento-unilateral-halteres"
  },
  "afundo-reverso-halteres": {
   "id": "afundo-reverso-halteres",
@@ -4940,10 +4940,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/close-feet-leg-press.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/close-feet-leg-press.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/close-feet-leg-press.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Contração isométrica de 1s no topo",
    "Quadril firme no banco",
@@ -5013,7 +5013,7 @@ export const EXERCISE_CATALOG = {
    "Zero relaxamento da musculatura no fundo",
    "Subida explosiva"
   ],
-  "home_alternative_id": "agachamento-pistola-pistol-squat"
+  "home_alternative_id": "agachamento-taca-goblet-squat"
  },
  "belt-squat-cinto": {
   "id": "belt-squat-cinto",
@@ -5034,7 +5034,7 @@ export const EXERCISE_CATALOG = {
    "Profundidade completa com segurança total",
    "Permite treinar mesmo com hérnia de disco ou…"
   ],
-  "home_alternative_id": "agachamento-pistola-pistol-squat"
+  "home_alternative_id": "agachamento-taca-goblet-squat"
  },
  "agachamento-isometrico-parede-wall-sit": {
   "id": "agachamento-isometrico-parede-wall-sit",
@@ -5068,10 +5068,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/weighted-sissy-squat.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/weighted-sissy-squat.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/weighted-sissy-squat.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Anilha colada no peito",
    "Tronco alinhado às coxas",
@@ -5091,16 +5091,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-deadlift-deadlift-1.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-deadlift-deadlift-1.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-deadlift-deadlift-1.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Barra alinhada sobre o meio dos pés o tempo todo",
    "Braços 100% bloqueados",
    "Profundidade completa"
   ],
-  "home_alternative_id": "agachamento-pistola-pistol-squat"
+  "home_alternative_id": "agachamento-taca-goblet-squat"
  },
  "terra-romeno-rdl-halteres": {
   "id": "terra-romeno-rdl-halteres",
@@ -5177,10 +5177,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-straight-leg-deadlift.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-straight-leg-deadlift.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/barbell-straight-leg-deadlift.jpg",
-  "video_source": "dataset",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Apenas para quem possui grande flexibilidade…",
    "Coluna neutra",
@@ -5220,10 +5220,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-femoral.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-femoral.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-femoral.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pelve colada no banco",
    "Sem girar o quadril",
@@ -5263,9 +5263,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-kneeling-leg-curl.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-kneeling-leg-curl.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-kneeling-leg-curl.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/leg-curl-on-stability-ball.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/leg-curl-on-stability-ball.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/female/leg-curl-on-stability-ball.jpg",
   "video_source": "verified",
   "form_cues": [
    "Quadril elevado do solo durante toda a série",
@@ -5412,10 +5412,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/hip-raise-bridge.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/hip-raise-bridge.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/female/hip-raise-bridge.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Costas coladas no solo",
    "Subida até alinhar joelho-quadril-ombro",
@@ -5519,10 +5519,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-hip-abduction.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-hip-abduction.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-hip-abduction.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Tronco inclinado a 45° para frente",
    "Aumenta o braço de momento para o glúteo em…",
@@ -5583,10 +5583,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bands",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-standing-hip-extension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-standing-hip-extension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-standing-hip-extension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Calcanhares permanecem colados o tempo todo",
    "Pelve não tomba para trás",
@@ -5647,10 +5647,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-hyperextension.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/45-degree-hyperextension.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/45-degree-hyperextension.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Coluna permanece intencionalmente arredondada…",
    "Pés apontados para fora a 45° para rotação…",
@@ -5668,10 +5668,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-calf-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Halter estável sobre os joelhos",
    "Amplitude completa no step",
@@ -5698,7 +5698,7 @@ export const EXERCISE_CATALOG = {
    "Pausa de 2s no pico",
    "Alongamento profundo no fundo"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "gemeos-step-halteres": {
   "id": "gemeos-step-halteres",
@@ -5710,10 +5710,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-standing-calf-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-standing-calf-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-standing-calf-raise.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Equilíbrio firme",
    "Descida abaixo do step",
@@ -5731,10 +5731,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-standing-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-standing-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-standing-calf-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cadência lenta estrita",
    "Amplitude máxima",
@@ -5752,16 +5752,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-calf-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pés seguros",
    "Movimento estrito no tornozelo",
    "Pernas quase retas"
   ],
-  "home_alternative_id": "gemeos-unilateral-step-sem-carga"
+  "home_alternative_id": "gemeos-step-halteres"
  },
  "panturrilha-agachamento-smith": {
   "id": "panturrilha-agachamento-smith",
@@ -5773,10 +5773,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/smith-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/smith-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/smith-calf-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Trilho alinhado",
    "Descida profunda",
@@ -5794,10 +5794,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/donkey-calf-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/donkey-calf-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/donkey-calf-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Dorsiflexão máxima puxando os dedos para…",
    "Calcanhares bem apoiados",
@@ -5824,7 +5824,7 @@ export const EXERCISE_CATALOG = {
    "Tensão contínua do cabo",
    "Contração de 2s"
   ],
-  "home_alternative_id": "dorsiflexao-tibial-anterior-halter"
+  "home_alternative_id": "panturrilha-em-pe-elastico"
  },
  "cadeira-adutora-isometria": {
   "id": "cadeira-adutora-isometria",
@@ -5837,10 +5837,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "machine",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-seated-hip-adduction.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-seated-hip-adduction.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-seated-hip-adduction.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pausa isométrica de 3s no fechamento",
    "Sem solavanco",
@@ -6009,10 +6009,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-bycicle-twisting-crunch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/45-degree-bycicle-twisting-crunch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/45-degree-bycicle-twisting-crunch.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Girar os ombros e não apenas os cotovelos",
    "Perna estendida não toca o chão",
@@ -6084,7 +6084,7 @@ export const EXERCISE_CATALOG = {
    "Movimento de rotação dos quadris",
    "Força de sustentação nas costas"
   ],
-  "home_alternative_id": "knee-to-elbow-barra-fixa"
+  "home_alternative_id": "spell-caster-halteres"
  },
  "toes-to-bar-pes-barra": {
   "id": "toes-to-bar-pes-barra",
@@ -6106,7 +6106,7 @@ export const EXERCISE_CATALOG = {
    "Controle da descida sem balanceio",
    "Dorsais ativas"
   ],
-  "home_alternative_id": "knee-to-elbow-barra-fixa"
+  "home_alternative_id": "spell-caster-halteres"
  },
  "knee-to-elbow-barra-fixa": {
   "id": "knee-to-elbow-barra-fixa",
@@ -6118,10 +6118,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-leg-hip-raise.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-leg-hip-raise.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/incline-leg-hip-raise.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Joelhos tocam fisicamente nos cotovelos",
    "Enrolamento pélvico",
@@ -6162,10 +6162,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-twist-up-down.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-twist-up-down.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-twist-up-down.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Trajetória diagonal de cima para baixo",
    "Giro do tronco e quadril coordenado",
@@ -6184,10 +6184,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-standing-lift.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-standing-lift.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-standing-lift.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Trajetória de baixo para cima",
    "Extensão com rotação do pé traseiro",
@@ -6227,10 +6227,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "barbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-side-bend.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-side-bend.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-side-bend.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Anilha fixa no peito",
    "Enrolar a coluna",
@@ -6249,10 +6249,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/landmine-180.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/landmine-180.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/landmine-180.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Esvaziar 100% do ar antes de iniciar a sucção",
    "Puxar o umbigo para dentro E para cima",
@@ -6315,10 +6315,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-standing-wheel-rollout.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-standing-wheel-rollout.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-standing-wheel-rollout.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Apenas para atletas avançados",
    "Coluna protegida em leve retroversão",
@@ -6336,10 +6336,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/sit-up-on-exercise-ball.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/sit-up-on-exercise-ball.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/sit-up-on-exercise-ball.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Curvatura da bola permite hiperextensão…",
    "Maior amplitude que o solo rígido",
@@ -6382,10 +6382,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "dumbbell",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/kettlebell-deadlift.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/kettlebell-deadlift.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/kettlebell-deadlift.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Trajetória vertical rente ao corpo",
    "Encaixe suave no antebraço sem colisão",
@@ -6473,10 +6473,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/running.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/running.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/running.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Pouso suave e silencioso como um gato",
    "Extensão completa do quadril no topo da caixa",
@@ -6549,7 +6549,7 @@ export const EXERCISE_CATALOG = {
    "Tronco estável sem balançar a cabeça",
    "Joelhos destravados"
   ],
-  "home_alternative_id": "salto-caixa-pliometrica-box-jump"
+  "home_alternative_id": "burpee-completo-salto"
  },
  "corda-naval-batida-dupla-slam": {
   "id": "corda-naval-batida-dupla-slam",
@@ -6561,16 +6561,16 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "gym",
   "equipment": "cable",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/battling-ropes.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/battling-ropes.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/battling-ropes.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Batida simultânea das duas cordas",
    "Flexão de quadril no impacto",
    "Potência máxima"
   ],
-  "home_alternative_id": "salto-caixa-pliometrica-box-jump"
+  "home_alternative_id": "burpee-completo-salto"
  },
  "pulo-corda-jump-rope": {
   "id": "pulo-corda-jump-rope",
@@ -6592,7 +6592,7 @@ export const EXERCISE_CATALOG = {
    "Saltos baixos e eficientes",
    "Calcanhares nunca tocam o chão"
   ],
-  "home_alternative_id": "salto-caixa-pliometrica-box-jump"
+  "home_alternative_id": "burpee-completo-salto"
  },
  "mountain-climbers-escalador": {
   "id": "mountain-climbers-escalador",
@@ -6637,7 +6637,7 @@ export const EXERCISE_CATALOG = {
    "Empurrar através do antepé",
    "Zero dano excêntrico"
   ],
-  "home_alternative_id": "salto-caixa-pliometrica-box-jump"
+  "home_alternative_id": "burpee-completo-salto"
  },
  "puxar-treno-sled-pull": {
   "id": "puxar-treno-sled-pull",
@@ -6659,7 +6659,7 @@ export const EXERCISE_CATALOG = {
    "Puxada contínua mão sobre mão",
    "Coluna neutra"
   ],
-  "home_alternative_id": "salto-caixa-pliometrica-box-jump"
+  "home_alternative_id": "burpee-completo-salto"
  },
  "remo-seco-rowing-machine": {
   "id": "remo-seco-rowing-machine",
@@ -6717,10 +6717,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": null,
-  "video_url_female": null,
-  "poster_url": null,
-  "video_source": null,
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-kneeling-back-rotation-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-kneeling-back-rotation-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-kneeling-back-rotation-stretch.jpg",
+  "video_source": "verified",
   "form_cues": [
    "Quadril permanece imóvel",
    "Olhar acompanha o cotovelo",
@@ -6760,10 +6760,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stationary-bike.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stationary-bike.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stationary-bike.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cotovelos permanecem totalmente estendidos",
    "Movimento exclusivo das escápulas",
@@ -6781,10 +6781,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/treadmill-running.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/treadmill-running.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/treadmill-running.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Braços retos como pilares",
    "Movimento ocorre apenas nas escápulas",
@@ -6803,10 +6803,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_minimal",
   "equipment": "bands",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/elliptical.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/elliptical.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/elliptical.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cotovelos permanecem estendidos",
    "Movimento contínuo e sem dor",
@@ -6869,10 +6869,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-above-head-chest-stretch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-above-head-chest-stretch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-above-head-chest-stretch.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Cotovelo alinhado com o ombro",
    "Giro suave sem forçar o ombro",
@@ -6890,9 +6890,9 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-ceiling-look-stretch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-ceiling-look-stretch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-ceiling-look-stretch.jpg",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-crossover-kneeling-hip-flexor-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-crossover-kneeling-hip-flexor-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-crossover-kneeling-hip-flexor-stretch.jpg",
   "video_source": "verified",
   "form_cues": [
    "Retroversão pélvica prévia",
@@ -6955,10 +6955,10 @@ export const EXERCISE_CATALOG = {
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
-  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-stairs-calf-stretch.mp4",
-  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-stairs-calf-stretch.mp4",
-  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-stairs-calf-stretch.jpg",
-  "video_source": "verified",
+  "video_url": null,
+  "video_url_female": null,
+  "poster_url": null,
+  "video_source": null,
   "form_cues": [
    "Calcanhar nunca sai do solo durante o avanço…",
    "Joelho avança em linha com o segundo dedo do pé",
@@ -6982,7 +6982,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/inverted-row-between-chairs.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/inverted-row-between-chairs.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/inverted-row-between-chairs.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Corpo reto da cabeça aos pés",
    "Escápulas juntas no topo",
@@ -7005,7 +7005,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/jump-step-up.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/jump-step-up.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/jump-step-up.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Impulso explosivo na perna da frente",
    "Aterrissagem suave",
@@ -7027,7 +7027,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-bycicle-twisting-crunch-1.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/45-degree-bycicle-twisting-crunch-1.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/45-degree-bycicle-twisting-crunch-1.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Lombar colada ao chão",
    "Gire pelo tronco",
@@ -7051,7 +7051,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/commando-pull-up.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/commando-pull-up.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/commando-pull-up.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Corpo firme",
    "Alterne os lados",
@@ -7073,7 +7073,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/scapula-dips.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/scapula-dips.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/scapula-dips.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos travados",
    "Ombros longe das orelhas",
@@ -7095,7 +7095,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-assisted-pull-up.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-assisted-pull-up.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-assisted-pull-up.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos em direção ao quadril",
    "Costelas para baixo",
@@ -7117,7 +7117,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-kneeling-one-arm-pulldown.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-kneeling-one-arm-pulldown.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-kneeling-one-arm-pulldown.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelo junto ao corpo",
    "Costelas para baixo",
@@ -7141,7 +7141,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-seated-row.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-seated-row.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-seated-row.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Puxe guiando pelos cotovelos",
    "Peito aberto",
@@ -7164,7 +7164,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-rear-delt-row.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-rear-delt-row.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-rear-delt-row.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos lideram o movimento",
    "Pescoço longo",
@@ -7187,7 +7187,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-bent-over-rear-lateral-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-bent-over-rear-lateral-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-bent-over-rear-lateral-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Costas retas",
    "Cotovelos levemente flexionados",
@@ -7209,7 +7209,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-one-arm-forward-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-one-arm-forward-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-one-arm-forward-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Suba até a altura do ombro",
    "Cotovelo levemente flexionado",
@@ -7232,7 +7232,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-high-fly.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-high-fly.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-high-fly.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos levemente flexionados",
    "Movimento controlado",
@@ -7254,7 +7254,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-overhead-triceps-extension.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-overhead-triceps-extension.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-overhead-triceps-extension.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos apontados para a frente",
    "Braços parados",
@@ -7275,7 +7275,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-triceps-pushdown.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-triceps-pushdown.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-triceps-pushdown.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Cotovelos colados ao corpo",
    "Só os antebraços se movem",
@@ -7297,7 +7297,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-seated-leg-extension.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-seated-leg-extension.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-seated-leg-extension.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Sente-se alto",
    "Coxa parada",
@@ -7319,7 +7319,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-leg-curl.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-leg-curl.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-leg-curl.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Quadril colado ao chão",
    "Pontas dos pés esticadas",
@@ -7341,7 +7341,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-leg-curl.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-standing-leg-curl.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-leg-curl.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Coxas alinhadas",
    "Postura alta",
@@ -7363,7 +7363,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-pull-through.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-pull-through.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-pull-through.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Quadril para trás",
    "Costelas para baixo",
@@ -7385,7 +7385,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-one-leg-kickback-bent-position.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-one-leg-kickback-bent-position.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-one-leg-kickback-bent-position.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Costas retas",
    "Calcanhar empurra para cima",
@@ -7407,7 +7407,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-hip-abduction.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-hip-abduction.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-hip-abduction.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Peito erguido",
    "Perna de apoio firme",
@@ -7429,7 +7429,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-hip-adduction.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-hip-adduction.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-hip-adduction.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Abdômen firme",
    "Movimento controlado",
@@ -7451,7 +7451,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-calf-raise.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-standing-calf-raise.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-calf-raise.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Suba ao máximo",
    "Pausa no topo",
@@ -7472,7 +7472,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-crunch.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-standing-crunch.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-crunch.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Costelas para baixo",
    "Enrole a coluna",
@@ -7494,7 +7494,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-side-bend.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-side-bend.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-side-bend.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Peito erguido",
    "Quadril sem girar",
@@ -7517,7 +7517,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/band-standing-lift.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/band-standing-lift.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-lift.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Braços quase estendidos",
    "Gire pelo core",
@@ -7540,7 +7540,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-single-leg-squat.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-single-leg-squat.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-single-leg-squat.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Peito erguido",
    "Quadril para trás",
@@ -7562,7 +7562,7 @@ export const EXERCISE_CATALOG = {
   "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/spell-caster.mp4",
   "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/spell-caster.mp4",
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/spell-caster.jpg",
-  "video_source": "dataset",
+  "video_source": "verified",
   "form_cues": [
    "Gire pelo tronco",
    "Costas retas",

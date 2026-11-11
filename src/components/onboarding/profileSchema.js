@@ -31,24 +31,56 @@ export const GENDERS = [
   { id: 'other', label: 'Prefiro não dizer', icon: 'CircleDashed' }
 ];
 
+/** `intensity` (1–4) alimenta as barras de carga dos cartões. */
 export const GOALS = [
-  { id: 'hypertrophy', label: 'Hipertrofia', hint: 'Ganhar massa muscular', icon: 'Dumbbell' },
-  { id: 'fat_loss', label: 'Definição', hint: 'Perder gordura e manter músculo', icon: 'Flame' },
-  { id: 'strength', label: 'Força pura', hint: 'Subir cargas nos básicos', icon: 'Weight' },
-  { id: 'conditioning', label: 'Condicionamento', hint: 'Fôlego e resistência', icon: 'HeartPulse' }
+  { id: 'hypertrophy', label: 'Hipertrofia', hint: 'Massa muscular e volume de treino', icon: 'Dumbbell', intensity: 3 },
+  { id: 'strength', label: 'Força', hint: 'Cargas máximas nos movimentos básicos', icon: 'Weight', intensity: 4 },
+  { id: 'fat_loss', label: 'Recomposição', hint: 'Perder gordura e manter músculo', icon: 'Flame', intensity: 2 },
+  { id: 'conditioning', label: 'Condicionamento', hint: 'Fôlego, densidade e resistência', icon: 'HeartPulse', intensity: 3 }
 ];
 
 export const LEVELS = [
-  { id: 'beginner', label: 'Iniciante', hint: 'Menos de 6 meses', icon: 'Sprout' },
-  { id: 'intermediate', label: 'Intermediário', hint: '6 meses a 2 anos', icon: 'TrendingUp' },
-  { id: 'advanced', label: 'Avançado', hint: 'Mais de 2 anos', icon: 'Trophy' }
+  { id: 'beginner', label: 'Iniciante', hint: 'Menos de 6 meses de treino consistente', icon: 'Sprout', intensity: 1 },
+  { id: 'intermediate', label: 'Intermédio', hint: '6 meses a 2 anos', icon: 'TrendingUp', intensity: 2 },
+  { id: 'advanced', label: 'Avançado', hint: 'Mais de 2 anos, técnica sólida', icon: 'Trophy', intensity: 4 }
 ];
 
+/** `environments`: ambientes do catálogo de exercícios disponíveis em cada local. */
 export const LOCATIONS = [
-  { id: 'gym', label: 'Ginásio completo', hint: 'Máquinas, barras e cabos', icon: 'Building2' },
-  { id: 'home_gym', label: 'Home gym', hint: 'Halteres e elásticos', icon: 'House' },
-  { id: 'bodyweight', label: 'Peso corporal', hint: 'Calistenia, sem equipamento', icon: 'PersonStanding' }
+  { id: 'gym', label: 'Ginásio completo', hint: 'Máquinas, barras, cabos e halteres', icon: 'Building2', environments: ['gym', 'home_minimal', 'home_no_equip'] },
+  { id: 'home_gym', label: 'Casa com equipamento', hint: 'Halteres, elásticos e barra fixa', icon: 'House', environments: ['home_minimal', 'home_no_equip'] },
+  { id: 'bodyweight', label: 'Só peso corporal', hint: 'Calistenia, sem equipamento', icon: 'PersonStanding', environments: ['home_no_equip'] }
 ];
+
+/** Dias de treino por frequência, segundo o gerador (0 = segunda … 6 = domingo). */
+export const TRAINING_DAYS = { 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 3, 4, 5] };
+
+/** Metadados dos 7 dias da semana (0 = segunda ... 6 = domingo; dayId espelha Date.getDay()). */
+export const WEEK_DAYS = [
+  { index: 0, dayId: 1, letter: 'S', short: 'Seg', name: 'Segunda-feira' },
+  { index: 1, dayId: 2, letter: 'T', short: 'Ter', name: 'Terça-feira' },
+  { index: 2, dayId: 3, letter: 'Q', short: 'Qua', name: 'Quarta-feira' },
+  { index: 3, dayId: 4, letter: 'Q', short: 'Qui', name: 'Quinta-feira' },
+  { index: 4, dayId: 5, letter: 'S', short: 'Sex', name: 'Sexta-feira' },
+  { index: 5, dayId: 6, letter: 'S', short: 'Sáb', name: 'Sábado' },
+  { index: 6, dayId: 0, letter: 'D', short: 'Dom', name: 'Domingo' }
+];
+
+export const formatTrainingDays = (days) => {
+  if (!Array.isArray(days) || days.length === 0) return '';
+  return [...days]
+    .sort((a, b) => a - b)
+    .map((idx) => WEEK_DAYS.find((w) => w.index === idx)?.short)
+    .filter(Boolean)
+    .join(' · ');
+};
+
+export const SPLIT_SUMMARY = {
+  3: 'Full Body A / B / C',
+  4: 'Upper / Lower · Upper / Lower',
+  5: 'Push / Pull / Legs / Upper / Lower',
+  6: 'Push / Pull / Legs × 2'
+};
 
 export const DAYS = [3, 4, 5, 6];
 export const MINUTES = [45, 60, 75];
@@ -92,25 +124,16 @@ export const DEFAULT_PROFILE = {
   experienceLevel: null,
   trainingLocation: null,
   daysPerWeek: null,
+  trainingDays: null,
   sessionMinutes: null,
   splitPreference: 'auto',
   injuries: [],
   priorityMuscles: []
 };
 
-/** Campos obrigatórios por etapa (as etapas sem campos são sempre válidas). */
-export const STEP_REQUIREMENTS = [
-  ['gender', 'age', 'weightKg', 'heightCm'],
-  ['primaryGoal'],
-  ['experienceLevel'],
-  ['trainingLocation', 'daysPerWeek', 'sessionMinutes'],
-  ['splitPreference'],
-  [],
-  []
-];
-
-export function isStepValid(profile, step) {
-  return (STEP_REQUIREMENTS[step] || []).every((k) => profile[k] !== null && profile[k] !== undefined);
+/** Uma etapa é válida quando todos os campos que exige estão preenchidos. */
+export function fieldsFilled(profile, fields = []) {
+  return fields.every((k) => profile[k] !== null && profile[k] !== undefined);
 }
 
 /** Converte para uma linha da tabela user_fitness_profiles (snake_case). */

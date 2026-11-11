@@ -1,0 +1,24 @@
+project_id = "tegdtjmglvrvgerrtivx"
+
+[auth]
+additional_redirect_urls = ["https://ba-fitness.vercel.app/**", "http://localhost:5173/**", "https://bafitness-brunoabels-projects.vercel.app/", "https://bafitness-brunoabels-projects.vercel.app/**", "https://bafitness-*-brunoabels-projects.vercel.app", "https://bafitness-*-brunoabels-projects.vercel.app/**"]
+site_url = "https://ba-fitness.vercel.app"
+
+[auth.email]
+enable_confirmations = true
+max_frequency = "1m0s"
+otp_length = 8
+
+[auth.sms]
+enable_confirmations = true
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[db.pooler]
+default_pool_size = 15
+max_client_conn = 200
+
+[storage.vector]
+enabled = false

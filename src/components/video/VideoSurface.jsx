@@ -9,7 +9,8 @@ const VideoSurface = forwardRef(function VideoSurface({ src, poster, playbackRat
   const ready = readyFor === src;
 
   return (
-    <div className={`relative overflow-hidden bg-surface ${className}`}>
+    // `relative` só quando o chamador não posiciona o contentor (com `absolute` + `relative` o vídeo ficava com altura 0)
+    <div className={`${/\b(absolute|fixed)\b/.test(className) ? '' : 'relative'} overflow-hidden bg-surface ${className}`}>
       {!ready && (
         <div aria-hidden className="absolute inset-0 bg-surface">
           <div className="skeleton-shimmer" />

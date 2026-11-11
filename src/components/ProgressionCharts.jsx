@@ -150,7 +150,7 @@ export default function ProgressionCharts() {
   return (
     <div className="space-y-4 animate-fadeIn">
       {/* Abas Superiores dos Gráficos — Apenas Sobrecarga Ativa, Whoop e Arnold ocultos */}
-      <div className="flex items-center justify-between px-1 text-xs font-bold text-zinc-900 dark:text-white">
+      <div className="flex items-center justify-between px-1 text-xs font-bold text-white">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-sky-400" />
           <span>Evolução de Sobrecarga Progressiva (PRs)</span>
@@ -165,16 +165,16 @@ export default function ProgressionCharts() {
       </div>
 
       {/* 1. VISUALIZAÇÃO DE SOBRECARGA PROGRESSIVA POR EXERCÍCIO */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-sm space-y-4 transition-colors">
+      <div className="p-4 sm:p-5 rounded-2xl bg-zinc-900 border border-white/10 shadow-sm space-y-4 transition-colors">
         
         {/* Seletor de Exercício do Arnold Split */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
-            <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-wider">
-              <Dumbbell className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+            <div className="flex items-center gap-1.5 text-zinc-400 text-[11px] font-bold uppercase tracking-wider">
+              <Dumbbell className="w-3.5 h-3.5 text-zinc-300" />
               <span>Evolução de Força • {currentEx.splitGroup}</span>
             </div>
-            <h3 className="text-base font-bold text-zinc-900 dark:text-white mt-0.5">
+            <h3 className="text-base font-bold text-white mt-0.5">
               {currentEx.name}
             </h3>
           </div>
@@ -186,7 +186,7 @@ export default function ProgressionCharts() {
               setSelectedExKey(e.target.value);
               triggerHaptic(10);
             }}
-            className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 outline-none cursor-pointer"
+            className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-800 text-zinc-100 text-xs font-semibold border border-zinc-700 outline-none cursor-pointer"
           >
             <option value="bench-press">Supino Plano (Peito)</option>
             <option value="barbell-row">Remada Curvada (Costas)</option>
@@ -199,19 +199,19 @@ export default function ProgressionCharts() {
 
         {/* Cards de Métricas do Exercício */}
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-white/10">
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase font-semibold block">Carga Inicial</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-zinc-900 dark:text-white">{currentEx.initialWeight} kg</span>
+          <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/10">
+            <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Inicial</span>
+            <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.initialWeight} kg</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-white/10">
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase font-semibold block">Carga Atual</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-zinc-900 dark:text-white">{currentEx.currentWeight} kg</span>
+          <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/10">
+            <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Atual</span>
+            <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.currentWeight} kg</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50">
-            <span className="text-[11px] text-emerald-700 dark:text-emerald-400 uppercase font-semibold block">Ganho Total</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-emerald-700 dark:text-emerald-400 flex items-center justify-center gap-0.5">
+          <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-800/50">
+            <span className="text-[11px] text-emerald-400 uppercase font-semibold block">Ganho Total</span>
+            <span className="text-sm font-bold font-mono tabular-nums text-emerald-400 flex items-center justify-center gap-0.5">
               <ArrowUpRight className="w-3.5 h-3.5" />
               {currentEx.gainPercent}
             </span>
@@ -226,15 +226,15 @@ export default function ProgressionCharts() {
           >
             <defs>
               <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="currentColor" className="text-zinc-400 dark:text-zinc-600" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="currentColor" className="text-zinc-400 dark:text-zinc-600" stopOpacity="0.0" />
+                <stop offset="0%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.0" />
               </linearGradient>
             </defs>
 
             {/* Linhas horizontais de grade técnica */}
-            <line x1={paddingX} y1={paddingTop} x2={chartWidth - paddingX} y2={paddingTop} stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
-            <line x1={paddingX} y1={chartHeight / 2} x2={chartWidth - paddingX} y2={chartHeight / 2} stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
-            <line x1={paddingX} y1={chartHeight - paddingBottom} x2={chartWidth - paddingX} y2={chartHeight - paddingBottom} stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" strokeWidth="1" />
+            <line x1={paddingX} y1={paddingTop} x2={chartWidth - paddingX} y2={paddingTop} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
+            <line x1={paddingX} y1={chartHeight / 2} x2={chartWidth - paddingX} y2={chartHeight / 2} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
+            <line x1={paddingX} y1={chartHeight - paddingBottom} x2={chartWidth - paddingX} y2={chartHeight - paddingBottom} stroke="currentColor" className="text-zinc-800" strokeWidth="1" />
 
             {/* Área com Gradiente neutro */}
             <path d={areaPath} fill="url(#areaGrad)" />
@@ -244,7 +244,7 @@ export default function ProgressionCharts() {
               d={linePath} 
               fill="none" 
               stroke="currentColor" 
-              className="text-zinc-900 dark:text-white"
+              className="text-white"
               strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeLinejoin="round" 
@@ -259,7 +259,7 @@ export default function ProgressionCharts() {
                     cx={pt.x}
                     cy={pt.y}
                     r={isHovered ? 5.5 : 3.5}
-                    className="fill-white dark:fill-zinc-950 stroke-zinc-900 dark:stroke-white cursor-pointer transition-all duration-150"
+                    className="fill-zinc-950 stroke-white cursor-pointer transition-all duration-150"
                     strokeWidth={isHovered ? 2.5 : 2}
                     onMouseEnter={() => setHoveredPoint(i)}
                     onTouchStart={() => setHoveredPoint(i)}
@@ -269,7 +269,7 @@ export default function ProgressionCharts() {
                     x={pt.x}
                     y={chartHeight - 12}
                     textAnchor="middle"
-                    className="text-[11px] font-mono tabular-nums fill-zinc-500 dark:fill-zinc-400 font-medium"
+                    className="text-[11px] font-mono tabular-nums fill-zinc-400 font-medium"
                   >
                     {pt.date}
                   </text>
@@ -281,7 +281,7 @@ export default function ProgressionCharts() {
           {/* Tooltip Dinâmico ao passar o dedo/mouse */}
           {hoveredPoint !== null && points[hoveredPoint] && (
             <div 
-              className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-700 dark:border-zinc-300 animate-fadeIn"
+              className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-100 text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-300 animate-fadeIn"
             >
               <span className="font-mono tabular-nums">{points[hoveredPoint].date}:</span>
               <span className="font-bold font-mono tabular-nums">
@@ -294,9 +294,9 @@ export default function ProgressionCharts() {
           )}
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-white/10">
+        <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/10">
           <span className="flex items-center gap-1 font-medium">
-            1RM Máximo Estimado: <strong className="font-mono tabular-nums text-zinc-900 dark:text-white font-bold">{Math.max(...sessions.map(s => s.estimated1RM))} kg</strong>
+            1RM Máximo Estimado: <strong className="font-mono tabular-nums text-white font-bold">{Math.max(...sessions.map(s => s.estimated1RM))} kg</strong>
           </span>
           <span className="text-[11px]">Toque nos pontos para detalhes</span>
         </div>

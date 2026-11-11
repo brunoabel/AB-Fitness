@@ -1,14 +1,17 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react';
+import { Skeleton, SkeletonList } from './components/ui/Skeleton';
 import { AnimatePresence } from 'motion/react';
 import Header from './components/Header';
 import WeeklyDashboard from './components/WeeklyDashboard';
-import ExerciseModal from './components/ExerciseModal';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
 import AuthScreen from './components/AuthScreen';
 import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
-import AppSplashScreen from './components/AppSplashScreen';
+import BootSequence, { BOOT_SEEN_KEY } from './components/boot/BootSequence';
+import CoachAvatar from './components/coach/CoachAvatar';
+import TrainModeSwitch from './components/TrainModeSwitch';
+import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
 import { 
@@ -22,45 +25,77 @@ import {
 import { WEEKLY_SCHEDULE } from './data/workouts';
 import { sound } from './utils/audio';
 import ABLogo from './components/ABLogo';
-import { Bot, Sparkles } from 'lucide-react';
+import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
+import Sidebar from './components/Sidebar';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
 const lazyImports = {
-  history: () => import('./components/HistoryView'),
+  history: () => import('./components/HistoryView'), // carregado dentro do Perfil
   running: () => import('./components/RunningHub'),
   custom: () => import('./components/CustomWorkoutsHub'),
   coach: () => import('./components/AICoachModal'),
   admin: () => import('./components/AdminDashboard'),
+  trainerHub: () => import('./components/trainer/TrainerHubView'),
+  linkTrainer: () => import('./components/trainer/LinkTrainerSheet'),
   manual: () => import('./components/AthleteManualModal'),
   onboarding: () => import('./components/onboarding/OnboardingCoach'),
-  workout: () => import('./components/ActiveWorkout')
+  social: () => import('./components/social/SocialHub'),
+  profile: () => import('./components/profile/ProfileView'),
+  workout: () => import('./components/ActiveWorkout'),
+  exerciseModal: () => import('./components/ExerciseModal')
 };
-const HistoryView = lazy(lazyImports.history);
 const RunningHub = lazy(lazyImports.running);
 const CustomWorkoutsHub = lazy(lazyImports.custom);
 const AICoachModal = lazy(lazyImports.coach);
 const AdminDashboard = lazy(lazyImports.admin);
+const TrainerHubView = lazy(lazyImports.trainerHub);
+const LinkTrainerSheet = lazy(lazyImports.linkTrainer);
 const AthleteManualModal = lazy(lazyImports.manual);
 const OnboardingCoach = lazy(lazyImports.onboarding);
+const SocialHub = lazy(lazyImports.social);
+const ProfileView = lazy(lazyImports.profile);
 const ActiveWorkout = lazy(lazyImports.workout);
+const ExerciseModal = lazy(lazyImports.exerciseModal);
 
 function TabFallback() {
   return (
-    <div className="flex items-center justify-center py-24" role="status" aria-label="A carregar">
-      <span className="w-6 h-6 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-zinc-100 animate-spin" />
+    <div className="max-w-md mx-auto w-full px-4 pt-6 space-y-4">
+      <Skeleton className="h-28 rounded-2xl" />
+      <SkeletonList rows={3} />
     </div>
   );
 }
 
 
 function AppContent() {
-  const { user, isGuest, loading } = useAuth();
-  const [showSplash, setShowSplash] = useState(true);
+  const { user, isGuest, loading, isTrainer } = useAuth();
+  // Abertura cinematográfica só na primeira abertura da sessão
+  const [showSplash, setShowSplash] = useState(() => {
+    try {
+      return !sessionStorage.getItem(BOOT_SEEN_KEY);
+    } catch {
+      return true;
+    }
+  });
+  const [bootJustEnded, setBootJustEnded] = useState(false);
+
+  // Fim da abertura: os cards do painel sobem em cascata com mola real (stiffness 300, damping 28)
+  useLayoutEffect(() => {
+    if (!bootJustEnded) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const cards = document.querySelectorAll('[data-boot-stagger] > *');
+    if (!cards.length) return;
+    animate(cards, { opacity: [0, 1], y: [24, 0] }, { type: 'spring', stiffness: 300, damping: 28, delay: stagger(0.06) });
+  }, [bootJustEnded]);
 
   const [schedule, setSchedule] = useState(() => getLocalCustomPlan() || WEEKLY_SCHEDULE);
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'active-workout'
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'custom-workouts' | 'running' | 'history'
+  // Link de atleta partilhado (?add=username) abre diretamente os Amigos
+  const [activeTab, setActiveTab] = useState(() => (new URLSearchParams(window.location.search).has('add') ? 'social' : 'dashboard')); // 'dashboard' | 'custom-workouts' | 'running' | 'history'
+  // Link de convite do PT (?trainer=CODE) abre a folha de vínculo já com o código preenchido
+  const [trainerCodeFromUrl] = useState(() => new URLSearchParams(window.location.search).get('trainer') || '');
+  const [showLinkTrainer, setShowLinkTrainer] = useState(() => Boolean(new URLSearchParams(window.location.search).get('trainer')));
   const [activeWorkout, setActiveWorkout] = useState(() => {
     const draft = getActiveDraft();
     if (draft && draft.workoutDayId !== undefined) {
@@ -160,7 +195,17 @@ function AppContent() {
     saveSoundPreference(val);
   };
 
+  // Modo do separador Treino: plano da semana ou treinos personalizados
+  const [trainMode, setTrainMode] = useState('plan');
+
   const handleTabChange = (tab) => {
+    // Destinos antigos: Criar vive agora dentro de Treino e o Histórico dentro do Perfil
+    if (tab === 'custom-workouts') {
+      setTrainMode('custom');
+      tab = 'dashboard';
+    } else if (tab === 'history') {
+      tab = 'profile';
+    }
     if (tab === 'guide') {
       setShowGuideModal(true);
     } else if (tab === 'admin') {
@@ -213,13 +258,20 @@ function AppContent() {
 
   // 1. Tela de Apresentação & Carregamento com Animação do Logo e Boas-Vindas
   if (showSplash) {
-    return <AppSplashScreen onFinish={() => setShowSplash(false)} />;
+    return (
+      <BootSequence
+        onFinish={() => {
+          setShowSplash(false);
+          setBootJustEnded(true);
+        }}
+      />
+    );
   }
 
   // 2. Aguarda autenticação caso a splash finalize antes do Supabase
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center select-none">
+      <div className="min-h-screen bg-app flex flex-col items-center justify-center p-6 text-center select-none">
         <ABLogo size={76} showText={true} />
       </div>
     );
@@ -231,11 +283,28 @@ function AppContent() {
   }
 
   // 3. Aplicação com Sessão Ativa (Dashboard & Treinos)
+  // Admin/Trainer Hub/Treino Ativo desenham o próprio layout de largura (max-w-5xl/6xl internos) —
+  // em desktop não ficam presos ao contentor max-w-5xl do painel principal, só o painel comum fica.
+  const isFullScreenView = currentView === 'active-workout' || currentView === 'admin' || currentView === 'trainer-hub';
   return (
-    <div className={`dark min-h-screen bg-[#f8f9fa] dark:bg-app text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white dark:selection:bg-zinc-200 dark:selection:text-black antialiased flex flex-col justify-between transition-colors duration-200`}>
+    <div className="dark min-h-screen bg-app text-zinc-100 font-sans selection:bg-zinc-200 selection:text-black antialiased flex flex-col justify-between transition-colors duration-200 lg:flex-row lg:justify-start">
+      <Sidebar
+        activeTab={activeTab}
+        currentView={currentView}
+        onTabChange={handleTabChange}
+        onOpenTrainerHub={() => {
+          setCurrentView('trainer-hub');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenAdmin={() => {
+          setCurrentView('admin');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenAICoach={() => setShowAICoachModal(true)}
+      />
       {/* Contentor Principal Adaptativo (Mobile até Desktop) */}
-      <div className="w-full max-w-5xl mx-auto min-h-screen bg-white dark:bg-surface sm:border-x border-zinc-200 dark:border-zinc-800/80 relative flex flex-col justify-between transition-colors duration-200">
-        
+      <div className={`w-full min-h-screen bg-surface relative flex flex-col justify-between transition-colors duration-200 lg:flex-1 lg:min-w-0 ${isFullScreenView ? '' : 'max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto sm:border-x border-zinc-800/80'}`}>
+
         {/* Visualização de Treino Ativo */}
         {currentView === 'active-workout' && activeWorkout ? (
           <Suspense fallback={<TabFallback />}>
@@ -253,6 +322,15 @@ function AppContent() {
               }}
             />
           </Suspense>
+        ) : currentView === 'trainer-hub' ? (
+          <Suspense fallback={<TabFallback />}>
+            <TrainerHubView
+              onBack={() => {
+                setCurrentView('dashboard');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </Suspense>
         ) : (
           /* Visualização do Painel Principal */
           <>
@@ -261,21 +339,17 @@ function AppContent() {
                 activeTab={activeTab}
                 currentView={currentView}
                 onNavigateTab={handleTabChange}
-                completedCount={completedDays.length}
-                onOpenGuide={() => setShowGuideModal(true)}
-                onOpenCustomize={() => setShowOnboardingModal(true)}
-                onOpenAICoach={() => setShowAICoachModal(true)}
-                onOpenAdmin={() => {
-                  setCurrentView('admin');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                soundEnabled={soundEnabled}
-                onToggleSound={handleToggleSound}
+                completedDays={completedDays}
+                schedule={schedule}
               />
 
               <InstallPrompt />
 
-              {activeTab === 'dashboard' && (
+              {activeTab === 'dashboard' && <AssignedProgramsCard onStartWorkout={handleStartWorkout} />}
+
+              {activeTab === 'dashboard' && <TrainModeSwitch mode={trainMode} onChange={setTrainMode} />}
+
+              {activeTab === 'dashboard' && trainMode === 'plan' && (
                 <WeeklyDashboard
                   completedDays={completedDays}
                   onStartWorkout={handleStartWorkout}
@@ -288,7 +362,7 @@ function AppContent() {
               )}
 
               <Suspense fallback={<TabFallback />}>
-                {activeTab === 'custom-workouts' && (
+                {activeTab === 'dashboard' && trainMode === 'custom' && (
                   <CustomWorkoutsHub
                     onStartWorkout={handleStartWorkout}
                     onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
@@ -300,9 +374,25 @@ function AppContent() {
                   <RunningHub isDark={isDark} />
                 )}
 
-                {activeTab === 'history' && (
-                  <HistoryView />
+                {activeTab === 'profile' && (
+                  <ProfileView
+                    onOpenGuide={() => setShowGuideModal(true)}
+                    onOpenCustomize={() => setShowOnboardingModal(true)}
+                    onOpenAICoach={() => setShowAICoachModal(true)}
+                    onOpenAdmin={() => {
+                      setCurrentView('admin');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    onOpenTrainerHub={() => {
+                      setCurrentView('trainer-hub');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    soundEnabled={soundEnabled}
+                    onToggleSound={handleToggleSound}
+                  />
                 )}
+
+                {activeTab === 'social' && <SocialHub onNavigateTab={handleTabChange} />}
               </Suspense>
 
               {/* Rodapé Institucional */}
@@ -321,13 +411,13 @@ function AppContent() {
                 sound.playTick();
                 setShowAICoachModal(true);
               }}
-              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 px-3.5 min-h-[44px] rounded-xl bg-surface/80 backdrop-blur-md text-zinc-100 font-semibold text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-surface-2/90 active:scale-95 transition-all cursor-pointer border border-white/10 select-none"
+              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 pl-1.5 pr-3.5 min-h-[44px] rounded-full bg-surface/80 backdrop-blur-md text-zinc-100 font-semibold text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-surface-2/90 active:scale-95 transition-all cursor-pointer border border-white/10 select-none lg:hidden"
               aria-label="Abrir AB Coach IA"
             >
-              <div className="relative flex items-center justify-center">
-                <Bot className="w-4 h-4 stroke-[2] text-accent" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full" />
-              </div>
+              <span className="relative flex">
+                <CoachAvatar size={32} alt="" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-surface" />
+              </span>
               <span className="tracking-tight text-xs font-semibold">
                 AB Coach
               </span>
@@ -338,13 +428,21 @@ function AppContent() {
         {/* Modal de Demonstração Biomecânica de Exercício */}
         <AnimatePresence>
           {selectedExerciseForModal && (
-            <ExerciseModal
-              key="exercise-modal"
-              exercise={selectedExerciseForModal}
-              onClose={() => setSelectedExerciseForModal(null)}
-            />
+            <Suspense key="exercise-modal" fallback={null}>
+              <ExerciseModal
+                exercise={selectedExerciseForModal}
+                onClose={() => setSelectedExerciseForModal(null)}
+              />
+            </Suspense>
           )}
         </AnimatePresence>
+
+        {/* Folha de vínculo ao PT a partir de um link de convite (?trainer=CODE) */}
+        {showLinkTrainer && !isTrainer && (
+          <Suspense fallback={null}>
+            <LinkTrainerSheet initialCode={trainerCodeFromUrl} onClose={() => setShowLinkTrainer(false)} />
+          </Suspense>
+        )}
 
         {/* Modal de Manuais do Atleta & Performance Especializados */}
         {showGuideModal && (
@@ -385,6 +483,7 @@ function AppContent() {
               onOpenAuth={() => {
                 // Se o usuário estiver em modo convidado e quiser autenticar
                 try {
+                  localStorage.removeItem('ab_fitness_guest_mode_v1');
                   localStorage.removeItem('ab_fitness_guest_mode');
                   window.location.reload();
                 } catch {}

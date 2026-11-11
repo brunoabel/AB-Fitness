@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Check, Flame, Trophy, Trash2 } from 'lucide-react';
+import { Check, Trophy, Trash2 } from 'lucide-react';
 import { SET_TYPES, SET_TYPE_ORDER, e1RM } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
 
@@ -107,7 +107,7 @@ export default function SetRow({
           spread: 55,
           startVelocity: 32,
           ticks: 120,
-          colors: ['#00f0ff', '#ffffff', '#5cf6ff'],
+          colors: ['#ffffff', '#ffffff', '#c9d3e6'],
           origin: {
             x: (rect.left + rect.width / 2) / window.innerWidth,
             y: (rect.top + rect.height / 2) / window.innerHeight
@@ -144,8 +144,8 @@ export default function SetRow({
     <div 
       className={`rounded-xl border transition-all duration-150 p-2 sm:p-2.5 ${
         isDone 
-          ? 'bg-accent/[0.07] border-accent/35 shadow-xs' 
-          : 'bg-zinc-50 dark:bg-surface border-zinc-200 dark:border-white/10'
+          ? 'bg-accent/[0.07] border-accent-hover shadow-xs' 
+          : 'bg-surface border-white/10'
       }`}
     >
       <div className="grid grid-cols-[2.5rem_1fr_1fr_3.5rem] sm:grid-cols-[2.75rem_4rem_1fr_1fr_3.5rem] items-center gap-1.5 sm:gap-2 min-h-[56px]">
@@ -157,7 +157,7 @@ export default function SetRow({
             disabled={isDone}
             className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums transition-transform active:scale-90 border cursor-pointer ${
               currentType === 'N'
-                ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                ? 'bg-zinc-800 text-zinc-300 border-zinc-700'
                 : currentType === 'W'
                   ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
                   : currentType === 'D'
@@ -169,7 +169,7 @@ export default function SetRow({
             {typeConfig.label || displayIndex}
           </button>
           
-          <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 mt-0.5 uppercase tracking-tighter truncate max-w-full">
+          <span className="text-[11px] font-semibold text-zinc-500 mt-0.5 uppercase tracking-tighter truncate max-w-full">
             {currentType === 'N' ? 'Série' : currentType === 'W' ? 'Aquec.' : currentType === 'D' ? 'Drop' : 'Falha'}
           </span>
         </div>
@@ -181,15 +181,15 @@ export default function SetRow({
           disabled={!prev || isDone}
           className={`hidden sm:flex flex-col items-center justify-center py-1 px-1 rounded-md text-center transition-colors cursor-pointer select-none ${
             prev && !isDone
-              ? 'hover:bg-zinc-200/60 dark:hover:bg-zinc-800/80 active:scale-95 text-zinc-500 dark:text-zinc-400' 
-              : 'text-zinc-400/60 dark:text-zinc-600 cursor-default'
+              ? 'hover:bg-zinc-800/80 active:scale-95 text-zinc-400' 
+              : 'text-zinc-600 cursor-default'
           }`}
           title={prev ? `Última vez: ${prev.weight}kg × ${prev.reps} reps. Toque para copiar.` : 'Sem registo anterior'}
         >
-          <span className="text-[11px] font-semibold uppercase tracking-wider block text-zinc-400 dark:text-zinc-500">
+          <span className="text-[11px] font-semibold uppercase tracking-wider block text-zinc-500">
             Anterior
           </span>
-          <span className="text-xs font-semibold tabular-nums text-zinc-600 dark:text-zinc-300">
+          <span className="text-xs font-semibold tabular-nums text-zinc-300">
             {prev ? `${prev.weight}×${prev.reps}` : '—'}
           </span>
         </button>
@@ -201,7 +201,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustWeight(-2.5)}
               disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
               title="-2.5 kg"
             >
               -
@@ -223,10 +223,10 @@ export default function SetRow({
                 aria-invalid={invalidShake || undefined}
                 className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
                   isDone
-                    ? 'bg-zinc-100 dark:bg-zinc-900 border-transparent text-zinc-500 dark:text-zinc-400'
+                    ? 'bg-zinc-900 border-transparent text-zinc-400'
                     : invalidShake
-                      ? 'bg-white dark:bg-zinc-900 border-red-500 ring-2 ring-red-500/60 text-zinc-950 dark:text-zinc-50'
-                      : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
+                      ? 'bg-zinc-900 border-red-500 ring-2 ring-red-500/60 text-zinc-50'
+                      : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
                 }`}
               />
               <span className="absolute right-1.5 top-3.5 text-[11px] font-semibold text-zinc-400 pointer-events-none">
@@ -237,7 +237,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustWeight(2.5)}
               disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
               title="+2.5 kg"
             >
               +
@@ -250,7 +250,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustWeight(-2.5)}
               aria-label="Diminuir 2,5 kg"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-700 dark:text-zinc-200 bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/60 dark:border-white/[0.06] active:scale-95 active:bg-zinc-300 dark:active:bg-zinc-700 transition-transform select-none touch-manipulation"
+              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
             >
               −2,5
             </button>
@@ -258,7 +258,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustWeight(2.5)}
               aria-label="Aumentar 2,5 kg"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-700 dark:text-zinc-200 bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/60 dark:border-white/[0.06] active:scale-95 active:bg-zinc-300 dark:active:bg-zinc-700 transition-transform select-none touch-manipulation"
+              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
             >
               +2,5
             </button>
@@ -272,7 +272,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustReps(-1)}
               disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
               title="-1 rep"
             >
               -
@@ -288,8 +288,8 @@ export default function SetRow({
                 disabled={isDone}
                 className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
                   isDone
-                    ? 'bg-zinc-100 dark:bg-zinc-900 border-transparent text-zinc-500 dark:text-zinc-400'
-                    : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
+                    ? 'bg-zinc-900 border-transparent text-zinc-400'
+                    : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
                 }`}
               />
             </div>
@@ -297,7 +297,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustReps(1)}
               disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
               title="+1 rep"
             >
               +
@@ -310,7 +310,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustReps(-1)}
               aria-label="Diminuir 1 repetição"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-700 dark:text-zinc-200 bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/60 dark:border-white/[0.06] active:scale-95 active:bg-zinc-300 dark:active:bg-zinc-700 transition-transform select-none touch-manipulation"
+              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
             >
               −1
             </button>
@@ -318,7 +318,7 @@ export default function SetRow({
               type="button"
               onClick={() => adjustReps(1)}
               aria-label="Aumentar 1 repetição"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-700 dark:text-zinc-200 bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/60 dark:border-white/[0.06] active:scale-95 active:bg-zinc-300 dark:active:bg-zinc-700 transition-transform select-none touch-manipulation"
+              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
             >
               +1
             </button>
@@ -334,8 +334,8 @@ export default function SetRow({
             aria-label={isDone ? 'Desmarcar série' : 'Concluir série e iniciar descanso'}
             className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all cursor-pointer active:scale-95 border select-none ${
               isDone
-                ? 'bg-accent text-zinc-950 border-accent shadow-sm font-black'
-                : 'bg-zinc-200/70 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700'
+                ? 'bg-accent text-white border-accent shadow-sm font-black'
+                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700'
             }`}
           >
             <Check className={`w-6 h-6 ${isDone ? 'stroke-[3.5]' : 'stroke-[2.2]'}`} />
@@ -344,24 +344,24 @@ export default function SetRow({
       </div>
 
       {/* Barra Inferior com PR / 1RM e Ações da Série */}
-      <div className="flex items-center justify-between mt-1 px-1 pt-1 border-t border-zinc-200/40 dark:border-zinc-800/60 text-[11px]">
+      <div className="flex items-center justify-between mt-1 px-1 pt-1 border-t border-zinc-800/60 text-[11px]">
         <div className="flex items-center gap-2 min-w-0">
           {/* Anterior (mobile): copia valores da última sessão */}
           {prev && !isDone && (
             <button
               type="button"
               onClick={applyPreviousValues}
-              className="sm:hidden flex items-center gap-1 min-h-[44px] px-2 -ml-1 rounded-md text-zinc-500 dark:text-zinc-400 active:bg-zinc-200/60 dark:active:bg-zinc-800/80 tabular-nums select-none touch-manipulation"
+              className="sm:hidden flex items-center gap-1 min-h-[44px] px-2 -ml-1 rounded-md text-zinc-400 active:bg-zinc-800/80 tabular-nums select-none touch-manipulation"
               aria-label={`Copiar última vez: ${prev.weight} kg por ${prev.reps} repetições`}
             >
               <span className="uppercase tracking-wider font-semibold">Ant.</span>
-              <strong className="text-zinc-700 dark:text-zinc-200 font-semibold">{prev.weight}×{prev.reps}</strong>
+              <strong className="text-zinc-200 font-semibold">{prev.weight}×{prev.reps}</strong>
             </button>
           )}
 
           {/* Badge de Novo PR */}
           {isPR && (
-            <span className="flex items-center gap-1 font-bold text-accent bg-accent/15 px-1.5 py-0.5 rounded border border-accent/30 uppercase tracking-wider motion-safe:animate-[pulse_1s_ease-in-out_3]">
+            <span className="flex items-center gap-1 font-bold text-white bg-accent/70 px-1.5 py-0.5 rounded border border-accent-hover uppercase tracking-wider motion-safe:animate-[pulse_1s_ease-in-out_3]">
               <Trophy className="w-3 h-3 stroke-[2.5]" />
               <span>Novo PR</span>
             </span>
@@ -369,8 +369,8 @@ export default function SetRow({
 
           {/* e1RM Estimado */}
           {currentE1RM && (
-            <span className="text-zinc-500 dark:text-zinc-400 font-medium tabular-nums">
-              1RM est.: <strong className="text-zinc-800 dark:text-zinc-200 font-semibold">{currentE1RM} kg</strong>
+            <span className="text-zinc-400 font-medium tabular-nums">
+              1RM est.: <strong className="text-zinc-200 font-semibold">{currentE1RM} kg</strong>
             </span>
           )}
         </div>
@@ -380,7 +380,7 @@ export default function SetRow({
           <button
             type="button"
             onClick={onRemove}
-            className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 p-1 flex items-center gap-1 transition-colors cursor-pointer"
+            className="text-zinc-500 hover:text-red-400 p-1 flex items-center gap-1 transition-colors cursor-pointer"
             title="Eliminar série"
           >
             <Trash2 className="w-3 h-3 stroke-[1.8]" />

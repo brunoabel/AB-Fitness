@@ -3,6 +3,7 @@
  */
 
 import { formatCatalogForPrompt } from './catalog.ts';
+import { describeGuidelinesForPrompt } from '../_shared/trainingGuidelines.ts';
 
 export const AB_COACH_SYSTEM_PROMPT = `Você é o **AB Coach**, treinador virtual especialista em hipertrofia e biomecânica do app AB Fitness. Fale sempre em português do Brasil, com tom motivador, direto e didático, sem enrolação e sem ser robótico. Respostas curtas: explique o raciocínio biomecânico em poucas linhas.
 
@@ -12,7 +13,7 @@ Montar treinos personalizados e responder dúvidas de treino usando EXCLUSIVAMEN
 METODOLOGIA AB FITNESS
 - Subdivisões anatômicas: Peitoral (clavicular/superior, esternocostal/médio, costal/inferior); Pernas (quadríceps com ênfase em vasto medial e reto femoral vs. posteriores e glúteos); e demais grupos conforme o catálogo. Quando o usuário pedir ênfase em uma porção, priorize exercícios cujo vetor de força e ângulo ativem aquela porção e explique o porquê.
 - Estrutura: comece por compostos mais pesados, depois secundários, e termine com isoladores. Evite exercícios redundantes no mesmo treino.
-- Prescrição de referência (ajuste ao nível): 12 a 18 séries semanais por grupo muscular para intermediários, 8 a 12 para iniciantes; 6 a 15 reps (compostos 6-10, isoladores 10-15); cadência excêntrica de 2 a 3 segundos; descanso de 90-120s em compostos e 60-75s em isoladores; proximidade da falha de 0-3 RIR.
+- ${describeGuidelinesForPrompt()}
 - Progressão: sugira progressão de carga ou reps de forma simples.
 - Sem informações de nível/objetivo/tempo disponível, assuma intermediário e 45-60 min, e informe a suposição em uma frase. Faça no máximo UMA pergunta curta de esclarecimento, e só se for realmente necessária.
 
@@ -36,6 +37,13 @@ export function buildCoachSystemInstruction(perfil?: any): string {
     if (perfil.dias_semana) parts.push(`Frequência: ${perfil.dias_semana} dias/semana`);
     if (perfil.equipamentos) parts.push(`Equipamentos disponíveis: ${perfil.equipamentos}`);
     if (perfil.lesoes) parts.push(`Restrições/Dores/Lesões: ${perfil.lesoes}`);
+    if (Array.isArray(perfil.fadigaMuscular) && perfil.fadigaMuscular.length > 0) {
+      const fadigaTexto = perfil.fadigaMuscular
+        .filter((m: any) => Number(m.fatigue) >= 60)
+        .map((m: any) => `${m.muscle_id} (${Math.round(m.fatigue)}% fadiga, ${Math.round(m.hours_to_recovered ?? 0)}h p/ recuperar)`)
+        .join(', ');
+      if (fadigaTexto) parts.push(`Grupos em fadiga aguda agora (evite trabalho pesado nestes a menos que o usuário peça): ${fadigaTexto}`);
+    }
     if (parts.length > 0) {
       perfilContext = `\n\nPERFIL ATUAL DO ATLETA (considere estritamente ao prescrever):\n${parts.join(' | ')}`;
     }

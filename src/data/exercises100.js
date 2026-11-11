@@ -380,6 +380,55 @@ export const MUSCLE_GROUPS = Object.keys(EXERCISES_BY_GROUP);
 export const ALL_EXERCISES = EXERCISES_100;
 export const EXERCISES_DATABASE = EXERCISES_100;
 
+// Apelidos históricos e chaves usadas nos planos/geradores -> slug canônico em EXERCISES_100
+export const EXERCISE_SLUG_ALIASES = {
+  'incline-dumbbell-soccer': 'supino-inclinado-halteres',
+  'crucifixo-reto-cabos': 'crossover-polia-alta',
+  'puxada-alta-soccer': 'puxada-frontal-aberta',
+  'remada-serrote-soccer': 'remada-unilateral-serrote',
+  'remada-baixa-triangulo': 'remada-baixa-cabo',
+  'desenvolvimento-halteres': 'desenvolvimento-com-halteres',
+  'desenvolvimento-militar-halteres': 'desenvolvimento-com-halteres',
+  'elevacao-lateral-speed': 'elevacao-lateral-halteres',
+  'face-pull-corda': 'face-pull',
+  'rosca-w-soccer': 'rosca-21-barra-w',
+  'rosca-direta-barra-w': 'rosca-21-barra-w',
+  'rosca-martelo-soccer': 'rosca-martelo-halteres',
+  'triceps-corda-soccer': 'triceps-corda',
+  'triceps-corda-polia': 'triceps-corda',
+  'triceps-pulley-corda': 'triceps-corda',
+  'triceps-frances-soccer': 'triceps-frances-halter',
+  'triceps-frances-halteres': 'triceps-frances-halter',
+  'agachamento-livre-barra': 'agachamento-livre',
+  'agachamento-livre-ou-goblet': 'agachamento-taca-goblet-squat',
+  'agachamento-goblet': 'agachamento-taca-goblet-squat',
+  'bulgaro-soccer': 'agachamento-bulgaro',
+  'stiff-romeno-halteres': 'stiff-com-halteres',
+  'stiff-halteres': 'stiff-com-halteres',
+  'stiff-barra': 'stiff-com-barra',
+  'rdl-halteres': 'terra-romeno-rdl-halteres',
+  'elevacao-pelvica-soccer': 'elevacao-pelvica-hip-thrust',
+  'elevacao-pelvica-barra': 'elevacao-pelvica-hip-thrust',
+  'elevacao-pelvica-quadril': 'elevacao-pelvica-hip-thrust',
+  'panturrilha-explosiva': 'gemeos-em-pe-maquina',
+  'panturrilha-em-pe-maquina': 'gemeos-em-pe-maquina',
+  'panturrilha-em-pe': 'gemeos-step-halteres',
+  'panturrilha-sentado': 'gemeos-sentado',
+  'panturrilha-sentado-gemeos': 'gemeos-sentado',
+  'copenhague-leves': 'prancha-copenhagen-adutores',
+  'adutor-copenhagen': 'prancha-copenhagen-adutores',
+  'aducao-copenhague': 'prancha-copenhagen-adutores',
+  'abdominal-crunch-chute': 'crunch-abdominal-classico',
+  'crunch-solo': 'crunch-abdominal-classico',
+  'abdominal-polia-rope-crunch': 'crunch-polia',
+  'prancha-frontal-ativa': 'prancha-isometrica',
+  'prancha-abdominal-frontal': 'prancha-isometrica',
+  'prancha-rotacional': 'prancha-lateral-solo',
+  'mobilidade-9090-soccer': 'mobilidade-quadril-9090-transicao',
+  'mobilidade-quadril-90-90': 'mobilidade-quadril-9090-transicao',
+  'alongamento-isquiotibiais-dinamico': 'alongamento-dinamico-isquiotibiais'
+};
+
 /**
  * Busca um exercício pelo seu ID numérico, slug ou correspondência aproximada de nome
  */
@@ -399,15 +448,22 @@ export function findExerciseIn100(idOrNameOrSlug) {
     return EXERCISES_100.find(e => e.id === num) || null;
   }
 
-  // 3. Por slug exato
+  // 3. Por alias explícito -> slug canônico
+  const aliasedSlug = EXERCISE_SLUG_ALIASES[str];
+  if (aliasedSlug) {
+    const byAlias = EXERCISES_100.find(e => e.slug === aliasedSlug);
+    if (byAlias) return byAlias;
+  }
+
+  // 4. Por slug exato
   const bySlug = EXERCISES_100.find(e => e.slug === str);
   if (bySlug) return bySlug;
 
-  // 4. Por correspondência de nome exato
+  // 5. Por correspondência de nome exato
   const byName = EXERCISES_100.find(e => e.nome.toLowerCase() === str);
   if (byName) return byName;
 
-  // 5. Por inclusão de substring
+  // 6. Por inclusão de substring
   return EXERCISES_100.find(e => 
     e.nome.toLowerCase().includes(str) || 
     str.includes(e.nome.toLowerCase()) ||

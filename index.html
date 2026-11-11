@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="pt" class="dark" style="background:#050608;color-scheme:dark">
+<html lang="pt" class="dark" style="background:#000000;color-scheme:dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
     <!-- PWA & Mobile Web App Meta Tags -->
-    <meta name="theme-color" content="#050608" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="AB Fitness" />
@@ -14,13 +15,120 @@
     <meta name="format-detection" content="telephone=no" />
     
     
-    <title>AB Fitness — Gestão & Performance de Treinos</title>
+    <title>AB Fitness: treino, corrida e recuperação muscular</title>
+    <meta name="description" content="Registe treinos de musculação e corrida, acompanhe a sobrecarga progressiva e veja o mapa de recuperação muscular. Com AB Coach, assistente de IA, e planos de prevenção de lesões." />
+    <meta name="keywords" content="app de treino, musculação, hipertrofia, sobrecarga progressiva, registo de treino, corrida GPS, mapa de recuperação muscular, prevenção de lesões, alongamentos, AB Fitness" />
+    <meta name="author" content="ABEX Studio" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://ba-fitness.vercel.app/" />
+    <link rel="alternate" hreflang="pt-PT" href="https://ba-fitness.vercel.app/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://ba-fitness.vercel.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://ba-fitness.vercel.app/" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AB Fitness" />
+    <meta property="og:locale" content="pt_PT" />
+    <meta property="og:locale:alternate" content="pt_BR" />
+    <meta property="og:url" content="https://ba-fitness.vercel.app/" />
+    <meta property="og:title" content="AB Fitness: treino, corrida e recuperação muscular" />
+    <meta property="og:description" content="Cargas, sobrecarga progressiva, corrida com GPS e mapa de recuperação muscular, com o AB Coach ao seu lado." />
+    <meta property="og:image" content="https://ba-fitness.vercel.app/coach/ab-coach-wide.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AB Coach, o assistente do AB Fitness" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AB Fitness: treino, corrida e recuperação muscular" />
+    <meta name="twitter:description" content="Cargas, sobrecarga progressiva, corrida com GPS e mapa de recuperação muscular, com o AB Coach ao seu lado." />
+    <meta name="twitter:image" content="https://ba-fitness.vercel.app/coach/ab-coach-wide.jpg" />
+
+    <!-- Dados estruturados (Schema.org) -->
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://ba-fitness.vercel.app/#organization",
+      "name": "ABEX Studio",
+      "url": "https://ba-fitness.vercel.app/",
+      "logo": "https://ba-fitness.vercel.app/ab-logo.png",
+      "founder": {
+        "@type": "Person",
+        "name": "Bruno Abel"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua das Mimosas, n.º 115, 1.º Esquerdo, São Cosme",
+        "addressLocality": "Gondomar",
+        "addressRegion": "Porto",
+        "postalCode": "4420-204",
+        "addressCountry": "PT"
+      },
+      "vatID": "PT297261983",
+      "taxID": "297261983",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "brunoaaraujo2005@gmail.com",
+        "availableLanguage": [
+          "pt-PT",
+          "pt-BR"
+        ]
+      }
+    },
+    {
+      "@type": [
+        "WebApplication",
+        "MobileApplication"
+      ],
+      "@id": "https://ba-fitness.vercel.app/#app",
+      "name": "AB Fitness",
+      "url": "https://ba-fitness.vercel.app/",
+      "description": "Aplicação de treino de musculação, corrida e recuperação muscular: registo de cargas, sobrecarga progressiva, mapa de recuperação muscular, prevenção de lesões e AB Coach, assistente de IA.",
+      "applicationCategory": "HealthApplication",
+      "applicationSubCategory": "Fitness",
+      "operatingSystem": "Web, Android, iOS (PWA instalável)",
+      "inLanguage": [
+        "pt-PT",
+        "pt-BR"
+      ],
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "Registo de treinos, cargas e repetições",
+        "Sobrecarga progressiva e recordes pessoais",
+        "Mapa de Recuperação Muscular",
+        "Alongamentos e prevenção de lesões",
+        "Corrida com percurso GPS",
+        "AB Coach, assistente de inteligência artificial",
+        "Amigos e comparação de resultados"
+      ],
+      "screenshot": [
+        "https://ba-fitness.vercel.app/screens/1-dashboard.png",
+        "https://ba-fitness.vercel.app/screens/3-workout.png",
+        "https://ba-fitness.vercel.app/screens/4-running.png"
+      ],
+      "publisher": {
+        "@id": "https://ba-fitness.vercel.app/#organization"
+      },
+      "author": {
+        "@id": "https://ba-fitness.vercel.app/#organization"
+      }
+    }
+  ]
+}
+    </script>
     
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/pwa-icon.svg" />
-    <link rel="apple-touch-icon" href="/pwa-icon.svg" />
-    <link rel="apple-touch-startup-image" href="/pwa-icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     
     <!-- Google Fonts: Barlow Condensed (Display/Números) + Inter (Corpo) + Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +137,7 @@
   </head>
   <body class="antialiased selection:bg-zinc-800 selection:text-white dark:selection:bg-zinc-200 dark:selection:text-black">
     <div id="root"></div>
+    <noscript>AB Fitness precisa de JavaScript para funcionar. Termos, privacidade e aviso médico estão em /termos, /privacidade e /aviso-medico.</noscript>
     <script type="module" src="/src/main.jsx"></script>
     <script>
       // Registro do Service Worker para suporte PWA e offline

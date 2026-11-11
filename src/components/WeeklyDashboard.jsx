@@ -11,14 +11,16 @@ import {
   ListPlus, 
   Plus,
   Target,
-  BookOpen
+  BookOpen,
+  Check
 } from 'lucide-react';
+import { weekProgress } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
 import { ATHLETE_MANUALS } from '../data/athleteManuals';
 import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 import MuscleRecoveryMap from './MuscleRecoveryMap';
-import { hasExerciseVideo as hasVerifiedExerciseVideo } from '../data/exerciseMedia';
+import { useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
 
 
 export default function WeeklyDashboard({ 
@@ -31,6 +33,8 @@ export default function WeeklyDashboard({
   schedule = WEEKLY_SCHEDULE
 }) {
   // Dia atual da semana (0 = Dom, 1 = Seg, ..., 6 = Sáb)
+  // Catálogo de vídeos carregado em segundo plano (fora do bundle inicial)
+  const hasVerifiedExerciseVideo = useHasExerciseVideo();
   const [currentJsDay] = useState(() => new Date().getDay());
   const [selectedDayId, setSelectedDayId] = useState(() => new Date().getDay());
 
@@ -41,35 +45,13 @@ export default function WeeklyDashboard({
 
   // Verificação de conclusão
   const isSelectedDayCompleted = completedDays.some((c) => (c?.dayId ?? c) === selectedDayId);
-  const completedCount = completedDays.length;
-  const weeklyProgressPercent = Math.min(100, Math.round((completedCount / 4) * 100));
+  // Mesma regra do header: treinos desta semana vs. dias de treino do plano
+  const { done: completedCount, target: weeklyTarget } = weekProgress(completedDays, schedule);
+  const weeklyProgressPercent = Math.min(100, Math.round((completedCount / weeklyTarget) * 100));
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fadeIn transition-colors">
+    <div data-boot-stagger className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-4 pb-6 space-y-6 transition-colors">
       
-      {/* Controlo de Segmento: Cronograma vs Criação de Treino */}
-      <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-1 border border-zinc-200 dark:border-zinc-700/60 text-xs font-semibold">
-        <button
-          type="button"
-          className="flex-1 py-2 px-3 rounded-lg bg-white dark:bg-surface text-zinc-950 dark:text-zinc-50 shadow-xs flex items-center justify-center gap-2 cursor-default font-semibold border border-zinc-200/80 dark:border-zinc-700/60"
-        >
-          <Calendar className="w-3.5 h-3.5 text-zinc-900 dark:text-zinc-100 stroke-[2]" />
-          <span>Cronograma Semanal</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            if (onNavigateTab) onNavigateTab('custom-workouts');
-            triggerHaptic(10);
-          }}
-          className="flex-1 py-2 px-3 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 flex items-center justify-center gap-2 transition-all cursor-pointer font-medium"
-        >
-          <ListPlus className="w-3.5 h-3.5 stroke-[1.8]" />
-          <span>Planear Treino Personalizado</span>
-        </button>
-      </div>
-
       {/* Grelha Adaptável: No tablet/desktop divide em 2 colunas ergonómicas */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         
@@ -77,9 +59,9 @@ export default function WeeklyDashboard({
         <div className="md:col-span-5 space-y-6">
           
           {/* Cartão de Performance Semanal */}
-          <div className="p-5 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-white/10 transition-colors shadow-xs">
+          <div className="p-5 rounded-xl bg-surface border border-white/10 transition-colors shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                 Desempenho Semanal
               </span>
 
@@ -89,7 +71,7 @@ export default function WeeklyDashboard({
                     if (onNavigateTab) onNavigateTab('custom-workouts');
                     triggerHaptic(15);
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-zinc-950 hover:bg-zinc-800 dark:bg-accent dark:text-app dark:hover:bg-accent-hover px-2.5 py-1.5 rounded-lg border border-zinc-800 dark:border-zinc-200 shadow-xs active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-primary text-app hover:bg-primary-hover px-2.5 py-1.5 rounded-lg border border-zinc-200 shadow-xs active:scale-95 transition-all cursor-pointer"
                   title="Criar novo plano de treino"
                 >
                   <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -99,7 +81,7 @@ export default function WeeklyDashboard({
                 {onOpenCustomize && (
                   <button
                     onClick={onOpenCustomize}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700/60 active:scale-95 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700 px-2 py-1.5 rounded-lg border border-zinc-700/60 active:scale-95 transition-all cursor-pointer"
                     title="Ajustar metas com IA"
                   >
                     <Target className="w-3 h-3 text-zinc-500 stroke-[2]" />
@@ -109,29 +91,29 @@ export default function WeeklyDashboard({
               </div>
             </div>
 
-            <h1 className="text-lg font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-snug">
+            <h1 className="font-heading text-title-xl font-bold text-zinc-50 tracking-tight">
               Sobrecarga Progressiva
             </h1>
 
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
+            <p className="text-body text-zinc-400 mt-1.5">
               Regista séries, ajusta cargas com rigor biomecânico e consolida a evolução semana a semana.
             </p>
 
             {/* Progresso Semanal com Numerais Tabulares */}
-            <div className="mt-4 pt-3.5 border-t border-zinc-100 dark:border-white/10 flex items-center justify-between text-xs">
+            <div className="mt-4 pt-3.5 border-t border-white/10 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-zinc-600 dark:text-zinc-400">Meta Semanal:</span>
-                <span className="font-semibold text-zinc-950 dark:text-zinc-50 tabular-nums">
-                  {completedCount} de 4 treinos efetuados
+                <span className="font-medium text-zinc-400">Meta Semanal:</span>
+                <span className="font-semibold text-zinc-50 tabular-nums">
+                  {completedCount} de {weeklyTarget} treinos efetuados
                 </span>
               </div>
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 tabular-nums">
+              <span className="text-xs font-semibold text-zinc-300 tabular-nums">
                 {weeklyProgressPercent}%
               </span>
             </div>
-            <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mt-2">
+            <div className="w-full bg-white/[0.06] h-1.5 rounded-full overflow-hidden mt-2">
               <div 
-                className="bg-zinc-950 dark:bg-accent h-full rounded-full transition-all duration-300"
+                className="bg-white h-full rounded-full transition-all duration-300"
                 style={{ width: `${weeklyProgressPercent}%` }}
               />
             </div>
@@ -140,11 +122,13 @@ export default function WeeklyDashboard({
           {/* Seletor Semanal de 7 Dias */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 stroke-[1.8]" />
+              <h2 className="font-heading text-section font-semibold text-zinc-100 flex items-center gap-2.5">
+                <span className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300">
+                  <Calendar className="w-[18px] h-[18px]" strokeWidth={1.75} />
+                </span>
                 <span>Dias da Semana</span>
               </h2>
-              <span className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">
+              <span className="text-micro uppercase tracking-wider text-zinc-400 font-medium">
                 {currentJsDay === selectedDayId ? 'Hoje' : 'Dia selecionado'}
               </span>
             </div>
@@ -165,34 +149,34 @@ export default function WeeklyDashboard({
                     }}
                     className={`py-2.5 px-1 rounded-xl flex flex-col items-center justify-between transition-all active:scale-95 border cursor-pointer min-h-[58px] ${
                       isSelected
-                        ? 'bg-zinc-950 text-white dark:bg-accent dark:text-app border-zinc-950 dark:border-accent font-semibold shadow-xs'
+                        ? 'bg-accent text-white border-accent font-semibold shadow-xs'
                         : isToday
-                          ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-100'
-                          : 'bg-white dark:bg-surface border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700'
+                          ? 'bg-zinc-800 border-zinc-700 text-zinc-100'
+                          : 'bg-surface border-white/10 text-zinc-400 hover:border-zinc-700'
                     }`}
                   >
                     <span className={`text-[11px] font-semibold uppercase tracking-tight ${
-                      isSelected ? 'text-white dark:text-zinc-950' : isToday ? 'text-zinc-950 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500'
+                      isSelected ? 'text-zinc-950' : isToday ? 'text-zinc-100' : 'text-zinc-500'
                     }`}>
                       {day.shortName}
                     </span>
 
                     <div className="my-1">
                       {isDone ? (
-                        <CheckCircle2 className={`w-4 h-4 stroke-[2.2] ${isSelected ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600 dark:text-emerald-400'}`} />
+                        <CheckCircle2 className={`w-4 h-4 stroke-[2.2] ${isSelected ? 'text-emerald-600' : 'text-emerald-400'}`} />
                       ) : day.isRestDay ? (
-                        <Coffee className={`w-3.5 h-3.5 stroke-[1.8] ${isSelected ? 'text-white/80 dark:text-zinc-900/80' : 'text-zinc-400'}`} />
+                        <Coffee className={`w-3.5 h-3.5 stroke-[1.8] ${isSelected ? 'text-zinc-900/80' : 'text-zinc-400'}`} />
                       ) : (
-                        <Dumbbell className={`w-3.5 h-3.5 stroke-[1.8] ${isSelected ? 'text-white/80 dark:text-zinc-900/80' : 'text-zinc-400'}`} />
+                        <Dumbbell className={`w-3.5 h-3.5 stroke-[1.8] ${isSelected ? 'text-zinc-900/80' : 'text-zinc-400'}`} />
                       )}
                     </div>
 
                     <div className="h-1.5 flex items-center justify-center">
                       {isToday && !isSelected && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950 dark:bg-accent" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
                       )}
                       {isSelected && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-zinc-950" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-950" />
                       )}
                     </div>
                   </button>
@@ -202,7 +186,7 @@ export default function WeeklyDashboard({
 
             {/* Aviso Sóbrio se for Dia de Descanso */}
             {selectedWorkout.isRestDay && (
-              <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 flex items-center justify-between text-xs text-zinc-700 dark:text-zinc-300">
+              <div className="p-3 rounded-xl bg-zinc-800/60 border border-zinc-700/60 flex items-center justify-between text-xs text-zinc-300">
                 <span className="font-normal flex items-center gap-2">
                   <Coffee className="w-4 h-4 text-zinc-500 shrink-0 stroke-[1.8]" />
                   <span><b>{selectedWorkout.name}</b> é dia de recuperação.</span>
@@ -214,7 +198,7 @@ export default function WeeklyDashboard({
                       setSelectedDayId(nextWorkoutDay.dayId);
                       triggerHaptic(10);
                     }}
-                    className="text-[11px] font-semibold text-zinc-950 dark:text-zinc-100 underline shrink-0 hover:opacity-80 cursor-pointer"
+                    className="text-[11px] font-semibold text-zinc-100 underline shrink-0 hover:opacity-80 cursor-pointer"
                   >
                     Ver {nextWorkoutDay.shortName} →
                   </button>
@@ -232,17 +216,17 @@ export default function WeeklyDashboard({
             return (
               <div 
                 onClick={onOpenGuide}
-                className="p-4 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-white/10 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer flex items-center justify-between shadow-xs"
+                className="p-4 rounded-xl bg-surface border border-white/10 hover:border-zinc-700 transition-all cursor-pointer flex items-center justify-between shadow-xs"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center font-bold border border-zinc-200 dark:border-zinc-700/60 shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-zinc-800 text-zinc-200 flex items-center justify-center font-bold border border-zinc-700/60 shrink-0">
                     <BookOpen className="w-4 h-4 stroke-[1.8]" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                    <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
                       {currentManual.tag}
                     </span>
-                    <h4 className="text-xs font-semibold text-zinc-950 dark:text-zinc-100 mt-0.5">
+                    <h4 className="text-xs font-semibold text-zinc-100 mt-0.5">
                       {currentManual.title}
                     </h4>
                   </div>
@@ -256,42 +240,42 @@ export default function WeeklyDashboard({
 
         {/* COLUNA DIREITA: Detalhes do Treino do Dia Selecionado */}
         <div className="md:col-span-7">
-          <div className="rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-white/10 overflow-hidden transition-colors shadow-xs">
+          <div className="rounded-xl bg-surface border border-white/10 overflow-hidden transition-colors shadow-xs">
             {/* Topo com Título do Treino */}
-            <div className="p-5 border-b border-zinc-100 dark:border-white/10 bg-zinc-50/60 dark:bg-surface-2/50 flex items-start justify-between">
+            <div className="p-5 border-b border-white/10 bg-surface-2/50 flex items-start justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold text-[11px] uppercase tracking-wider border border-zinc-200 dark:border-zinc-700/60">
+                  <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-100 font-semibold text-[11px] uppercase tracking-wider border border-zinc-700/60">
                     {selectedWorkout.name}
                   </span>
                   {selectedWorkout.badge && (
-                    <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium text-[11px] border border-zinc-200 dark:border-zinc-700/60">
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-medium text-[11px] border border-zinc-700/60">
                       {selectedWorkout.badge}
                     </span>
                   )}
                   {currentJsDay === selectedWorkout.dayId && (
-                    <span className="px-2 py-0.5 rounded-md bg-zinc-950 text-white dark:bg-accent dark:text-app font-semibold text-[11px]">
+                    <span className="px-2 py-0.5 rounded-md bg-primary text-app font-semibold text-[11px]">
                       Hoje
                     </span>
                   )}
                   {isSelectedDayCompleted && (
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-semibold text-[11px] border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1">
-                      ✓ Efetuado
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-950/40 text-emerald-400 font-semibold text-[11px] border border-emerald-800/60 flex items-center gap-1">
+                      <Check className="w-3 h-3" strokeWidth={2.5} /> Efetuado
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-xl font-bold text-zinc-950 dark:text-zinc-50 leading-tight">
+                <h3 className="font-heading text-title-xl font-bold text-zinc-50 tracking-tight">
                   {selectedWorkout.title}
                 </h3>
 
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">
+                <p className="text-xs text-zinc-400 font-medium mt-1">
                   {selectedWorkout.focus}
                 </p>
               </div>
 
               {!selectedWorkout.isRestDay && (
-                <div className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-semibold tabular-nums shrink-0">
+                <div className="flex items-center gap-1.5 text-zinc-300 bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-700 text-xs font-semibold tabular-nums shrink-0">
                   <Clock className="w-3.5 h-3.5 text-zinc-500 stroke-[1.8]" />
                   <span>{selectedWorkout.duration}</span>
                 </div>
@@ -300,33 +284,35 @@ export default function WeeklyDashboard({
 
             {/* Descrição & Conteúdo */}
             <div className="p-5 space-y-5">
-              <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed font-normal">
+              <p className="text-xs text-zinc-300 leading-relaxed font-normal">
                 {selectedWorkout.description}
               </p>
 
               {/* Se for Dia de Descanso */}
               {selectedWorkout.isRestDay ? (
-                <div className="p-6 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/60 text-center space-y-4">
-                  <div className="w-11 h-11 rounded-xl bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center mx-auto border border-zinc-200 dark:border-zinc-700">
-                    <Coffee className="w-5 h-5 stroke-[1.8]" />
+                <div className="rounded-xl bg-app border border-white/[0.08] text-center overflow-hidden">
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <img src="/coach/ab-coach-rest.jpg" alt="AB Coach a lembrar-te de beber água" width={800} height={447} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover object-[45%_30%]" />
+                    <div aria-hidden className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-app to-transparent" />
                   </div>
+                  <div className="px-6 pb-6 space-y-4">
                   <div>
-                    <h4 className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
-                      Dia de Regeneração Neural e Muscular
+                    <h4 className="font-heading text-section font-semibold text-white">
+                      Hoje o treino é recuperar
                     </h4>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed mt-1">
-                      A síntese proteica e a adaptação neuromuscular ocorrem prioritariamente na fase de repouso e nutrição.
+                    <p className="text-body text-zinc-400 max-w-sm mx-auto mt-1">
+                      O músculo cresce no descanso. Dorme bem, come proteína e não te esqueças de beber água ao longo do dia.
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-zinc-200/80 dark:border-zinc-700/60 space-y-2">
+                  <div className="pt-2 border-t border-zinc-700/60 space-y-2">
                     {nextWorkoutDay && nextWorkoutDay.dayId !== selectedWorkout.dayId && (
                       <button
                         onClick={() => {
                           setSelectedDayId(nextWorkoutDay.dayId);
                           triggerHaptic(15);
                         }}
-                        className="w-full py-2.5 px-4 rounded-lg bg-zinc-950 hover:bg-zinc-800 dark:bg-accent dark:text-app dark:hover:bg-accent-hover text-white text-xs font-semibold flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer"
+                        className="w-full py-2.5 px-4 rounded-lg bg-primary text-app hover:bg-primary-hover text-xs font-semibold flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer"
                       >
                         <Play className="w-3.5 h-3.5 fill-current" />
                         <span>Antecipar {nextWorkoutDay.name}: {nextWorkoutDay.title} ({nextWorkoutDay.exercises?.length || 0} exercícios)</span>
@@ -338,18 +324,19 @@ export default function WeeklyDashboard({
                         if (onNavigateTab) onNavigateTab('custom-workouts');
                         triggerHaptic(10);
                       }}
-                      className="w-full py-2.5 px-4 rounded-lg bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs font-semibold text-zinc-200 flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       <ListPlus className="w-3.5 h-3.5 stroke-[1.8]" />
                       <span>Iniciar Treino Personalizado</span>
                     </button>
+                  </div>
                   </div>
                 </div>
               ) : (
                 <>
                   {/* Lista de Exercícios Prescritos */}
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-wider px-1">
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 font-semibold uppercase tracking-wider px-1">
                       <span>Exercícios ({selectedWorkout.exercises.length})</span>
                       <span>Séries & Carga</span>
                     </div>
@@ -359,25 +346,25 @@ export default function WeeklyDashboard({
                         <div
                           key={ex.id}
                           onClick={() => onViewExercise(ex)}
-                          className="p-3 rounded-lg bg-zinc-50 dark:bg-surface-2/80 hover:bg-zinc-100 dark:hover:bg-surface-3 border border-zinc-200 dark:border-zinc-800/80 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                          className="p-3 rounded-lg bg-surface-2/80 hover:bg-surface-3 border border-zinc-800/80 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-md bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-semibold text-xs flex items-center justify-center border border-zinc-200 dark:border-zinc-700 tabular-nums shrink-0">
+                            <div className="w-6 h-6 rounded-md bg-zinc-800 text-zinc-200 font-semibold text-xs flex items-center justify-center border border-zinc-700 tabular-nums shrink-0">
                               {index + 1}
                             </div>
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <h5 className="text-xs font-semibold text-zinc-950 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
+                                <h5 className="text-xs font-semibold text-zinc-100 group-hover:text-white transition-colors">
                                   {ex.name}
                                 </h5>
                                 {hasVerifiedExerciseVideo(ex) && (
-                                  <span className="px-1.5 py-0.5 rounded text-[11px] font-bold uppercase bg-accent/10 text-accent border border-accent/30 flex items-center gap-0.5 shrink-0">
+                                  <span className="px-1.5 py-0.5 rounded text-[11px] font-bold uppercase bg-accent/70 text-white border border-accent-hover flex items-center gap-0.5 shrink-0">
                                     <Play className="w-2 h-2 fill-current" />
                                     Vídeo
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                              <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 mt-0.5">
                                 <span className="font-medium">{ex.badge || ex.target}</span>
                                 <span>•</span>
                                 <span>{ex.equipment}</span>
@@ -386,10 +373,10 @@ export default function WeeklyDashboard({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-700 tabular-nums">
+                            <span className="text-[11px] font-semibold text-zinc-200 bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-700 tabular-nums">
                               {ex.defaultSets} × {ex.suggestedReps}
                             </span>
-                            <Eye className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors" />
+                            <Eye className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-300 transition-colors" />
                           </div>
                         </div>
                       ))}
@@ -403,7 +390,7 @@ export default function WeeklyDashboard({
                         triggerHaptic(20);
                         onStartWorkout(selectedWorkout);
                       }}
-                      className="w-full py-3.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 dark:bg-accent dark:text-app dark:hover:bg-accent-hover text-white font-semibold text-sm shadow-sm flex items-center justify-center gap-2 active:scale-[0.99] transition-all cursor-pointer min-h-[48px]"
+                      className="w-full py-3.5 rounded-xl bg-primary text-app hover:bg-primary-hover font-semibold text-sm shadow-sm flex items-center justify-center gap-2 active:scale-[0.99] transition-all cursor-pointer min-h-[48px]"
                     >
                       <Play className="w-4 h-4 fill-current" />
                       <span>

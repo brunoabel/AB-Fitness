@@ -12,7 +12,7 @@ export const BADGES_CATALOG = [
     icon: 'Footprints',
     category: 'running',
     tier: 'bronze',
-    color: '#00f0ff' // Sky
+    color: '#ffffff' // Branco
   },
   {
     id: 'club_5k',
@@ -66,7 +66,7 @@ export const BADGES_CATALOG = [
     icon: 'Award',
     category: 'running',
     tier: 'gold',
-    color: '#06b6d4' // Cyan
+    color: '#dce3f0' // Gelo neutro
   },
 
   // 2. MUSCULAÇÃO & FORÇA PURA
@@ -77,7 +77,7 @@ export const BADGES_CATALOG = [
     icon: 'Dumbbell',
     category: 'gym',
     tier: 'bronze',
-    color: '#00f0ff'
+    color: '#ffffff'
   },
   {
     id: 'club_100kg_bench',

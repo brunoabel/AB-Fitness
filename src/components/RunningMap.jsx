@@ -4,7 +4,11 @@ import {
   Navigation2, 
   Maximize2, 
   Minimize2, 
-  Check
+  Check,
+  Satellite,
+  Moon,
+  Map as MapIcon,
+  Mountain
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
 import { getCoordinatesWithFallback } from '../utils/runningService';
@@ -15,7 +19,7 @@ const MAP_LAYERS = {
     id: 'satellite',
     name: 'Satélite HD',
     badge: 'Aéreo Real',
-    icon: '🛰️',
+    icon: Satellite,
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: [],
     maxZoom: 19,
@@ -25,7 +29,7 @@ const MAP_LAYERS = {
     id: 'strava-dark',
     name: 'Strava Dark',
     badge: 'Noturno',
-    icon: '🌙',
+    icon: Moon,
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     subdomains: [],
     maxZoom: 19,
@@ -35,7 +39,7 @@ const MAP_LAYERS = {
     id: 'outdoor',
     name: 'Ruas & Parques',
     badge: 'Outdoor',
-    icon: '🗺️',
+    icon: MapIcon,
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     subdomains: [],
     maxZoom: 19,
@@ -45,7 +49,7 @@ const MAP_LAYERS = {
     id: 'topography',
     name: 'Topografia',
     badge: 'Altimetria',
-    icon: '⛰️',
+    icon: Mountain,
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
     subdomains: [],
     maxZoom: 18,
@@ -165,7 +169,7 @@ function RunningMapComponent({
     }).addTo(map);
     casingPolylineRef.current = casingPolyline;
 
-    // 2. Linha Principal (Neon Strava Orange / Cyan)
+    // 2. Linha Principal (laranja de sinal)
     const corePolyline = L.polyline([], {
       color: routeColor,
       weight: 5,
@@ -452,7 +456,7 @@ function RunningMapComponent({
         accuracyCircleRef.current.remove();
         accuracyCircleRef.current = null;
       }
-      // Marcador de Fim / Chegada 🏁
+      // Marcador de Fim / Chegada
       if (effectiveCoordinates.length > 1) {
         const finishPos = [latest.lat, latest.lng];
         if (!finishMarkerRef.current) {
@@ -468,10 +472,8 @@ function RunningMapComponent({
                 background: #e11d48; 
                 border: 3px solid #ffffff; 
                 border-radius: 50%;
-                box-shadow: 0 0 16px rgba(225, 29, 72, 0.95);
-                font-size: 13px;
               ">
-                🏁
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"/><path d="M4 4h13l-2 4 2 4H4"/></svg>
               </div>
             `,
             iconSize: [26, 26],
@@ -598,7 +600,7 @@ function RunningMapComponent({
 
   return (
     <div 
-      className={`relative rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-white/10 shadow-xl transition-all duration-300 ${
+      className={`relative rounded-3xl overflow-hidden border border-white/10 shadow-xl transition-all duration-300 ${
         isExpanded ? 'fixed inset-3 z-50 h-auto' : ''
       }`}
       style={{ height: isExpanded ? 'calc(100vh - 24px)' : height }}
@@ -623,7 +625,7 @@ function RunningMapComponent({
             className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15 text-white text-[11px] font-bold shadow-md hover:bg-black/90 active:scale-95 transition-all cursor-pointer"
             title="Alternar estilo do mapa"
           >
-            <span>{activeLayer.icon}</span>
+            <activeLayer.icon className="w-3.5 h-3.5" strokeWidth={1.75} />
             <span className="text-[11px] hidden sm:inline">{activeLayer.name}</span>
           </button>
 
@@ -643,7 +645,7 @@ function RunningMapComponent({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span>{layer.icon}</span>
+                    <layer.icon className="w-3.5 h-3.5" strokeWidth={1.75} />
                     <span>{layer.name}</span>
                   </div>
                   {currentLayerId === layer.id && <Check className="w-3.5 h-3.5 text-orange-400" />}

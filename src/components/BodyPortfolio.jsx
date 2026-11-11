@@ -19,16 +19,16 @@ import { getWorkoutHistory } from '../utils/storage';
 import { findExerciseIn100 } from '../data/exercises100';
 import { triggerHaptic } from '../utils/audio';
 
-const card = 'p-5 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-white/10 shadow-xs space-y-4 transition-colors';
-const eyebrow = 'flex items-center gap-2 text-zinc-500 dark:text-zinc-400 text-xs font-semibold uppercase tracking-wider';
+const card = 'p-5 rounded-xl bg-surface border border-white/10 shadow-xs space-y-4 transition-colors';
+const eyebrow = 'flex items-center gap-2 text-zinc-400 text-xs font-semibold uppercase tracking-wider';
 const chip = (active) =>
   `px-3 min-h-[40px] rounded-lg text-xs font-semibold border transition-all active:scale-95 cursor-pointer select-none ${
     active
-      ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-accent/15 dark:text-accent dark:border-accent/40'
-      : 'bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700'
+      ? 'bg-accent/70 text-white border-accent-hover'
+      : 'bg-zinc-900 text-zinc-300 border-zinc-700'
   }`;
 const inputCls =
-  'w-full h-11 rounded-lg px-3 text-base tabular-nums bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent outline-none';
+  'w-full h-11 rounded-lg px-3 text-base tabular-nums bg-zinc-900 border border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent outline-none';
 
 const daysBetween = (a, b) => Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
 const fmt = (n) => (Math.round(n * 10) / 10).toLocaleString('pt-PT');
@@ -43,7 +43,7 @@ function exerciseName(id) {
 function MetricChart({ series, unit }) {
   if (series.length < 2) {
     return (
-      <div className="h-36 flex items-center justify-center rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400 text-center px-6">
+      <div className="h-36 flex items-center justify-center rounded-lg border border-dashed border-zinc-700 text-xs text-zinc-400 text-center px-6">
         {series.length === 0 ? 'Ainda sem registos desta medida.' : 'Registe mais uma medição para ver a linha de evolução.'}
       </div>
     );
@@ -67,20 +67,20 @@ function MetricChart({ series, unit }) {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label={`Evolução de ${series[0].value} para ${last.value} ${unit}`}>
         <defs>
           <linearGradient id="bodyArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="#00f0ff" stopOpacity="0" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
         </defs>
-        <line x1={pad.l} x2={W - pad.r} y1={H - pad.b} y2={H - pad.b} className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+        <line x1={pad.l} x2={W - pad.r} y1={H - pad.b} y2={H - pad.b} className="stroke-zinc-800" strokeWidth="1" />
         <path d={area} fill="url(#bodyArea)" />
-        <path d={line} fill="none" stroke="#00f0ff" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={line} fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         {series.map((p, i) => (
-          <circle key={p.date} cx={x(i)} cy={y(p.value)} r={i === series.length - 1 ? 4.5 : 3} className="fill-white dark:fill-surface" stroke="#00f0ff" strokeWidth="2" />
+          <circle key={p.date} cx={x(i)} cy={y(p.value)} r={i === series.length - 1 ? 4.5 : 3} className="fill-surface" stroke="#ffffff" strokeWidth="2" />
         ))}
         <text x={pad.l} y={H - 6} className="fill-zinc-400 text-[11px]">{formatDatePt(series[0].date)}</text>
         <text x={W - pad.r} y={H - 6} textAnchor="end" className="fill-zinc-400 text-[11px]">{formatDatePt(last.date)}</text>
       </svg>
-      <figcaption className="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400 tabular-nums">
+      <figcaption className="flex justify-between text-[11px] text-zinc-400 tabular-nums">
         <span>Mín. {fmt(min)} {unit}</span>
         <span>Máx. {fmt(max)} {unit}</span>
       </figcaption>
@@ -102,10 +102,10 @@ function CompareSlider({ beforeUrl, afterUrl, beforeDate, afterDate }) {
         draggable="false"
       />
       <div className="absolute inset-y-0 w-0.5 bg-accent pointer-events-none" style={{ left: `${pos}%` }}>
-        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent text-zinc-950 text-xs font-black flex items-center justify-center shadow-lg">⇆</span>
+        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent text-white text-xs font-black flex items-center justify-center shadow-lg">⇆</span>
       </div>
       <span className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/60 text-white text-[11px] font-bold tabular-nums">Antes · {formatDatePt(beforeDate)}</span>
-      <span className="absolute top-3 right-3 px-2 py-1 rounded-md bg-accent text-zinc-950 text-[11px] font-bold tabular-nums">Depois · {formatDatePt(afterDate)}</span>
+      <span className="absolute top-3 right-3 px-2 py-1 rounded-md bg-primary text-app text-[11px] font-bold tabular-nums">Depois · {formatDatePt(afterDate)}</span>
       <input
         type="range"
         min="0"
@@ -252,41 +252,41 @@ export default function BodyPortfolio() {
           <span>Portfólio Corporal</span>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-surface-2/80 border border-zinc-200 dark:border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">Peso atual</span>
-            <span className="text-base sm:text-lg font-black text-zinc-950 dark:text-zinc-50 tabular-nums whitespace-nowrap">
+          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Peso atual</span>
+            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">
               {weightSeries.length ? `${fmt(weightSeries[weightSeries.length - 1].value)} kg` : '—'}
             </span>
           </div>
-          <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-surface-2/80 border border-zinc-200 dark:border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">Variação</span>
-            <span className="text-base sm:text-lg font-black text-zinc-950 dark:text-zinc-50 tabular-nums whitespace-nowrap">
+          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Variação</span>
+            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">
               {weightDelta === null ? '—' : `${weightDelta > 0 ? '+' : ''}${fmt(weightDelta)} kg`}
             </span>
           </div>
-          <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-surface-2/80 border border-zinc-200 dark:border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">Fotos</span>
-            <span className="text-base sm:text-lg font-black text-zinc-950 dark:text-zinc-50 tabular-nums whitespace-nowrap">{photos.length}</span>
+          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Fotos</span>
+            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">{photos.length}</span>
           </div>
         </div>
         <button
           type="button"
           onClick={handleShare}
           disabled={!canShare || busy === 'card'}
-          className="w-full min-h-[48px] rounded-xl bg-accent hover:bg-accent-strong text-zinc-950 font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-app font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {busy === 'card' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4 stroke-[2.2]" />}
           <span>Partilhar card de evolução</span>
         </button>
         {!canShare && (
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 text-center">
+          <p className="text-[11px] text-zinc-400 text-center">
             Disponível com duas medições ou duas fotos da mesma pose.
           </p>
         )}
       </div>
 
       {error && (
-        <div role="alert" className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm">
+        <div role="alert" className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
         </div>
       )}
@@ -302,7 +302,7 @@ export default function BodyPortfolio() {
             type="button"
             onClick={() => setFormOpen((v) => !v)}
             aria-expanded={formOpen}
-            className="flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 text-xs font-semibold active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg bg-zinc-800 text-zinc-100 text-xs font-semibold active:scale-95 cursor-pointer"
           >
             {formOpen ? <ChevronDown className="w-4 h-4 rotate-180" /> : <Plus className="w-4 h-4" />}
             <span>{formOpen ? 'Fechar' : 'Registar'}</span>
@@ -312,7 +312,7 @@ export default function BodyPortfolio() {
         {formOpen && (
           <form onSubmit={handleSaveEntry} className="space-y-3 pt-1">
             <label className="block space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Data</span>
+              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Data</span>
               <input
                 type="date"
                 value={form.date}
@@ -324,7 +324,7 @@ export default function BodyPortfolio() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {BODY_METRICS.map((m) => (
                 <label key={m.id} className="block space-y-1">
-                  <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                     {m.label} ({m.unit})
                   </span>
                   <input
@@ -339,12 +339,12 @@ export default function BodyPortfolio() {
                 </label>
               ))}
             </div>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="text-[11px] text-zinc-400">
               Meça de manhã, em jejum, sempre nas mesmas condições. Um registo por dia: guardar outra vez substitui o desse dia.
             </p>
             <button
               type="submit"
-              className="w-full min-h-[48px] rounded-xl bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-sm active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full min-h-[48px] rounded-xl bg-zinc-100 text-zinc-950 font-bold text-sm active:scale-[0.98] transition-all cursor-pointer"
             >
               Guardar medidas
             </button>
@@ -369,12 +369,12 @@ export default function BodyPortfolio() {
         <MetricChart series={series} unit={metricDef.unit} />
 
         {entries.length > 0 && (
-          <ul className="divide-y divide-zinc-100 dark:divide-white/10 border-t border-zinc-100 dark:border-white/10">
+          <ul className="divide-y divide-white/10 border-t border-white/10">
             {[...entries].reverse().slice(0, 8).map((entry) => (
               <li key={entry.id} className="flex items-center justify-between py-2.5 gap-3">
                 <div className="min-w-0">
-                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">{formatDatePt(entry.date)}</span>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate tabular-nums">
+                  <span className="text-sm font-semibold text-zinc-100 tabular-nums">{formatDatePt(entry.date)}</span>
+                  <p className="text-xs text-zinc-400 truncate tabular-nums">
                     {BODY_METRICS.filter((m) => entry[m.id]).map((m) => `${m.short} ${fmt(entry[m.id])}${m.unit === '%' ? '%' : ''}`).join(' · ')}
                   </p>
                 </div>
@@ -399,7 +399,7 @@ export default function BodyPortfolio() {
             <Camera className="w-4 h-4 stroke-[1.8]" />
             <span>Fotos de progresso</span>
           </div>
-          <span className="flex items-center gap-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <span className="flex items-center gap-1 text-[11px] text-zinc-400">
             <Lock className="w-3 h-3" />
             Só neste aparelho
           </span>
@@ -431,7 +431,7 @@ export default function BodyPortfolio() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy === 'photo'}
-          className="w-full flex items-center justify-center gap-1.5 min-h-[44px] rounded-lg bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 text-sm font-bold active:scale-[0.98] cursor-pointer disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-1.5 min-h-[44px] rounded-lg bg-zinc-100 text-zinc-950 text-sm font-bold active:scale-[0.98] cursor-pointer disabled:opacity-50"
         >
           {busy === 'photo' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
           <span>Adicionar foto de {PHOTO_POSES.find((p) => p.id === pose).label.toLowerCase()}</span>
@@ -439,9 +439,9 @@ export default function BodyPortfolio() {
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoPicked} className="hidden" />
 
         {photosLoaded && photos.length === 0 && (
-          <div className="flex flex-col items-center gap-2 py-8 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 text-center px-6">
+          <div className="flex flex-col items-center gap-2 py-8 rounded-lg border border-dashed border-zinc-700 text-center px-6">
             <ImageOff className="w-6 h-6 text-zinc-400" />
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-zinc-400">
               Tire uma foto de frente, lado e costas, com a mesma luz e distância. Repita a cada 2–4 semanas.
             </p>
           </div>
@@ -458,7 +458,7 @@ export default function BodyPortfolio() {
                     ['Depois', after, setAfterId]
                   ].map(([lbl, current, setter]) => (
                     <label key={lbl} className="block space-y-1">
-                      <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{lbl}</span>
+                      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{lbl}</span>
                       <select value={current.id} onChange={(e) => setter(e.target.value)} className={inputCls}>
                         {posePhotos.map((p) => (
                           <option key={p.id} value={p.id}>
@@ -471,14 +471,14 @@ export default function BodyPortfolio() {
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-zinc-400">
                 Adicione mais uma foto de {PHOTO_POSES.find((p) => p.id === pose).label.toLowerCase()} para comparar antes e depois.
               </p>
             )}
 
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {[...posePhotos].reverse().map((p) => (
-                <div key={p.id} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900 group">
+                <div key={p.id} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-900 group">
                   <img src={urls[p.id]} alt={`${PHOTO_POSES.find((x) => x.id === p.pose)?.label}, ${formatDatePt(p.date)}`} className="w-full h-full object-cover" loading="lazy" />
                   <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[11px] font-semibold tabular-nums">
                     {formatDatePt(p.date)}

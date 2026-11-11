@@ -4,15 +4,15 @@ import ABLogo from './ABLogo';
 
 export default function Footer({ onOpenGuide }) {
   return (
-    <footer className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-zinc-500 dark:text-zinc-400 space-y-3 transition-colors border-t border-zinc-200/60 dark:border-zinc-800/60 mt-8">
+    <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 py-8 text-center text-xs text-zinc-400 space-y-3 transition-colors border-t border-zinc-800/60 mt-8">
       <div className="flex items-center justify-center gap-2">
         <ABLogo size={24} showText={false} />
-        <span className="text-zinc-900 dark:text-zinc-100 font-bold tracking-wider text-[11px] uppercase">
+        <span className="text-zinc-100 font-bold tracking-wider text-[11px] uppercase">
           AB FITNESS
         </span>
       </div>
 
-      <p className="text-zinc-500 dark:text-zinc-400 font-normal text-[11px] max-w-sm mx-auto leading-relaxed">
+      <p className="text-zinc-400 font-normal text-[11px] max-w-sm mx-auto leading-relaxed">
         Biomecânica aplicada, sobrecarga progressiva e monitorização de rendimento atlético.
       </p>
 
@@ -20,7 +20,7 @@ export default function Footer({ onOpenGuide }) {
         <div className="pt-1">
           <button
             onClick={onOpenGuide}
-            className="inline-flex items-center gap-1.5 text-[11px] text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white font-medium bg-zinc-100 dark:bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700/60 active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-[11px] text-zinc-300 hover:text-white font-medium bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-700/60 active:scale-95 transition-all cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-zinc-500 stroke-[1.8]" />
             <span>Consultar Manuais Técnicos do Atleta</span>
@@ -28,16 +28,24 @@ export default function Footer({ onOpenGuide }) {
         </div>
       )}
 
+      <nav aria-label="Documentos legais e apoio ao consumidor" className="pt-1 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px]">
+        <a href="/termos" className="text-zinc-400 hover:text-white underline underline-offset-2">Termos</a>
+        <a href="/privacidade" className="text-zinc-400 hover:text-white underline underline-offset-2">Privacidade</a>
+        <a href="/aviso-medico" className="text-zinc-400 hover:text-white underline underline-offset-2">Aviso médico</a>
+        <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white underline underline-offset-2">Livro de Reclamações</a>
+        <a href="https://www.cicap.pt" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white underline underline-offset-2">Litígios (CICAP)</a>
+      </nav>
+
       {/* Assinatura de Autoria */}
-      <div className="pt-2 text-[11px] text-zinc-400 dark:text-zinc-500 font-normal flex items-center justify-center gap-1">
+      <div className="pt-2 text-[11px] text-zinc-500 font-normal flex items-center justify-center gap-1">
         <span>Desenvolvido por</span>
-        <strong className="text-zinc-700 dark:text-zinc-300 font-semibold">
-          Bruno Abel
+        <strong className="text-zinc-300 font-semibold">
+          ABEX Studio
         </strong>
       </div>
 
-      <div className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center justify-center gap-1.5">
-        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500 stroke-[1.8]" />
+      <div className="text-[11px] text-zinc-500 flex items-center justify-center gap-1.5">
+        <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 stroke-[1.8]" />
         <span>Dados e métricas protegidos localmente com segurança</span>
       </div>
     </footer>

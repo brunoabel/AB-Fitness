@@ -8,7 +8,7 @@
  * - NSCA (National Strength and Conditioning Association)
  */
 
-import { findExerciseIn100 } from './exercises100';
+import { findExerciseIn100 } from './exercises100.js';
 
 // ==============================================================================
 // 1. BANCO DE DADOS MESTRE DE EXERCÍCIOS (ANATOMIA, EXECUÇÃO E SEGURANÇA)
@@ -392,9 +392,10 @@ export const EXERCISE_DATABASE = {
 export function generatePersonalizedWorkoutPlan({
   goal = 'hypertrophy', // 'hypertrophy' | 'fat_loss' | 'strength' | 'athlete' | 'health'
   experience = 'beginner', // 'beginner' | 'intermediate' | 'advanced'
-  frequencyDays = 4, // 3 | 4 | 5
+  frequencyDays = 4, // 3 | 4 | 5 | 6
   focusMuscle = 'balanced', // 'balanced' | 'arms_chest' | 'legs_glutes' | 'back_posture'
-  duration = 'standard' // 'express' (30-40) | 'standard' (45-60) | 'high_volume' (60-75)
+  duration = 'standard', // 'express' (30-40) | 'standard' (45-60) | 'high_volume' (60-75)
+  splitPreference = 'auto' // 'auto' | 'ppl' | 'upper_lower' | 'arnold' | 'full_body'
 }) {
   // Ajuste de parâmetros científicos por objetivo
   const goalParams = {
@@ -596,7 +597,7 @@ export function generatePersonalizedWorkoutPlan({
         duration: 'Livre',
         intensity: 'Lazer',
         badge: 'Ativo',
-        color: 'from-cyan-400 to-sky-500',
+        color: 'from-zinc-400 to-zinc-500',
         description: 'Aproveite o fim de semana com a sensação de missão cumprida.',
         isRestDay: true,
         exercises: []
@@ -753,6 +754,155 @@ export function generatePersonalizedWorkoutPlan({
   }
 
   // -------------------------------------------------------------
+  // DIVISÃO DE 6 DIAS NA SEMANA — ARNOLD SPLIT (PEITO+COSTAS / OMBROS+BRAÇOS / PERNAS 2X)
+  // -------------------------------------------------------------
+  if (frequencyDays === 6 && splitPreference === 'arnold') {
+    return [
+      {
+        dayId: 1,
+        name: 'Segunda-feira',
+        shortName: 'Seg',
+        title: 'Arnold A1: Peitoral & Dorsais (Antagonistas)',
+        focus: 'Peito Completo, Grande Dorsal & Espessura',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Torso A',
+        color: 'from-sky-400 to-sky-500',
+        description: 'Combinação clássica antagonista de peitoral e costas para máximo fluxo sanguíneo e densidade de tronco.',
+        isRestDay: false,
+        exercises: [
+          getEx('supino-reto-barra'),
+          getEx('barra-fixa-pronada'),
+          getEx('supino-inclinado-halteres'),
+          getEx('remada-curvada-barra'),
+          getEx('crossover-polia-media'),
+          getEx('puxada-com-triangulo')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 2,
+        name: 'Terça-feira',
+        shortName: 'Ter',
+        title: 'Arnold B1: Deltoides 3D & Braços Completos',
+        focus: 'Ombros (3 Cabeças), Bíceps & Tríceps',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Arms & Delts',
+        color: 'from-sky-500 to-blue-600',
+        description: 'Sessão dedicada a ombros largos e braços densos com os músculos frescos.',
+        isRestDay: false,
+        exercises: [
+          getEx('desenvolvimento-militar'),
+          getEx('elevacao-lateral-halteres'),
+          getEx('face-pull'),
+          getEx('rosca-direta-barra'),
+          getEx('triceps-testa-barra-w'),
+          getEx('rosca-martelo-halteres'),
+          getEx('triceps-corda')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 3,
+        name: 'Quarta-feira',
+        shortName: 'Qua',
+        title: 'Arnold C1: Pernas Completas (Foco Quadríceps)',
+        focus: 'Quadríceps, Glúteos, Panturrilhas & Core',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Legs A',
+        color: 'from-blue-600 to-indigo-600',
+        description: 'Base pesada de membros inferiores com agachamento livre, leg press e estabilidade.',
+        isRestDay: false,
+        exercises: [
+          getEx('agachamento-livre-barra'),
+          getEx('leg-press-45'),
+          getEx('agachamento-bulgaro'),
+          getEx('cadeira-extensora'),
+          getEx('panturrilha-em-pe-maquina'),
+          getEx('abdominal-polia-rope-crunch')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 4,
+        name: 'Quinta-feira',
+        shortName: 'Qui',
+        title: 'Arnold A2: Peitoral Superior & Costas Densidade',
+        focus: 'Porção Clavicular, Remadas & Dorsal',
+        duration: '55 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Torso B',
+        color: 'from-sky-400 to-indigo-500',
+        description: 'Segundo estímulo semanal de tronco priorizando ângulos inclinados e remadas apoiadas.',
+        isRestDay: false,
+        exercises: [
+          getEx('supino-inclinado-halteres'),
+          getEx('puxada-frontal-aberta'),
+          getEx('crucifixo-inclinado-halteres'),
+          getEx('remada-cavalinho'),
+          getEx('paralelas-foco-peito'),
+          getEx('remada-unilateral-serrote')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 5,
+        name: 'Sexta-feira',
+        shortName: 'Sex',
+        title: 'Arnold B2: Ombros & Braços (Hipertrofia Metabólica)',
+        focus: 'Deltoide Lateral/Posterior, Bíceps & Tríceps',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Pump',
+        color: 'from-zinc-400 to-zinc-500',
+        description: 'Tensão contínua em polias e halteres para detalhamento de deltoides e braços.',
+        isRestDay: false,
+        exercises: [
+          getEx('desenvolvimento-com-halteres'),
+          getEx('elevacao-lateral-polia'),
+          getEx('crucifixo-invertido-halteres'),
+          getEx('rosca-scott-barra-w'),
+          getEx('triceps-pulley-barra-reta'),
+          getEx('rosca-concentrada')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 6,
+        name: 'Sábado',
+        shortName: 'Sáb',
+        title: 'Arnold C2: Cadeia Posterior, Glúteos & Core',
+        focus: 'Isquiotibiais, Glúteo Máximo & Abdômen',
+        duration: '50 min',
+        intensity: goalParams.intensity,
+        badge: 'Arnold Legs B',
+        color: 'from-indigo-500 to-sky-500',
+        description: 'Construção da cadeia posterior com stiff, elevação pélvica e flexoras.',
+        isRestDay: false,
+        exercises: [
+          getEx('stiff-com-halteres'),
+          getEx('elevacao-pelvica-barra'),
+          getEx('mesa-flexora'),
+          getEx('cadeira-abdutora'),
+          getEx('panturrilha-sentado-gemeos'),
+          getEx('prancha-abdominal-frontal')
+        ].filter(Boolean)
+      },
+      {
+        dayId: 0,
+        name: 'Domingo',
+        shortName: 'Dom',
+        title: 'Recuperação Ativa & Descanso',
+        focus: 'Regeneração Neuromuscular',
+        duration: '0 min',
+        intensity: 'Repouso',
+        badge: 'Off Day',
+        color: 'from-slate-400 to-slate-500',
+        description: 'Descanso total para supercompensação após 6 sessões do Arnold Split.',
+        isRestDay: true,
+        exercises: []
+      }
+    ];
+  }
+
+  // -------------------------------------------------------------
   // DIVISÃO DE 6 DIAS NA SEMANA (PUSH / PULL / LEGS 2X - ATLETA AVANÇADO)
   // -------------------------------------------------------------
   if (frequencyDays === 6) {
@@ -850,7 +1000,7 @@ export function generatePersonalizedWorkoutPlan({
         duration: '50 min',
         intensity: goalParams.intensity,
         badge: 'Pull Density',
-        color: 'from-cyan-400 to-sky-600',
+        color: 'from-zinc-400 to-zinc-500',
         description: 'Densidade dorsal com remada cavalinho, serrote e pico de contração no bíceps.',
         isRestDay: false,
         exercises: [
@@ -996,7 +1146,7 @@ export function generatePersonalizedWorkoutPlan({
       duration: '45 min',
       intensity: goalParams.intensity,
       badge: 'Posterior & Power',
-      color: 'from-cyan-400 to-sky-600',
+      color: 'from-zinc-400 to-zinc-500',
       description: 'Finalize a semana com posterior blindado e glúteos ativos.',
       isRestDay: false,
       exercises: [

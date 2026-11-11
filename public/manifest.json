@@ -1,19 +1,27 @@
 {
-  "name": "AB Fitness — Gestão de Treinos",
+  "id": "/",
+  "name": "AB Fitness",
   "short_name": "AB Fitness",
-  "description": "Gestão Inteligente de Treinos de Academia, Cargas & Performance de Atleta",
+  "description": "Treino de musculação e corrida, sobrecarga progressiva, mapa de recuperação muscular e AB Coach, o teu assistente de IA.",
+  "lang": "pt",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
-  "background_color": "#050608",
-  "theme_color": "#050608",
-  "categories": ["fitness", "sports", "health"],
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "categories": ["fitness", "health", "sports"],
   "icons": [
-    {
-      "src": "/pwa-icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/pwa-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "/screens/1-dashboard.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Plano da semana" },
+    { "src": "/screens/3-workout.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Treino ativo" },
+    { "src": "/screens/4-running.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Corrida com GPS" }
   ]
 }

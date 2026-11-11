@@ -11,10 +11,7 @@ export function useWakeLock(active) {
   const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
-    if (!active || !isSupported) {
-      setIsLocked(false);
-      return;
-    }
+    if (!active || !isSupported) return undefined;
 
     let cancelled = false;
     let currentLock = null;
@@ -65,5 +62,6 @@ export function useWakeLock(active) {
     };
   }, [active, isSupported]);
 
-  return { isSupported, isLocked };
+  // Inativo ou sem suporte: nunca reporta bloqueio (derivado, sem setState no efeito)
+  return { isSupported, isLocked: Boolean(active && isSupported && isLocked) };
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { REST_OPTIONS } from './custom-workout/options';
+import WorkoutDetailsForm from './custom-workout/WorkoutDetailsForm';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import { AnimatePresence } from 'motion/react';
 import { 
@@ -17,24 +19,7 @@ import {
 import { EXERCISES_100, MUSCLE_GROUPS } from '../data/exercises100';
 import { triggerHaptic, sound } from '../utils/audio';
 
-const QUICK_FOCUS_OPTIONS = [
-  'Peito & Tríceps',
-  'Costas & Bíceps',
-  'Pernas Completo',
-  'Quadricípites & Glúteos',
-  'Posteriores & Glúteos',
-  'Ombros & Trapézio',
-  'Superior (Upper)',
-  'Inferior (Lower)',
-  'Push (Empurrar)',
-  'Pull (Puxar)',
-  'Legs (Pernas)',
-  'Full Body',
-  'Abdominais & Core'
-];
 
-const REST_OPTIONS = [30, 45, 60, 90, 120, 180];
-const DURATION_OPTIONS = ['30 min', '40 min', '45 min', '50 min', '60 min', '75 min', '90 min'];
 
 const createTempExerciseId = () => `ex_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
@@ -178,7 +163,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
     }
 
     const payload = {
-      ...(workoutToEdit || {}),
+      ...workoutToEdit,
       title: title.trim(),
       level,
       focus: focus.trim() || 'Treino Personalizado',
@@ -217,19 +202,19 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
     <AnimatePresence>
     {isOpen && (
     <ModalBackdrop key="modal" className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-      <ModalPanel className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-t-2xl sm:rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden transition-colors">
+      <ModalPanel className="w-full max-w-xl bg-zinc-950 rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden transition-colors">
         
         {/* Topo do Modal com Título e Fechar */}
-        <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-zinc-50 dark:bg-zinc-900">
+        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-zinc-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center font-bold">
-              <Dumbbell className="w-4 h-4 text-white dark:text-zinc-950" />
+            <div className="w-9 h-9 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold">
+              <Dumbbell className="w-4 h-4 text-zinc-950" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">
+              <h2 className="text-base font-bold text-white leading-tight">
                 {workoutToEdit ? 'Editar Treino Personalizado' : 'Criar Treino Personalizado'}
               </h2>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">
+              <p className="text-[11px] text-zinc-400 font-normal">
                 Monte a sua rotina ou adicione a prescrição do seu treinador
               </p>
             </div>
@@ -237,7 +222,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
 
           <button
             onClick={onClose}
-            className="w-11 h-11 rounded-xl text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Fechar"
           >
             <X className="w-5 h-5" />
@@ -245,171 +230,26 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
         </div>
 
         {/* Corpo com Scroll */}
-        <div className="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1 divide-y divide-zinc-100 dark:divide-zinc-800/80">
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1 divide-y divide-zinc-800/80">
           
           {/* Mensagem de Erro de Validação */}
           {validationError && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-900 text-rose-300 text-xs font-semibold flex items-center gap-2">
               <Info className="w-4 h-4 shrink-0" />
               <span>{validationError}</span>
             </div>
           )}
 
-          {/* 1. SEÇÃO: DADOS DO TREINO & NÍVEL */}
-          <div className="space-y-3.5 pt-1">
-            {/* Nome do Treino */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Nome do Treino <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex: Treino A - Peitoral e Tríceps"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-sm font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
-              />
-            </div>
-
-            {/* SELETOR DE NÍVEL (Iniciante, Intermédio, Avançado) */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  Nível de Experiência
-                </label>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold tracking-wider">
-                  Disponível para todos
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'Iniciante', label: 'Iniciante', desc: 'Adaptação' },
-                  { id: 'Intermédio', label: 'Intermédio', desc: 'Volume & Carga' },
-                  { id: 'Avançado', label: 'Avançado', desc: 'Alta Intensidade' }
-                ].map((item) => {
-                  const isSelected = level === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setLevel(item.id);
-                        triggerHaptic(10);
-                      }}
-                      className={`min-h-[48px] p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer text-center ${
-                        isSelected
-                          ? 'bg-zinc-950 text-white dark:bg-accent/15 dark:text-accent border-zinc-950 dark:border-accent/40 font-bold shadow-xs'
-                          : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400'
-                      }`}
-                    >
-                      <span className="text-xs font-bold">{item.label}</span>
-                      <span className={`text-[11px] mt-0.5 ${isSelected ? 'text-zinc-300 dark:text-accent/75' : 'text-zinc-400 dark:text-zinc-500'}`}>{item.desc}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Foco Muscular */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Foco Muscular / Grupamento
-              </label>
-              <input
-                type="text"
-                value={focus}
-                onChange={(e) => setFocus(e.target.value)}
-                placeholder="Ex: Peito, Ombros e Tríceps"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-sm font-semibold text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all mb-2"
-              />
-
-              {/* Sugestões Rápidas de Foco */}
-              <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto pr-1">
-                {QUICK_FOCUS_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => {
-                      setFocus(opt);
-                      triggerHaptic(10);
-                    }}
-                    className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
-                      focus === opt
-                        ? 'bg-zinc-950 text-white dark:bg-accent/15 dark:text-accent border-zinc-950 dark:border-white'
-                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-white/10 hover:border-zinc-400'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Duração Estimada */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Duração Estimada
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {DURATION_OPTIONS.map((dur) => (
-                  <button
-                    key={dur}
-                    type="button"
-                    onClick={() => {
-                      setDuration(dur);
-                      triggerHaptic(10);
-                    }}
-                    className={`min-h-[44px] text-xs font-mono tabular-nums font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer border ${
-                      duration === dur
-                        ? 'bg-zinc-950 text-white dark:bg-accent/15 dark:text-accent border-zinc-950 dark:border-white'
-                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-white/10 hover:border-zinc-400'
-                    }`}
-                  >
-                    {dur}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Descrição / Objetivo do Treino */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Descrição / Objetivo do Treino <span className="text-zinc-400 font-normal">(Opcional)</span>
-              </label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ex: Treino focado em força bruta e sobrecarga progressiva"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
-              />
-            </div>
-
-            {/* Observações do Treinador */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Observações / Prescrição do Treinador <span className="text-zinc-400 font-normal">(Opcional)</span>
-              </label>
-              <textarea
-                value={trainerNotes}
-                onChange={(e) => setTrainerNotes(e.target.value)}
-                placeholder="Ex: Descanso de 60s entre séries. Cadência 3s excêntrica. Focar em não usar impulsão."
-                rows={2}
-                className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all resize-none"
-              />
-            </div>
-          </div>
-
+          <WorkoutDetailsForm {...{ description, duration, focus, level, setDescription, setDuration, setFocus, setLevel, setTitle, setTrainerNotes, title, trainerNotes }} />
           {/* 2. SEÇÃO: EXERCÍCIOS ADICIONADOS */}
           <div className="pt-4 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-zinc-300" />
                   <span>Exercícios ({exercises.length})</span>
                 </h3>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                <p className="text-[11px] text-zinc-400">
                   Configure séries, repetições, carga inicial e descanso
                 </p>
               </div>
@@ -420,7 +260,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                   setIsPickerOpen(true);
                   triggerHaptic(15);
                 }}
-                className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-white bg-zinc-950 hover:bg-zinc-800 dark:bg-accent dark:text-app dark:hover:bg-zinc-200 px-3.5 py-2 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold bg-primary text-app hover:bg-primary-hover px-3.5 py-2 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Adicionar</span>
@@ -434,15 +274,15 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                   setIsPickerOpen(true);
                   triggerHaptic(15);
                 }}
-                className="p-6 rounded-xl border-2 border-dashed border-zinc-200 dark:border-white/10 hover:border-zinc-400 dark:hover:border-zinc-700 text-center cursor-pointer transition-all group"
+                className="p-6 rounded-xl border-2 border-dashed border-white/10 hover:border-zinc-700 text-center cursor-pointer transition-all group"
               >
-                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
-                  <Plus className="w-5 h-5 text-zinc-900 dark:text-white" />
+                <div className="w-10 h-10 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
+                  <Plus className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-xs font-bold text-zinc-900 dark:text-white">
+                <p className="text-xs font-bold text-white">
                   Nenhum exercício adicionado ainda
                 </p>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-zinc-400 mt-0.5">
                   Toque aqui para escolher da biblioteca oficial de exercícios ou prescrever um exercício personalizado.
                 </p>
               </div>
@@ -451,19 +291,19 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                 {exercises.map((ex, index) => (
                   <div
                     key={ex.tempId || index}
-                    className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 space-y-3"
+                    className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-3"
                   >
                     {/* Topo do Exercício com Nome e Ações de Ordenação */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-mono tabular-nums font-bold flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0">
+                        <span className="w-6 h-6 rounded-lg bg-zinc-800 text-white text-xs font-mono tabular-nums font-bold flex items-center justify-center border border-zinc-700 shrink-0">
                           {index + 1}
                         </span>
                         <div>
-                          <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
+                          <h4 className="text-xs font-bold text-white leading-tight">
                             {ex.name}
                           </h4>
-                          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                          <span className="text-[11px] text-zinc-400 font-medium">
                             {ex.target} • {ex.equipment}
                           </span>
                         </div>
@@ -474,7 +314,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           type="button"
                           disabled={index === 0}
                           onClick={() => handleMoveExercise(index, -1)}
-                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
                           title="Mover para cima"
                           aria-label="Mover para cima"
                         >
@@ -484,7 +324,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           type="button"
                           disabled={index === exercises.length - 1}
                           onClick={() => handleMoveExercise(index, 1)}
-                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
                           title="Mover para baixo"
                           aria-label="Mover para baixo"
                         >
@@ -493,7 +333,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                         <button
                           type="button"
                           onClick={() => handleRemoveExercise(index)}
-                          className="tap-44 w-8 h-8 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center cursor-pointer"
+                          className="tap-44 w-8 h-8 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-950/40 flex items-center justify-center cursor-pointer"
                           title="Eliminar"
                           aria-label="Eliminar"
                         >
@@ -505,23 +345,23 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     {/* Controles de Séries, Reps, Carga e Descanso */}
                     <div className="grid grid-cols-4 gap-2 pt-1 text-center">
                       {/* Séries */}
-                      <div className="p-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10">
+                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
                         <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Séries</span>
                         <div className="flex items-center justify-center gap-1">
                           <button
                             type="button"
                             onClick={() => handleUpdateExercise(index, 'defaultSets', Math.max(1, (ex.defaultSets || 3) - 1))}
-                            className="tap-44 w-6 h-6 rounded-md bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
+                            className="tap-44 w-6 h-6 rounded-md bg-zinc-800 text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
                           >
                             -
                           </button>
-                          <span className="text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white w-4">
+                          <span className="text-xs font-mono tabular-nums font-bold text-white w-4">
                             {ex.defaultSets || 3}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleUpdateExercise(index, 'defaultSets', Math.min(8, (ex.defaultSets || 3) + 1))}
-                            className="tap-44 w-6 h-6 rounded-md bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
+                            className="tap-44 w-6 h-6 rounded-md bg-zinc-800 text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
                           >
                             +
                           </button>
@@ -529,37 +369,37 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       </div>
 
                       {/* Repetições */}
-                      <div className="p-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10">
+                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
                         <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Reps</span>
                         <input
                           type="text"
                           value={ex.suggestedReps || '10'}
                           onChange={(e) => handleUpdateExercise(index, 'suggestedReps', e.target.value)}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white bg-transparent focus:outline-none"
+                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none"
                         />
                       </div>
 
                       {/* Carga Inicial */}
-                      <div className="p-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10">
+                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
                         <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Carga (kg)</span>
                         <input
                           type="number"
                           value={ex.suggestedWeight ?? 0}
                           onChange={(e) => handleUpdateExercise(index, 'suggestedWeight', Math.max(0, parseFloat(e.target.value) || 0))}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white bg-transparent focus:outline-none"
+                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none"
                         />
                       </div>
 
                       {/* Descanso */}
-                      <div className="p-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10">
+                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
                         <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Descanso</span>
                         <select
                           value={ex.restTime || 60}
                           onChange={(e) => handleUpdateExercise(index, 'restTime', Number(e.target.value))}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white bg-transparent focus:outline-none cursor-pointer"
+                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none cursor-pointer"
                         >
                           {REST_OPTIONS.map((sec) => (
-                            <option key={sec} value={sec} className="dark:bg-zinc-900">
+                            <option key={sec} value={sec} className="bg-zinc-900">
                               {sec}s
                             </option>
                           ))}
@@ -573,7 +413,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={ex.notes || ''}
                       onChange={(e) => handleUpdateExercise(index, 'notes', e.target.value)}
                       placeholder="Indicação técnica (Ex: Drop-set na última série, pausa 2s)"
-                      className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 text-[11px] text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                      className="w-full px-3 py-1.5 rounded-xl bg-zinc-950 border border-white/10 text-[11px] text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
                     />
                   </div>
                 ))}
@@ -585,9 +425,9 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     setIsPickerOpen(true);
                     triggerHaptic(15);
                   }}
-                  className="min-h-[44px] w-full py-2.5 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-500 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                  className="min-h-[44px] w-full py-2.5 rounded-xl border border-dashed border-zinc-700 hover:border-zinc-500 text-xs font-bold text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-zinc-900 transition-colors cursor-pointer"
                 >
-                  <Plus className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+                  <Plus className="w-4 h-4 text-zinc-300" />
                   <span>Adicionar Mais Exercícios</span>
                 </button>
               </div>
@@ -596,11 +436,11 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
         </div>
 
         {/* Rodapé Fixo com Botão Guardar */}
-        <div className="p-4 sm:p-5 border-t border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900 flex items-center gap-3 shrink-0">
+        <div className="p-4 sm:p-5 border-t border-white/10 bg-zinc-900 flex items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 min-h-[48px] py-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition-colors cursor-pointer active:scale-95"
+            className="flex-1 min-h-[48px] py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs transition-colors cursor-pointer active:scale-95"
           >
             Cancelar
           </button>
@@ -608,7 +448,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
           <button
             type="button"
             onClick={handleSaveWorkout}
-            className="flex-2 min-h-[48px] py-3 rounded-xl bg-zinc-950 hover:bg-zinc-800 dark:bg-accent dark:text-app dark:hover:bg-zinc-200 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
+            className="flex-2 min-h-[48px] py-3 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
           >
             <Check className="w-4 h-4 stroke-[2.5]" />
             <span>Guardar Treino</span>
@@ -617,12 +457,12 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
 
         {/* SUB-MODAL: PICKER DE EXERCÍCIOS (BIBLIOTECA 100 OU PERSONALIZADO) */}
         {isPickerOpen && (
-          <div className="absolute inset-0 z-60 bg-white dark:bg-zinc-950 flex flex-col animate-slideUp">
+          <div className="absolute inset-0 z-60 bg-zinc-950 flex flex-col animate-slideUp">
             {/* Topo do Picker */}
-            <div className="p-4 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-zinc-50 dark:bg-zinc-900">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-zinc-900">
               <div className="flex items-center gap-2">
-                <Dumbbell className="w-4 h-4 text-zinc-900 dark:text-white" />
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
+                <Dumbbell className="w-4 h-4 text-white" />
+                <h3 className="text-sm font-bold text-white">
                   Adicionar Exercício ao Treino
                 </h3>
               </div>
@@ -630,7 +470,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
               <button
                 type="button"
                 onClick={() => setIsPickerOpen(false)}
-                className="w-10 h-10 rounded-xl text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center cursor-pointer transition-colors"
+                className="w-10 h-10 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center cursor-pointer transition-colors"
                 aria-label="Fechar seleção"
               >
                 <X className="w-5 h-5" />
@@ -638,7 +478,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
             </div>
 
             {/* Abas: Da Biblioteca vs Criar Novo */}
-            <div className="flex border-b border-zinc-200 dark:border-white/10 px-4 pt-2 shrink-0 gap-2 text-xs font-bold">
+            <div className="flex border-b border-white/10 px-4 pt-2 shrink-0 gap-2 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => {
@@ -647,8 +487,8 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                 }}
                 className={`min-h-[44px] pb-2.5 px-3 border-b-2 transition-colors cursor-pointer ${
                   pickerTab === 'library'
-                    ? 'border-zinc-950 text-zinc-950 dark:border-accent dark:text-accent'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    ? 'border-accent text-white'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-200'
                 }`}
               >
                 Banco Oficial ({EXERCISES_100.length} Exercícios)
@@ -662,8 +502,8 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                 }}
                 className={`min-h-[44px] pb-2.5 px-3 border-b-2 transition-colors cursor-pointer ${
                   pickerTab === 'custom'
-                    ? 'border-zinc-950 text-zinc-950 dark:border-accent dark:text-accent'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    ? 'border-accent text-white'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-200'
                 }`}
               >
                 Exercício Personalizado (Avulso)
@@ -674,7 +514,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
             {pickerTab === 'library' ? (
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Barra de Pesquisa */}
-                <div className="p-3 border-b border-zinc-200 dark:border-white/10 shrink-0 space-y-2">
+                <div className="p-3 border-b border-white/10 shrink-0 space-y-2">
                   <div className="relative">
                     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                     <input
@@ -682,7 +522,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Pesquisar exercício por nome ou grupo..."
-                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-medium text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
                     />
                   </div>
 
@@ -693,8 +533,8 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       onClick={() => setSelectedMuscleFilter('Todos')}
                       className={`min-h-[44px] text-[11px] font-bold px-3 py-1 rounded-lg shrink-0 cursor-pointer border ${
                         selectedMuscleFilter === 'Todos'
-                          ? 'bg-zinc-950 text-white dark:bg-accent/15 dark:text-accent border-zinc-950 dark:border-white'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                          ? 'bg-accent/70 text-white border-white'
+                          : 'bg-zinc-800 text-zinc-300 border-zinc-700'
                       }`}
                     >
                       Todos
@@ -706,8 +546,8 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                         onClick={() => setSelectedMuscleFilter(group)}
                         className={`min-h-[44px] text-[11px] font-bold px-3 py-1 rounded-lg shrink-0 cursor-pointer border ${
                           selectedMuscleFilter === group
-                            ? 'bg-zinc-950 text-white dark:bg-accent/15 dark:text-accent border-zinc-950 dark:border-white'
-                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                            ? 'bg-accent/70 text-white border-white'
+                            : 'bg-zinc-800 text-zinc-300 border-zinc-700'
                         }`}
                       >
                         {group}
@@ -727,14 +567,14 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       <div
                         key={ex.id}
                         onClick={() => handleAddFromLibrary(ex)}
-                        className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-850 border border-zinc-200 dark:border-white/10 transition-colors cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                        className="p-3 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-white/10 transition-colors cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                       >
                         <div>
-                          <h4 className="text-xs font-bold text-zinc-900 dark:text-white transition-colors">
+                          <h4 className="text-xs font-bold text-white transition-colors">
                             {ex.nome}
                           </h4>
-                          <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{ex.grupo}</span>
+                          <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 mt-0.5">
+                            <span className="font-semibold text-zinc-300">{ex.grupo}</span>
                             <span>•</span>
                             <span>{ex.mecanica}</span>
                             <span>•</span>
@@ -744,7 +584,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
 
                         <button
                           type="button"
-                          className="min-h-[44px] px-2.5 py-1 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[11px] font-bold group-hover:bg-zinc-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-zinc-950 transition-colors"
+                          className="min-h-[44px] px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-100 text-[11px] font-bold group-hover:bg-white group-hover:text-zinc-950 transition-colors"
                         >
                           + Adicionar
                         </button>
@@ -756,13 +596,13 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
             ) : (
               /* Formulário de Criação de Exercício Avulso */
               <form onSubmit={handleAddCustomExercise} className="flex-1 overflow-y-auto p-4 space-y-3.5">
-                <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 text-xs flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 shrink-0 text-zinc-900 dark:text-white" />
+                <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 text-zinc-300 text-xs flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 shrink-0 text-white" />
                   <span>Registe um exercício exclusivo prescrito pelo seu treinador.</span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                  <label className="block text-xs font-bold text-zinc-300 mb-1">
                     Nome do Exercício <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -771,19 +611,19 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     onChange={(e) => setCustomExName(e.target.value)}
                     placeholder="Ex: Supino Hammer com pega neutra"
                     required
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-400"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                    <label className="block text-xs font-bold text-zinc-300 mb-1">
                       Grupo Muscular
                     </label>
                     <select
                       value={customExGroup}
                       onChange={(e) => setCustomExGroup(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-400 cursor-pointer"
+                      className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400 cursor-pointer"
                     >
                       {MUSCLE_GROUPS.map((g) => (
                         <option key={g} value={g}>{g}</option>
@@ -792,7 +632,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                    <label className="block text-xs font-bold text-zinc-300 mb-1">
                       Equipamento
                     </label>
                     <input
@@ -800,7 +640,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExEquip}
                       onChange={(e) => setCustomExEquip(e.target.value)}
                       placeholder="Ex: Máquina / Polia"
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-900 dark:text-white focus:outline-none focus:border-zinc-400"
+                      className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
                     />
                   </div>
                 </div>
@@ -814,7 +654,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       min={1}
                       max={10}
                       onChange={(e) => setCustomExSets(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -825,7 +665,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExReps}
                       onChange={(e) => setCustomExReps(e.target.value)}
                       placeholder="10-12"
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -835,7 +675,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       type="number"
                       value={customExWeight}
                       onChange={(e) => setCustomExWeight(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -846,7 +686,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExRest}
                       step={15}
                       onChange={(e) => setCustomExRest(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-mono tabular-nums font-bold text-zinc-900 dark:text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
                 </div>
@@ -854,7 +694,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full min-h-[48px] py-3 rounded-xl bg-zinc-950 dark:bg-accent dark:text-app text-white font-bold text-xs shadow-md active:scale-95 transition-colors cursor-pointer"
+                    className="w-full min-h-[48px] py-3 rounded-xl bg-primary text-app font-bold text-xs shadow-md active:scale-95 transition-colors cursor-pointer"
                   >
                     Adicionar Exercício ao Treino
                   </button>

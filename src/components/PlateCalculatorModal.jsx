@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Dumbbell, Info } from 'lucide-react';
+import { X, Dumbbell } from 'lucide-react';
 import { platesPerSide } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
 
@@ -27,20 +27,20 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
       <div 
-        className="w-full max-w-md bg-white dark:bg-surface rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col animate-scaleUp"
+        className="w-full max-w-md bg-surface rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-accent/15 text-accent flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-accent/70 text-white flex items-center justify-center font-bold">
               <Dumbbell className="w-4 h-4 stroke-[2.2]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-zinc-950 dark:text-zinc-50">
+              <h3 className="text-sm font-bold text-zinc-50">
                 Calculadora de Anilhas
               </h3>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              <p className="text-[11px] text-zinc-400">
                 Distribuição exata por cada lado da barra
               </p>
             </div>
@@ -49,7 +49,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="tap-44 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5 stroke-[2]" />
           </button>
@@ -59,7 +59,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
         <div className="p-5 space-y-5">
           {/* Escolha da Barra */}
           <div>
-            <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">
               Peso da Barra
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -77,8 +77,8 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                   }}
                   className={`py-2 px-2 rounded-xl text-xs font-bold transition-all border cursor-pointer text-center ${
                     barWeight === b.weight
-                      ? 'bg-accent text-zinc-950 border-accent shadow-xs'
-                      : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                      ? 'bg-accent text-white border-accent shadow-xs'
+                      : 'bg-zinc-800/80 text-zinc-300 border-zinc-700'
                   }`}
                 >
                   {b.label}
@@ -89,21 +89,21 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
 
           {/* Carga Alvo Total */}
           <div>
-            <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">
               Carga Alvo Total (Barra + Anilhas)
             </label>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => adjustWeight(-5)}
-                className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-200 dark:border-zinc-700 cursor-pointer"
+                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
               >
                 -5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(-2.5)}
-                className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-200 dark:border-zinc-700 cursor-pointer"
+                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
               >
                 -2.5
               </button>
@@ -115,7 +115,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                   step="0.5"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(Math.max(barWeight, parseFloat(e.target.value) || barWeight))}
-                  className="w-full h-12 rounded-xl text-center font-black text-xl tabular-nums bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-950 dark:text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent"
+                  className="w-full h-12 rounded-xl text-center font-black text-xl tabular-nums bg-zinc-900 border border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent"
                 />
                 <span className="absolute right-3 top-3.5 text-xs font-bold text-zinc-400 pointer-events-none">
                   kg
@@ -125,14 +125,14 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
               <button
                 type="button"
                 onClick={() => adjustWeight(2.5)}
-                className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-200 dark:border-zinc-700 cursor-pointer"
+                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
               >
                 +2.5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(5)}
-                className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-200 dark:border-zinc-700 cursor-pointer"
+                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
               >
                 +5
               </button>
@@ -140,7 +140,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           </div>
 
           {/* Desenho da Barra em SVG */}
-          <div className="bg-zinc-100 dark:bg-zinc-950 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800/80">
             <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2 text-center">
               Visualização por lado da barra
             </div>
@@ -197,10 +197,10 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
             </div>
 
             {/* Resumo Textual */}
-            <div className="text-center mt-2 border-t border-zinc-200 dark:border-white/10 pt-2 text-xs">
+            <div className="text-center mt-2 border-t border-white/10 pt-2 text-xs">
               {calc?.plates && calc.plates.length > 0 ? (
                 <div className="space-y-1">
-                  <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                  <span className="font-bold text-zinc-100">
                     Colocar por lado ({calc.perSideKg} kg):
                   </span>
                   <div className="flex flex-wrap items-center justify-center gap-1.5 font-mono font-bold text-xs">
@@ -231,7 +231,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-bold text-xs uppercase tracking-wider cursor-pointer"
+            className="w-full py-3 rounded-xl bg-white text-zinc-950 font-bold text-xs uppercase tracking-wider cursor-pointer"
           >
             Entendido
           </button>

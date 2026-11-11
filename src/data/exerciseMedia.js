@@ -21,10 +21,12 @@ export function normalizeMediaUrl(url) {
 /** Entrada do catálogo para um exercício (id, slug ou nome). */
 export function getCatalogEntry(exercise) {
   if (!exercise) return null;
-  const id = typeof exercise === 'string' ? exercise : exercise.slug || exercise.id;
+  const id = typeof exercise === 'string' || typeof exercise === 'number' ? String(exercise) : exercise.slug || exercise.id;
   if (id && EXERCISE_CATALOG[id]) return EXERCISE_CATALOG[id];
   const found = findExerciseIn100(id) || (typeof exercise === 'object' ? findExerciseIn100(exercise.name || exercise.nome) : null);
-  return found ? EXERCISE_CATALOG[found.slug] || null : null;
+  if (found && EXERCISE_CATALOG[found.slug]) return EXERCISE_CATALOG[found.slug];
+  const verified = getVerifiedExerciseVideo(exercise);
+  return verified?.canonicalId ? EXERCISE_CATALOG[verified.canonicalId] || null : null;
 }
 
 /**

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { AuthContext } from './authContextDef';
+import { CONSENT_VERSION } from '../legal/config';
 
 const GUEST_STORAGE_KEY = 'ab_fitness_guest_mode_v1';
 
@@ -105,7 +106,7 @@ export function AuthProvider({ children }) {
   };
 
   // Cadastro de Novo Usuário
-  const signUpWithEmail = async (email, password, fullName) => {
+  const signUpWithEmail = async (email, password, fullName, consent = null) => {
     if (!configured || !supabase) {
       throw new Error('Supabase não configurado. Por favor, adicione as chaves no ambiente.');
     }
@@ -122,6 +123,10 @@ export function AuthProvider({ children }) {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName || email.split('@')[0],
+          // Registo do consentimento (copiado para public.user_consents por trigger no servidor)
+          ...(consent?.terms && consent?.health
+            ? { consent_terms_at: new Date().toISOString(), consent_health_at: new Date().toISOString(), consent_version: CONSENT_VERSION }
+            : {}),
         },
       },
     });
@@ -132,6 +137,30 @@ export function AuthProvider({ children }) {
       setIsGuest(false);
       localStorage.removeItem(GUEST_STORAGE_KEY);
     }
+    return data;
+  };
+
+  // Reenviar e-mail de confirmação
+  const resendConfirmationEmail = async (emailToResend) => {
+    if (!configured || !supabase) {
+      throw new Error('Supabase não configurado. Por favor, adicione as chaves no ambiente.');
+    }
+    const targetEmail = (emailToResend || '').trim();
+    if (!targetEmail) {
+      throw new Error('Indique o e-mail para o qual pretende reenviar a confirmação.');
+    }
+    const redirectUrl = typeof window !== 'undefined' && window.location.origin
+      ? `${window.location.origin}/`
+      : 'https://ba-fitness.vercel.app/';
+
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: targetEmail,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
+    });
+    if (error) throw error;
     return data;
   };
 
@@ -159,12 +188,11 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // Só para mostrar/ocultar a UI de admin: o acesso real aos dados é garantido pelas políticas RLS.
+  // Só para mostrar/ocultar a UI de admin/trainer: o acesso real aos dados é garantido pelas políticas RLS.
+  // Role protegido na base de dados por trigger (prevent_profile_role_change) — "coach" é o papel de PT.
   const profileRole = roleState.userId === userId ? roleState.role : null;
-  const isAdmin = Boolean(
-    profileRole === 'admin' ||
-    (user?.email === 'brunoaaraujo2005@gmail.com' && user?.email_confirmed_at)
-  );
+  const isAdmin = Boolean(profileRole === 'admin');
+  const isTrainer = Boolean(profileRole === 'coach');
 
   const value = {
     user,
@@ -172,9 +200,11 @@ export function AuthProvider({ children }) {
     loading,
     isGuest,
     isAdmin,
+    isTrainer,
     isConfigured: configured,
     signInWithEmail,
     signUpWithEmail,
+    resendConfirmationEmail,
     signOut,
     continueAsGuest,
   };

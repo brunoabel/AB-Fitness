@@ -7,7 +7,7 @@ import { formatDatePt } from './bodyPortfolio';
 
 const W = 1080;
 const H = 1920;
-const ACCENT = '#00f0ff';
+const ACCENT = '#ffffff';
 
 function loadBlobImage(blob) {
   return new Promise((resolve, reject) => {

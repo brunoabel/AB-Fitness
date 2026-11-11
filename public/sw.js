@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v5';
+const CACHE_NAME = 'ab-fitness-v8'; // v8: novo design oficial do logo AB Fitness (PWA e ícones renovados); v7: ícones PNG do manifesto
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;
@@ -8,7 +8,9 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/pwa-icon.svg'
+  '/pwa-icon.svg',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -97,13 +99,17 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
+  // Supabase (dados e autenticação do utilizador): nunca passa pelo cache, para não guardar dados
+  // de uma conta num aparelho partilhado. Offline, a app já usa o LocalStorage e a fila de sincronização.
+  if (url.hostname.endsWith('.supabase.co') || url.hostname.endsWith('.supabase.in')) return;
+
   // Vídeos: o bucket não envia CORS, por isso não é possível servir pedidos parciais (Range)
   // a partir do cache. Deixa passar diretamente para a rede.
-  if (request.destination === 'video' || request.headers.has('range')) return;
+  if (request.destination === 'video' || request.headers.has('range') || url.pathname.endsWith('.mp4')) return;
 
   // Capas dos vídeos (R2): cache primeiro, com limite de entradas
   // Posters (bucket de origem ou o teu R2 espelhado via VITE_MEDIA_BASE_URL)
-  if (url.hostname === MEDIA_HOST || url.pathname.startsWith('/exercise-posters/')) {
+  if ((url.hostname === MEDIA_HOST && !url.pathname.endsWith('.mp4')) || url.pathname.startsWith('/exercise-posters/')) {
     event.respondWith(cacheFirst(request, MEDIA_CACHE));
     return;
   }
@@ -115,7 +121,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // App (mesma origem): rede com limite de 3s e fallback para cache.
-  // APIs externas (Supabase etc.): rede primeiro sem limite, para não servir dados desatualizados só por lentidão.
+  // Outros pedidos externos (fontes etc.): rede primeiro sem limite.
   const sameOrigin = url.origin === self.location.origin;
   event.respondWith(
     networkFirstWithTimeout(request, {

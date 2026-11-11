@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  X, 
-  Zap, 
-  Dumbbell, 
-  Flame, 
-  ShieldCheck, 
-  Activity, 
-  Droplets, 
-  Moon, 
-  Calculator, 
-  CheckCircle2, 
+import {
+  X,
+  Zap,
+  Dumbbell,
+  Flame,
+  ShieldCheck,
+  Activity,
+  Droplets,
+  Moon,
+  Calculator,
+  CheckCircle2,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -17,8 +17,7 @@ import {
   HeartPulse,
   Star,
   ListFilter,
-  ArrowLeft,
-  Sparkles
+  ArrowLeft
 } from 'lucide-react';
 import { ATHLETE_MANUALS } from '../data/athleteManuals';
 import { getSavedUserProfile, saveUserProfileLocal } from '../utils/storage';
@@ -219,7 +218,7 @@ export default function AthleteManualModal({ onClose }) {
             </button>
 
             <div className="flex items-center gap-2 pl-1">
-              <span className="px-2 py-0.5 rounded-md bg-accent/15 text-accent text-[11px] font-black uppercase tracking-wider border border-accent/25">
+              <span className="px-2 py-0.5 rounded-md bg-accent/70 text-white text-[11px] font-black uppercase tracking-wider border border-accent-hover">
                 {currentIndex + 1} de {tabOptions.length}
               </span>
               <span className="font-bold text-xs text-zinc-200 hidden sm:inline truncate max-w-[200px]">
@@ -238,7 +237,7 @@ export default function AthleteManualModal({ onClose }) {
               className="h-9 px-3 rounded-xl bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 hover:text-white flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer border border-zinc-700/60"
               title="Ver Todos os Manuais"
             >
-              <ListFilter className="w-3.5 h-3.5 text-accent" />
+              <ListFilter className="w-3.5 h-3.5 text-white" />
               <span>Índice ({tabOptions.length})</span>
             </button>
 
@@ -284,7 +283,7 @@ export default function AthleteManualModal({ onClose }) {
                   onClick={() => switchManual(tab.key)}
                   className={`min-h-[44px] py-1.5 px-3 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 active:scale-95 cursor-pointer border ${
                     isSelected
-                      ? 'bg-accent text-zinc-950 border-accent shadow-sm font-black'
+                      ? 'bg-accent text-white border-accent shadow-sm font-black'
                       : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-800'
                   }`}
                 >
@@ -395,7 +394,7 @@ export default function AthleteManualModal({ onClose }) {
           <div id="sec-calc" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-                <Calculator className="w-4 h-4 text-accent" />
+                <Calculator className="w-4 h-4 text-white" />
                 <span>Calculadora Personalizada de Metas</span>
               </div>
               <div className="flex items-center gap-1.5 font-mono tabular-nums">
@@ -417,7 +416,7 @@ export default function AthleteManualModal({ onClose }) {
                 <span className="text-[11px] text-zinc-400 font-bold uppercase block">
                   Proteína Recomendada
                 </span>
-                <span className="text-lg font-black text-accent block mt-0.5 font-mono tabular-nums">
+                <span className="text-lg font-black text-white block mt-0.5 font-mono tabular-nums">
                   {getProteinTarget()} <span className="text-xs font-normal text-zinc-400 font-sans">g/dia</span>
                 </span>
                 <span className="text-[11px] text-zinc-400 mt-0.5 block">
@@ -442,7 +441,7 @@ export default function AthleteManualModal({ onClose }) {
           {/* Estrutura & Divisão do Treino */}
           <div id="sec-split" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-3 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-              <Layers className="w-4 h-4 text-accent" />
+              <Layers className="w-4 h-4 text-white" />
               <span>Diretrizes de Volume & Carga</span>
             </div>
 
@@ -451,7 +450,7 @@ export default function AthleteManualModal({ onClose }) {
                 <div key={i} className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800/80">
                   <div className="flex items-center justify-between mb-1">
                     <strong className="text-white font-bold">{split.day}</strong>
-                    <span className="text-[11px] font-bold text-accent">{split.focus}</span>
+                    <span className="text-[11px] font-bold text-white">{split.focus}</span>
                   </div>
                   <p className="text-zinc-400 leading-relaxed text-[11px]">
                     {split.detail}
@@ -546,13 +545,13 @@ export default function AthleteManualModal({ onClose }) {
             className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer border ${
               isCurrentGoal || justSavedGoal
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-xs' 
-                : 'bg-accent text-zinc-950 hover:bg-[#d5fa52] border-accent shadow-sm font-black'
+                : 'bg-accent text-white hover:bg-[#d5fa52] border-accent shadow-sm font-black'
             }`}
           >
             {isCurrentGoal || justSavedGoal ? (
               <>
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 stroke-[2.5]" />
-                <span>O Meu Objetivo Atual ✓</span>
+                <span>O Meu Objetivo Atual</span>
               </>
             ) : (
               <>
@@ -584,7 +583,7 @@ export default function AthleteManualModal({ onClose }) {
             >
               <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-[#191920]">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-accent" />
+                  <BookOpen className="w-4 h-4 text-white" />
                   <h4 className="font-bold text-sm text-white">
                     Índice de Manuais do Atleta ({tabOptions.length})
                   </h4>
@@ -613,12 +612,12 @@ export default function AthleteManualModal({ onClose }) {
                       }}
                       className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer active:scale-[0.99] ${
                         isSelected
-                          ? 'bg-accent/10 border-accent text-white'
+                          ? 'bg-accent/70 border-accent text-white'
                           : 'bg-zinc-900/60 hover:bg-zinc-800/80 border-zinc-800 text-zinc-300'
                       }`}
                     >
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        isSelected ? 'bg-accent text-zinc-950' : 'bg-zinc-800 text-zinc-400'
+                        isSelected ? 'bg-accent text-white' : 'bg-zinc-800 text-zinc-400'
                       }`}>
                         <Icon className="w-4 h-4 stroke-[2]" />
                       </div>
@@ -642,7 +641,7 @@ export default function AthleteManualModal({ onClose }) {
                         </p>
                       </div>
 
-                      <ChevronRight className={`w-4 h-4 shrink-0 mt-2.5 ${isSelected ? 'text-accent' : 'text-zinc-600'}`} />
+                      <ChevronRight className={`w-4 h-4 shrink-0 mt-2.5 ${isSelected ? 'text-white' : 'text-zinc-600'}`} />
                     </button>
                   );
                 })}

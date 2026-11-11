@@ -155,7 +155,7 @@ export default function RestTimer({
               </div>
               <button
                 onClick={() => setIsAlerting(false)}
-                className="ml-2 px-3.5 py-1.5 bg-accent text-zinc-950 text-xs font-bold rounded-lg shadow-xs hover:bg-accent-strong active:scale-95 transition-all cursor-pointer shrink-0 min-h-[44px]"
+                className="ml-2 px-3.5 py-1.5 bg-primary text-app text-xs font-bold rounded-lg shadow-xs hover:bg-primary-hover active:scale-95 transition-all cursor-pointer shrink-0 min-h-[44px]"
               >
                 Pronto
               </button>
@@ -182,7 +182,7 @@ export default function RestTimer({
                   onClick={toggleTimer}
                   className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer select-none shrink-0 ${
                     isActive
-                      ? 'bg-accent text-zinc-950 hover:bg-accent-strong'
+                      ? 'bg-accent text-white hover:bg-accent-strong'
                       : 'bg-zinc-800 text-zinc-100 hover:bg-zinc-700'
                   } active:scale-95`}
                   aria-label={isActive ? 'Pausar Descanso' : 'Iniciar Descanso'}
@@ -194,10 +194,11 @@ export default function RestTimer({
                   )}
                 </button>
 
+                <img src="/coach/ab-coach-rest-128.jpg" alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover border border-white/[0.08] shrink-0" />
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[11px] font-bold tracking-wider uppercase text-zinc-400">
-                      {isActive ? 'A descansar...' : 'Em pausa'}
+                      {isActive ? 'A descansar · bebe água' : 'Em pausa'}
                     </span>
                     {isActive && (
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -263,7 +264,7 @@ export default function RestTimer({
                       onClick={() => selectPreset(sec)}
                       className={`py-1.5 px-1 rounded-lg text-xs font-bold tabular-nums transition-all cursor-pointer border ${
                         totalSeconds === sec
-                          ? 'bg-accent text-zinc-950 border-accent'
+                          ? 'bg-accent text-white border-accent'
                           : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-700'
                       }`}
                     >
@@ -284,7 +285,7 @@ export default function RestTimer({
               className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-surface/90 hover:bg-surface-2 text-zinc-300 hover:text-white border border-white/[0.12] shadow-lg backdrop-blur-md text-xs font-semibold active:scale-95 transition-all cursor-pointer select-none"
               title="Iniciar descanso"
             >
-              <Play className="w-3 h-3 text-accent fill-current" />
+              <Play className="w-3 h-3 text-white fill-current" />
               <span>Descanso</span>
               <span className="font-mono text-zinc-400 font-normal">({totalSeconds}s)</span>
             </button>

@@ -1,16 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { THEMES } from './share/themes';
+import ShareTitleEditor from './share/ShareTitleEditor';
+import ShareThemePicker from './share/ShareThemePicker';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import { createPortal } from 'react-dom';
 import L from 'leaflet';
-import { 
-  X, 
-  Share2, 
-  Download, 
-  Camera, 
-  Copy, 
-  Check, 
-  Sparkles, 
-  Edit2,
+import {
+  X,
+  Share2,
+  Download,
+  Copy,
+  Check,
+  Sparkles,
   ArrowLeft,
   MessageCircle,
   Image as ImageIcon
@@ -25,32 +26,6 @@ import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
 
 // Temas visuais desportivos de alto impacto
-const THEMES = {
-  'strava-orange': {
-    id: 'strava-orange',
-    name: 'Strava Orange',
-    accent: '#fc5200',
-    glow: 'rgba(252, 82, 0, 0.85)',
-    bgGrad: ['#1c0f08', '#0a0502'],
-    badge: 'Strava'
-  },
-  'ab-cyan': {
-    id: 'ab-cyan',
-    name: 'AB Electric',
-    accent: '#00f0ff',
-    glow: 'rgba(56, 189, 248, 0.85)',
-    bgGrad: ['#0c1524', '#04070e'],
-    badge: 'Cyan'
-  },
-  'satellite-map': {
-    id: 'satellite-map',
-    name: 'Satélite HD',
-    accent: '#34d399',
-    glow: 'rgba(52, 211, 153, 0.85)',
-    bgGrad: ['#0f1715', '#050a08'],
-    badge: 'Satélite'
-  }
-};
 
 // Componente de Minimapa Real (100% livre de marcas d'água de API KEY)
 function CardRouteMap({ coordinates, themeId }) {
@@ -116,7 +91,7 @@ function CardRouteMap({ coordinates, themeId }) {
     }).addTo(map);
 
     // Linha neon principal
-    const lineColor = themeId === 'strava-orange' ? '#fc5200' : themeId === 'satellite-map' ? '#34d399' : '#00f0ff';
+    const lineColor = themeId === 'strava-orange' ? '#fc5200' : themeId === 'satellite-map' ? '#34d399' : '#ffffff';
     const poly = L.polyline(latLngs, {
       color: lineColor,
       weight: 4.5,
@@ -359,13 +334,8 @@ export default function RunningShareModal({
     ctx.stroke();
 
     if (logoImg) {
-      const imgPad = 16;
-      ctx.drawImage(logoImg, logoX + imgPad, logoY + 10, logoSize - imgPad * 2, (logoSize - imgPad * 2) * 0.75);
+      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
     }
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 13px system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('FITNESS', logoX + logoSize / 2, logoY + logoSize - 14);
     ctx.restore();
 
     ctx.textAlign = 'left';
@@ -665,109 +635,8 @@ export default function RunningShareModal({
         {/* Corpo Scrollável do Modal */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2.5 min-h-0">
           
-          {/* Customização: Título da Sessão */}
-          <div className="px-3 py-1.5 bg-zinc-950/60 border border-zinc-800/80 rounded-2xl flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">
-                Título:
-              </span>
-              {isEditingTitle ? (
-                <input
-                  type="text"
-                  value={sessionTitle}
-                  onChange={(e) => setSessionTitle(e.target.value)}
-                  onBlur={() => setIsEditingTitle(false)}
-                  autoFocus
-                  className="w-full px-2 py-0.5 rounded-lg bg-zinc-800 border border-orange-500/50 text-white text-xs font-bold outline-none"
-                />
-              ) : (
-                <span 
-                  onClick={() => setIsEditingTitle(true)}
-                  className="text-xs font-bold text-white hover:text-orange-400 transition-colors cursor-pointer truncate flex items-center gap-1.5"
-                  title="Clique para editar"
-                >
-                  <span className="truncate">{sessionTitle}</span>
-                  <Edit2 className="w-3 h-3 text-zinc-500 shrink-0" />
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={() => {
-                setSessionTitle(sessionTitle === 'Sessão de Treino de Hoje' ? 'Corrida Matinal' : 'Sessão de Treino de Hoje');
-                triggerHaptic(8);
-              }}
-              className="text-[11px] text-orange-400 hover:underline font-bold shrink-0 cursor-pointer"
-            >
-              Alternar
-            </button>
-          </div>
-
-          {/* Seletor de Aspect Ratio e Temas */}
-          <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
-            {/* Proporção */}
-            <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
-              <button
-                onClick={() => { setAspectRatio('story'); triggerHaptic(8); }}
-                className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer ${
-                  aspectRatio === 'story' 
-                    ? 'bg-white text-black shadow' 
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Story 9:16
-              </button>
-              <button
-                onClick={() => { setAspectRatio('post'); triggerHaptic(8); }}
-                className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer ${
-                  aspectRatio === 'post' 
-                    ? 'bg-white text-black shadow' 
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Feed 1:1
-              </button>
-            </div>
-
-            {/* Temas */}
-            <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
-              {Object.values(THEMES).map((th) => (
-                <button
-                  key={th.id}
-                  onClick={() => { setThemeId(th.id); setBgMode('map'); triggerHaptic(8); }}
-                  className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    themeId === th.id && bgMode === 'map'
-                      ? 'bg-zinc-800 text-white border border-zinc-700 shadow-xs'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                  title={th.name}
-                >
-                  {th.badge}
-                </button>
-              ))}
-
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                accept="image/*" 
-                onChange={handlePhotoUpload} 
-                className="hidden" 
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
-                  bgMode === 'custom-photo'
-                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-                title="Carregar Foto Própria"
-              >
-                <Camera className="w-3 h-3" />
-                <span>Foto</span>
-              </button>
-            </div>
-          </div>
-
+          <ShareTitleEditor {...{ isEditingTitle, sessionTitle, setIsEditingTitle, setSessionTitle }} />
+          <ShareThemePicker {...{ aspectRatio, bgMode, fileInputRef, handlePhotoUpload, setAspectRatio, setBgMode, setThemeId, themeId }} />
           {/* Pré-visualização do Card Compacto e Escalado */}
           <div className="flex items-center justify-center p-2 bg-black/50 rounded-2xl border border-zinc-800/80 overflow-hidden">
             <div 
@@ -890,7 +759,7 @@ export default function RunningShareModal({
           <button
             onClick={handleShare}
             disabled={isExporting}
-            className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-accent text-app hover:bg-accent-hover font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+            className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
           >
             <Share2 className="w-4 h-4" />
             <span>{isExporting ? 'A Gerar Imagem HD...' : 'Partilhar Cartão (Instagram / Redes)'}</span>

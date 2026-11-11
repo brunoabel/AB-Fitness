@@ -60,86 +60,9 @@ export function findNearestExercise(grupo = '', porcao = '', excludeIds = new Se
   return EXERCISE_CATALOG.find((e) => !excludeIds.has(e.id)) || EXERCISE_CATALOG[0];
 }
 
-export function formatDynamicCatalogForPrompt(userText = ''): string {
-  const text = (userText || '').toLowerCase();
-  
-  // Deteção inteligente: se o utilizador está apenas a fazer uma pergunta teórica ou de dúvidas
-  const isWorkoutRequest = /(treino|ficha|rotina|exerc[íi]cio|monta|prescreve|s[ée]rie|divis[ãa]o|push|pull|legs|peito|costas|ombro|perna|quadr[íi]ceps|posterior|gl[úu]teo|b[íi]ceps|tr[íi]ceps|abd[ôo]men|full\s*body|cardio)/i.test(text);
-
-  if (!isWorkoutRequest && text.trim().length > 0) {
-    // Para dúvidas teóricas: NÃO envia catálogo pesado. Resposta instantânea!
-    return 'MODO CONSELHO TEÓRICO: O utilizador fez uma pergunta teórica/biomecânica. Responde de forma curta, didática e motivadora. Define treino: null.';
-  }
-
-  // Grupos musculares alvo identificados a partir do texto
-  const targets = new Set<string>();
-
-  if (/(peito|peitoral|supino|crucifixo|flex[ãa]o|cross)/i.test(text)) {
-    targets.add('Peito');
-    targets.add('Tríceps');
-    targets.add('Ombros');
-  }
-  if (/(costas|dorsal|remada|puxada|barra\s*fixa|terra)/i.test(text)) {
-    targets.add('Costas');
-    targets.add('Bíceps');
-    targets.add('Trapézio');
-    targets.add('Antebraços');
-  }
-  if (/(ombro|deltoide|desenvolvimento|eleva[çc][ãa]o|face\s*pull)/i.test(text)) {
-    targets.add('Ombros');
-    targets.add('Trapézio');
-    targets.add('Tríceps');
-  }
-  if (/(b[íi]ceps|tr[íi]ceps|bra[çc]o|antebra[çc]o|rosca)/i.test(text)) {
-    targets.add('Bíceps');
-    targets.add('Tríceps');
-    targets.add('Antebraços');
-  }
-  if (/(perna|quadr[íi]ceps|agachamento|leg\s*press|extensora)/i.test(text)) {
-    targets.add('Quadríceps');
-    targets.add('Posteriores');
-    targets.add('Glúteos');
-    targets.add('Panturrilhas');
-    targets.add('Adutores');
-  }
-  if (/(posterior|isquiotibiais|stiff|rdl|flexora|gl[úu]teo|p[ée]lvica)/i.test(text)) {
-    targets.add('Posteriores');
-    targets.add('Glúteos');
-    targets.add('Panturrilhas');
-    targets.add('Quadríceps');
-  }
-  if (/(abd[ôo]men|abdominal|core|prancha)/i.test(text)) {
-    targets.add('Abdômen');
-  }
-  if (/(cardio|funcional|alongamento|mobilidade)/i.test(text)) {
-    targets.add('Funcional & Cardio');
-    targets.add('Mobilidade');
-  }
-
-  let exercisesToInclude: CatalogExercise[] = [];
-
-  if (targets.size > 0) {
-    exercisesToInclude = EXERCISE_CATALOG.filter((e) => targets.has(e.grupo));
-  } else {
-    // Curadoria dos exercícios essenciais mais prescritos para full-body / geral
-    const essentialIds = new Set([
-      "supino-reto-barra", "supino-inclinado-halteres", "crucifixo-reto-halteres", "crossover-polia-alta", "voador-peck-deck", "paralelas-foco-peito",
-      "puxada-frontal-aberta", "remada-curvada-barra", "remada-baixa-cabo", "remada-unilateral-serrote", "barra-fixa-pronada", "pulldown-com-corda",
-      "desenvolvimento-com-halteres", "desenvolvimento-militar", "elevacao-lateral-halteres", "elevacao-lateral-polia", "crucifixo-invertido-halteres", "face-pull",
-      "rosca-direta-barra", "rosca-alternada", "rosca-martelo-halteres", "rosca-scott-barra-w", "rosca-polia-baixa",
-      "triceps-pulley-barra-reta", "triceps-corda", "triceps-testa-barra-w", "triceps-frances-halter", "supino-fechado",
-      "agachamento-livre", "leg-press-45", "agachamento-bulgaro", "cadeira-extensora", "passada-walking-lunges",
-      "stiff-com-barra", "stiff-com-halteres", "terra-romeno-rdl", "mesa-flexora", "cadeira-flexora",
-      "elevacao-pelvica-hip-thrust", "cadeira-abdutora", "cadeira-adutora", "agachamento-sumo",
-      "gemeos-em-pe-maquina", "gemeos-sentado", "gemeos-leg-press",
-      "crunch-polia", "prancha-isometrica", "elevacao-pernas-suspensao", "roda-abdominal-ab-wheel"
-    ]);
-    exercisesToInclude = EXERCISE_CATALOG.filter((e) => essentialIds.has(e.id));
-  }
-
-  // Formatação ultra-compacta: id|nome|grupo|porção|tipo
-  return exercisesToInclude.map(
-    (e) => `${e.id}|${e.nome}|${e.grupo}|${e.porcao}|${e.tipo}`
+export function formatCatalogForPrompt(): string {
+  return EXERCISE_CATALOG.map(
+    (e) => `${e.id}|${e.nome}|${e.grupo}|${e.porcao}|${e.equipamento}|${e.tipo}`
   ).join('\n');
 }
 
@@ -334,7 +257,7 @@ Montar treinos personalizados e responder dúvidas de treino usando EXCLUSIVAMEN
 METODOLOGIA AB FITNESS
 - Subdivisões anatômicas: Peitoral (clavicular/superior, esternocostal/médio, costal/inferior); Pernas (quadríceps com ênfase em vasto medial e reto femoral vs. posteriores e glúteos); e demais grupos conforme o catálogo. Quando o usuário pedir ênfase em uma porção, priorize exercícios cujo vetor de força e ângulo ativem aquela porção e explique o porquê.
 - Estrutura: comece por compostos mais pesados, depois secundários, e termine com isoladores. Evite exercícios redundantes no mesmo treino.
-- Prescrição de referência (ajuste ao nível): 12 a 18 séries semanais por grupo muscular para intermediários, 8 a 12 para iniciantes; 6 a 15 reps (compostos 6-10, isoladores 10-15); cadência excêntrica de 2 a 3 segundos; descanso de 90-120s em compostos e 60-75s em isoladores; proximidade da falha de 0-3 RIR.
+- Prescrição de referência (ajuste ao nível): 12 a 18 séries semanais por grupo muscular para intermediários, 8 a 12 para iniciantes, 14 a 20 para avançados; 6-15 reps (compostos 6-12, isoladores 10-15); descanso de 90-120s em compostos e 60-75s em isoladores; proximidade da falha de 1-3 RIR; frequência mínima de 2x/semana por grupo muscular grande.
 - Progressão: sugira progressão de carga ou reps de forma simples.
 - Sem informações de nível/objetivo/tempo disponível, assuma intermediário e 45-60 min, e informe a suposição em uma frase. Faça no máximo UMA pergunta curta de esclarecimento, e só se for realmente necessária.
 
@@ -347,8 +270,8 @@ PERSONALIZAÇÃO E SEGURANÇA
 FORMATO DE SAÍDA
 Responda SEMPRE no JSON do schema fornecido. \`mensagem\` contém a explicação amigável (pode usar poucos emojis). \`treino\` é preenchido somente quando houver um treino a entregar; caso contrário, null.`;
 
-export function buildCoachSystemInstruction(perfil?: any, userPromptText = ''): string {
-  const catalogText = formatDynamicCatalogForPrompt(userPromptText);
+export function buildCoachSystemInstruction(perfil?: any): string {
+  const catalogText = formatCatalogForPrompt();
   let perfilContext = '';
 
   if (perfil && typeof perfil === 'object') {
@@ -364,6 +287,13 @@ export function buildCoachSystemInstruction(perfil?: any, userPromptText = ''): 
     if (Array.isArray(perfil.recentWorkouts) && perfil.recentWorkouts.length > 0) {
       const wStr = perfil.recentWorkouts.map((w: any) => `${w.treino} (${w.data})`).join(', ');
       parts.push(`ÚLTIMOS TREINOS: ${wStr}`);
+    }
+    if (Array.isArray(perfil.fadigaMuscular) && perfil.fadigaMuscular.length > 0) {
+      const fadigaTexto = perfil.fadigaMuscular
+        .filter((m: any) => Number(m.fatigue) >= 60)
+        .map((m: any) => `${m.muscle_id} (${Math.round(m.fatigue)}% fadiga, ${Math.round(m.hours_to_recovered ?? 0)}h p/ recuperar)`)
+        .join(', ');
+      if (fadigaTexto) parts.push(`Grupos em fadiga aguda agora (evite trabalho pesado nestes a menos que o usuário peça): ${fadigaTexto}`);
     }
     if (parts.length > 0) {
       perfilContext = `\n\nPERFIL & HISTÓRICO REAL DO ATLETA (considere estritamente ao prescrever cargas e fadiga):\n${parts.join(' | ')}`;
@@ -416,13 +346,6 @@ Deno.serve(async (req: Request) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  if (req.method === "GET") {
-    return new Response(JSON.stringify({ status: "healthy", service: "ab-coach", version: 20 }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
-  }
-
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Método não permitido." }), {
       status: 405,
@@ -431,7 +354,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // 1. Verificação de Autenticação (JWT do Supabase) em memória (0ms overhead)
+    // 1. Verificação de Autenticação (JWT do Supabase)
     const authHeader = req.headers.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(
@@ -440,39 +363,27 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const token = authHeader.replace("Bearer ", "").trim();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-    // Valida a assinatura e a validade do token no Supabase Auth (decodificar o JWT não basta:
-    // um token forjado com "sub" aleatório contornaria o rate limit e gastaria a quota do Gemini).
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    if (!supabaseUrl || !anonKey) {
-      console.error("ERRO: SUPABASE_URL / SUPABASE_ANON_KEY indisponíveis no ambiente da função.");
-      return new Response(
-        JSON.stringify({ error: "Configuração do servidor incompleta." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    const authRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: { Authorization: `Bearer ${token}`, apikey: anonKey }
+    const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        "Authorization": authHeader,
+        "apikey": supabaseAnonKey
+      }
     });
-    if (!authRes.ok) {
+
+    if (!userRes.ok) {
       return new Response(
         JSON.stringify({ error: "Sessão inválida ou expirada. Faça login novamente." }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const authUser = await authRes.json().catch(() => null);
-    const userId: string | undefined = authUser?.id;
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "Sessão inválida. Faça login novamente." }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+
+    const user = await userRes.json();
 
     // 2. Rate Limit simples por usuário
-    if (isRateLimited(userId)) {
+    if (isRateLimited(user.id)) {
       return new Response(
         JSON.stringify({
           error: "Limite de requisições atingido. O AB Coach permite até 20 interações por hora."
@@ -519,23 +430,8 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const configuredModel = Deno.env.get("GEMINI_MODEL");
-    // Modelos oficiais ativos do Google Gemini v1beta (ordem: alta velocidade e capacidade)
-    const candidateModels = [
-      configuredModel && configuredModel !== "gemini-flash-latest" && configuredModel !== "gemini-2.5-flash" ? configuredModel : null,
-      "gemini-3.7-flash",
-      "gemini-3.5-flash",
-      "gemini-3.8-flash",
-      "gemini-3.5-flash-lite",
-      "gemini-3.1-flash-lite"
-    ].filter(Boolean) as string[];
-    const modelsToTry = [...new Set(candidateModels)];
-
-    // Identificar a última mensagem do usuário para podar cirurgicamente o catálogo
-    const lastUserMsg = [...rawMessages].reverse().find((m: any) => m && m.role === "user");
-    const userPromptText = lastUserMsg && typeof lastUserMsg.content === 'string' ? lastUserMsg.content : '';
-
-    const systemInstructionText = buildCoachSystemInstruction(perfil, userPromptText);
+    const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite";
+    const systemInstructionText = buildCoachSystemInstruction(perfil);
 
     const geminiPayload = {
       systemInstruction: {
@@ -543,50 +439,50 @@ Deno.serve(async (req: Request) => {
       },
       contents: geminiContents,
       generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 4096,
+        temperature: 0.4,
         responseMimeType: "application/json",
         responseSchema: GEMINI_RESPONSE_SCHEMA
       }
     };
 
-    async function callGeminiModel(targetModel: string): Promise<Response> {
+    async function callGemini(): Promise<Response> {
       return await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(geminiPayload),
-          signal: AbortSignal.timeout(25000)
+          body: JSON.stringify(geminiPayload)
         }
       );
     }
 
-    let geminiRes: Response | null = null;
-    let lastStatus = 0;
+    let geminiRes = await callGemini();
 
-    for (const m of modelsToTry) {
-      try {
-        geminiRes = await callGeminiModel(m);
-        lastStatus = geminiRes.status;
-        if (geminiRes.ok) {
-          break;
-        }
-        const errDetail = await geminiRes.text().catch(() => "");
-        console.warn(`Modelo ${m} retornou status ${geminiRes.status}: ${errDetail.slice(0, 180)}. Tentando modelo alternativo imediatamente...`);
-      } catch (fetchErr) {
-        console.warn(`Erro/timeout de rede ao contactar modelo ${m}:`, fetchErr);
-      }
+    if (geminiRes.status >= 500) {
+      console.warn(`Tentando novamente chamada ao Gemini após status ${geminiRes.status}...`);
+      await new Promise((r) => setTimeout(r, 800));
+      geminiRes = await callGemini();
     }
 
-    if (!geminiRes || !geminiRes.ok) {
-      console.error(`Todos os modelos do Gemini falharam. Último status: ${lastStatus}`);
+    if (!geminiRes.ok) {
+      const status = geminiRes.status;
+      if (status === 429) {
+        return new Response(
+          JSON.stringify({
+            mensagem: "O AB Coach está com alta demanda no momento. Aguarde alguns segundos e tente novamente.",
+            treino: null
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.error(`Erro na API do Gemini: HTTP ${status}`);
       return new Response(
         JSON.stringify({
-          mensagem: "O motor de inteligência artificial da Google está temporariamente sobrecarregado (alta procura). Por favor, aguarda alguns segundos e tenta novamente.",
+          mensagem: "Não foi possível conectar ao motor de IA no momento. Tente novamente em instantes.",
           treino: null
         }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -604,17 +500,10 @@ Deno.serve(async (req: Request) => {
     }
 
     let parsedJson = null;
-    let cleanedText = rawText.trim();
-    if (cleanedText.startsWith("```json")) {
-      cleanedText = cleanedText.replace(/^```json\s*/, "").replace(/```$/, "").trim();
-    } else if (cleanedText.startsWith("```")) {
-      cleanedText = cleanedText.replace(/^```\s*/, "").replace(/```$/, "").trim();
-    }
-
     try {
-      parsedJson = JSON.parse(cleanedText);
+      parsedJson = JSON.parse(rawText);
     } catch (parseErr) {
-      console.warn("Falha no JSON.parse da resposta do Gemini:", parseErr, "Trecho:", cleanedText.slice(0, 300));
+      console.warn("Falha no JSON.parse da resposta do Gemini:", parseErr);
       return new Response(
         JSON.stringify({
           mensagem: "Recebi a resposta, mas o formato foi inconsistente. Por favor, tente novamente.",
