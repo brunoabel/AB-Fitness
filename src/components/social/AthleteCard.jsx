@@ -23,11 +23,8 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
 
   return (
     <article className="relative overflow-hidden rounded-3xl bg-app border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-      <div className={`h-16 ${cover.className} border-b border-white/[0.06]`} aria-hidden>
-        {/* Linha de barra: assinatura gráfica do AB Fitness */}
-        <span className="absolute left-5 right-5 top-8 h-px bg-white/[0.12]" />
-      </div>
-      <div className="px-5 pb-5 -mt-9">
+      <div className={`h-20 ${cover.className} border-b border-white/[0.06] relative transition-colors`} aria-hidden />
+      <div className="px-5 pb-5 -mt-10">
         <div className="flex items-end justify-between gap-3">
           <Avatar url={avatarPreview || profile?.avatar_url} name={name} size={compact ? 64 : 76} className="ring-4 ring-app" />
           <div className="text-right pb-1">

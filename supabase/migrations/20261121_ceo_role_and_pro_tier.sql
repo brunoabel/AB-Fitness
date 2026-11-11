@@ -86,3 +86,4 @@ SET role = 'ceo',
 WHERE email ILIKE '%brunoaaraujo2005@gmail.com%';
 
 COMMIT;
+

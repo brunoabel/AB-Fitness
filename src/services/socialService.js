@@ -19,7 +19,13 @@ export const COVER_STYLES = [
   { id: 'titanium', label: 'Titânio', className: 'bg-gradient-to-r from-neutral-800 via-stone-700 to-neutral-900 border-white/20', badge: 'PRO' },
   { id: 'cyberpunk', label: 'Neon Ciano', className: 'bg-gradient-to-r from-slate-950 via-cyan-950/80 to-teal-950 border-cyan-500/30', badge: 'PRO' },
   { id: 'aurora', label: 'Aurora', className: 'bg-gradient-to-r from-emerald-950 via-teal-900/70 to-slate-950 border-emerald-500/30', badge: 'PRO' },
-  { id: 'crimson', label: 'Crimson', className: 'bg-gradient-to-r from-rose-950 via-red-950/80 to-zinc-950 border-rose-500/25', badge: 'PRO' }
+  { id: 'crimson', label: 'Crimson', className: 'bg-gradient-to-r from-rose-950 via-red-950/80 to-zinc-950 border-rose-500/25', badge: 'PRO' },
+  { id: 'emerald', label: 'Esmeralda Real', className: 'bg-gradient-to-r from-emerald-950 via-emerald-800/60 to-teal-950 border-emerald-400/30', badge: 'PRO' },
+  { id: 'amethyst', label: 'Ametista Real', className: 'bg-gradient-to-r from-indigo-950 via-purple-900/70 to-fuchsia-950 border-purple-500/30', badge: 'PRO' },
+  { id: 'sunset', label: 'Solar Flare', className: 'bg-gradient-to-r from-amber-950 via-orange-700/60 to-rose-950 border-orange-500/30', badge: 'PRO' },
+  { id: 'electric_blue', label: 'Azul Elétrico', className: 'bg-gradient-to-r from-blue-950 via-indigo-900/80 to-sky-950 border-sky-400/30', badge: 'PRO' },
+  { id: 'magma', label: 'Magma Vulcânico', className: 'bg-gradient-to-r from-red-950 via-orange-950/90 to-zinc-950 border-orange-500/30', badge: 'PRO' },
+  { id: 'monochrome_luxury', label: 'Platina Stealth', className: 'bg-gradient-to-r from-zinc-950 via-zinc-700/40 to-black border-zinc-500/30', badge: 'PRO' }
 ];
 export const FEATURED_STATS = [
   { id: 'total_workouts', label: 'Total de treinos' },
@@ -190,4 +196,255 @@ export async function shareAthleteLink(username) {
       return 'failed';
     }
   }
+}
+
+// ---------- Publicação de Fotos no Perfil & Feed ----------
+
+const POSTS_STORAGE_KEY = 'ab_athlete_posts';
+const DM_STORAGE_PREFIX = 'ab_dm_';
+
+/** Redimensiona fotos para publicação preservando a proporção de ecrã (máx 1280px) */
+export async function compressPostPhoto(file, maxWidth = 1280) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxWidth / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close?.();
+  const toBlob = (type, q) => new Promise((r) => canvas.toBlob(r, type, q));
+  let blob = await toBlob('image/webp', 0.85);
+  if (!blob || blob.type !== 'image/webp') blob = await toBlob('image/jpeg', 0.88);
+  return blob;
+}
+
+export async function uploadPostPhoto(userId, blob) {
+  if (!canUseSocial(userId)) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve({ data: reader.result, error: null });
+      reader.readAsDataURL(blob);
+    });
+  }
+  const ext = blob.type === 'image/webp' ? 'webp' : 'jpg';
+  const path = `${userId}/posts/post-${Date.now()}.${ext}`;
+  try {
+    const { error } = await supabase.storage.from('avatars').upload(path, blob, {
+      contentType: blob.type,
+      cacheControl: '31536000',
+      upsert: false
+    });
+    if (error) throw error;
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+    return { data: data.publicUrl, error: null };
+  } catch (_err) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve({ data: reader.result, error: null });
+      reader.readAsDataURL(blob);
+    });
+  }
+}
+
+export function getLocalPosts() {
+  try {
+    const raw = localStorage.getItem(POSTS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveLocalPosts(posts) {
+  try {
+    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(posts));
+  } catch (e) {
+    console.warn('Não foi possível guardar posts localmente:', e);
+  }
+}
+
+export async function createAthletePost(userId, { imageUrl, caption = '', profile = null }) {
+  const newPost = {
+    id: `post_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    user_id: userId,
+    image_url: imageUrl,
+    caption: (caption || '').trim(),
+    full_name: profile?.full_name || 'Atleta AB',
+    username: profile?.username || null,
+    avatar_url: profile?.avatar_url || null,
+    is_verified: Boolean(profile?.is_verified),
+    is_ceo: Boolean(profile?.is_ceo),
+    is_pro: Boolean(profile?.is_pro),
+    respect_count: 0,
+    respected_by_me: false,
+    created_at: new Date().toISOString()
+  };
+
+  const local = getLocalPosts();
+  saveLocalPosts([newPost, ...local]);
+
+  if (canUseSocial(userId)) {
+    try {
+      const { data, error } = await supabase.from('athlete_posts').insert({
+        user_id: userId,
+        image_url: imageUrl,
+        caption: (caption || '').trim()
+      }).select().maybeSingle();
+
+      if (!error && data) {
+        newPost.id = data.id;
+        const updated = getLocalPosts().map((p) => (p.image_url === imageUrl ? { ...p, id: data.id } : p));
+        saveLocalPosts(updated);
+      }
+    } catch (_e) {}
+  }
+
+  return { data: newPost, error: null };
+}
+
+export async function listAthletePosts(targetUserId) {
+  let posts = [];
+  if (canUseSocial(targetUserId)) {
+    try {
+      const { data, error } = await supabase
+        .from('athlete_posts')
+        .select('*')
+        .eq('user_id', targetUserId)
+        .order('created_at', { ascending: false });
+      if (!error && data) posts = data;
+    } catch (_e) {}
+  }
+
+  const local = getLocalPosts().filter((p) => p.user_id === targetUserId);
+  const mergedMap = new Map();
+  [...local, ...posts].forEach((p) => {
+    if (!mergedMap.has(p.id)) mergedMap.set(p.id, p);
+  });
+  const result = Array.from(mergedMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return { data: result, error: null };
+}
+
+export async function listFeedPosts() {
+  const local = getLocalPosts();
+  let serverPosts = [];
+  try {
+    const { data } = await supabase
+      .from('athlete_posts')
+      .select('*, profiles:user_id(username, full_name, avatar_url, is_verified, role)')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (data) {
+      serverPosts = data.map((sp) => ({
+        ...sp,
+        username: sp.profiles?.username,
+        full_name: sp.profiles?.full_name,
+        avatar_url: sp.profiles?.avatar_url,
+        is_verified: sp.profiles?.is_verified,
+        is_ceo: sp.profiles?.role === 'ceo'
+      }));
+    }
+  } catch (_e) {}
+
+  const mergedMap = new Map();
+  [...serverPosts, ...local].forEach((p) => {
+    if (!mergedMap.has(p.id)) mergedMap.set(p.id, p);
+  });
+  const result = Array.from(mergedMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return { data: result, error: null };
+}
+
+export async function togglePostRespect(postId, currentUserId) {
+  const local = getLocalPosts();
+  let updatedRespects = 0;
+  const updated = local.map((p) => {
+    if (p.id === postId) {
+      const respected = !p.respected_by_me;
+      const count = Math.max(0, (p.respect_count || 0) + (respected ? 1 : -1));
+      updatedRespects = count;
+      return { ...p, respected_by_me: respected, respect_count: count };
+    }
+    return p;
+  });
+  saveLocalPosts(updated);
+
+  if (canUseSocial(currentUserId)) {
+    try {
+      await supabase.rpc('toggle_post_respect', { target_post: postId });
+    } catch (_e) {}
+  }
+  return { data: updatedRespects, error: null };
+}
+
+// ---------- Conversas e Mensagens Diretas (DMs) ----------
+
+function getDmKey(userA, userB) {
+  const pair = [userA, userB].sort().join('_');
+  return `${DM_STORAGE_PREFIX}${pair}`;
+}
+
+export async function listDirectMessages(currentUserId, friendId) {
+  if (!currentUserId || !friendId) return { data: [], error: null };
+  const key = getDmKey(currentUserId, friendId);
+  let localMsgs = [];
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) localMsgs = JSON.parse(raw);
+  } catch {}
+
+  if (canUseSocial(currentUserId)) {
+    try {
+      const { data, error } = await supabase
+        .from('friend_messages')
+        .select('*')
+        .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUserId})`)
+        .order('created_at', { ascending: true });
+      if (!error && data && data.length > 0) {
+        const map = new Map();
+        [...localMsgs, ...data].forEach((m) => map.set(m.id, m));
+        const combined = Array.from(map.values()).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        localStorage.setItem(key, JSON.stringify(combined));
+        return { data: combined, error: null };
+      }
+    } catch (_e) {}
+  }
+
+  return { data: localMsgs, error: null };
+}
+
+export async function sendDirectMessage(currentUserId, friendId, content, senderProfile = null) {
+  if (!content || !content.trim()) return { data: null, error: 'Mensagem vazia' };
+  const key = getDmKey(currentUserId, friendId);
+  const newMsg = {
+    id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    sender_id: currentUserId,
+    receiver_id: friendId,
+    content: content.trim(),
+    created_at: new Date().toISOString(),
+    sender_name: senderProfile?.full_name || 'Eu'
+  };
+
+  try {
+    const raw = localStorage.getItem(key);
+    const msgs = raw ? JSON.parse(raw) : [];
+    msgs.push(newMsg);
+    localStorage.setItem(key, JSON.stringify(msgs));
+  } catch {}
+
+  if (canUseSocial(currentUserId)) {
+    try {
+      const { data, error } = await supabase.from('friend_messages').insert({
+        sender_id: currentUserId,
+        receiver_id: friendId,
+        content: content.trim()
+      }).select().maybeSingle();
+      if (!error && data) {
+        newMsg.id = data.id;
+      }
+    } catch (_e) {}
+  }
+
+  return { data: newMsg, error: null };
 }

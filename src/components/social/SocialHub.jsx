@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Search, Share2, UserPlus, Check, Clock3, Inbox, Users, Activity, HandMetal, Flame, ChevronRight } from 'lucide-react';
+import { Search, Share2, UserPlus, Check, Clock3, Inbox, Users, Activity, HandMetal, Flame, ChevronRight, MessageCircle, Camera, Crown } from 'lucide-react';
 import { useAuth } from '../../context';
 import HeadToHeadSheet from './HeadToHeadSheet';
+import DirectMessageSheet from './DirectMessageSheet';
+import NewPostModal from './NewPostModal';
 import { Avatar, SectionTitle, SPRING, TAP, exerciseLabel, fmtDuration, fmtInt, fmtKg, timeAgo } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
-import { isAthleteVerified } from '../../utils/userVerification';
+import { isAthleteVerified, isAthleteCeo } from '../../utils/userVerification';
 import { SkeletonList } from '../ui/Skeleton';
 import {
   canUseSocial, getFriendFeed, getFriendsWeeklySummary, getMyProfile, listFriendships,
-  respondFriendRequest, searchAthletes, sendFriendRequest, shareAthleteLink, toggleRespect
+  respondFriendRequest, searchAthletes, sendFriendRequest, shareAthleteLink, toggleRespect,
+  listFeedPosts, togglePostRespect
 } from '../../services/socialService';
 import { triggerHaptic } from '../../utils/audio';
 
@@ -47,6 +50,77 @@ function SearchResult({ r, onAdd, onAccept }) {
       </div>
       {action}
     </li>
+  );
+}
+
+function FeedPostCard({ item, onRespect, onOpenChat }) {
+  const name = item.full_name || `@${item.username}` || 'Atleta';
+  const isCeo = isAthleteCeo(item);
+  return (
+    <article className="rounded-2xl bg-surface border border-white/[0.08] overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <header className="flex items-center justify-between p-4 pb-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Avatar url={item.avatar_url} name={name} size={40} />
+          <div className="flex-1 min-w-0">
+            <p className="text-[14px] text-white truncate flex items-center gap-1.5 flex-wrap">
+              <span className="font-semibold truncate">{name}</span>
+              {isAthleteVerified(item) && <VerifiedBadge size={14} />}
+              {isCeo && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-black uppercase">
+                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                  CEO
+                </span>
+              )}
+            </p>
+            <p className="text-[12px] text-zinc-500">{timeAgo(item.created_at)}</p>
+          </div>
+        </div>
+        {onOpenChat && (
+          <button
+            type="button"
+            onClick={onOpenChat}
+            className="w-9 h-9 rounded-xl bg-surface-2 hover:bg-surface-3 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white cursor-pointer transition-colors"
+            title={`Conversar com ${name}`}
+          >
+            <MessageCircle className="w-4 h-4" />
+          </button>
+        )}
+      </header>
+
+      {item.image_url && (
+        <div className="relative aspect-square sm:aspect-4/3 w-full bg-black flex items-center justify-center overflow-hidden">
+          <img src={item.image_url} alt={item.caption || 'Foto do atleta'} className="w-full h-full object-cover" />
+        </div>
+      )}
+
+      <div className="p-4 pt-3">
+        {item.caption && (
+          <p className="text-[14px] text-zinc-200 leading-relaxed mb-3">
+            <span className="font-semibold text-white mr-1.5">{name}</span>
+            {item.caption}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between pt-1 border-t border-white/[0.04]">
+          <span className="text-[12px] text-zinc-500 font-medium">
+            {item.respect_count ? `${item.respect_count} respects` : 'Sê o primeiro a dar respect'}
+          </span>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            transition={SPRING}
+            aria-pressed={item.respected_by_me}
+            onClick={onRespect}
+            className={`min-h-[38px] px-3.5 rounded-xl border inline-flex items-center gap-1.5 text-[13px] font-bold tabular-nums cursor-pointer transition-colors ${
+              item.respected_by_me ? 'bg-accent border-accent-hover text-white' : 'bg-surface-2 border-white/[0.08] text-zinc-300 hover:text-white'
+            }`}
+          >
+            <HandMetal className="w-4 h-4" />
+            Respect
+          </motion.button>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -114,12 +188,27 @@ export default function SocialHub({ onNavigateTab }) {
   const [results, setResults] = useState({ q: '', items: [] });
   const [h2h, setH2h] = useState(null);
   const [notice, setNotice] = useState('');
+  const [activeChatFriend, setActiveChatFriend] = useState(null);
+  const [newPostOpen, setNewPostOpen] = useState(false);
 
   const refreshSocial = useCallback(async () => {
-    const [f, s, fd] = await Promise.all([listFriendships(), getFriendsWeeklySummary(), getFriendFeed(30)]);
+    const [f, s, fd, fp] = await Promise.all([
+      listFriendships(),
+      getFriendsWeeklySummary(),
+      getFriendFeed(30),
+      listFeedPosts()
+    ]);
     setFriendships(f.data || []);
     setSummary(s.data || []);
-    setFeed(fd.data || []);
+
+    const workouts = (fd.data || []).map((w) => ({ ...w, _type: 'workout' }));
+    const photos = (fp.data || []).map((p) => ({ ...p, _type: 'photo' }));
+    const merged = [...workouts, ...photos].sort((a, b) => {
+      const timeA = new Date(a.completed_at || a.created_at || 0).getTime();
+      const timeB = new Date(b.completed_at || b.created_at || 0).getTime();
+      return timeB - timeA;
+    });
+    setFeed(merged);
     return f.error || s.error || fd.error || '';
   }, []);
 
@@ -186,6 +275,14 @@ export default function SocialHub({ onNavigateTab }) {
   };
 
   const respect = async (item) => {
+    if (item._type === 'photo') {
+      triggerHaptic([8, 24, 8]);
+      const flip = (x) => (x.id === item.id ? { ...x, respected_by_me: !x.respected_by_me, respect_count: (x.respect_count || 0) + (x.respected_by_me ? -1 : 1) } : x);
+      setFeed((list) => list.map(flip));
+      await togglePostRespect(item.id, userId);
+      return;
+    }
+
     triggerHaptic(item.respected_by_me ? 6 : [8, 24, 8]);
     const flip = (x) => (x.session_id === item.session_id ? { ...x, respected_by_me: !x.respected_by_me, respect_count: x.respect_count + (x.respected_by_me ? -1 : 1) } : x);
     setFeed((list) => list.map(flip));
@@ -308,13 +405,13 @@ export default function SocialHub({ onNavigateTab }) {
             {summary.map((s) => {
               const f = friendships.find((x) => x.friend_id === s.friend_id) || {};
               return (
-                <li key={s.friend_id}>
+                <li key={s.friend_id} className="flex items-center justify-between pr-3 hover:bg-white/[0.02] transition-colors">
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.98 }}
                     transition={SPRING}
                     onClick={() => setH2h({ ...s, friendship_id: f.friendship_id })}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer"
+                    className="flex-1 flex items-center gap-3 px-4 py-3 text-left cursor-pointer min-w-0"
                   >
                     <Avatar url={s.avatar_url} name={s.full_name || s.username} size={42} />
                     <div className="flex-1 min-w-0">
@@ -327,13 +424,26 @@ export default function SocialHub({ onNavigateTab }) {
                       </p>
                     </div>
                     {s.streak != null && (
-                      <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-white tabular-nums">
+                      <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-white tabular-nums mr-1">
                         <Flame className="w-4 h-4 text-zinc-400" strokeWidth={1.75} />
                         {s.streak}
                       </span>
                     )}
-                    <ChevronRight className="w-4 h-4 text-zinc-600" strokeWidth={1.75} />
                   </motion.button>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic(10);
+                        setActiveChatFriend({ ...s, friendship_id: f.friendship_id });
+                      }}
+                      className="w-9 h-9 rounded-xl bg-surface-2 hover:bg-surface-3 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white cursor-pointer active:scale-95 transition-all"
+                      title={`Conversar com ${s.full_name || s.username}`}
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-zinc-600 cursor-pointer" onClick={() => setH2h({ ...s, friendship_id: f.friendship_id })} strokeWidth={1.75} />
+                  </div>
                 </li>
               );
             })}
@@ -343,16 +453,67 @@ export default function SocialHub({ onNavigateTab }) {
 
       {/* Feed */}
       <div className="space-y-3">
-        <SectionTitle icon={Activity}>Atividade</SectionTitle>
+        <div className="flex items-center justify-between">
+          <SectionTitle icon={Activity}>Atividade & Feed</SectionTitle>
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic(10);
+              setNewPostOpen(true);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-primary text-app text-[12px] font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs hover:brightness-105 transition-all"
+          >
+            <Camera className="w-3.5 h-3.5" strokeWidth={2} />
+            Postar foto
+          </button>
+        </div>
+
+        {/* Quick Post Prompt */}
+        <div
+          onClick={() => {
+            triggerHaptic(8);
+            setNewPostOpen(true);
+          }}
+          className="p-3.5 rounded-2xl bg-surface border border-white/[0.08] flex items-center justify-between gap-3 cursor-pointer hover:border-white/20 transition-colors shadow-xs"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="w-9 h-9 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
+              <Camera className="w-4 h-4" />
+            </span>
+            <span className="text-[13px] text-zinc-300 font-medium truncate">
+              Publicar evolução ou foto de treino no feed...
+            </span>
+          </div>
+          <span className="text-[12px] text-accent font-bold shrink-0">Novo</span>
+        </div>
+
         {!loaded ? (
           <SkeletonList rows={2} label="A carregar atividade" />
         ) : feed.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-white/[0.1] px-4 py-5 text-[14px] text-zinc-400">Quando os teus amigos concluírem treinos, aparecem aqui.</p>
+          <p className="rounded-2xl border border-dashed border-white/[0.1] px-4 py-5 text-[14px] text-zinc-400">
+            Ainda sem publicações ou treinos recentes. Sê o primeiro a publicar uma foto ou conclui um treino!
+          </p>
         ) : (
           <div className="space-y-3">
-            {feed.map((item) => (
-              <FeedCard key={item.session_id} item={item} onRespect={() => respect(item)} />
-            ))}
+            {feed.map((item) =>
+              item._type === 'photo' ? (
+                <FeedPostCard
+                  key={item.id}
+                  item={item}
+                  onRespect={() => respect(item)}
+                  onOpenChat={() => {
+                    setActiveChatFriend({
+                      friend_id: item.user_id,
+                      full_name: item.full_name,
+                      username: item.username,
+                      avatar_url: item.avatar_url
+                    });
+                  }}
+                />
+              ) : (
+                <FeedCard key={item.session_id} item={item} onRespect={() => respect(item)} />
+              )
+            )}
           </div>
         )}
       </div>
@@ -379,6 +540,36 @@ export default function SocialHub({ onNavigateTab }) {
             onClose={() => setH2h(null)}
             onRemoved={() => {
               setH2h(null);
+              refreshSocial();
+            }}
+            onOpenChat={(fr) => {
+              setH2h(null);
+              setActiveChatFriend(fr);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeChatFriend && (
+          <DirectMessageSheet
+            friend={activeChatFriend}
+            currentUserId={userId}
+            currentUserProfile={profile}
+            onClose={() => setActiveChatFriend(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {newPostOpen && (
+          <NewPostModal
+            isOpen={newPostOpen}
+            onClose={() => setNewPostOpen(false)}
+            userId={userId}
+            profile={profile}
+            onPostCreated={() => {
+              flash('Foto publicada no feed e perfil com sucesso!');
               refreshSocial();
             }}
           />

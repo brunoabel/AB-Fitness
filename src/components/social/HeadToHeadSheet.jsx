@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { MessageCircle } from 'lucide-react';
 import { Avatar, Sheet, SPRING, fmtInt, fmtKg } from './ui';
 import { Skeleton } from '../ui/Skeleton';
 import { getHeadToHead, removeFriendship } from '../../services/socialService';
@@ -23,7 +24,7 @@ const Bar = ({ ratio, tone }) => (
   </span>
 );
 
-export default function HeadToHeadSheet({ friend, onClose, onRemoved }) {
+export default function HeadToHeadSheet({ friend, onClose, onRemoved, onOpenChat }) {
   const [days, setDays] = useState(7);
   const [result, setResult] = useState({ days: null, data: null, error: '' });
 
@@ -44,12 +45,27 @@ export default function HeadToHeadSheet({ friend, onClose, onRemoved }) {
   return (
     <Sheet onClose={onClose} title="Head-to-head" label={`Comparativo com ${name}`}>
       <div className="space-y-5 pt-1">
-        <div className="flex items-center gap-3">
-          <Avatar url={friend.avatar_url} name={name} size={52} />
-          <div className="min-w-0">
-            <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
-            <p className="text-[13px] text-zinc-400 truncate">@{friend.username}{friend.athlete_tag ? ` · ${friend.athlete_tag}` : ''}</p>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar url={friend.avatar_url} name={name} size={52} />
+            <div className="min-w-0">
+              <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
+              <p className="text-[13px] text-zinc-400 truncate">@{friend.username}{friend.athlete_tag ? ` · ${friend.athlete_tag}` : ''}</p>
+            </div>
           </div>
+          {onOpenChat && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenChat(friend);
+              }}
+              className="min-h-[38px] px-3.5 rounded-xl bg-accent border border-accent-hover text-white text-[13px] font-bold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-sm"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Conversar
+            </button>
+          )}
         </div>
 
         <div role="radiogroup" aria-label="Período" className="flex p-1 gap-1 rounded-2xl bg-surface-2 border border-white/[0.08]">

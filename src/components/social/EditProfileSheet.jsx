@@ -210,7 +210,7 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
         <div>
           <div className="flex items-center justify-between mb-2">
             <Label>Estilo de Capa</Label>
-            <span className="text-[12px] text-zinc-400 font-medium">8 Temas do Atleta</span>
+            <span className="text-[12px] text-zinc-400 font-medium">{COVER_STYLES.length} Temas do Atleta</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {COVER_STYLES.map((c) => {
@@ -225,17 +225,16 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
                     triggerHaptic(8);
                     set('cover_style', c.id);
                   }}
-                  className={`relative h-14 rounded-xl border p-2 flex flex-col justify-between overflow-hidden cursor-pointer transition-all ${c.className} ${isSelected ? 'ring-2 ring-white border-white scale-[1.02]' : 'border-white/[0.1] hover:border-white/20'}`}
+                  className={`relative h-14 rounded-xl border p-2.5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all ${c.className} ${isSelected ? 'ring-2 ring-white border-white scale-[1.02] shadow-lg' : 'border-white/[0.1] hover:border-white/20'}`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="text-[12px] font-bold text-white tracking-tight">{c.label}</span>
+                    <span className="text-[12px] font-bold text-white tracking-tight drop-shadow-sm">{c.label}</span>
                     {c.badge && (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-white/25 text-white backdrop-blur-sm border border-white/20">
                         {c.badge}
                       </span>
                     )}
                   </div>
-                  <span className="h-0.5 w-full bg-white/20 rounded-full" />
                 </motion.button>
               );
             })}
