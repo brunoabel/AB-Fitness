@@ -16,9 +16,9 @@ export default function Navigation({ activeTab, onTabChange }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed bottom-0 left-0 right-0 z-30 bg-app/75 backdrop-blur-xl backdrop-saturate-150 border-t border-white/[0.07] pb-[max(env(safe-area-inset-bottom,0px),8px)] lg:hidden"
+      className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] max-w-[390px] mx-auto z-40 lg:hidden"
     >
-      <div className="max-w-5xl mx-auto px-2 sm:px-6 flex items-stretch justify-around h-16">
+      <div className="relative flex items-stretch justify-around h-[60px] rounded-full backdrop-blur-2xl backdrop-saturate-[190%] bg-black/60 sm:bg-[#07090E]/65 border border-white/[0.14] shadow-[0_12px_36px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.22)] px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -32,21 +32,26 @@ export default function Navigation({ activeTab, onTabChange }) {
                 onTabChange(tab.id);
                 triggerHaptic(10);
               }}
-              className={`relative flex flex-col items-center justify-center flex-1 px-1 min-h-[48px] cursor-pointer select-none transition-colors active:scale-[0.98] ${
-                isActive ? 'text-zinc-50' : 'text-zinc-500 hover:text-zinc-300'
-              }`}
+              className="relative flex flex-1 items-center justify-center min-h-[52px] min-w-[48px] cursor-pointer select-none"
             >
               {isActive && (
                 <motion.span
-                  layoutId="nav-active-indicator"
-                  className="absolute top-0 h-[2px] w-8 rounded-full bg-white"
-                  transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                  layoutId="liquid-tab-pill"
+                  className="absolute inset-1 rounded-full bg-white/[0.12] border border-white/[0.16] shadow-[0_2px_10px_rgba(255,255,255,0.06)]"
+                  transition={{ type: 'spring', stiffness: 420, damping: 30 }}
                 />
               )}
-              <Icon className={`w-[22px] h-[22px] ${isActive ? 'text-white' : ''}`} strokeWidth={1.75} />
-              <span className={`text-micro leading-tight mt-1 ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                {tab.label}
-              </span>
+              <motion.span
+                animate={{ scale: isActive ? 1.08 : 1 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                className="relative z-10"
+              >
+                <Icon
+                  className={`w-[22px] h-[22px] ${isActive ? 'text-white' : 'text-zinc-500'}`}
+                  strokeWidth={1.75}
+                />
+              </motion.span>
+              <span className="sr-only">{tab.label}</span>
             </button>
           );
         })}

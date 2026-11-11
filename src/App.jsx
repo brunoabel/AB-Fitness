@@ -350,7 +350,7 @@ function AppContent() {
         ) : (
           /* Visualização do Painel Principal */
           <>
-            <div className="pb-24 flex-1">
+            <div className="pb-28 sm:pb-32 flex-1">
               <Header
                 activeTab={activeTab}
                 currentView={currentView}
@@ -427,7 +427,7 @@ function AppContent() {
                 sound.playTick();
                 setShowAICoachModal(true);
               }}
-              className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 pl-1.5 pr-3.5 min-h-[44px] rounded-full bg-surface/80 backdrop-blur-md text-zinc-100 font-semibold text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-surface-2/90 active:scale-95 transition-all cursor-pointer border border-white/10 select-none lg:hidden"
+              className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 pl-1.5 pr-3.5 min-h-[44px] rounded-full bg-surface/80 backdrop-blur-md text-zinc-100 font-semibold text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-surface-2/90 active:scale-95 transition-all cursor-pointer border border-white/10 select-none lg:hidden"
               aria-label="Abrir AB Coach IA"
             >
               <span className="relative flex">
