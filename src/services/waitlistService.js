@@ -21,7 +21,7 @@ export function saveLocalWaitlist(list) {
 
 /**
  * Inscreve um lead na Lista VIP de Acesso Antecipado.
- * Grava imediatamente em localStorage e tenta sincronizar com o Supabase.
+ * Grava imediatamente no Supabase (nuvem) e em localStorage.
  */
 export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) {
   const cleanEmail = (email || '').trim().toLowerCase();
@@ -30,7 +30,7 @@ export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) 
   const cleanPhone = (phone || '').trim();
 
   if (!cleanEmail || !cleanEmail.includes('@')) {
-    return { data: null, error: 'Por favor, indique um e-mail válido.' };
+    return { data: null, error: 'Por favor, indica um e-mail válido.' };
   }
 
   const existing = getLocalWaitlist();
@@ -47,30 +47,85 @@ export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) 
   };
 
   if (!alreadyJoined) {
-    const updated = [entry, ...existing];
-    saveLocalWaitlist(updated);
+    saveLocalWaitlist([entry, ...existing]);
   }
 
-  // Tenta sincronizar com o Supabase (se a tabela waitlist existir)
+  // Sincroniza com o Supabase (para ficar visível para o Admin em todos os dispositivos)
+  let cloudError = null;
   if (isSupabaseConfigured() && supabase) {
     try {
-      await supabase.from('waitlist').insert({
-        name: entry.name,
-        email: entry.email,
-        goal: entry.goal,
-        phone: entry.phone || null,
-        created_at: entry.created_at
-      });
-    } catch {
-      // Ignora erro de tabela não existente — o lead já está gravado em local
+      const { data, error } = await supabase
+        .from('waitlist')
+        .upsert(
+          {
+            name: entry.name,
+            email: entry.email,
+            goal: entry.goal,
+            phone: entry.phone || null,
+            source: entry.source,
+            created_at: entry.created_at
+          },
+          { onConflict: 'email' }
+        )
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        cloudError = error;
+        console.warn('Erro ao sincronizar lead com o Supabase:', error.message);
+      } else if (data) {
+        entry.id = data.id;
+        entry.created_at = data.created_at;
+      }
+    } catch (err) {
+      cloudError = err;
+      console.warn('Exceção ao gravar no Supabase:', err);
     }
   }
 
   return {
     data: entry,
     alreadyJoined,
+    cloudSaved: !cloudError,
     error: null
   };
+}
+
+/**
+ * Carrega a lista completa de leads da nuvem (Supabase) para o Admin.
+ * Se estiver offline ou a tabela ainda não existir, usa o fallback local.
+ */
+export async function fetchWaitlistLeads() {
+  const localList = getLocalWaitlist();
+
+  if (!isSupabaseConfigured() || !supabase) {
+    return localList;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('waitlist')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Não foi possível carregar waitlist da nuvem:', error.message);
+      return localList;
+    }
+
+    if (Array.isArray(data)) {
+      // Mescla com dados locais caso haja algum offline
+      const cloudEmails = new Set(data.map((d) => (d.email || '').toLowerCase()));
+      const offlineOnly = localList.filter((l) => !cloudEmails.has((l.email || '').toLowerCase()));
+      const merged = [...data, ...offlineOnly];
+      saveLocalWaitlist(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.warn('Exceção ao obter leads do Supabase:', err);
+  }
+
+  return localList;
 }
 
 export function getWaitlistCount() {
@@ -80,8 +135,8 @@ export function getWaitlistCount() {
 /**
  * Exporta a lista de espera para formato CSV para uso no marketing/CRM
  */
-export function exportWaitlistCsv() {
-  const list = getLocalWaitlist();
+export function exportWaitlistCsv(customList = null) {
+  const list = customList || getLocalWaitlist();
   if (!list.length) return '';
   const headers = ['Data', 'Nome', 'Email', 'Objetivo', 'Telefone'];
   const rows = list.map((l) => [
@@ -93,4 +148,3 @@ export function exportWaitlistCsv() {
   ]);
   return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 }
-

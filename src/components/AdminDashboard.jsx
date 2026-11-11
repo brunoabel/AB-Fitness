@@ -23,7 +23,7 @@ import { fetchAdminAthletesData, fetchAthleteDetails, promoteToCoach, demoteToAt
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import ABLogo from './ABLogo';
-import { getLocalWaitlist, exportWaitlistCsv } from '../services/waitlistService';
+import { getLocalWaitlist, fetchWaitlistLeads, exportWaitlistCsv } from '../services/waitlistService';
 import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
 
 export default function AdminDashboard({ onBackToWorkout }) {
@@ -45,13 +45,14 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const loadData = async () => {
     try {
       const data = await fetchAdminAthletesData();
+      const leads = await fetchWaitlistLeads();
       setAthletes(data.athletes || []);
       setSessions(data.sessions || []);
       setStats({
         totalLogs: data.totalLogsCount || 0,
         totalVolume: data.totalVolumeKg || 0
       });
-      setWaitlistLeads(getLocalWaitlist());
+      if (Array.isArray(leads)) setWaitlistLeads(leads);
     } catch (err) {
       console.error('Erro ao carregar dados admin:', err);
     } finally {
@@ -65,6 +66,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
     (async () => {
       try {
         const data = await fetchAdminAthletesData();
+        const leads = await fetchWaitlistLeads();
         if (isMounted) {
           setAthletes(data.athletes || []);
           setSessions(data.sessions || []);
@@ -72,6 +74,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
             totalLogs: data.totalLogsCount || 0,
             totalVolume: data.totalVolumeKg || 0
           });
+          if (Array.isArray(leads)) setWaitlistLeads(leads);
         }
       } catch (err) {
         if (isMounted) console.error('Erro ao carregar dados admin:', err);
@@ -84,6 +87,14 @@ export default function AdminDashboard({ onBackToWorkout }) {
     })();
     return () => { isMounted = false; };
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'waitlist') {
+      fetchWaitlistLeads().then((leads) => {
+        if (Array.isArray(leads)) setWaitlistLeads(leads);
+      });
+    }
+  }, [activeTab]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -157,7 +168,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
   };
 
   const handleExportWaitlist = () => {
-    const csv = exportWaitlistCsv();
+    const csv = exportWaitlistCsv(waitlistLeads);
     if (!csv) return;
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -491,16 +502,31 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     Total de <strong>{waitlistLeads.length}</strong> atletas em lista de espera aguardando convite de membro fundador.
                   </p>
                 </div>
-                {waitlistLeads.length > 0 && (
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={handleExportWaitlist}
-                    className="py-2 px-3.5 rounded-xl bg-white text-zinc-950 font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-zinc-200 transition-colors cursor-pointer"
+                    onClick={async () => {
+                      triggerHaptic(10);
+                      const leads = await fetchWaitlistLeads();
+                      if (Array.isArray(leads)) setWaitlistLeads(leads);
+                    }}
+                    className="py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/10"
+                    title="Atualizar lista da nuvem"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Exportar CSV</span>
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Atualizar</span>
                   </button>
-                )}
+                  {waitlistLeads.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleExportWaitlist}
+                      className="py-2 px-3.5 rounded-xl bg-white text-zinc-950 font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-zinc-200 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Exportar CSV</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {waitlistLeads.length === 0 ? (
