@@ -4208,55 +4208,29 @@ export const VERIFIED_EXERCISE_VIDEOS = {
       "alongamento-isquiotibiais-dinamico"
     ]
   },
-  "elevacao-pelvica-hip-thrust": {
-    "canonicalId": "elevacao-pelvica-hip-thrust",
-    "name": "Elevação Pélvica (Hip Thrust)",
-    "englishName": "Hip Thrust",
-    "category": "glutes",
-    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/hip-thrust-barbell-bench.mp4",
-    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/hip-thrust-barbell-bench.mp4",
-    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/hip-thrust-barbell-bench.jpg",
+  "alongamento-quadriceps-em-pe": {
+    "canonicalId": "alongamento-quadriceps-em-pe",
+    "name": "Alongamento de Quadríceps em Pé",
+    "englishName": "Standing Quadriceps Stretch",
+    "category": "quadriceps",
+    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-quadriceps-stretch.mp4",
+    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-quadriceps-stretch.mp4",
+    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-quadriceps-stretch.jpg",
     "targetMuscles": [
-      "Glúteos",
-      "glutes"
+      "Quadríceps",
+      "quadriceps"
     ],
-    "equipment": "barbell",
+    "equipment": "body weight",
     "keyCues": [
-      "Costas apoiadas no banco, barra sobre o quadril",
-      "Sobe até o quadril estender por completo",
-      "Aperta os glúteos no topo, sem hiperestender a lombar"
+      "Joelhos juntos, anca para a frente",
+      "Não arqueia a lombar",
+      "Segura o tornozelo atrás do corpo"
     ],
     "aliases": [
-      "elevacao-pelvica-hip-thrust",
-      "Elevação Pélvica (Hip Thrust)",
-      "Hip Thrust"
-    ],
-    "source": "wger.de · CC-BY-SA 4.0 · Bret Contreras (transcodido para mp4 720p)"
-  },
-  "terra-romeno-rdl": {
-    "canonicalId": "terra-romeno-rdl",
-    "name": "Levantamento Terra Romeno (RDL)",
-    "englishName": "Romanian Deadlift",
-    "category": "posteriores",
-    "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/romanian-deadlift-barbell.mp4",
-    "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/romanian-deadlift-barbell.mp4",
-    "poster": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/romanian-deadlift-barbell.jpg",
-    "targetMuscles": [
-      "Posteriores de coxa",
-      "hamstrings"
-    ],
-    "equipment": "barbell",
-    "keyCues": [
-      "Joelhos quase estendidos, só uma leve flexão",
-      "Barra desliza perto das pernas, quadril para trás",
-      "Para quando sentir o alongamento, sem arredondar a lombar"
-    ],
-    "aliases": [
-      "terra-romeno-rdl",
-      "Levantamento Terra Romeno (RDL)",
-      "Romanian Deadlift"
-    ],
-    "source": "wger.de · CC-BY-SA 4.0 · pjwirth (transcodido para mp4 720p)"
+      "alongamento-quadriceps-em-pe",
+      "quad-stretch",
+      "Alongamento de Quadríceps em Pé"
+    ]
   },
   "supino-reto-halteres": {
     "canonicalId": "supino-reto-halteres",

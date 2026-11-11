@@ -1,8 +1,8 @@
 # Catálogo de exercícios — relatório
 
 - Total: 347 (320 atuais + 27 de casa)
-- Com vídeo: 170 (49%) · auditados: 143 · ligados à mão: 0
-- Sem vídeo: 177 · exercícios de ginásio sem alternativa de casa: 0
+- Com vídeo: 168 (48%) · auditados: 141 · ligados à mão: 0
+- Sem vídeo: 179 · exercícios de ginásio sem alternativa de casa: 0
 
 ## Vídeos do dataset ligados por revisão manual
 
@@ -83,6 +83,7 @@
 - Glúteos · Cadeira Abdutora com Tronco Inclinado à Frente
 - Glúteos · Clamshell com Mini Band no Colchonete (Ostra)
 - Glúteos · Coice no Smith (Donkey Kick no Smith)
+- Glúteos · Elevação Pélvica (Hip Thrust)
 - Glúteos · Elevação Pélvica (Hip Thrust) com Halter Pesado
 - Glúteos · Elevação Pélvica na Máquina
 - Glúteos · Frog Pump no Colchonete com Halter
@@ -142,6 +143,7 @@
 - Posteriores · Glute Ham Raise (GHR Máquina)
 - Posteriores · Good Morning
 - Posteriores · Good Morning Sentado no Banco
+- Posteriores · Levantamento Terra Romeno (RDL)
 - Posteriores · Levantamento Terra Romeno (RDL) com Halteres _(sugestão a rever: Dumbbell Deadlift)_
 - Posteriores · Mesa Flexora Unilateral
 - Posteriores · RDL no Smith com Calço nos Calcanhares

@@ -14,7 +14,9 @@ export const REJECTED_VIDEO_IDS = [
   'rosca-inversa', // Rosca Inversa ≠ Barbell Reverse Wrist Curl
   'triceps-coice-polia', // Tríceps Coice na Polia ≠ Cable Standing One Arm Triceps Extension
   'agachamento-bulgaro', // Agachamento Búlgaro ≠ Dumbbell Single Leg Squat
+  'terra-romeno-rdl', // Levantamento Terra Romeno (RDL) ≠ Barbell Straight Leg Deadlift
   'good-morning', // Good Morning ≠ Barbell Straight Leg Deadlift
+  'elevacao-pelvica-hip-thrust', // Elevação Pélvica (Hip Thrust) ≠ Glute Bridge
   'elevacao-pelvica-maquina', // Elevação Pélvica na Máquina ≠ Glute Bridge
   'gluteo-polia-baixa', // Glúteo na Polia Baixa ≠ Lever Standing Hip Extension
   'gemeos-hack', // Gêmeos no Hack ≠ Sled 45 Degree Calf Press

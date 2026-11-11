@@ -29,7 +29,7 @@ export const DRILLS = {
   'side-plank': D('Prancha lateral', 'forca', '2 × 30 s por lado', 'Linha reta da cabeça aos pés; a anca não cai.', 'prancha-lateral-isometrica'),
   'hip-flexor': D('Alongamento de flexores do quadril', 'estatico', '2 × 40 s por lado', 'Contrai o glúteo da perna de trás e leva a anca para a frente.', 'alongamento-flexores-quadril-psoas'),
   'foam-quads': D('Rolo miofascial nos quadríceps', 'libertacao', '60 a 90 s por perna', 'Rola devagar; pára 10 s nos pontos mais tensos.', 'liberacao-miofascial-quadriceps-foam-roller'),
-  'quad-stretch': D('Alongamento de quadríceps em pé', 'estatico', '2 × 30 s por lado', 'Joelhos juntos e anca para a frente; não arqueies a lombar.'),
+  'quad-stretch': D('Alongamento de quadríceps em pé', 'estatico', '2 × 30 s por lado', 'Joelhos juntos e anca para a frente; não arqueies a lombar.', 'alongamento-quadriceps-em-pe'),
   'wall-sit': D('Agachamento isométrico na parede', 'forca', '3 × 30 s', 'Joelhos a 90° e alinhados com os pés.'),
   'leg-swing': D('Balanço de perna frente e trás', 'dinamico', '2 × 12 por perna', 'Tronco direito; aumenta a amplitude aos poucos.'),
   butterfly: D('Borboleta sentado', 'estatico', '2 × 40 s', 'Plantas dos pés juntas; inclina o tronco à frente com as costas direitas.'),
