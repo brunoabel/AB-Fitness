@@ -1,9 +1,9 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { X, UserRound, Target, BookOpen, Volume2, VolumeX, ShieldCheck, LogOut, ChevronRight, Cloud, HardDrive, Scale, Trash2, Dumbbell, Link2 } from 'lucide-react';
+import { X, UserRound, Target, BookOpen, Volume2, VolumeX, ShieldCheck, LogOut, ChevronRight, Cloud, HardDrive, Scale, Trash2, Dumbbell, Link2, Crown } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import VerifiedBadge from './ui/VerifiedBadge';
-import { isAthleteVerified } from '../utils/userVerification';
+import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../utils/userVerification';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
 
@@ -33,7 +33,7 @@ function Row({ icon: Icon, label, hint, onClick, trailing, danger = false }) {
 
 /** Folha "Conta": substitui o antigo menu hambúrguer (sem repetir os destinos da barra inferior). */
 export default function AccountSheet({ identity, soundEnabled, onToggleSound, onClose, onEditProfile, onOpenCustomize, onOpenGuide, onOpenAICoach, onOpenAdmin, onOpenTrainerHub }) {
-  const { user, isGuest, isAdmin, isTrainer, isConfigured, signOut } = useAuth();
+  const { user, isGuest, isCeo, isAdmin, isTrainer, isPro, isConfigured, signOut } = useAuth();
   const [deleting, setDeleting] = useState(false);
   const [linkingTrainer, setLinkingTrainer] = useState(false);
 
@@ -54,6 +54,8 @@ export default function AccountSheet({ identity, soundEnabled, onToggleSound, on
     fn?.();
   };
 
+  const ceo = isCeo || isAthleteCeo(identity, user);
+  const pro = isPro || isAthletePro(identity, user);
   const name = identity.fullName || user?.email?.split('@')[0] || 'Atleta';
   const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   const synced = isConfigured && !isGuest;
@@ -77,11 +79,23 @@ export default function AccountSheet({ identity, soundEnabled, onToggleSound, on
             {identity.avatar ? <img src={identity.avatar} alt="" className="absolute inset-0 w-full h-full object-cover" /> : initials}
           </span>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
               <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
               {isVerified && <VerifiedBadge size={16} />}
+              {ceo ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(245,158,11,0.25)]">
+                  <Crown className="w-3 h-3 text-amber-400" />
+                  CEO
+                </span>
+              ) : pro ? (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] font-black uppercase tracking-wider">
+                  PRO
+                </span>
+              ) : null}
             </div>
-            <p className="text-[13px] text-zinc-400 truncate">{isGuest ? 'Modo convidado' : user?.email}</p>
+            <p className="text-[13px] text-zinc-400 truncate">
+              {isGuest ? 'Modo convidado' : ceo ? 'CEO & Fundador do AB Fitness' : user?.email}
+            </p>
             <p className="mt-1 inline-flex items-center gap-1.5 text-[12px] text-zinc-400">
               {synced ? <Cloud className="w-3.5 h-3.5" strokeWidth={1.75} /> : <HardDrive className="w-3.5 h-3.5" strokeWidth={1.75} />}
               {synced ? 'Sincronizado na conta' : 'Guardado neste aparelho'}
@@ -131,7 +145,14 @@ export default function AccountSheet({ identity, soundEnabled, onToggleSound, on
           {!isTrainer && !isGuest && (
             <Row icon={Link2} label="Vincular Personal Trainer" hint="Insere o código de 6 dígitos do teu PT" onClick={() => { triggerHaptic(10); setLinkingTrainer(true); }} />
           )}
-          {isAdmin && <Row icon={ShieldCheck} label="Painel admin" hint="Atletas e sessões" onClick={run(onOpenAdmin)} />}
+          {isAdmin && (
+            <Row
+              icon={ceo ? Crown : ShieldCheck}
+              label={ceo ? 'Painel Executivo CEO' : 'Painel admin'}
+              hint={ceo ? 'Controlo supremo de atletas, métricas e ecossistema' : 'Atletas e sessões'}
+              onClick={run(onOpenAdmin)}
+            />
+          )}
         </div>
 
         <div className="mt-3 mx-4 rounded-2xl bg-surface-2 border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">

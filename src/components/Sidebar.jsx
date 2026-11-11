@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dumbbell, Footprints, UsersRound, CircleUserRound, Sparkles, ShieldCheck } from 'lucide-react';
+import { Dumbbell, Footprints, UsersRound, CircleUserRound, Sparkles, ShieldCheck, Crown } from 'lucide-react';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
 import CoachAvatar from './coach/CoachAvatar';
@@ -36,7 +36,7 @@ function NavItem({ icon: Icon, label, active, onClick }) {
  * a mais hoje (Perfil → Definições) — exatamente o público (PT em computador) que motivou isto.
  */
 export default function Sidebar({ activeTab, currentView, onTabChange, onOpenTrainerHub, onOpenAdmin, onOpenAICoach }) {
-  const { isAdmin, isTrainer } = useAuth();
+  const { isCeo, isAdmin, isTrainer } = useAuth();
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen border-r border-white/[0.08] bg-surface px-3 py-6">
@@ -65,7 +65,12 @@ export default function Sidebar({ activeTab, currentView, onTabChange, onOpenTra
           <NavItem icon={Dumbbell} label="Trainer Hub" active={currentView === 'trainer-hub'} onClick={onOpenTrainerHub} />
         )}
         {isAdmin && (
-          <NavItem icon={ShieldCheck} label="Painel admin" active={currentView === 'admin'} onClick={onOpenAdmin} />
+          <NavItem
+            icon={isCeo ? Crown : ShieldCheck}
+            label={isCeo ? 'Painel Executivo CEO' : 'Painel admin'}
+            active={currentView === 'admin'}
+            onClick={onOpenAdmin}
+          />
         )}
       </nav>
 

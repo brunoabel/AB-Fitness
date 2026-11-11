@@ -1,8 +1,8 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Crown } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
-import { isAthleteVerified } from '../../utils/userVerification';
+import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { COVER_STYLES, FEATURED_STATS } from '../../services/socialService';
 
 const statValue = (id, stats) => {
@@ -17,6 +17,8 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
   const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
   const name = profile?.full_name || 'Atleta AB';
+  const isCeo = Boolean(profile?.is_ceo) || isAthleteCeo(profile);
+  const isPro = isCeo || Boolean(profile?.is_premium || profile?.is_pro) || isAthletePro(profile);
   const isVerified = Boolean(profile?.is_verified) || isAthleteVerified(profile);
 
   return (
@@ -33,11 +35,23 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
             <span className="block font-display font-bold text-[30px] leading-none tracking-tight text-white tabular-nums">{statValue(featured.id, stats)}</span>
           </div>
         </div>
-        <div className="mt-3 flex items-center gap-1.5 min-w-0">
+        <div className="mt-3 flex items-center gap-2 min-w-0 flex-wrap">
           <h3 className="font-heading text-title-xl font-bold tracking-tight text-white truncate">{name}</h3>
           {isVerified && <VerifiedBadge size={compact ? 18 : 22} />}
+          {isCeo ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[11px] font-black uppercase tracking-wider shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+              CEO
+            </span>
+          ) : isPro ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-black uppercase tracking-wider">
+              PRO
+            </span>
+          ) : null}
         </div>
-        <p className="text-body text-zinc-400 truncate">{profile?.username ? `@${profile.username}` : profile?.id ? 'Escolhe o teu @username' : 'Atleta AB Fitness'}</p>
+        <p className="text-body text-zinc-400 truncate">
+          {profile?.username ? `@${profile.username}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Escolhe o teu @username' : 'Atleta AB Fitness'}
+        </p>
         {profile?.bio && !compact && <p className="mt-2.5 text-body text-zinc-300 leading-relaxed">{profile.bio}</p>}
         {(profile?.athlete_tag || profile?.home_gym) && (
           <div className="mt-3 flex flex-wrap items-center gap-2">

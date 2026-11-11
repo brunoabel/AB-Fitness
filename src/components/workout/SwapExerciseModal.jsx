@@ -117,3 +117,4 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
     </div>
   );
 }
+

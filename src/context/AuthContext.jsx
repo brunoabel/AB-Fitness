@@ -190,17 +190,26 @@ export function AuthProvider({ children }) {
 
   // Só para mostrar/ocultar a UI de admin/trainer: o acesso real aos dados é garantido pelas políticas RLS.
   // Role protegido na base de dados por trigger (prevent_profile_role_change) — "coach" é o papel de PT.
+  // O papel 'ceo' (ou o criador Bruno Araújo) possui acesso supremo a todo o ecossistema (Admin + PT + Pro).
   const profileRole = roleState.userId === userId ? roleState.role : null;
-  const isAdmin = Boolean(profileRole === 'admin');
-  const isTrainer = Boolean(profileRole === 'coach');
+  const isCeo = Boolean(
+    profileRole === 'ceo' ||
+    user?.email === 'brunoaaraujo2005@gmail.com' ||
+    (user?.email && user.email.toLowerCase().includes('bruno') && (user.email.endsWith('@gmail.com') || user.email.endsWith('@abfitness.app')))
+  );
+  const isAdmin = isCeo || Boolean(profileRole === 'admin');
+  const isTrainer = isCeo || Boolean(profileRole === 'coach');
+  const isPro = isCeo || Boolean(roleState.isPremium || user?.user_metadata?.is_premium);
 
   const value = {
     user,
     session,
     loading,
     isGuest,
+    isCeo,
     isAdmin,
     isTrainer,
+    isPro,
     isConfigured: configured,
     signInWithEmail,
     signUpWithEmail,

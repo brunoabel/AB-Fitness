@@ -13,13 +13,16 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldPlus,
-  ShieldMinus
+  ShieldMinus,
+  Crown
 } from 'lucide-react';
 import { fetchAdminAthletesData, fetchAthleteDetails, promoteToCoach, demoteToAthlete } from '../services/workoutService';
 import { triggerHaptic } from '../utils/audio';
+import { useAuth } from '../context';
 import ABLogo from './ABLogo';
 
 export default function AdminDashboard({ onBackToWorkout }) {
+  const { isCeo } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [athletes, setAthletes] = useState([]);
@@ -165,16 +168,23 @@ export default function AdminDashboard({ onBackToWorkout }) {
               <div className="flex items-center gap-2.5">
                 <ABLogo size={36} showText={false} />
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <h1 className="text-xs sm:text-sm font-bold tracking-tight text-white uppercase leading-none">
-                      Painel do Treinador
+                      {isCeo ? 'Painel Executivo CEO' : 'Painel do Treinador'}
                     </h1>
-                    <span className="px-1.5 py-0.5 rounded-md bg-primary text-app text-[11px] font-bold uppercase tracking-wider leading-none">
-                      ADMIN
-                    </span>
+                    {isCeo ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider leading-none shadow-[0_0_10px_rgba(245,158,11,0.25)]">
+                        <Crown className="w-3 h-3 text-amber-400" />
+                        CEO & FUNDADOR
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 rounded-md bg-primary text-app text-[11px] font-bold uppercase tracking-wider leading-none">
+                        ADMIN
+                      </span>
+                    )}
                   </div>
                   <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
-                    Gestão Geral de Atletas & Treinos
+                    {isCeo ? 'Controlo Supremo de Atletas, Métricas & Ecossistema' : 'Gestão Geral de Atletas & Treinos'}
                   </p>
                 </div>
               </div>
@@ -290,7 +300,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {filteredAthletes.map((ath) => {
                     const athSessionsCount = sessions.filter((s) => s.user_id === ath.id).length;
-                    const isCurrentAdmin = ath.role === 'admin' || ath.email === 'brunoaaraujo2005@gmail.com';
+                    const isAthCeo = ath.role === 'ceo' || ath.email === 'brunoaaraujo2005@gmail.com';
+                    const isCurrentAdmin = isAthCeo || ath.role === 'admin';
                     const initials = (ath.full_name || ath.email || 'A')
                       .split(' ')
                       .map((n) => n[0])
@@ -311,20 +322,24 @@ export default function AdminDashboard({ onBackToWorkout }) {
                           </div>
 
                           <div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <h4 className="text-xs font-bold text-white leading-tight">
                                 {ath.full_name || ath.email.split('@')[0]}
                               </h4>
-                              {isCurrentAdmin && (
+                              {isAthCeo ? (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider shadow-[0_0_8px_rgba(245,158,11,0.25)]">
+                                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                                  CEO
+                                </span>
+                              ) : isCurrentAdmin ? (
                                 <span className="px-1.5 py-0.5 rounded-md bg-zinc-800 text-[11px] font-bold uppercase tracking-wider text-zinc-300">
                                   Treinador
                                 </span>
-                              )}
-                              {ath.role === 'coach' && (
+                              ) : ath.role === 'coach' ? (
                                 <span className="px-1.5 py-0.5 rounded-md bg-accent border border-accent-hover text-[11px] font-bold uppercase tracking-wider text-white">
                                   Personal Trainer
                                 </span>
-                              )}
+                              ) : null}
                             </div>
                             <p className="text-[11px] text-zinc-400 font-medium truncate max-w-[180px]">
                               {ath.email}
@@ -501,7 +516,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
               </div>
 
               {/* Promover/remover papel de Trainer */}
-              {selectedAthlete && selectedAthlete.role !== 'admin' && selectedAthlete.email !== 'brunoaaraujo2005@gmail.com' && (
+              {selectedAthlete && selectedAthlete.role !== 'admin' && selectedAthlete.role !== 'ceo' && selectedAthlete.email !== 'brunoaaraujo2005@gmail.com' && (
                 <div className="px-4 pt-3.5 border-t border-white/10 bg-zinc-900 space-y-2">
                   {roleActionError && (
                     <p className="text-[11px] text-red-400">{roleActionError}</p>

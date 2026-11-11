@@ -5,7 +5,7 @@ import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
 import { canUseSocial, getMyCardStats, getMyProfile } from '../../services/socialService';
-import { isAthleteVerified } from '../../utils/userVerification';
+import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
 
@@ -18,7 +18,7 @@ const AccountSheet = lazy(() => import('../AccountSheet'));
  * por baixo, o histórico completo (sessões, gráficos, conquistas, corpo).
  */
 export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoach, onOpenAdmin, onOpenTrainerHub, soundEnabled, onToggleSound }) {
-  const { user, isGuest, isAdmin } = useAuth();
+  const { user, isGuest, isCeo, isAdmin, isPro } = useAuth();
   const userId = user?.id;
   const social = canUseSocial(userId);
 
@@ -41,11 +41,20 @@ export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoac
   const fallbackProfile = {
     full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Atleta',
     avatar_url: user?.user_metadata?.avatar_url || null,
-    cover_style: 'midnight',
+    cover_style: isCeo ? 'gold' : 'midnight',
     featured_stat: 'total_workouts'
   };
+  const ceo = isCeo || isAthleteCeo(state.profile || fallbackProfile, user);
+  const pro = isPro || isAthletePro(state.profile || fallbackProfile, user);
   const verified = isAthleteVerified(state.profile || fallbackProfile, user, isAdmin);
-  const profile = { ...(state.profile || fallbackProfile), is_verified: verified };
+  const profile = {
+    ...(state.profile || fallbackProfile),
+    is_ceo: ceo,
+    is_pro: pro,
+    is_premium: pro,
+    is_verified: verified,
+    cover_style: state.profile?.cover_style || (ceo ? 'gold' : 'midnight')
+  };
   // Estatísticas locais quando o servidor não as dá (convidado / offline)
   const localStats = (() => {
     const h = getWorkoutHistory() || [];
