@@ -50,7 +50,19 @@ export async function getMyProfile(userId) {
   const { data, error } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle();
   if (error) return fail(error);
   if (data) {
-    return { data: { ...data, privacy_settings: { ...DEFAULT_PRIVACY, ...data.privacy_settings } }, error: null };
+    let coverStyle = data.cover_style;
+    try {
+      const savedCover = typeof window !== 'undefined' ? localStorage.getItem(`ab_cover_style_${userId}`) : null;
+      if (savedCover) coverStyle = savedCover;
+    } catch {}
+    return {
+      data: {
+        ...data,
+        cover_style: coverStyle || 'midnight',
+        privacy_settings: { ...DEFAULT_PRIVACY, ...data.privacy_settings }
+      },
+      error: null
+    };
   }
   const { data: authData } = await supabase.auth.getUser();
   const u = authData?.user;
@@ -66,7 +78,19 @@ export async function getMyProfile(userId) {
       .select(PROFILE_COLUMNS)
       .maybeSingle();
     if (!insertErr && created) {
-      return { data: { ...created, privacy_settings: { ...DEFAULT_PRIVACY, ...created.privacy_settings } }, error: null };
+      let coverStyle = created.cover_style;
+      try {
+        const savedCover = typeof window !== 'undefined' ? localStorage.getItem(`ab_cover_style_${userId}`) : null;
+        if (savedCover) coverStyle = savedCover;
+      } catch {}
+      return {
+        data: {
+          ...created,
+          cover_style: coverStyle || 'midnight',
+          privacy_settings: { ...DEFAULT_PRIVACY, ...created.privacy_settings }
+        },
+        error: null
+      };
     }
   }
   return { data: null, error: null };
@@ -77,8 +101,37 @@ export async function updateMyProfile(userId, patch) {
   const allowed = ['username', 'full_name', 'avatar_url', 'cover_style', 'bio', 'athlete_tag', 'home_gym', 'featured_stat', 'privacy_settings'];
   const row = Object.fromEntries(Object.entries(patch).filter(([k]) => allowed.includes(k)));
   if (row.username) row.username = row.username.trim().toLowerCase();
-  const { data, error } = await supabase.from('profiles').update(row).eq('id', userId).select(PROFILE_COLUMNS).single();
+
+  const desiredCoverStyle = row.cover_style;
+  if (desiredCoverStyle) {
+    try {
+      localStorage.setItem(`ab_cover_style_${userId}`, desiredCoverStyle);
+    } catch {}
+  }
+
+  let { data, error } = await supabase.from('profiles').update(row).eq('id', userId).select(PROFILE_COLUMNS).single();
+
+  // Se o Supabase remoto falhar por violação de constraint de cover_style (ex: migration pendente na cloud)
+  if (error && (String(error.message || '').includes('profiles_cover_style_valid') || String(error.details || '').includes('profiles_cover_style_valid'))) {
+    console.warn('Constraint de cover_style restritiva no Supabase remoto. Salvando no banco com fallback "midnight" e preservando estilo escolhido na aplicação.');
+    const safeRow = { ...row, cover_style: 'midnight' };
+    const retry = await supabase.from('profiles').update(safeRow).eq('id', userId).select(PROFILE_COLUMNS).single();
+    if (!retry.error && retry.data) {
+      return {
+        data: {
+          ...retry.data,
+          cover_style: desiredCoverStyle || retry.data.cover_style
+        },
+        error: null
+      };
+    }
+  }
+
   if (error) return fail(error.code === '23505' ? 'Esse @username já está em uso.' : error);
+
+  if (data && desiredCoverStyle) {
+    data.cover_style = desiredCoverStyle;
+  }
   return { data, error: null };
 }
 

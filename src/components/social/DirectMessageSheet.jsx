@@ -220,3 +220,4 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
     </div>
   );
 }
+

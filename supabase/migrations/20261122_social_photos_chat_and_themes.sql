@@ -132,3 +132,4 @@ CREATE POLICY "posts_delete_own" ON storage.objects FOR DELETE TO authenticated
   USING (bucket_id = 'posts' AND (storage.foldername(name))[1] = auth.uid()::text);
 
 COMMIT;
+

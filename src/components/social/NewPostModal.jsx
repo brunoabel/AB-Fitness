@@ -210,3 +210,4 @@ export default function NewPostModal({ isOpen, onClose, userId, profile, onPostC
     </div>
   );
 }
+
