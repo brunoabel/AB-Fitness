@@ -68,17 +68,31 @@ for (const [path, doc] of Object.entries(LEGAL_DOCS)) {
   const body = `<main class="prerender"><p><a href="/">AB Fitness</a></p><h1>${esc(doc.title)}</h1><p>Última atualização: <time datetime="${doc.updated}">${formatDatePt(doc.updated)}</time></p><p>${esc(doc.intro)}</p>${doc.sections
     .map((s) => `<section id="${s.id}"><h2>${esc(s.title)}</h2>${s.blocks.map(block).join('')}</section>`)
     .join('')}</main>`;
-  html = setTag(html, /<div id="root"><\/div>/, `<div id="root">${body}</div>`);
+  html = setTag(html, /<div id="root">[\s\S]*?<\/div>\s*(<noscript>)/, `<div id="root">${body}</div>\n    $1`);
 
   mkdirSync(`dist${path}`, { recursive: true });
   writeFileSync(`dist${path}/index.html`, html);
   pages.push(path);
 }
 
-const urls = ['/', ...pages].map((p) => `  <url><loc>${SITE}${p === '/' ? '/' : p}</loc><lastmod>${LAST_UPDATED}</lastmod></url>`).join('\n');
-writeFileSync('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+const urls = ['/', ...pages]
+  .map((p) => {
+    const isHome = p === '/';
+    return `  <url>
+    <loc>${SITE}${isHome ? '/' : p}</loc>
+    <lastmod>${LAST_UPDATED}</lastmod>
+    <changefreq>${isHome ? 'weekly' : 'monthly'}</changefreq>
+    <priority>${isHome ? '1.0' : '0.6'}</priority>
+  </url>`;
+  })
+  .join('\n');
 
-// A app é uma SPA com uma só rota pública ("/"); /api, /dashboard e /profile não existem como páginas, ficam fora do índice por precaução.
-writeFileSync('dist/robots.txt', `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /dashboard\nDisallow: /profile\n\nSitemap: ${SITE}/sitemap.xml\n`);
+const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+const robotsContent = `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /dashboard\nDisallow: /profile\n\nSitemap: ${SITE}/sitemap.xml\n`;
+
+writeFileSync('dist/sitemap.xml', sitemapContent);
+writeFileSync('dist/robots.txt', robotsContent);
+writeFileSync('public/sitemap.xml', sitemapContent);
+writeFileSync('public/robots.txt', robotsContent);
 
 console.log(`Prerender: ${pages.join(', ')} + sitemap.xml + robots.txt`);

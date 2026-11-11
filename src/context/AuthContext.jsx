@@ -114,7 +114,7 @@ export function AuthProvider({ children }) {
     // Redirecionamento explícito para o AB Fitness após confirmação de e-mail
     const redirectUrl = typeof window !== 'undefined' && window.location.origin
       ? `${window.location.origin}/`
-      : 'https://ba-fitness.vercel.app/';
+      : 'https://www.abfitness.app/';
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -151,7 +151,7 @@ export function AuthProvider({ children }) {
     }
     const redirectUrl = typeof window !== 'undefined' && window.location.origin
       ? `${window.location.origin}/`
-      : 'https://ba-fitness.vercel.app/';
+      : 'https://www.abfitness.app/';
 
     const { data, error } = await supabase.auth.resend({
       type: 'signup',

@@ -123,7 +123,7 @@ export async function generateAndShareWorkoutCard(treino) {
 
   ctx.fillStyle = '#ffffff';
   ctx.font = '800 28px sans-serif';
-  ctx.fillText('ba-fitness.vercel.app', 540, 1800);
+  ctx.fillText('www.abfitness.app', 540, 1800);
 
   // 8. Compartilhar ou Baixar
   canvas.toBlob(async (blob) => {

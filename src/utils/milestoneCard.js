@@ -151,7 +151,7 @@ export async function buildMilestoneCard({ before, after, deltas = [], lifts = [
   }
 
   // Rodapé
-  label(ctx, 'ba-fitness.vercel.app', W / 2, H - 90, { size: 28, weight: 800, color: 'rgba(255,255,255,0.55)', align: 'center' });
+  label(ctx, 'www.abfitness.app', W / 2, H - 90, { size: 28, weight: 800, color: 'rgba(255,255,255,0.55)', align: 'center' });
 
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }

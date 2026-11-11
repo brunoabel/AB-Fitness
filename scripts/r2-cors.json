@@ -1,6 +1,6 @@
 [
   {
-    "AllowedOrigins": ["https://ba-fitness.vercel.app", "http://localhost:5173", "http://localhost:4173"],
+    "AllowedOrigins": ["https://www.abfitness.app", "https://abfitness.app", "http://localhost:5173", "http://localhost:4173"],
     "AllowedMethods": ["GET", "HEAD"],
     "AllowedHeaders": ["Range"],
     "ExposeHeaders": ["Content-Length", "Content-Range", "Accept-Ranges"],
