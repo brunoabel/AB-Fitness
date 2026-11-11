@@ -14,12 +14,17 @@ import {
   ChevronRight,
   ShieldPlus,
   ShieldMinus,
-  Crown
+  Crown,
+  Download,
+  Sparkles,
+  Lock
 } from 'lucide-react';
 import { fetchAdminAthletesData, fetchAthleteDetails, promoteToCoach, demoteToAthlete } from '../services/workoutService';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import ABLogo from './ABLogo';
+import { getLocalWaitlist, exportWaitlistCsv } from '../services/waitlistService';
+import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
 
 export default function AdminDashboard({ onBackToWorkout }) {
   const { isCeo } = useAuth();
@@ -29,7 +34,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState({ totalLogs: 0, totalVolume: 0 });
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('athletes'); // 'athletes' | 'sessions'
+  const [activeTab, setActiveTab] = useState('athletes'); // 'athletes' | 'sessions' | 'waitlist'
+  const [waitlistLeads, setWaitlistLeads] = useState(() => getLocalWaitlist());
   const [selectedAthlete, setSelectedAthlete] = useState(null);
   const [athleteDetailsLoading, setAthleteDetailsLoading] = useState(false);
   const [athleteDetails, setAthleteDetails] = useState(null);
@@ -45,6 +51,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
         totalLogs: data.totalLogsCount || 0,
         totalVolume: data.totalVolumeKg || 0
       });
+      setWaitlistLeads(getLocalWaitlist());
     } catch (err) {
       console.error('Erro ao carregar dados admin:', err);
     } finally {
@@ -149,6 +156,20 @@ export default function AdminDashboard({ onBackToWorkout }) {
     }
   };
 
+  const handleExportWaitlist = () => {
+    const csv = exportWaitlistCsv();
+    if (!csv) return;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `ab_fitness_waitlist_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerHaptic([10, 30, 10]);
+  };
+
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col justify-between transition-colors animate-fadeIn">
       <div className="w-full max-w-5xl mx-auto min-h-screen bg-zinc-950 shadow-2xl relative flex flex-col justify-between border-x border-white/10">
@@ -243,8 +264,31 @@ export default function AdminDashboard({ onBackToWorkout }) {
             </div>
           </div>
 
-          {/* Abas: Atletas / Histórico Geral */}
-          <div className="grid grid-cols-2 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold">
+          {/* Banner de Status: Modo Lançamento Privado / Fechado para Marketing */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+              </span>
+              <div className="min-w-0">
+                <p className="font-bold text-amber-300 truncate">
+                  {PRIVATE_LAUNCH_MODE ? 'App Fechada para Marketing (Lançamento VIP Ativo)' : 'App Aberta ao Público'}
+                </p>
+                <p className="text-[11px] text-zinc-400 truncate">
+                  {PRIVATE_LAUNCH_MODE ? 'Apenas o Administrador/CEO tem acesso ao interior da app. Visitantes vêem a Waitlist.' : 'Qualquer atleta pode criar conta e aceder à app.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] uppercase font-bold tracking-wider">
+                {PRIVATE_LAUNCH_MODE ? 'Privado' : 'Aberto'}
+              </span>
+            </div>
+          </div>
+
+          {/* Abas: Atletas / Histórico Geral / Waitlist VIP Marketing */}
+          <div className="grid grid-cols-3 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold">
             <button
               onClick={() => {
                 setActiveTab('athletes');
@@ -269,7 +313,20 @@ export default function AdminDashboard({ onBackToWorkout }) {
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Histórico Geral ({sessions.length})
+              Treinos ({sessions.length})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('waitlist');
+                triggerHaptic(10);
+              }}
+              className={`min-h-[40px] py-2 rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'waitlist'
+                  ? 'bg-zinc-800 text-white shadow-xs'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Waitlist ({waitlistLeads.length})
             </button>
           </div>
 
@@ -416,6 +473,72 @@ export default function AdminDashboard({ onBackToWorkout }) {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: LEADS DE MARKETING / LISTA VIP (WAITLIST) */}
+          {activeTab === 'waitlist' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-zinc-900 border border-white/10">
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Leads Capturados no Lançamento Privado
+                  </h3>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    Total de <strong>{waitlistLeads.length}</strong> atletas em lista de espera aguardando convite de membro fundador.
+                  </p>
+                </div>
+                {waitlistLeads.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleExportWaitlist}
+                    className="py-2 px-3.5 rounded-xl bg-white text-zinc-950 font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-zinc-200 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Exportar CSV</span>
+                  </button>
+                )}
+              </div>
+
+              {waitlistLeads.length === 0 ? (
+                <div className="p-10 rounded-2xl border border-dashed border-white/10 text-center space-y-2.5">
+                  <Sparkles className="w-7 h-7 text-amber-400/60 mx-auto" />
+                  <h4 className="text-xs font-bold text-zinc-300">
+                    Ainda não foram registados leads na lista
+                  </h4>
+                  <p className="text-[11px] text-zinc-500 max-w-sm mx-auto">
+                    Assim que os visitantes da campanha de marketing preencherem o formulário no ecrã de lançamento privado, surgirão aqui em tempo real.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {waitlistLeads.map((lead) => (
+                    <div
+                      key={lead.id}
+                      className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-xs">
+                          {(lead.name || lead.email).slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-white">{lead.name || 'Atleta VIP'}</span>
+                            <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-[10px] text-zinc-400 uppercase font-medium">
+                              {lead.goal || 'Geral'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-400">{lead.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-zinc-500 font-mono">
+                        {lead.created_at ? new Date(lead.created_at).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Recente'}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

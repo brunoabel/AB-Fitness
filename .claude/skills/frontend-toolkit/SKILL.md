@@ -58,3 +58,4 @@ Production-grade engineering standards for building responsive, accessible, high
 - **Lazy Loading & Code Splitting**: Heavy components (charts, modals, audio engines, rich editors) must be loaded dynamically via `React.lazy()` and `Suspense`.
 - **Client-Side Compression**: Compress camera images via canvas bitmap processing before uploading or storing locally.
 - **Resilient Fallbacks**: Every network request must gracefully fall back to local storage or cached states when offline or during transient server errors.
+

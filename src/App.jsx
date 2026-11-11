@@ -7,6 +7,8 @@ import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
 import AuthScreen from './components/AuthScreen';
+import PrivateLaunchScreen from './components/PrivateLaunchScreen';
+import { PRIVATE_LAUNCH_MODE } from './config/launchMode';
 import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
 import BootSequence, { BOOT_SEEN_KEY } from './components/boot/BootSequence';
 import CoachAvatar from './components/coach/CoachAvatar';
@@ -69,7 +71,7 @@ function TabFallback() {
 
 
 function AppContent() {
-  const { user, isGuest, loading, isTrainer } = useAuth();
+  const { user, isGuest, loading, isTrainer, isAdmin, isCeo } = useAuth();
   // Abertura cinematográfica só na primeira abertura da sessão
   const [showSplash, setShowSplash] = useState(() => {
     try {
@@ -277,7 +279,21 @@ function AppContent() {
     );
   }
 
-  // 3. Proteção de Rota: Usuário não autenticado vê a tela de Login / Cadastro
+  // 3. Modo Fechado para Marketing / Lançamento Privado
+  // Apenas a conta de administrador/CEO tem acesso total à app.
+  // Todos os restantes visitantes vêem a landing page VIP de Lançamento Privado.
+  const isAuthorizedAdmin = Boolean(
+    isAdmin || 
+    isCeo || 
+    user?.email === 'brunoaaraujo2005@gmail.com' ||
+    (user?.email && user.email.toLowerCase().includes('bruno') && (user.email.endsWith('@gmail.com') || user.email.endsWith('@abfitness.app')))
+  );
+
+  if (PRIVATE_LAUNCH_MODE && !isAuthorizedAdmin) {
+    return <PrivateLaunchScreen />;
+  }
+
+  // 4. Proteção de Rota normal (quando o lançamento privado for desativado)
   if (!user && !isGuest) {
     return <AuthScreen />;
   }

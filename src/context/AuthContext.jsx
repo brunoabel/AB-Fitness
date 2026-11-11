@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { AuthContext } from './authContextDef';
 import { CONSENT_VERSION } from '../legal/config';
+import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
 
 const GUEST_STORAGE_KEY = 'ab_fitness_guest_mode_v1';
 
@@ -175,8 +176,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(GUEST_STORAGE_KEY);
   };
 
-  // Acesso Convidado / Modo Offline
+  // Acesso Convidado / Modo Offline (bloqueado durante o lançamento privado)
   const continueAsGuest = () => {
+    if (PRIVATE_LAUNCH_MODE) return;
     setIsGuest(true);
     localStorage.setItem(GUEST_STORAGE_KEY, 'true');
     setUser({
