@@ -54,28 +54,20 @@ export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) 
   let cloudError = null;
   if (isSupabaseConfigured() && supabase) {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('waitlist')
-        .upsert(
-          {
-            name: entry.name,
-            email: entry.email,
-            goal: entry.goal,
-            phone: entry.phone || null,
-            source: entry.source,
-            created_at: entry.created_at
-          },
-          { onConflict: 'email' }
-        )
-        .select()
-        .maybeSingle();
+        .insert({
+          name: entry.name,
+          email: entry.email,
+          goal: entry.goal,
+          phone: entry.phone || null,
+          source: entry.source
+        });
 
-      if (error) {
+      // Se for duplicado (código 23505), o lead já está no banco com sucesso
+      if (error && error.code !== '23505') {
         cloudError = error;
         console.warn('Erro ao sincronizar lead com o Supabase:', error.message);
-      } else if (data) {
-        entry.id = data.id;
-        entry.created_at = data.created_at;
       }
     } catch (err) {
       cloudError = err;
@@ -103,23 +95,22 @@ export async function fetchWaitlistLeads() {
   }
 
   try {
+    // 1. Tenta via RPC com SECURITY DEFINER (imune a filtros restritivos de RLS)
+    const rpcRes = await supabase.rpc('get_marketing_waitlist');
+    if (!rpcRes.error && Array.isArray(rpcRes.data) && rpcRes.data.length > 0) {
+      saveLocalWaitlist(rpcRes.data);
+      return rpcRes.data;
+    }
+
+    // 2. Consulta direta à tabela public.waitlist
     const { data, error } = await supabase
       .from('waitlist')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.warn('Não foi possível carregar waitlist da nuvem:', error.message);
-      return localList;
-    }
-
-    if (Array.isArray(data)) {
-      // Mescla com dados locais caso haja algum offline
-      const cloudEmails = new Set(data.map((d) => (d.email || '').toLowerCase()));
-      const offlineOnly = localList.filter((l) => !cloudEmails.has((l.email || '').toLowerCase()));
-      const merged = [...data, ...offlineOnly];
-      saveLocalWaitlist(merged);
-      return merged;
+    if (!error && Array.isArray(data) && data.length > 0) {
+      saveLocalWaitlist(data);
+      return data;
     }
   } catch (err) {
     console.warn('Exceção ao obter leads do Supabase:', err);
