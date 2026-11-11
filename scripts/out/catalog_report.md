@@ -1,10 +1,38 @@
 # Catálogo de exercícios — relatório
 
-- Total: 347 (320 atuais + 27 de casa)
-- Com vídeo: 168 (48%) · auditados: 141 · ligados à mão: 0
+- Total: 375 (348 atuais + 27 de casa)
+- Com vídeo: 196 (52%) · auditados: 141 · ligados à mão: 28
 - Sem vídeo: 179 · exercícios de ginásio sem alternativa de casa: 0
 
 ## Vídeos do dataset ligados por revisão manual
+- Elevação Lateral Sentado com Halteres → Dumbbell Seated Lateral Raise
+- Elevação Frontal Sentado com Halteres → Dumbbell Seated Front Raise
+- Elevação Lateral 'Cruz de Ferro' (Iron Cross) → Dumbbell Iron Cross
+- Rosca Direta Inclinada com Halteres → Dumbbell Incline Biceps Curl
+- Extensão de Tríceps Inclinado com Halteres → Dumbbell Incline Triceps Extension
+- Rosca Scott com Bola Suíça → Dumbbell Preacher Curl Over Exercise Ball
+- Tríceps na Máquina Articulada → Lever Triceps Extension
+- Rosca Unilateral na Polia → Cable One Arm Curl
+- Supino Fechado com Halteres → Dumbbell Close-Grip Press
+- Remada Baixa Pegada Aberta no Cabo → Seated Cable Row (Wide-Grip)
+- Remada Alta Sentada em V → Cable Seated High Row (V-bar)
+- Encolhimento na Máquina Articulada → Lever Shrug
+- Barra Fixa Assistida no Banco (Bench Pull-Up) → Bench Pull-Up
+- Remada Alta em Argolas → Ring High Row
+- Encolhimento Reclinado no Banco Inclinado com Halteres → Dumbbell Incline Shrug
+- Agachamento com Halteres → Dumbbell Squat
+- Flexora Deitada com Halteres → Dumbbell Lying Leg Curl
+- Hiperextensão Reversa na Máquina → Lever Reverse Hyperextension
+- Extensão de Quadril em Pé na Máquina → Lever Standing Hip Extension
+- Leg Press Pés Juntos → Close Feet Leg Press
+- Alongamento de Dorsais Ajoelhado (Extensão Total) → Kneeling Lat Stretch
+- Alongamento Dinâmico de Peitoral → Dynamic Chest Stretch
+- Postura da Borboleta → Butterfly Yoga Pose
+- Alongamento de Peitoral Acima da Cabeça com Mãos Entrelaçadas → Overhead Chest Stretch
+- Alongamento de Adutores Deitado (Pernas Abertas) → Standing Adductor Stretch
+- Alongamento de Quadríceps Deitado de Bruços → Lying Quadriceps Stretch
+- Alongamento Lateral Sentado no Banco → Seated Lower Back Stretch
+- Alongamento de Tríceps e Dorsais Ajoelhado → Kneeling Triceps Stretch
 
 ## Sem vídeo (lista de gravação)
 - Abdômen · Abdominal Declinado com Anilha no Peito

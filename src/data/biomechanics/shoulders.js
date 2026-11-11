@@ -875,5 +875,87 @@ export const SHOULDERS_BIOMECHANICS = {
     respiracao: 'Inspire descendo; expire subindo.',
     erro_comum: 'Rolar os ombros com a carga pesada.',
     beneficio: 'A biomecânica perfeita para encolhimento: as pegadas laterais neutralizam o atrito da barra contra as pernas e reduzem estresse nos punhos.'
+  },
+
+  // =========================================================================
+  // EXPANSÃO: NOVOS EXERCÍCIOS (IDS 321-326)
+  // =========================================================================
+  321: {
+    id: 321,
+    slug: 'elevacao-lateral-sentado-halteres',
+    nome: 'Elevação Lateral Sentado com Halteres',
+    grupo: 'Ombros',
+    alvo: 'Deltoide Lateral (Médio)',
+    sinergistas: 'Trapézio Superior e Supraespinhal',
+    equipamento: 'Banco Reto + Halteres',
+    posicao_inicial: 'Sentado com tronco ereto e colado ao encosto, halteres ao lado do corpo com cotovelos levemente flexionados.',
+    concentrica: 'Eleve os halteres lateralmente até a linha dos ombros, cotovelos sempre ligeiramente à frente do tronco.',
+    excentrica: 'Desça em 2 a 3 segundos resistindo à gravidade até os braços quase tocarem o tronco.',
+    passos: [
+      'Sente-se com as costas fixas no encosto, eliminando qualquer impulso do tronco.',
+      'Segure os halteres ao lado do quadril com pegada neutra.',
+      'Eleve os braços lateralmente até a altura dos ombros.',
+      'Desça controlado sem deixar o peso cair.'
+    ],
+    checkpoints: [
+      'Tronco preso ao encosto, sem balanço para gerar impulso',
+      'Cotovelos levemente flexionados e fixos durante todo o movimento',
+      'Elevação até no máximo a linha dos ombros, sem encolher o trapézio'
+    ],
+    respiracao: 'Expire subindo os halteres; inspire na descida controlada.',
+    erro_comum: 'Usar o encosto inclinado para balançar o tronco e gerar impulso com o trapézio em vez do deltoide lateral.',
+    beneficio: 'O apoio do banco remove qualquer compensação do tronco, isolando o deltoide lateral com mais pureza do que a versão em pé.'
+  },
+  322: {
+    id: 322,
+    slug: 'elevacao-frontal-sentado-halteres',
+    nome: 'Elevação Frontal Sentado com Halteres',
+    grupo: 'Ombros',
+    alvo: 'Deltoide Anterior',
+    sinergistas: 'Deltoide Lateral e Porção Clavicular do Peitoral',
+    equipamento: 'Banco Reto + Halteres',
+    posicao_inicial: 'Sentado com tronco ereto, halteres apoiados nas coxas com pegada pronada.',
+    concentrica: 'Eleve um halter à frente do corpo até a altura dos ombros, mantendo o cotovelo quase estendido.',
+    excentrica: 'Desça em 2 a 3 segundos de volta à coxa antes de iniciar o lado oposto.',
+    passos: [
+      'Sente-se ereto e segure os halteres sobre as coxas.',
+      'Eleve um braço à frente até a linha dos ombros.',
+      'Desça com controle total até a coxa.',
+      'Alterne os lados mantendo o tronco imóvel.'
+    ],
+    checkpoints: [
+      'Tronco imóvel, sem inclinar para trás para ajudar a subida',
+      'Trajetória reta à frente do corpo, sem desviar para o lado',
+      'Pausa breve no topo sem usar impulso do quadril'
+    ],
+    respiracao: 'Expire na subida; inspire na descida.',
+    erro_comum: 'Inclinar o tronco para trás no banco para ganhar impulso com a lombar.',
+    beneficio: 'A posição sentada bloqueia a inércia do quadril, tornando o isolamento do deltoide anterior mais estrito que a versão em pé.'
+  },
+  324: {
+    id: 324,
+    slug: 'elevacao-lateral-iron-cross',
+    nome: 'Elevação Lateral "Cruz de Ferro" (Iron Cross)',
+    grupo: 'Ombros',
+    alvo: 'Deltoide Lateral',
+    sinergistas: 'Deltoide Anterior e Trapézio Superior',
+    equipamento: 'Halteres',
+    posicao_inicial: 'Em pé, halteres à frente do corpo com os braços cruzados próximos ao quadril oposto.',
+    concentrica: 'Eleve os halteres em arco lateral e diagonal até os braços formarem uma cruz na altura dos ombros.',
+    excentrica: 'Desça em 2 a 3 segundos retornando os halteres ao ponto cruzado à frente do quadril.',
+    passos: [
+      'Em pé, cruze os halteres à frente do quadril.',
+      'Eleve os braços em arco amplo até a altura dos ombros.',
+      'Finalize com os braços abertos formando uma cruz.',
+      'Desça controlado retornando ao ponto cruzado.'
+    ],
+    checkpoints: [
+      'Trajetória em arco diagonal, não puramente lateral',
+      'Tronco estável sem balanço para impulsionar a carga',
+      'Carga leve priorizando amplitude completa sobre o peso'
+    ],
+    respiracao: 'Expire na subida; inspire na descida.',
+    erro_comum: 'Usar carga pesada demais, encurtando a amplitude e perdendo o cruzamento inicial dos braços.',
+    beneficio: 'O ponto de partida cruzado alonga o deltoide lateral sob tensão antes mesmo de iniciar a subida, aumentando o tempo total sob carga.'
   }
 };

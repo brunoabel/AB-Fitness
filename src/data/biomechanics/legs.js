@@ -2053,5 +2053,139 @@ export const LEGS_BIOMECHANICS = {
     respiracao: 'Inspire voltando; expire puxando.',
     erro_comum: 'Arrastar o calcanhar no solo.',
     beneficio: 'Resistência perfeita do cabo para fortalecimento dos músculos anteriores da perna e blindagem do tornozelo.'
+  },
+
+  // =========================================================================
+  // EXPANSÃO: NOVOS EXERCÍCIOS (IDS 340-344)
+  // =========================================================================
+  340: {
+    id: 340,
+    slug: 'agachamento-halteres',
+    nome: 'Agachamento com Halteres',
+    grupo: 'Quadríceps',
+    alvo: 'Quadríceps (Vastos e Reto Femoral)',
+    sinergistas: 'Glúteos e Isquiotibiais',
+    equipamento: 'Halteres',
+    posicao_inicial: 'Em pé com os halteres ao lado do corpo ou apoiados nos ombros, pés na largura dos ombros.',
+    concentrica: 'Suba empurrando o chão com os calcanhares até a extensão completa de quadril e joelhos.',
+    excentrica: 'Desça em 2 a 3 segundos flexionando quadril e joelhos até as coxas ficarem paralelas ao chão.',
+    passos: [
+      'Segure os halteres ao lado do corpo ou nos ombros.',
+      'Desça flexionando quadril e joelhos simultaneamente.',
+      'Mantenha o tronco ereto durante toda a descida.',
+      'Suba empurrando o chão até a extensão completa.'
+    ],
+    checkpoints: [
+      'Joelhos alinhados com a ponta dos pés, sem colapsar para dentro',
+      'Tronco ereto, peso distribuído no meio do pé',
+      'Profundidade até as coxas paralelas ao chão'
+    ],
+    respiracao: 'Inspire na descida; expire na subida.',
+    erro_comum: 'Deixar os joelhos avançarem muito à frente da ponta dos pés, transferindo carga excessiva para o tendão patelar.',
+    beneficio: 'Uma alternativa acessível ao agachamento com barra, ideal para quem não tem suporte de rack ou está a trabalhar a técnica antes de progredir para cargas maiores.'
+  },
+  341: {
+    id: 341,
+    slug: 'flexora-deitada-halteres',
+    nome: 'Flexora Deitada com Halteres',
+    grupo: 'Posteriores',
+    alvo: 'Isquiotibiais',
+    sinergistas: 'Gastrocnêmio',
+    equipamento: 'Banco + Halter (preso entre os pés)',
+    posicao_inicial: 'Deitado de bruços no banco com um halter preso entre os pés, pernas estendidas.',
+    concentrica: 'Flexione os joelhos elevando o halter em direção aos glúteos.',
+    excentrica: 'Desça em 2 a 3 segundos controlados até a extensão quase completa das pernas.',
+    passos: [
+      'Deite de bruços com o halter preso entre os pés.',
+      'Mantenha o quadril colado ao banco.',
+      'Flexione os joelhos levando o peso aos glúteos.',
+      'Desça controlado até quase estender as pernas.'
+    ],
+    checkpoints: [
+      'Quadril permanece colado ao banco, sem elevar para ajudar',
+      'Movimento isolado no joelho, sem usar impulso',
+      'Contração máxima com o calcanhar próximo ao glúteo'
+    ],
+    respiracao: 'Expire flexionando; inspire estendendo.',
+    erro_comum: 'Elevar o quadril do banco para compensar a falta de força nos isquiotibiais.',
+    beneficio: 'Uma alternativa de baixo custo à mesa flexora de máquina, útil para treinar em casa ou em academias sem o equipamento específico.'
+  },
+  342: {
+    id: 342,
+    slug: 'hiperextensao-reversa-maquina',
+    nome: 'Hiperextensão Reversa na Máquina',
+    grupo: 'Glúteos',
+    alvo: 'Glúteo Máximo',
+    sinergistas: 'Isquiotibiais e Eretores da Espinha',
+    equipamento: 'Máquina Articulada (Lever)',
+    posicao_inicial: 'Deitado de bruços sobre a máquina com o tronco apoiado e as pernas presas na alavanca abaixo do corpo.',
+    concentrica: 'Eleve as pernas para trás e para cima estendendo o quadril contra a resistência.',
+    excentrica: 'Desça em 2 a 3 segundos controlados até as pernas retornarem abaixo da linha do tronco.',
+    passos: [
+      'Deite de bruços com o tronco apoiado firme na máquina.',
+      'Prenda as pernas na alavanca inferior.',
+      'Eleve as pernas estendendo o quadril contra a resistência.',
+      'Desça controlado até a posição inicial.'
+    ],
+    checkpoints: [
+      'Tronco fixo e apoiado durante toda a repetição',
+      'Movimento ocorre no quadril, não na lombar',
+      'Contração máxima do glúteo no topo'
+    ],
+    respiracao: 'Expire subindo as pernas; inspire descendo.',
+    erro_comum: 'Usar a lombar para arremessar as pernas em vez de isolar a extensão de quadril.',
+    beneficio: 'Inverte a mecânica da hiperextensão tradicional, fixando o tronco e movendo as pernas, o que isola o glúteo com menor estresse na coluna lombar.'
+  },
+  343: {
+    id: 343,
+    slug: 'extensao-quadril-pe-maquina',
+    nome: 'Extensão de Quadril em Pé na Máquina',
+    grupo: 'Glúteos',
+    alvo: 'Glúteo Máximo',
+    sinergistas: 'Isquiotibiais e Eretores da Espinha',
+    equipamento: 'Máquina Articulada (Lever) em Pé',
+    posicao_inicial: 'Em pé apoiado na máquina com uma perna presa na alavanca atrás do corpo, tronco levemente inclinado à frente.',
+    concentrica: 'Estenda o quadril empurrando a perna para trás e para cima contra a resistência.',
+    excentrica: 'Retorne em 2 a 3 segundos controlados até a perna alinhar com o tronco.',
+    passos: [
+      'Prenda uma perna na alavanca da máquina.',
+      'Apoie as mãos no suporte e incline levemente o tronco.',
+      'Estenda o quadril empurrando a perna para trás.',
+      'Retorne controlado sem perder a postura.'
+    ],
+    checkpoints: [
+      'Joelho da perna de apoio levemente flexionado e estável',
+      'Tronco mantém a mesma inclinação do início ao fim',
+      'Perna de trabalho não ultrapassa o ponto de hiperextensão lombar'
+    ],
+    respiracao: 'Expire estendendo a perna; inspire retornando.',
+    erro_comum: 'Compensar com rotação do quadril em vez de manter o movimento no plano sagital.',
+    beneficio: 'O trabalho unilateral em pé exige maior ativação dos estabilizadores do quadril de apoio, somando um componente de equilíbrio ao isolamento do glúteo.'
+  },
+  344: {
+    id: 344,
+    slug: 'leg-press-pes-juntos',
+    nome: 'Leg Press Pés Juntos',
+    grupo: 'Quadríceps',
+    alvo: 'Quadríceps (Vasto Lateral)',
+    sinergistas: 'Glúteos, Adutores e Isquiotibiais',
+    equipamento: 'Máquina de Leg Press',
+    posicao_inicial: 'Sentado na máquina com os pés juntos e centralizados na plataforma, na altura dos ombros.',
+    concentrica: 'Empurre a plataforma estendendo os joelhos até quase a extensão completa, sem travar.',
+    excentrica: 'Desça em 2 a 3 segundos controlados até os joelhos se aproximarem do peito.',
+    passos: [
+      'Sente-se e posicione os pés juntos no centro da plataforma.',
+      'Destrave a máquina mantendo os joelhos alinhados.',
+      'Desça controlado até os joelhos próximos ao peito.',
+      'Empurre a plataforma de volta quase à extensão total.'
+    ],
+    checkpoints: [
+      'Pés mantidos juntos e centralizados durante toda a série',
+      'Joelhos seguem a mesma linha dos pés, sem abrir ou fechar',
+      'Lombar permanece apoiada no encosto, sem descolar'
+    ],
+    respiracao: 'Inspire na descida; expire empurrando.',
+    erro_comum: 'Descer além da mobilidade de quadril disponível, arredondando a lombar e descolando-a do encosto.',
+    beneficio: 'O posicionamento de pés juntos desloca mais ênfase para o vasto lateral do quadríceps em comparação ao posicionamento tradicional mais aberto.'
   }
 };

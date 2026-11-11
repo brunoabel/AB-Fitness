@@ -871,5 +871,165 @@ export const BACK_BIOMECHANICS = {
     respiracao: 'Inspire descendo; expire subindo.',
     erro_comum: 'Usar carga pesada demais e quicar o tronco na subida.',
     beneficio: 'Sobrecarga progressiva para os eretores espinhais para suportar cargas brutas de agachamento e levantamento terra.'
+  },
+
+  // =========================================================================
+  // EXPANSÃO: NOVOS EXERCÍCIOS (IDS 333-339)
+  // =========================================================================
+  333: {
+    id: 333,
+    slug: 'remada-baixa-pegada-aberta-cabo',
+    nome: 'Remada Baixa Pegada Aberta no Cabo',
+    grupo: 'Costas',
+    alvo: 'Latíssimo do Dorso e Trapézio Médio',
+    sinergistas: 'Deltoide Posterior e Bíceps Braquial',
+    equipamento: 'Polia Baixa + Barra Reta Larga',
+    posicao_inicial: 'Sentado com joelhos levemente flexionados, tronco ereto, barra segurada com pegada pronada mais larga que os ombros.',
+    concentrica: 'Puxe a barra em direção ao abdômen abrindo os cotovelos para os lados e aproximando as escápulas.',
+    excentrica: 'Estenda os braços em 2 a 3 segundos controlados até o alongamento total das costas.',
+    passos: [
+      'Sente-se com os pés firmes e joelhos levemente flexionados.',
+      'Segure a barra com pegada pronada aberta.',
+      'Puxe a barra até o abdômen abrindo os cotovelos.',
+      'Estenda os braços controlado até o alongamento total.'
+    ],
+    checkpoints: [
+      'Tronco ereto sem balançar para trás a cada puxada',
+      'Cotovelos abrem para os lados, não colam ao tronco',
+      'Escápulas se aproximam no final da puxada'
+    ],
+    respiracao: 'Expire puxando; inspire na extensão.',
+    erro_comum: 'Usar o balanço do tronco para ajudar a puxar o peso, tirando a tensão do latíssimo.',
+    beneficio: 'A pegada aberta recruta mais fibras do trapézio médio e romboides em comparação com a pegada fechada, somando espessura às costas.'
+  },
+  334: {
+    id: 334,
+    slug: 'remada-alta-sentada-v',
+    nome: 'Remada Alta Sentada em V',
+    grupo: 'Costas',
+    alvo: 'Latíssimo do Dorso',
+    sinergistas: 'Bíceps Braquial, Romboides e Deltoide Posterior',
+    equipamento: 'Polia Baixa + Puxador em V',
+    posicao_inicial: 'Sentado com tronco ereto, segurando o puxador em V com pegada neutra e braços estendidos à frente.',
+    concentrica: 'Puxe o puxador em direção ao abdômen superior mantendo os cotovelos próximos ao tronco.',
+    excentrica: 'Estenda os braços em 2 a 3 segundos controlados até a extensão total.',
+    passos: [
+      'Sente-se ereto segurando o puxador em V.',
+      'Mantenha o tronco fixo, sem balançar para trás.',
+      'Puxe o puxador até o abdômen superior.',
+      'Estenda controlado de volta à posição inicial.'
+    ],
+    checkpoints: [
+      'Cotovelos permanecem próximos ao tronco durante a puxada',
+      'Tronco ereto, sem usar impulso do quadril',
+      'Puxada termina na altura do abdômen superior, não do pescoço'
+    ],
+    respiracao: 'Expire puxando; inspire estendendo.',
+    erro_comum: 'Inclinar o tronco muito para trás para completar a amplitude com a lombar.',
+    beneficio: 'A pegada neutra do puxador em V reduz o estresse no ombro e favorece uma contração mais completa do latíssimo na porção final do movimento.'
+  },
+  336: {
+    id: 336,
+    slug: 'encolhimento-maquina-articulada',
+    nome: 'Encolhimento na Máquina Articulada',
+    grupo: 'Trapézio',
+    alvo: 'Trapézio Superior',
+    sinergistas: 'Elevador da Escápula',
+    equipamento: 'Máquina Articulada (Lever)',
+    posicao_inicial: 'Em pé ou sentado segurando as alças da máquina com os braços estendidos ao lado do corpo.',
+    concentrica: 'Encolha os ombros verticalmente com força, segurando 1 a 2 segundos no topo.',
+    excentrica: 'Desça em 2 a 3 segundos permitindo o alongamento total do trapézio.',
+    passos: [
+      'Posicione-se na máquina segurando as alças.',
+      'Mantenha os braços estendidos e relaxados.',
+      'Encolha os ombros diretamente para cima.',
+      'Desça controlado até o alongamento total.'
+    ],
+    checkpoints: [
+      'Movimento puramente vertical, sem rotação dos ombros',
+      'Cotovelos permanecem estendidos durante toda a repetição',
+      'Pausa no topo antes de iniciar a descida'
+    ],
+    respiracao: 'Expire subindo; inspire descendo.',
+    erro_comum: 'Rolar os ombros para frente ou para trás em vez de encolher em linha reta.',
+    beneficio: 'A trajetória guiada da máquina permite focar inteiramente na contração do trapézio sem gastar energia estabilizando a carga livre.'
+  },
+  337: {
+    id: 337,
+    slug: 'barra-fixa-assistida-banco',
+    nome: 'Barra Fixa Assistida no Banco (Bench Pull-Up)',
+    grupo: 'Costas',
+    alvo: 'Latíssimo do Dorso',
+    sinergistas: 'Bíceps Braquial e Romboides',
+    equipamento: 'Barra Fixa + Banco de Apoio',
+    posicao_inicial: 'Pendurado na barra fixa com um banco posicionado abaixo para apoiar parte do peso corporal com as pernas.',
+    concentrica: 'Puxe o corpo para cima usando costas e braços, permitindo que as pernas assistam apenas o necessário.',
+    excentrica: 'Desça em 2 a 3 segundos controlados até os braços ficarem quase estendidos.',
+    passos: [
+      'Posicione o banco abaixo da barra fixa.',
+      'Segure a barra com pegada pronada na largura dos ombros.',
+      'Puxe o corpo para cima apoiando parcialmente as pernas no banco.',
+      'Desça controlado até a extensão quase completa dos braços.'
+    ],
+    checkpoints: [
+      'Pernas assistem só o mínimo necessário para completar a repetição',
+      'Queixo ultrapassa a linha da barra no topo',
+      'Descida controlada, sem soltar o peso de uma vez'
+    ],
+    respiracao: 'Expire puxando para cima; inspire na descida.',
+    erro_comum: 'Apoiar peso demais nas pernas, perdendo o estímulo real nas costas.',
+    beneficio: 'Permite progredir tecnicamente rumo à barra fixa completa, mantendo o padrão de puxada vertical real com assistência regulável pelo próprio praticante.'
+  },
+  338: {
+    id: 338,
+    slug: 'remada-alta-argolas',
+    nome: 'Remada Alta em Argolas',
+    grupo: 'Costas',
+    alvo: 'Latíssimo do Dorso e Trapézio Médio',
+    sinergistas: 'Bíceps Braquial e Deltoide Posterior',
+    equipamento: 'Argolas de Ginástica (Suspensão)',
+    posicao_inicial: 'Segurando as argolas com os braços estendidos, corpo inclinado para trás formando uma linha reta dos calcanhares aos ombros.',
+    concentrica: 'Puxe o corpo em direção às argolas levando o peito ao encontro das mãos, abrindo os cotovelos para fora.',
+    excentrica: 'Estenda os braços em 2 a 3 segundos controlados retornando à inclinação inicial.',
+    passos: [
+      'Segure as argolas e incline o corpo para trás em linha reta.',
+      'Trave o core para manter a postura rígida.',
+      'Puxe o peito em direção às mãos abrindo os cotovelos.',
+      'Estenda controlado de volta à posição inicial.'
+    ],
+    checkpoints: [
+      'Corpo em linha reta dos calcanhares à cabeça durante toda a repetição',
+      'Cotovelos abrem para fora na puxada, aproximando as escápulas',
+      'Ângulo do corpo regula a dificuldade: quanto mais horizontal, mais difícil'
+    ],
+    respiracao: 'Expire puxando; inspire estendendo.',
+    erro_comum: 'Deixar o quadril cair, quebrando a linha reta do corpo e reduzindo o recrutamento das costas.',
+    beneficio: 'A instabilidade das argolas exige maior ativação dos estabilizadores escapulares, somando controle neuromuscular ao estímulo de força nas costas.'
+  },
+  339: {
+    id: 339,
+    slug: 'encolhimento-inclinado-halteres',
+    nome: 'Encolhimento Inclinado com Halteres',
+    grupo: 'Trapézio',
+    alvo: 'Trapézio Médio e Superior',
+    sinergistas: 'Romboides',
+    equipamento: 'Banco Inclinado + Halteres',
+    posicao_inicial: 'Deitado de bruços num banco inclinado a 45°, halteres pendurados sob os ombros com braços estendidos.',
+    concentrica: 'Encolha os ombros verticalmente em direção às orelhas, segurando 1 a 2 segundos no topo.',
+    excentrica: 'Desça em 2 a 3 segundos permitindo o alongamento total do trapézio.',
+    passos: [
+      'Deite de bruços no banco inclinado com os halteres pendurados.',
+      'Mantenha os braços estendidos e relaxados.',
+      'Encolha os ombros diretamente para cima.',
+      'Desça controlado até o alongamento total.'
+    ],
+    checkpoints: [
+      'Peito fixo no banco durante toda a repetição',
+      'Movimento isolado nos ombros, sem flexionar os cotovelos',
+      'Pausa no topo antes de descer'
+    ],
+    respiracao: 'Expire subindo; inspire descendo.',
+    erro_comum: 'Flexionar os cotovelos para ajudar a elevar o peso, transformando em uma remada parcial.',
+    beneficio: 'O apoio no banco inclinado isola o trapézio médio com um ângulo de tração diferente do encolhimento em pé, variando o estímulo entre as fibras superiores e médias.'
   }
 };

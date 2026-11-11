@@ -1368,5 +1368,185 @@ export const CORE_FUNCTIONAL_BIOMECHANICS = {
     respiracao: 'Inspire na volta; expire no avanço do joelho.',
     erro_comum: 'Levantar o calcanhar do chão para conseguir encostar o joelho na parede.',
     beneficio: 'Aumenta a dorsiflexão do tornozelo, permitindo agachar muito mais fundo com o tronco reto e sem inclinar para a frente.'
+  },
+
+  // =========================================================================
+  // EXPANSÃO: NOVOS ALONGAMENTOS (IDS 345-356)
+  // =========================================================================
+  345: {
+    id: 345,
+    slug: 'alongamento-dorsais-ajoelhado',
+    nome: 'Alongamento de Dorsais Ajoelhado (Extensão Total)',
+    grupo: 'Mobilidade',
+    alvo: 'Latíssimo do Dorso',
+    sinergistas: 'Redondo Maior, Tríceps e Eretores da Espinha',
+    equipamento: 'Colchonete',
+    posicao_inicial: 'Ajoelhado no chão, quadril sobre os calcanhares, os dois braços estendidos à frente com as palmas no colchonete (postura da criança alongada).',
+    concentrica: 'Afaste as mãos para a frente e empurre o peito em direção ao chão, alongando o latíssimo dos dois lados.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos respirando profundamente antes de soltar.',
+    passos: [
+      'Ajoelhe no chão com o quadril apoiado sobre os calcanhares.',
+      'Estenda os dois braços à frente com as palmas no colchonete.',
+      'Empurre o peito na direção do chão sem tirar o quadril dos calcanhares.',
+      'Mantenha a posição sentindo o alongamento ao longo das costas e laterais do tronco.'
+    ],
+    checkpoints: ['Quadril não levanta dos calcanhares', 'Braços totalmente estendidos à frente', 'Sem dor aguda, apenas tensão confortável'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Levantar o quadril dos calcanhares para alcançar mais à frente, perdendo o alongamento passivo das costas.',
+    beneficio: 'Libera a tensão do latíssimo acumulada após puxadas e remadas pesadas, melhorando a amplitude de elevação do braço acima da cabeça.'
+  },
+  348: {
+    id: 348,
+    slug: 'alongamento-dinamico-peitoral',
+    nome: 'Alongamento Dinâmico de Peitoral',
+    grupo: 'Mobilidade',
+    alvo: 'Peitoral Maior',
+    sinergistas: 'Deltoide Anterior e Bíceps',
+    equipamento: 'Nenhum',
+    posicao_inicial: 'Em pé com os braços abertos na altura dos ombros, palmas das mãos viradas para a frente.',
+    concentrica: 'Leve os braços para trás em arco amplo, abrindo o peito ao máximo.',
+    excentrica: 'Traga os braços de volta à frente do corpo cruzando levemente, num movimento contínuo e controlado.',
+    passos: [
+      'Fique em pé com os braços abertos na altura dos ombros.',
+      'Leve os braços para trás abrindo o peito.',
+      'Pause brevemente sentindo o alongamento.',
+      'Retorne os braços à frente de forma controlada.'
+    ],
+    checkpoints: ['Movimento controlado, nunca com solavancos', 'Peito aberto e ombros para trás na fase de alongamento', 'Amplitude aumenta progressivamente a cada repetição'],
+    respiracao: 'Inspire abrindo os braços para trás; expire trazendo-os de volta.',
+    erro_comum: 'Usar solavancos bruscos em vez de um movimento fluido e controlado.',
+    beneficio: 'Excelente como aquecimento dinâmico antes de treinos de peito e ombro, preparando a articulação para a amplitude completa sem o risco de um alongamento estático a frio.'
+  },
+  349: {
+    id: 349,
+    slug: 'postura-borboleta',
+    nome: 'Postura da Borboleta',
+    grupo: 'Mobilidade',
+    alvo: 'Adutores',
+    sinergistas: 'Flexores de Quadril',
+    equipamento: 'Colchonete',
+    posicao_inicial: 'Sentado com as plantas dos pés unidas à frente do corpo e os joelhos abertos para os lados.',
+    concentrica: 'Incline o tronco à frente mantendo a coluna reta, aproximando o peito dos pés.',
+    excentrica: 'Mantenha a posição de alongamento 40 segundos pressionando suavemente os joelhos em direção ao chão.',
+    passos: [
+      'Sente-se com as plantas dos pés unidas.',
+      'Segure os pés com as mãos.',
+      'Incline o tronco à frente mantendo a coluna reta.',
+      'Sustente a posição respirando profundamente.'
+    ],
+    checkpoints: ['Coluna reta na inclinação, sem arredondar as costas', 'Joelhos relaxam em direção ao chão com o peso do próprio corpo', 'Sem forçar com as mãos sobre os joelhos'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Empurrar os joelhos para baixo com força usando os cotovelos, forçando a articulação do quadril.',
+    beneficio: 'Melhora a mobilidade de quadril em rotação externa, essencial para agachamentos profundos e levantamento terra sumô.'
+  },
+  350: {
+    id: 350,
+    slug: 'alongamento-peitoral-acima-cabeca',
+    nome: 'Alongamento de Peitoral Acima da Cabeça com Mãos Entrelaçadas',
+    grupo: 'Mobilidade',
+    alvo: 'Peitoral Maior',
+    sinergistas: 'Deltoide Anterior e Tríceps',
+    equipamento: 'Nenhum',
+    posicao_inicial: 'Em pé, braços estendidos acima da cabeça com as mãos entrelaçadas e as palmas viradas para cima.',
+    concentrica: 'Estenda os braços para cima e ligeiramente para trás, abrindo o peito ao máximo.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos respirando profundamente.',
+    passos: [
+      'Entrelace as mãos acima da cabeça com as palmas para cima.',
+      'Estenda os cotovelos ao máximo.',
+      'Leve os braços ligeiramente para trás, abrindo o peito.',
+      'Sustente a posição respirando profundamente.'
+    ],
+    checkpoints: ['Cotovelos totalmente estendidos', 'Peito aberto, sem elevar os ombros até as orelhas', 'Sem dor no ombro, apenas tensão no peitoral'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Encolher os ombros em direção às orelhas em vez de manter o pescoço longo e relaxado.',
+    beneficio: 'Alonga o peitoral em toda a sua extensão e melhora a postura de ombros projetados para a frente, sem precisar de parede ou batente de porta.'
+  },
+  351: {
+    id: 351,
+    slug: 'alongamento-adutores-deitado',
+    nome: 'Alongamento de Adutores Deitado (Pernas Abertas)',
+    grupo: 'Mobilidade',
+    alvo: 'Adutores',
+    sinergistas: 'Isquiotibiais',
+    equipamento: 'Colchonete',
+    posicao_inicial: 'Deitado de costas no colchonete, pernas estendidas e abertas o máximo possível em V.',
+    concentrica: 'Deslize as pernas para fora lentamente, aumentando a abertura até sentir o alongamento na virilha.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos respirando profundamente.',
+    passos: [
+      'Deite de costas com os braços relaxados ao lado do corpo.',
+      'Estenda as pernas para cima ou ao longo do chão.',
+      'Abra as pernas lateralmente o máximo confortável.',
+      'Sustente a posição respirando profundamente.'
+    ],
+    checkpoints: ['Lombar permanece apoiada no chão, sem arquear', 'Pernas estendidas, joelhos sem travar com força', 'Abertura aumenta de forma passiva, sem solavancos'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Forçar a abertura além do confortável, gerando tensão aguda em vez de alongamento progressivo.',
+    beneficio: 'Posição deitada permite relaxar completamente o peso das pernas por gravidade, aprofundando o alongamento dos adutores sem exigir equilíbrio.'
+  },
+  352: {
+    id: 352,
+    slug: 'alongamento-quadriceps-deitado',
+    nome: 'Alongamento de Quadríceps Deitado de Bruços',
+    grupo: 'Mobilidade',
+    alvo: 'Quadríceps (Reto Femoral)',
+    sinergistas: 'Flexores de Quadril',
+    equipamento: 'Colchonete',
+    posicao_inicial: 'Deitado de bruços, segurando o tornozelo de um lado com a mão do mesmo lado.',
+    concentrica: 'Puxe o calcanhar em direção ao glúteo até sentir o alongamento na frente da coxa.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos antes de trocar de lado.',
+    passos: [
+      'Deite de bruços com a testa apoiada no colchonete ou nos antebraços.',
+      'Segure o tornozelo de um lado com a mão do mesmo lado.',
+      'Puxe o calcanhar suavemente em direção ao glúteo.',
+      'Sustente a posição e troque de lado.'
+    ],
+    checkpoints: ['Quadril permanece colado ao colchonete, sem levantar', 'Joelhos próximos um do outro', 'Tensão sentida na frente da coxa, não no joelho'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Levantar o quadril do chão para forçar mais amplitude, transformando o alongamento numa hiperextensão lombar.',
+    beneficio: 'A base ampla de apoio deitado de bruços facilita manter o quadril neutro, isolando melhor o alongamento no reto femoral.'
+  },
+  354: {
+    id: 354,
+    slug: 'alongamento-lateral-sentado-banco',
+    nome: 'Alongamento Lateral Sentado no Banco',
+    grupo: 'Mobilidade',
+    alvo: 'Latíssimo do Dorso e Oblíquos',
+    sinergistas: 'Intercostais',
+    equipamento: 'Banco',
+    posicao_inicial: 'Sentado num banco, uma mão apoiada ao lado do corpo, o outro braço relaxado.',
+    concentrica: 'Eleve o braço livre estendido acima da cabeça e incline o tronco para o lado oposto, alongando a lateral do corpo.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos antes de trocar de lado.',
+    passos: [
+      'Sente-se no banco com uma mão apoiada ao seu lado.',
+      'Eleve o braço oposto estendido acima da cabeça.',
+      'Incline o tronco para o lado da mão apoiada.',
+      'Sustente a posição e troque de lado.'
+    ],
+    checkpoints: ['Quadril permanece fixo no banco durante a inclinação', 'Braço elevado totalmente estendido', 'Tensão sentida na lateral do tronco, não na lombar'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Inclinar o tronco para a frente em vez de puramente para o lado, perdendo o alongamento lateral.',
+    beneficio: 'Alonga o latíssimo e os oblíquos num plano que complementa os alongamentos de dorsais feitos com os braços à frente do corpo.'
+  },
+  355: {
+    id: 355,
+    slug: 'alongamento-triceps-ajoelhado',
+    nome: 'Alongamento de Tríceps e Dorsais Ajoelhado',
+    grupo: 'Mobilidade',
+    alvo: 'Tríceps Braquial',
+    sinergistas: 'Latíssimo do Dorso',
+    equipamento: 'Colchonete',
+    posicao_inicial: 'Ajoelhado no chão, quadril sobre os calcanhares, os dois braços estendidos à frente com as palmas no colchonete.',
+    concentrica: 'Afaste as mãos para a frente e empurre o peito em direção ao chão, sentindo o alongamento na parte de trás dos braços.',
+    excentrica: 'Mantenha a posição de alongamento 30 segundos respirando profundamente.',
+    passos: [
+      'Ajoelhe no chão com o quadril apoiado sobre os calcanhares.',
+      'Estenda os dois braços à frente com as palmas no colchonete.',
+      'Empurre o peito na direção do chão sem tirar o quadril dos calcanhares.',
+      'Mantenha a posição sentindo o alongamento no tríceps e nas costas.'
+    ],
+    checkpoints: ['Quadril não levanta dos calcanhares', 'Braços totalmente estendidos à frente', 'Tensão sentida na parte de trás dos braços e nas costas'],
+    respiracao: 'Respire profundamente e de forma constante durante todo o alongamento.',
+    erro_comum: 'Levantar o quadril dos calcanhares para alcançar mais à frente, perdendo o alongamento passivo.',
+    beneficio: 'Alívio direto da tensão do tríceps e do latíssimo após treinos de braços ou puxadas, numa única posição de descanso ativo.'
   }
 };

@@ -1,6 +1,6 @@
 /**
  * exerciseBiomechanics.js — AB Fitness
- * Hub central de dados biomecânicos auditados e verificados para os 320 exercícios.
+ * Hub central de dados biomecânicos auditados e verificados para os 348 exercícios.
  * Consolida anatomia aplicada, técnica padrão ouro, fases de movimento e benefícios fisiológicos.
  */
 
@@ -11,7 +11,7 @@ import { ARMS_BIOMECHANICS } from './biomechanics/arms.js';
 import { LEGS_BIOMECHANICS } from './biomechanics/legs.js';
 import { CORE_FUNCTIONAL_BIOMECHANICS } from './biomechanics/core_functional.js';
 
-// Tabela mestre indexada por ID numérico (1 a 320)
+// Tabela mestre indexada por ID numérico (1 a 355, com lacunas)
 export const EXERCISE_BIOMECHANICS = {
   ...CHEST_BIOMECHANICS,
   ...BACK_BIOMECHANICS,

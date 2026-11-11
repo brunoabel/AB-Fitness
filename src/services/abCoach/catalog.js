@@ -51,7 +51,7 @@ function normalizePorcao(alvo = '', grupo = '') {
 }
 
 /**
- * Catálogo completo compacto com os 320 exercícios oficiais
+ * Catálogo completo compacto com os 348 exercícios oficiais
  */
 export const EXERCISE_CATALOG = Object.values(EXERCISE_BIOMECHANICS).map((item) => {
   const meta = EX100_MAP.get(item.id) || {};

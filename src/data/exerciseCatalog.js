@@ -583,7 +583,7 @@ export const EXERCISE_CATALOG = {
    "Coluna reta",
    "Finalização com extensão de quadril"
   ],
-  "home_alternative_id": "remada-sentada-elastico"
+  "home_alternative_id": "barra-fixa-assistida-banco"
  },
  "desenvolvimento-militar": {
   "id": "desenvolvimento-militar",
@@ -694,7 +694,7 @@ export const EXERCISE_CATALOG = {
    "Subir até a linha do ombro",
    "Manter o tronco imóvel"
   ],
-  "home_alternative_id": "elevacao-lateral-halteres"
+  "home_alternative_id": "elevacao-lateral-iron-cross"
  },
  "elevacao-frontal-halteres": {
   "id": "elevacao-frontal-halteres",
@@ -871,7 +871,7 @@ export const EXERCISE_CATALOG = {
    "Braços permanecem totalmente estendidos…",
    "Pausa de contração isométrica no topo"
   ],
-  "home_alternative_id": "encolhimento-com-halteres"
+  "home_alternative_id": "encolhimento-inclinado-halteres"
  },
  "encolhimento-com-halteres": {
   "id": "encolhimento-com-halteres",
@@ -916,7 +916,7 @@ export const EXERCISE_CATALOG = {
    "Coluna reta sem balanço ou gangorra lombar",
    "Supinação máxima durante a subida"
   ],
-  "home_alternative_id": "rosca-direta-halteres"
+  "home_alternative_id": "rosca-direta-inclinada-halteres"
  },
  "rosca-alternada": {
   "id": "rosca-alternada",
@@ -1003,7 +1003,7 @@ export const EXERCISE_CATALOG = {
    "Não descer até o estalo de hiperextensão…",
    "Não subir até 90° onde o peso descansa sobre…"
   ],
-  "home_alternative_id": "rosca-scott-unilateral-halter"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-scott-maquina": {
   "id": "rosca-scott-maquina",
@@ -1024,7 +1024,7 @@ export const EXERCISE_CATALOG = {
    "Peito apoiado",
    "Retorno suave"
   ],
-  "home_alternative_id": "rosca-scott-unilateral-halter"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-concentrada": {
   "id": "rosca-concentrada",
@@ -1067,7 +1067,7 @@ export const EXERCISE_CATALOG = {
    "Punhos retos sem dobrar para trás",
    "Cotovelos estáveis"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-polia-baixa": {
   "id": "rosca-polia-baixa",
@@ -1089,7 +1089,7 @@ export const EXERCISE_CATALOG = {
    "Tronco reto",
    "Cotovelos fixos"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-aranha-spider-curl": {
   "id": "rosca-aranha-spider-curl",
@@ -1110,7 +1110,7 @@ export const EXERCISE_CATALOG = {
    "Peito apoiado",
    "Pico de contração de 1s"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "triceps-testa-barra-w": {
   "id": "triceps-testa-barra-w",
@@ -1305,7 +1305,7 @@ export const EXERCISE_CATALOG = {
    "Cotovelos passam raspando a lateral do corpo",
    "Descida controlada sem rebote no peito"
   ],
-  "home_alternative_id": "triceps-pulley-elastico"
+  "home_alternative_id": "supino-fechado-halteres"
  },
  "mergulho-no-banco": {
   "id": "mergulho-no-banco",
@@ -3377,7 +3377,7 @@ export const EXERCISE_CATALOG = {
    "Eixo da máquina alinhado ao ombro",
    "Pés apoiados"
   ],
-  "home_alternative_id": "elevacao-lateral-halteres"
+  "home_alternative_id": "elevacao-lateral-iron-cross"
  },
  "elevacao-frontal-barra-reta": {
   "id": "elevacao-frontal-barra-reta",
@@ -3657,7 +3657,7 @@ export const EXERCISE_CATALOG = {
    "Sem dobrar os braços",
    "Pausa de 2s no topo"
   ],
-  "home_alternative_id": "encolhimento-com-halteres"
+  "home_alternative_id": "encolhimento-inclinado-halteres"
  },
  "encolhimento-polia-baixa": {
   "id": "encolhimento-polia-baixa",
@@ -3678,7 +3678,7 @@ export const EXERCISE_CATALOG = {
    "Ombros sobem retos",
    "Braços relaxados"
   ],
-  "home_alternative_id": "encolhimento-com-halteres"
+  "home_alternative_id": "encolhimento-inclinado-halteres"
  },
  "encolhimento-barra-por-tras-haney": {
   "id": "encolhimento-barra-por-tras-haney",
@@ -3699,7 +3699,7 @@ export const EXERCISE_CATALOG = {
    "Elevação vertical para cima e para trás",
    "Escápulas se aproximam"
   ],
-  "home_alternative_id": "encolhimento-com-halteres"
+  "home_alternative_id": "encolhimento-inclinado-halteres"
  },
  "encolhimento-trap-bar-hexagonal": {
   "id": "encolhimento-trap-bar-hexagonal",
@@ -3721,7 +3721,7 @@ export const EXERCISE_CATALOG = {
    "Cargas elevadas com segurança",
    "Coluna ereta"
   ],
-  "home_alternative_id": "encolhimento-com-halteres"
+  "home_alternative_id": "encolhimento-inclinado-halteres"
  },
  "rosca-direta-halteres": {
   "id": "rosca-direta-halteres",
@@ -3807,7 +3807,7 @@ export const EXERCISE_CATALOG = {
    "Sem descansar entre as fases",
    "Carga leve/moderada"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-drag-curl-barra": {
   "id": "rosca-drag-curl-barra",
@@ -3828,7 +3828,7 @@ export const EXERCISE_CATALOG = {
    "Cotovelos se movem para trás e para cima",
    "Zero participação do deltoide anterior"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-zottman-halteres": {
   "id": "rosca-zottman-halteres",
@@ -3934,7 +3934,7 @@ export const EXERCISE_CATALOG = {
    "Corpo imóvel no centro exato da máquina",
    "Contração de pico sustentada"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-barra-reta-pegada-aberta": {
   "id": "rosca-barra-reta-pegada-aberta",
@@ -3955,7 +3955,7 @@ export const EXERCISE_CATALOG = {
    "Foco na cabeça curta",
    "Sem balanço"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-barra-reta-pegada-fechada": {
   "id": "rosca-barra-reta-pegada-fechada",
@@ -3977,7 +3977,7 @@ export const EXERCISE_CATALOG = {
    "Cotovelos estáveis",
    "Coluna alinhada"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-scott-polia-barra": {
   "id": "rosca-scott-polia-barra",
@@ -3998,7 +3998,7 @@ export const EXERCISE_CATALOG = {
    "Axilas apoiadas",
    "Sem hiperextensão no fundo"
   ],
-  "home_alternative_id": "rosca-scott-unilateral-halter"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-inversa-polia-barra": {
   "id": "rosca-inversa-polia-barra",
@@ -4019,7 +4019,7 @@ export const EXERCISE_CATALOG = {
    "Palmas para baixo",
    "Tensão suave"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-bayesiana-polia-bayesian-curl": {
   "id": "rosca-bayesiana-polia-bayesian-curl",
@@ -4040,7 +4040,7 @@ export const EXERCISE_CATALOG = {
    "Alongamento extremo da cabeça longa sob…",
    "Tronco estável inclinado ligeiramente…"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "rosca-garcom-anilha-waiter-curl": {
   "id": "rosca-garcom-anilha-waiter-curl",
@@ -4062,7 +4062,7 @@ export const EXERCISE_CATALOG = {
    "Anilha mantida na horizontal",
    "Cotovelos fechados"
   ],
-  "home_alternative_id": "rosca-martelo-cruzada-cross-body"
+  "home_alternative_id": "rosca-scott-bola-suica"
  },
  "flexao-punho-halteres": {
   "id": "flexao-punho-halteres",
@@ -6963,6 +6963,615 @@ export const EXERCISE_CATALOG = {
    "Calcanhar nunca sai do solo durante o avanço…",
    "Joelho avança em linha com o segundo dedo do pé",
    "Distância mínima ideal de 8 a 10 cm da parede"
+  ],
+  "home_alternative_id": null
+ },
+ "elevacao-lateral-sentado-halteres": {
+  "id": "elevacao-lateral-sentado-halteres",
+  "legacy_id": 321,
+  "name": "Elevação Lateral Sentado com Halteres",
+  "primary_muscle": "Ombros",
+  "secondary_muscles": [
+   "Trapézio Superior",
+   "Supraespinhal"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-lateral-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-lateral-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-lateral-raise.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Tronco preso ao encosto",
+   "Cotovelos levemente flexionados e fixos…",
+   "Elevação até no máximo a linha dos ombros"
+  ],
+  "home_alternative_id": null
+ },
+ "elevacao-frontal-sentado-halteres": {
+  "id": "elevacao-frontal-sentado-halteres",
+  "legacy_id": 322,
+  "name": "Elevação Frontal Sentado com Halteres",
+  "primary_muscle": "Ombros",
+  "secondary_muscles": [
+   "Deltoide Lateral",
+   "Porção Clavicular do Peitoral"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-seated-front-raise.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-seated-front-raise.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-seated-front-raise.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Tronco imóvel",
+   "Trajetória reta à frente do corpo",
+   "Pausa breve no topo sem usar impulso do quadril"
+  ],
+  "home_alternative_id": null
+ },
+ "elevacao-lateral-iron-cross": {
+  "id": "elevacao-lateral-iron-cross",
+  "legacy_id": 324,
+  "name": "Elevação Lateral 'Cruz de Ferro' (Iron Cross)",
+  "primary_muscle": "Ombros",
+  "secondary_muscles": [
+   "Deltoide Anterior",
+   "Trapézio Superior"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-iron-cross.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-iron-cross.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-iron-cross.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Trajetória em arco diagonal",
+   "Tronco estável sem balanço para impulsionar…",
+   "Carga leve priorizando amplitude completa…"
+  ],
+  "home_alternative_id": null
+ },
+ "rosca-direta-inclinada-halteres": {
+  "id": "rosca-direta-inclinada-halteres",
+  "legacy_id": 327,
+  "name": "Rosca Direta Inclinada com Halteres",
+  "primary_muscle": "Bíceps",
+  "secondary_muscles": [
+   "Braquial",
+   "Braquiorradial"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-biceps-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-biceps-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-biceps-curl.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelos permanecem atrás do tronco durante…",
+   "Ombros colados ao banco",
+   "Extensão completa no fundo para maximizar…"
+  ],
+  "home_alternative_id": null
+ },
+ "extensao-triceps-inclinado-halteres": {
+  "id": "extensao-triceps-inclinado-halteres",
+  "legacy_id": 328,
+  "name": "Extensão de Tríceps Inclinado com Halteres",
+  "primary_muscle": "Tríceps",
+  "secondary_muscles": [
+   "Cabeça Lateral",
+   "Medial do Tríceps"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-triceps-extension.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelos fixos no mesmo ponto",
+   "Amplitude completa até sentir o alongamento…",
+   "Movimento isolado apenas no cotovelo"
+  ],
+  "home_alternative_id": null
+ },
+ "rosca-scott-bola-suica": {
+  "id": "rosca-scott-bola-suica",
+  "legacy_id": 329,
+  "name": "Rosca Scott com Bola Suíça",
+  "primary_muscle": "Bíceps",
+  "secondary_muscles": [
+   "Braquial"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-preacher-curl-over-exercise-ball.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-preacher-curl-over-exercise-ball.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-preacher-curl-over-exercise-ball.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Parte de trás do braço permanece colada à…",
+   "Tronco estável",
+   "Descida completa até a extensão total…"
+  ],
+  "home_alternative_id": null
+ },
+ "triceps-maquina-articulada": {
+  "id": "triceps-maquina-articulada",
+  "legacy_id": 330,
+  "name": "Tríceps na Máquina Articulada",
+  "primary_muscle": "Tríceps",
+  "secondary_muscles": [
+   "Ancôneo"
+  ],
+  "environment": "gym",
+  "equipment": "machine",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-triceps-extension.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelos alinhados ao eixo de rotação…",
+   "Ombros fixos",
+   "Extensão quase completa sem travar…"
+  ],
+  "home_alternative_id": "triceps-pulley-elastico"
+ },
+ "rosca-unilateral-polia": {
+  "id": "rosca-unilateral-polia",
+  "legacy_id": 331,
+  "name": "Rosca Unilateral na Polia",
+  "primary_muscle": "Bíceps",
+  "secondary_muscles": [
+   "Braquial",
+   "Braquiorradial"
+  ],
+  "environment": "gym",
+  "equipment": "cable",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-one-arm-curl.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-one-arm-curl.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-one-arm-curl.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelo fixo ao lado do tronco durante toda…",
+   "Tensão constante do cabo",
+   "Tronco estável"
+  ],
+  "home_alternative_id": "rosca-scott-unilateral-halter"
+ },
+ "supino-fechado-halteres": {
+  "id": "supino-fechado-halteres",
+  "legacy_id": 332,
+  "name": "Supino Fechado com Halteres",
+  "primary_muscle": "Tríceps",
+  "secondary_muscles": [
+   "Peitoral Esternal",
+   "Deltoide Anterior"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-close-grip-press.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-close-grip-press.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-close-grip-press.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Halteres permanecem próximos um do outro em…",
+   "Cotovelos colados ao tronco",
+   "Descida controlada sem perder o alinhamento…"
+  ],
+  "home_alternative_id": null
+ },
+ "remada-baixa-pegada-aberta-cabo": {
+  "id": "remada-baixa-pegada-aberta-cabo",
+  "legacy_id": 333,
+  "name": "Remada Baixa Pegada Aberta no Cabo",
+  "primary_muscle": "Costas",
+  "secondary_muscles": [
+   "Deltoide Posterior",
+   "Bíceps Braquial"
+  ],
+  "environment": "gym",
+  "equipment": "cable",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-seated-row-wide-grip.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-seated-row-wide-grip.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-seated-row-wide-grip.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Tronco ereto sem balançar para trás a cada…",
+   "Cotovelos abrem para os lados",
+   "Escápulas se aproximam no final da puxada"
+  ],
+  "home_alternative_id": "remada-sentada-elastico"
+ },
+ "remada-alta-sentada-v": {
+  "id": "remada-alta-sentada-v",
+  "legacy_id": 334,
+  "name": "Remada Alta Sentada em V",
+  "primary_muscle": "Costas",
+  "secondary_muscles": [
+   "Bíceps Braquial",
+   "Romboides",
+   "Deltoide Posterior"
+  ],
+  "environment": "gym",
+  "equipment": "cable",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/cable-seated-high-row-v-bar.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/cable-seated-high-row-v-bar.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/cable-seated-high-row-v-bar.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelos permanecem próximos ao tronco…",
+   "Tronco ereto",
+   "Puxada termina na altura do abdômen superior"
+  ],
+  "home_alternative_id": "remada-sentada-elastico"
+ },
+ "encolhimento-maquina-articulada": {
+  "id": "encolhimento-maquina-articulada",
+  "legacy_id": 336,
+  "name": "Encolhimento na Máquina Articulada",
+  "primary_muscle": "Trapézio",
+  "secondary_muscles": [
+   "Elevador da Escápula"
+  ],
+  "environment": "gym",
+  "equipment": "machine",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-shrug.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-shrug.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-shrug.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Movimento puramente vertical",
+   "Cotovelos permanecem estendidos durante toda…",
+   "Pausa no topo antes de iniciar a descida"
+  ],
+  "home_alternative_id": "encolhimento-inclinado-halteres"
+ },
+ "barra-fixa-assistida-banco": {
+  "id": "barra-fixa-assistida-banco",
+  "legacy_id": 337,
+  "name": "Barra Fixa Assistida no Banco (Bench Pull-Up)",
+  "primary_muscle": "Costas",
+  "secondary_muscles": [
+   "Bíceps Braquial",
+   "Romboides"
+  ],
+  "environment": "home_minimal",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/bench-pull-ups.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/bench-pull-ups.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/bench-pull-ups.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Pernas assistem só o mínimo necessário…",
+   "Queixo ultrapassa a linha da barra no topo",
+   "Descida controlada"
+  ],
+  "home_alternative_id": null
+ },
+ "remada-alta-argolas": {
+  "id": "remada-alta-argolas",
+  "legacy_id": 338,
+  "name": "Remada Alta em Argolas",
+  "primary_muscle": "Costas",
+  "secondary_muscles": [
+   "Bíceps Braquial",
+   "Deltoide Posterior"
+  ],
+  "environment": "home_minimal",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/ring-high-row.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/ring-high-row.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/ring-high-row.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Corpo em linha reta dos calcanhares à cabeça…",
+   "Cotovelos abrem para fora na puxada",
+   "Ângulo do corpo regula a dificuldade: quanto…"
+  ],
+  "home_alternative_id": null
+ },
+ "encolhimento-inclinado-halteres": {
+  "id": "encolhimento-inclinado-halteres",
+  "legacy_id": 339,
+  "name": "Encolhimento Reclinado no Banco Inclinado com Halteres",
+  "primary_muscle": "Trapézio",
+  "secondary_muscles": [
+   "Romboides"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-shrug.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-shrug.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-incline-shrug.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Peito fixo no banco durante toda a repetição",
+   "Movimento isolado nos ombros",
+   "Pausa no topo antes de descer"
+  ],
+  "home_alternative_id": null
+ },
+ "agachamento-halteres": {
+  "id": "agachamento-halteres",
+  "legacy_id": 340,
+  "name": "Agachamento com Halteres",
+  "primary_muscle": "Quadríceps",
+  "secondary_muscles": [
+   "Glúteos",
+   "Isquiotibiais"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-squat.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-squat.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-squat.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Joelhos alinhados com a ponta dos pés",
+   "Tronco ereto",
+   "Profundidade até as coxas paralelas ao chão"
+  ],
+  "home_alternative_id": null
+ },
+ "flexora-deitada-halteres": {
+  "id": "flexora-deitada-halteres",
+  "legacy_id": 341,
+  "name": "Flexora Deitada com Halteres",
+  "primary_muscle": "Posteriores",
+  "secondary_muscles": [
+   "Gastrocnêmio"
+  ],
+  "environment": "home_minimal",
+  "equipment": "dumbbell",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-lying-femoral.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-lying-femoral.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/dumbbell-lying-femoral.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Quadril permanece colado ao banco",
+   "Movimento isolado no joelho",
+   "Contração máxima com o calcanhar próximo ao…"
+  ],
+  "home_alternative_id": null
+ },
+ "hiperextensao-reversa-maquina": {
+  "id": "hiperextensao-reversa-maquina",
+  "legacy_id": 342,
+  "name": "Hiperextensão Reversa na Máquina",
+  "primary_muscle": "Glúteos",
+  "secondary_muscles": [
+   "Isquiotibiais",
+   "Eretores da Espinha"
+  ],
+  "environment": "gym",
+  "equipment": "machine",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-reverse-hyperextension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-reverse-hyperextension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-reverse-hyperextension.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Tronco fixo e apoiado durante toda a repetição",
+   "Movimento ocorre no quadril",
+   "Contração máxima do glúteo no topo"
+  ],
+  "home_alternative_id": "abducao-quadril-elastico"
+ },
+ "extensao-quadril-pe-maquina": {
+  "id": "extensao-quadril-pe-maquina",
+  "legacy_id": 343,
+  "name": "Extensão de Quadril em Pé na Máquina",
+  "primary_muscle": "Glúteos",
+  "secondary_muscles": [
+   "Isquiotibiais",
+   "Eretores da Espinha"
+  ],
+  "environment": "gym",
+  "equipment": "machine",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-standing-hip-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-standing-hip-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/lever-standing-hip-extension.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Joelho da perna de apoio levemente flexionado…",
+   "Tronco mantém a mesma inclinação do início ao…",
+   "Perna de trabalho não ultrapassa o ponto…"
+  ],
+  "home_alternative_id": "abducao-quadril-elastico"
+ },
+ "leg-press-pes-juntos": {
+  "id": "leg-press-pes-juntos",
+  "legacy_id": 344,
+  "name": "Leg Press Pés Juntos",
+  "primary_muscle": "Quadríceps",
+  "secondary_muscles": [
+   "Glúteos",
+   "Adutores",
+   "Isquiotibiais"
+  ],
+  "environment": "gym",
+  "equipment": "machine",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/close-feet-leg-press.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/close-feet-leg-press.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/close-feet-leg-press.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Pés mantidos juntos e centralizados durante…",
+   "Joelhos seguem a mesma linha dos pés",
+   "Lombar permanece apoiada no encosto"
+  ],
+  "home_alternative_id": "agachamento-unilateral-halteres"
+ },
+ "alongamento-dorsais-ajoelhado": {
+  "id": "alongamento-dorsais-ajoelhado",
+  "legacy_id": 345,
+  "name": "Alongamento de Dorsais Ajoelhado (Extensão Total)",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Redondo Maior",
+   "Tríceps",
+   "Eretores da Espinha"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-kneeling-lat-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-kneeling-lat-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-kneeling-lat-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Quadril não levanta dos calcanhares",
+   "Braços totalmente estendidos à frente",
+   "Sem dor aguda"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-dinamico-peitoral": {
+  "id": "alongamento-dinamico-peitoral",
+  "legacy_id": 348,
+  "name": "Alongamento Dinâmico de Peitoral",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Deltoide Anterior",
+   "Bíceps"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-dynamic-chest-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-dynamic-chest-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-dynamic-chest-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Movimento controlado",
+   "Peito aberto e ombros para trás na fase…",
+   "Amplitude aumenta progressivamente a cada…"
+  ],
+  "home_alternative_id": null
+ },
+ "postura-borboleta": {
+  "id": "postura-borboleta",
+  "legacy_id": 349,
+  "name": "Postura da Borboleta",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Flexores de Quadril"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-butterfly-yoga-pose.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-butterfly-yoga-pose.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-butterfly-yoga-pose.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Coluna reta na inclinação",
+   "Joelhos relaxam em direção ao chão com o peso…",
+   "Sem forçar com as mãos sobre os joelhos"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-peitoral-acima-cabeca": {
+  "id": "alongamento-peitoral-acima-cabeca",
+  "legacy_id": 350,
+  "name": "Alongamento de Peitoral Acima da Cabeça com Mãos Entrelaçadas",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Deltoide Anterior",
+   "Tríceps"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-above-head-chest-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-above-head-chest-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-above-head-chest-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Cotovelos totalmente estendidos",
+   "Peito aberto",
+   "Sem dor no ombro"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-adutores-deitado": {
+  "id": "alongamento-adutores-deitado",
+  "legacy_id": 351,
+  "name": "Alongamento de Adutores Deitado (Pernas Abertas)",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Isquiotibiais"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-adductor-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-adductor-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-adductor-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Lombar permanece apoiada no chão",
+   "Pernas estendidas",
+   "Abertura aumenta de forma passiva"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-quadriceps-deitado": {
+  "id": "alongamento-quadriceps-deitado",
+  "legacy_id": 352,
+  "name": "Alongamento de Quadríceps Deitado de Bruços",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Flexores de Quadril"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-quadriceps-lying-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-quadriceps-lying-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-quadriceps-lying-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Quadril permanece colado ao colchonete",
+   "Joelhos próximos um do outro",
+   "Tensão sentida na frente da coxa"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-lateral-sentado-banco": {
+  "id": "alongamento-lateral-sentado-banco",
+  "legacy_id": 354,
+  "name": "Alongamento Lateral Sentado no Banco",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Intercostais"
+  ],
+  "environment": "home_minimal",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-seated-lower-back-stretch.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-seated-lower-back-stretch.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-seated-lower-back-stretch.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Quadril permanece fixo no banco durante…",
+   "Braço elevado totalmente estendido",
+   "Tensão sentida na lateral do tronco"
+  ],
+  "home_alternative_id": null
+ },
+ "alongamento-triceps-ajoelhado": {
+  "id": "alongamento-triceps-ajoelhado",
+  "legacy_id": 355,
+  "name": "Alongamento de Tríceps e Dorsais Ajoelhado",
+  "primary_muscle": "Mobilidade",
+  "secondary_muscles": [
+   "Latíssimo do Dorso"
+  ],
+  "environment": "home_no_equip",
+  "equipment": "bodyweight",
+  "video_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/stretching-kneeling-triceps-extension.mp4",
+  "video_url_female": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/stretching-kneeling-triceps-extension.mp4",
+  "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/stretching-kneeling-triceps-extension.jpg",
+  "video_source": "dataset",
+  "form_cues": [
+   "Quadril não levanta dos calcanhares",
+   "Braços totalmente estendidos à frente",
+   "Tensão sentida na parte de trás dos braços…"
   ],
   "home_alternative_id": null
  },

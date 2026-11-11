@@ -1534,5 +1534,165 @@ export const ARMS_BIOMECHANICS = {
     respiracao: 'Inspire descendo, retenha o ar na isometria e expire ao empurrar.',
     erro_comum: 'Abrir os cotovelos para os lados transformando em flexão comum de peito.',
     beneficio: 'Desenvolve resistência neuromuscular tremenda e hipertrofia funcional com o próprio peso do corpo.'
+  },
+
+  // =========================================================================
+  // EXPANSÃO: NOVOS EXERCÍCIOS (IDS 327-332)
+  // =========================================================================
+  327: {
+    id: 327,
+    slug: 'rosca-direta-inclinada-halteres',
+    nome: 'Rosca Direta Inclinada com Halteres',
+    grupo: 'Bíceps',
+    alvo: 'Bíceps Braquial (Cabeça Longa)',
+    sinergistas: 'Braquial e Braquiorradial',
+    equipamento: 'Banco Inclinado a 45-60° + Halteres',
+    posicao_inicial: 'Deitado no banco inclinado com braços totalmente estendidos para baixo, atrás da linha do tronco.',
+    concentrica: 'Flexione os cotovelos elevando os halteres até a altura dos ombros, mantendo os braços atrás do tronco.',
+    excentrica: 'Desça em 3 segundos até a extensão completa, sentindo o alongamento máximo da cabeça longa.',
+    passos: [
+      'Deite no banco inclinado com os braços soltos para baixo.',
+      'Mantenha os cotovelos fixos atrás da linha do tronco.',
+      'Flexione os halteres até a altura dos ombros.',
+      'Desça com controle total até a extensão completa.'
+    ],
+    checkpoints: [
+      'Cotovelos permanecem atrás do tronco durante toda a repetição',
+      'Ombros colados ao banco, sem elevar para ajudar a subida',
+      'Extensão completa no fundo para maximizar o alongamento'
+    ],
+    respiracao: 'Expire na subida; inspire na descida controlada.',
+    erro_comum: 'Levar os cotovelos para a frente do tronco, aliviando a tensão da cabeça longa do bíceps.',
+    beneficio: 'A inclinação do banco posiciona o braço atrás do tronco, alongando a cabeça longa do bíceps sob tensão e ampliando o estímulo de hipertrofia.'
+  },
+  328: {
+    id: 328,
+    slug: 'extensao-triceps-inclinado-halteres',
+    nome: 'Extensão de Tríceps Inclinado com Halteres',
+    grupo: 'Tríceps',
+    alvo: 'Tríceps Braquial (Cabeça Longa)',
+    sinergistas: 'Cabeça Lateral e Medial do Tríceps',
+    equipamento: 'Banco Inclinado + Halter',
+    posicao_inicial: 'Deitado no banco inclinado, halter sustentado acima da cabeça com os dois braços estendidos.',
+    concentrica: 'Flexione os cotovelos descendo o halter atrás da cabeça em arco controlado.',
+    excentrica: 'Esta é a fase que recebe a carga: desça em 3 segundos controlando o alongamento máximo do tríceps.',
+    passos: [
+      'Deite no banco inclinado com o halter acima da cabeça.',
+      'Mantenha os cotovelos fixos e apontados para o teto.',
+      'Desça o halter atrás da cabeça flexionando só o cotovelo.',
+      'Estenda de volta ao topo sem travar bruscamente.'
+    ],
+    checkpoints: [
+      'Cotovelos fixos no mesmo ponto, sem abrir para os lados',
+      'Amplitude completa até sentir o alongamento atrás da cabeça',
+      'Movimento isolado apenas no cotovelo, ombro permanece estável'
+    ],
+    respiracao: 'Inspire na descida; expire estendendo o halter.',
+    erro_comum: 'Deixar os cotovelos abrirem para os lados, transformando em um pullover parcial.',
+    beneficio: 'A inclinação do banco mantém tensão constante na cabeça longa do tríceps em toda a amplitude, diferente da variação sentada tradicional.'
+  },
+  329: {
+    id: 329,
+    slug: 'rosca-scott-bola-suica',
+    nome: 'Rosca Scott com Bola Suíça',
+    grupo: 'Bíceps',
+    alvo: 'Bíceps Braquial (Cabeça Curta)',
+    sinergistas: 'Braquial',
+    equipamento: 'Bola Suíça + Halteres',
+    posicao_inicial: 'Ajoelhado atrás da bola suíça com a parte de trás do braço apoiada sobre a bola, braços estendidos.',
+    concentrica: 'Flexione os cotovelos elevando os halteres até quase tocar os ombros, sem levantar o braço da bola.',
+    excentrica: 'Desça em 3 segundos até a extensão completa, mantendo o apoio constante na bola.',
+    passos: [
+      'Ajoelhe atrás da bola suíça apoiando a parte de trás dos braços.',
+      'Segure os halteres com os braços estendidos.',
+      'Flexione os cotovelos elevando o peso até perto do ombro.',
+      'Desça controlado sem tirar o braço do apoio.'
+    ],
+    checkpoints: [
+      'Parte de trás do braço permanece colada à bola o tempo todo',
+      'Tronco estável, sem usar o quadril para impulsionar',
+      'Descida completa até a extensão total do cotovelo'
+    ],
+    respiracao: 'Expire na subida; inspire na descida.',
+    erro_comum: 'Levantar o cotovelo do apoio da bola para roubar a repetição com o ombro.',
+    beneficio: 'O apoio instável da bola suíça exige maior controle neuromuscular e ativa o core como estabilizador, além de isolar a cabeça curta do bíceps como no banco Scott tradicional.'
+  },
+  330: {
+    id: 330,
+    slug: 'triceps-maquina-articulada',
+    nome: 'Tríceps na Máquina Articulada',
+    grupo: 'Tríceps',
+    alvo: 'Tríceps Braquial (Três Cabeças)',
+    sinergistas: 'Ancôneo',
+    equipamento: 'Máquina Articulada (Lever)',
+    posicao_inicial: 'Sentado na máquina com os braços apoiados nas almofadas e cotovelos alinhados ao eixo de rotação do equipamento.',
+    concentrica: 'Estenda os cotovelos empurrando as alavancas até a extensão quase completa dos braços.',
+    excentrica: 'Volte em 2 a 3 segundos controlados até a flexão máxima permitida pela máquina.',
+    passos: [
+      'Ajuste o banco para alinhar o cotovelo ao eixo da máquina.',
+      'Segure as alavancas com os braços apoiados.',
+      'Estenda os cotovelos empurrando com força constante.',
+      'Retorne controlado até a flexão máxima.'
+    ],
+    checkpoints: [
+      'Cotovelos alinhados ao eixo de rotação da máquina',
+      'Ombros fixos, sem elevar durante o esforço',
+      'Extensão quase completa sem travar bruscamente a articulação'
+    ],
+    respiracao: 'Expire estendendo; inspire na volta.',
+    erro_comum: 'Usar o peito e os ombros para empurrar a alavanca em vez de isolar o cotovelo.',
+    beneficio: 'A trajetória guiada da máquina permite sobrecarga progressiva segura, ideal para quem busca um isolamento estável do tríceps sem exigir equilíbrio.'
+  },
+  331: {
+    id: 331,
+    slug: 'rosca-unilateral-polia',
+    nome: 'Rosca Unilateral na Polia',
+    grupo: 'Bíceps',
+    alvo: 'Bíceps Braquial',
+    sinergistas: 'Braquial e Braquiorradial',
+    equipamento: 'Polia Baixa + Punho Simples',
+    posicao_inicial: 'Em pé de lado para a polia baixa, braço estendido para baixo segurando o punho com pegada supinada.',
+    concentrica: 'Flexione o cotovelo trazendo a mão em direção ao ombro mantendo o cotovelo fixo ao lado do tronco.',
+    excentrica: 'Desça em 2 a 3 segundos resistindo à tração constante do cabo até a extensão completa.',
+    passos: [
+      'Fique de lado para a polia com o cotovelo colado ao tronco.',
+      'Segure o punho com pegada supinada.',
+      'Flexione o cotovelo trazendo a mão ao ombro.',
+      'Desça controlado contra a resistência do cabo.'
+    ],
+    checkpoints: [
+      'Cotovelo fixo ao lado do tronco durante toda a repetição',
+      'Tensão constante do cabo, sem pontos de descanso',
+      'Tronco estável, sem girar para ajudar o movimento'
+    ],
+    respiracao: 'Expire flexionando; inspire na descida.',
+    erro_comum: 'Afastar o cotovelo do tronco para reduzir a resistência no ponto mais difícil.',
+    beneficio: 'A tensão constante do cabo elimina o ponto de descanso que halteres têm no início do movimento, maximizando o tempo sob tensão do bíceps.'
+  },
+  332: {
+    id: 332,
+    slug: 'supino-fechado-halteres',
+    nome: 'Supino Fechado com Halteres',
+    grupo: 'Tríceps',
+    alvo: 'Tríceps Braquial (Cabeça Lateral)',
+    sinergistas: 'Peitoral Esternal e Deltoide Anterior',
+    equipamento: 'Banco Reto + Halteres',
+    posicao_inicial: 'Deitado no banco com halteres juntos sobre o peito, cotovelos apontados para a frente e colados ao tronco.',
+    concentrica: 'Empurre os halteres verticalmente mantendo-os próximos um do outro durante toda a subida.',
+    excentrica: 'Desça em 2 a 3 segundos com os cotovelos raspando as costelas até o peito.',
+    passos: [
+      'Deite no banco com os halteres juntos sobre o peito.',
+      'Mantenha os cotovelos colados ao tronco.',
+      'Empurre os halteres para cima sem afastá-los.',
+      'Desça controlado até quase tocar o peito.'
+    ],
+    checkpoints: [
+      'Halteres permanecem próximos um do outro em toda a amplitude',
+      'Cotovelos colados ao tronco, nunca abertos a 90°',
+      'Descida controlada sem perder o alinhamento vertical'
+    ],
+    respiracao: 'Inspire na descida; expire empurrando para cima.',
+    erro_comum: 'Deixar os halteres se afastarem no topo, transferindo a tensão do tríceps para o peitoral.',
+    beneficio: 'A liberdade de trajetória dos halteres permite ajustar o ângulo do punho para o ponto de maior conforto articular, mantendo a cabeça lateral do tríceps sob tensão máxima.'
   }
 };

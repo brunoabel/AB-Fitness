@@ -358,7 +358,40 @@ export const EXERCISES_BASE = [
   { id: 317, nome: "Alongamento de Flexores de Quadril (Psoas) no Chão", grupo: "Mobilidade", mecanica: "Alongamento", series: 3, reps: "40s", descanso_seg: 30, slug: "alongamento-flexores-quadril-psoas" },
   { id: 318, nome: "Alongamento Dinâmico de Isquiotibiais em Movimento", grupo: "Mobilidade", mecanica: "Alongamento", series: 3, reps: "10", descanso_seg: 30, slug: "alongamento-dinamico-isquiotibiais" },
   { id: 319, nome: "Rolo de Liberação Miofascial em Quadríceps (Foam Roller)", grupo: "Mobilidade", mecanica: "Alongamento", series: 3, reps: "60s", descanso_seg: 30, slug: "liberacao-miofascial-quadriceps-foam-roller" },
-  { id: 320, nome: "Mobilidade de Tornozelo na Parede com Joelho à Frente", grupo: "Mobilidade", mecanica: "Alongamento", series: 3, reps: "15", descanso_seg: 30, slug: "mobilidade-tornozelo-parede-dorsiflexao" }
+  { id: 320, nome: "Mobilidade de Tornozelo na Parede com Joelho à Frente", grupo: "Mobilidade", mecanica: "Alongamento", series: 3, reps: "15", descanso_seg: 30, slug: "mobilidade-tornozelo-parede-dorsiflexao" },
+
+  // === EXPANSÃO: NOVOS EXERCÍCIOS COM VÍDEO VERIFICADO (free-exercise-db-with-videos, MIT) ===
+  // Nota: 8 candidatos iniciais foram descartados após auditoria visual frame-a-frame (vídeo não
+  // batia com o movimento esperado); os restantes tiveram nome/descrição corrigidos para o que o
+  // vídeo realmente mostra.
+  { id: 321, nome: "Elevação Lateral Sentado com Halteres", grupo: "Ombros", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "elevacao-lateral-sentado-halteres" },
+  { id: 322, nome: "Elevação Frontal Sentado com Halteres", grupo: "Ombros", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "elevacao-frontal-sentado-halteres" },
+  { id: 324, nome: "Elevação Lateral 'Cruz de Ferro' (Iron Cross)", grupo: "Ombros", mecanica: "Isolado", series: 3, reps: "10-12", descanso_seg: 45, slug: "elevacao-lateral-iron-cross" },
+  { id: 327, nome: "Rosca Direta Inclinada com Halteres", grupo: "Bíceps", mecanica: "Isolado", series: 3, reps: "10-12", descanso_seg: 60, slug: "rosca-direta-inclinada-halteres" },
+  { id: 328, nome: "Extensão de Tríceps Inclinado com Halteres", grupo: "Tríceps", mecanica: "Isolado", series: 3, reps: "10-12", descanso_seg: 60, slug: "extensao-triceps-inclinado-halteres" },
+  { id: 329, nome: "Rosca Scott com Bola Suíça", grupo: "Bíceps", mecanica: "Isolado", series: 3, reps: "10-12", descanso_seg: 60, slug: "rosca-scott-bola-suica" },
+  { id: 330, nome: "Tríceps na Máquina Articulada", grupo: "Tríceps", mecanica: "Isolado", series: 3, reps: "10-15", descanso_seg: 60, slug: "triceps-maquina-articulada" },
+  { id: 331, nome: "Rosca Unilateral na Polia", grupo: "Bíceps", mecanica: "Isolado", series: 3, reps: "10-12", descanso_seg: 45, slug: "rosca-unilateral-polia" },
+  { id: 332, nome: "Supino Fechado com Halteres", grupo: "Tríceps", mecanica: "Composto", series: 4, reps: "8-10", descanso_seg: 90, slug: "supino-fechado-halteres" },
+  { id: 333, nome: "Remada Baixa Pegada Aberta no Cabo", grupo: "Costas", mecanica: "Composto", series: 4, reps: "10-12", descanso_seg: 75, slug: "remada-baixa-pegada-aberta-cabo" },
+  { id: 334, nome: "Remada Alta Sentada em V", grupo: "Costas", mecanica: "Composto", series: 4, reps: "10-12", descanso_seg: 75, slug: "remada-alta-sentada-v" },
+  { id: 336, nome: "Encolhimento na Máquina Articulada", grupo: "Trapézio", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "encolhimento-maquina-articulada" },
+  { id: 337, nome: "Barra Fixa Assistida no Banco (Bench Pull-Up)", grupo: "Costas", mecanica: "Composto", series: 3, reps: "8-12", descanso_seg: 90, slug: "barra-fixa-assistida-banco" },
+  { id: 338, nome: "Remada Alta em Argolas", grupo: "Costas", mecanica: "Composto", series: 3, reps: "8-12", descanso_seg: 90, slug: "remada-alta-argolas" },
+  { id: 339, nome: "Encolhimento Reclinado no Banco Inclinado com Halteres", grupo: "Trapézio", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "encolhimento-inclinado-halteres" },
+  { id: 340, nome: "Agachamento com Halteres", grupo: "Quadríceps", mecanica: "Composto", series: 4, reps: "10-12", descanso_seg: 90, slug: "agachamento-halteres" },
+  { id: 341, nome: "Flexora Deitada com Halteres", grupo: "Posteriores", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "flexora-deitada-halteres" },
+  { id: 342, nome: "Hiperextensão Reversa na Máquina", grupo: "Glúteos", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 60, slug: "hiperextensao-reversa-maquina" },
+  { id: 343, nome: "Extensão de Quadril em Pé na Máquina", grupo: "Glúteos", mecanica: "Isolado", series: 3, reps: "12-15", descanso_seg: 45, slug: "extensao-quadril-pe-maquina" },
+  { id: 344, nome: "Leg Press Pés Juntos", grupo: "Quadríceps", mecanica: "Composto", series: 4, reps: "10-12", descanso_seg: 90, slug: "leg-press-pes-juntos" },
+  { id: 345, nome: "Alongamento de Dorsais Ajoelhado (Extensão Total)", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s", descanso_seg: 30, slug: "alongamento-dorsais-ajoelhado" },
+  { id: 348, nome: "Alongamento Dinâmico de Peitoral", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "10", descanso_seg: 30, slug: "alongamento-dinamico-peitoral" },
+  { id: 349, nome: "Postura da Borboleta", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "40s", descanso_seg: 30, slug: "postura-borboleta" },
+  { id: 350, nome: "Alongamento de Peitoral Acima da Cabeça com Mãos Entrelaçadas", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s", descanso_seg: 30, slug: "alongamento-peitoral-acima-cabeca" },
+  { id: 351, nome: "Alongamento de Adutores Deitado (Pernas Abertas)", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s", descanso_seg: 30, slug: "alongamento-adutores-deitado" },
+  { id: 352, nome: "Alongamento de Quadríceps Deitado de Bruços", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s por lado", descanso_seg: 30, slug: "alongamento-quadriceps-deitado" },
+  { id: 354, nome: "Alongamento Lateral Sentado no Banco", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s por lado", descanso_seg: 30, slug: "alongamento-lateral-sentado-banco" },
+  { id: 355, nome: "Alongamento de Tríceps e Dorsais Ajoelhado", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s", descanso_seg: 30, slug: "alongamento-triceps-ajoelhado" }
 ];
 
 /** Catálogo completo: os 320 originais + o lote de casa gerado (src/data/homeExercises.js). */

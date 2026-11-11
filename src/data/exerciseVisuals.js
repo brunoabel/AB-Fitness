@@ -84,7 +84,7 @@ export const EXERCISE_VISUALS = {
 
 /**
  * Retorna os dados visuais e anatômicos precisos de qualquer exercício.
- * Consulta o módulo de biomecânica auditada para os 320 exercícios.
+ * Consulta o módulo de biomecânica auditada para os 348 exercícios.
  */
 export function getExerciseVisual(exercise) {
   if (!exercise) return null;
