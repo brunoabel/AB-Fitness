@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
 const WAITLIST_STORAGE_KEY = 'ab_marketing_waitlist_v1';
 
@@ -93,3 +93,4 @@ export function exportWaitlistCsv() {
   ]);
   return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 }
+
