@@ -7,6 +7,8 @@ import {
   setRosterTags, listAthleteFeedback
 } from '../../services/trainerService';
 import { triggerHaptic } from '../../utils/audio';
+import VerifiedBadge from '../ui/VerifiedBadge';
+import { isAthleteVerified } from '../../utils/userVerification';
 import ProgramBuilderSheet from './ProgramBuilderSheet';
 import AthleteFeedback from './AthleteFeedback';
 
@@ -212,8 +214,9 @@ export default function AthleteWorkspace({ athleteId, onBack, embedded = false, 
             <button onClick={onBack} className="w-11 h-11 rounded-xl bg-surface-2 border border-white/[0.08] text-zinc-300 hover:text-white cursor-pointer active:scale-95 flex items-center justify-center">
               <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
             </button>
-            <h1 className="font-heading text-section font-semibold text-white truncate">
-              {context?.profile?.full_name || 'Atleta'}
+            <h1 className="font-heading text-section font-semibold text-white truncate flex items-center gap-1.5">
+              <span>{context?.profile?.full_name || 'Atleta'}</span>
+              {isAthleteVerified(context?.profile) && <VerifiedBadge size={16} />}
             </h1>
           </div>
         </header>

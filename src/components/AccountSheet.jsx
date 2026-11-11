@@ -2,6 +2,8 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { X, UserRound, Target, BookOpen, Volume2, VolumeX, ShieldCheck, LogOut, ChevronRight, Cloud, HardDrive, Scale, Trash2, Dumbbell, Link2 } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
+import VerifiedBadge from './ui/VerifiedBadge';
+import { isAthleteVerified } from '../utils/userVerification';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
 
@@ -55,6 +57,7 @@ export default function AccountSheet({ identity, soundEnabled, onToggleSound, on
   const name = identity.fullName || user?.email?.split('@')[0] || 'Atleta';
   const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   const synced = isConfigured && !isGuest;
+  const isVerified = isAthleteVerified(identity, user, isAdmin);
 
   return (
     <div className="fixed inset-0 z-[80] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Conta">
@@ -74,7 +77,10 @@ export default function AccountSheet({ identity, soundEnabled, onToggleSound, on
             {identity.avatar ? <img src={identity.avatar} alt="" className="absolute inset-0 w-full h-full object-cover" /> : initials}
           </span>
           <div className="flex-1 min-w-0">
-            <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
+              {isVerified && <VerifiedBadge size={16} />}
+            </div>
             <p className="text-[13px] text-zinc-400 truncate">{isGuest ? 'Modo convidado' : user?.email}</p>
             <p className="mt-1 inline-flex items-center gap-1.5 text-[12px] text-zinc-400">
               {synced ? <Cloud className="w-3.5 h-3.5" strokeWidth={1.75} /> : <HardDrive className="w-3.5 h-3.5" strokeWidth={1.75} />}

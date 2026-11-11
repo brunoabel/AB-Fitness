@@ -4,6 +4,8 @@ import { Search, Share2, UserPlus, Check, Clock3, Inbox, Users, Activity, HandMe
 import { useAuth } from '../../context';
 import HeadToHeadSheet from './HeadToHeadSheet';
 import { Avatar, SectionTitle, SPRING, TAP, exerciseLabel, fmtDuration, fmtInt, fmtKg, timeAgo } from './ui';
+import VerifiedBadge from '../ui/VerifiedBadge';
+import { isAthleteVerified } from '../../utils/userVerification';
 import { SkeletonList } from '../ui/Skeleton';
 import {
   canUseSocial, getFriendFeed, getFriendsWeeklySummary, getMyProfile, listFriendships,
@@ -37,7 +39,10 @@ function SearchResult({ r, onAdd, onAccept }) {
     <li className="flex items-center gap-3 py-2.5">
       <Avatar url={r.avatar_url} name={r.full_name || r.username} size={42} />
       <div className="flex-1 min-w-0">
-        <p className="text-body font-semibold text-white truncate">{r.full_name || `@${r.username}`}</p>
+        <p className="text-body font-semibold text-white truncate flex items-center gap-1.5">
+          <span>{r.full_name || `@${r.username}`}</span>
+          {isAthleteVerified(r) && <VerifiedBadge size={14} />}
+        </p>
         <p className="text-[13px] text-zinc-400 truncate">{r.username ? `@${r.username}` : 'Sem @username'}{r.athlete_tag ? ` · ${r.athlete_tag}` : ''}</p>
       </div>
       {action}
@@ -52,7 +57,11 @@ function FeedCard({ item, onRespect }) {
       <header className="flex items-center gap-3">
         <Avatar url={item.avatar_url} name={name} size={38} />
         <div className="flex-1 min-w-0">
-          <p className="text-[14px] text-white truncate"><span className="font-semibold">{name}</span> <span className="text-zinc-400">concluiu um treino</span></p>
+          <p className="text-[14px] text-white truncate flex items-center gap-1.5">
+            <span className="font-semibold truncate">{name}</span>
+            {isAthleteVerified(item) && <VerifiedBadge size={14} />}
+            <span className="text-zinc-400 shrink-0">concluiu um treino</span>
+          </p>
           <p className="text-[12px] text-zinc-500">{timeAgo(item.completed_at)}</p>
         </div>
       </header>
@@ -309,7 +318,10 @@ export default function SocialHub({ onNavigateTab }) {
                   >
                     <Avatar url={s.avatar_url} name={s.full_name || s.username} size={42} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-body font-semibold text-white truncate">{s.full_name || `@${s.username}`}</p>
+                      <p className="text-body font-semibold text-white truncate flex items-center gap-1.5">
+                        <span>{s.full_name || `@${s.username}`}</span>
+                        {isAthleteVerified(s) && <VerifiedBadge size={14} />}
+                      </p>
                       <p className="text-[13px] text-zinc-400 tabular-nums truncate">
                         {fmtInt(s.workouts_week)} {s.workouts_week === 1 ? 'treino' : 'treinos'} · {fmtKg(s.volume_week_kg)}
                       </p>

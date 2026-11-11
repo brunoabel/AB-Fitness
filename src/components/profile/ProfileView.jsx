@@ -5,6 +5,7 @@ import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
 import { canUseSocial, getMyCardStats, getMyProfile } from '../../services/socialService';
+import { isAthleteVerified } from '../../utils/userVerification';
 import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
 
@@ -17,7 +18,7 @@ const AccountSheet = lazy(() => import('../AccountSheet'));
  * por baixo, o histórico completo (sessões, gráficos, conquistas, corpo).
  */
 export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoach, onOpenAdmin, onOpenTrainerHub, soundEnabled, onToggleSound }) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, isAdmin } = useAuth();
   const userId = user?.id;
   const social = canUseSocial(userId);
 
@@ -43,7 +44,8 @@ export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoac
     cover_style: 'midnight',
     featured_stat: 'total_workouts'
   };
-  const profile = state.profile || fallbackProfile;
+  const verified = isAthleteVerified(state.profile || fallbackProfile, user, isAdmin);
+  const profile = { ...(state.profile || fallbackProfile), is_verified: verified };
   // Estatísticas locais quando o servidor não as dá (convidado / offline)
   const localStats = (() => {
     const h = getWorkoutHistory() || [];

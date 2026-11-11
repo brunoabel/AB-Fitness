@@ -1,6 +1,8 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
+import VerifiedBadge from '../ui/VerifiedBadge';
+import { isAthleteVerified } from '../../utils/userVerification';
 import { COVER_STYLES, FEATURED_STATS } from '../../services/socialService';
 
 const statValue = (id, stats) => {
@@ -15,6 +17,7 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
   const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
   const name = profile?.full_name || 'Atleta AB';
+  const isVerified = Boolean(profile?.is_verified) || isAthleteVerified(profile);
 
   return (
     <article className="relative overflow-hidden rounded-3xl bg-app border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
@@ -30,7 +33,10 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
             <span className="block font-display font-bold text-[30px] leading-none tracking-tight text-white tabular-nums">{statValue(featured.id, stats)}</span>
           </div>
         </div>
-        <h3 className="mt-3 font-heading text-title-xl font-bold tracking-tight text-white truncate">{name}</h3>
+        <div className="mt-3 flex items-center gap-1.5 min-w-0">
+          <h3 className="font-heading text-title-xl font-bold tracking-tight text-white truncate">{name}</h3>
+          {isVerified && <VerifiedBadge size={compact ? 18 : 22} />}
+        </div>
         <p className="text-body text-zinc-400 truncate">{profile?.username ? `@${profile.username}` : profile?.id ? 'Escolhe o teu @username' : 'Atleta AB Fitness'}</p>
         {profile?.bio && !compact && <p className="mt-2.5 text-body text-zinc-300 leading-relaxed">{profile.bio}</p>}
         {(profile?.athlete_tag || profile?.home_gym) && (
