@@ -179,27 +179,27 @@ export const EXERCISE_DATABASE = {
     commonMistake: 'Deixar os joelhos colapsarem para dentro (valgo dinâmico) ao fazer esforço na subida.',
     evidenceTip: 'O agachamento profundo estimula até 3x mais os glúteos e quadríceps do que o agachamento curto (Hartmann et al., 2013).'
   },
-  'agachamento-bulgaro': {
-    id: 'agachamento-bulgaro',
-    name: 'Agachamento Búlgaro (Unilateral)',
+  'passada-walking-lunges': {
+    id: 'passada-walking-lunges',
+    name: 'Passada (Walking Lunges)',
     category: 'legs',
     target: 'Quadríceps, Glúteo & Estabilidade Pélvica',
     secondary: 'Isquiotibiais & Core',
-    equipment: 'Banco + Halteres',
-    diagramType: 'bulgarian-split-squat',
+    equipment: 'Halteres',
+    diagramType: 'walking-lunges',
     postureCheckpoints: [
-      'Peito do pé traseiro apoiado com conforto sobre o banco',
-      'Pé dianteiro afastado o suficiente para permitir descida vertical de 90°',
-      'Tronco levemente inclinado para frente (foco glúteo) ou reto (foco quadríceps)'
+      'Tronco ereto e olhar à frente durante todo o deslocamento',
+      'Passo longo o suficiente para o joelho de trás quase tocar o chão',
+      'Joelho da frente alinhado com o segundo dedo do pé, sem ultrapassar muito a ponta'
     ],
     executionSteps: [
-      'Desça o joelho de trás em direção ao chão de forma suave até quase encostar.',
-      'O joelho da frente deve se manter alinhado com o segundo dedo do pé.',
-      'Suba com força gerada unicamente pela perna da frente.'
+      'Dê um passo à frente e desça o quadril até o joelho de trás quase encostar no chão.',
+      'Empurre pelo calcanhar da frente para avançar até a próxima passada.',
+      'Mantenha o tronco estável, sem balanço lateral entre um passo e outro.'
     ],
-    breathing: 'Inspire na descida; expire na subida.',
-    commonMistake: 'Colocar o pé dianteiro muito perto do banco, esmagando a patela no joelho.',
-    evidenceTip: 'Exercício rei para correção de assimetrias entre pernas e ganho de força de arrancada atlética.'
+    breathing: 'Inspire na descida de cada passada; expire ao empurrar para a próxima.',
+    commonMistake: 'Dar um passo curto demais, jogando o peso para o joelho da frente em vez do glúteo.',
+    evidenceTip: 'Exercício unilateral que corrige assimetrias entre pernas e soma componente de equilíbrio e deslocamento ao estímulo de força.'
   },
   'stiff-romeno-halteres': {
     id: 'stiff-romeno-halteres',
@@ -544,7 +544,7 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Sessão focada na cadeia posterior, postura e força de puxada.',
         isRestDay: false,
         exercises: [
-          getEx('levantamento-terra'),
+          getEx('stiff-com-barra'),
           getEx('remada-curvada-barra'),
           getEx('supino-inclinado-halteres'),
           getEx('elevacao-lateral-halteres'),
@@ -579,12 +579,12 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Correção de assimetrias com movimentos unilaterais e volume nos deltoides.',
         isRestDay: false,
         exercises: [
-          getEx('agachamento-bulgaro'),
-          getEx('elevacao-pelvica-barra'),
-          getEx('crossover-polia-media'),
+          getEx('passada-walking-lunges'),
+          getEx('ponte-gluteos-barra-glute-bridge'),
+          getEx('crossover-polia-alta'),
           getEx('remada-unilateral-serrote'),
           getEx('face-pull'),
-          getEx('rosca-martelo-halteres'),
+          getEx('rosca-martelo-cruzada-cross-body'),
           getEx('triceps-corda')
         ].filter(Boolean)
       },
@@ -660,7 +660,7 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('agachamento-bulgaro'),
+          getEx('passada-walking-lunges'),
           getEx('cadeira-extensora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('prancha-abdominal-frontal')
@@ -697,7 +697,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('remada-curvada-barra'),
           getEx('crucifixo-inclinado-halteres'),
           getEx('elevacao-lateral-polia'),
-          getEx('rosca-scott-barra-w'),
+          getEx('rosca-scott-maquina'),
           getEx('triceps-pulley-barra-reta')
         ].filter(Boolean)
       },
@@ -714,9 +714,9 @@ export function generatePersonalizedWorkoutPlan({
         description: 'Fechamento da semana com posterior de coxa e glúteo máximo protegendo joelhos e lombar.',
         isRestDay: false,
         exercises: [
-          getEx('levantamento-terra'),
+          getEx('stiff-com-barra'),
           getEx('stiff-com-halteres'),
-          getEx('elevacao-pelvica-barra'),
+          getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
           getEx('panturrilha-sentado-gemeos'),
           getEx('abdominal-polia-rope-crunch')
@@ -775,7 +775,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('barra-fixa-pronada'),
           getEx('supino-inclinado-halteres'),
           getEx('remada-curvada-barra'),
-          getEx('crossover-polia-media'),
+          getEx('crossover-polia-alta'),
           getEx('puxada-com-triangulo')
         ].filter(Boolean)
       },
@@ -797,7 +797,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('face-pull'),
           getEx('rosca-direta-barra'),
           getEx('triceps-testa-barra-w'),
-          getEx('rosca-martelo-halteres'),
+          getEx('rosca-martelo-cruzada-cross-body'),
           getEx('triceps-corda')
         ].filter(Boolean)
       },
@@ -816,7 +816,7 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('agachamento-bulgaro'),
+          getEx('passada-walking-lunges'),
           getEx('cadeira-extensora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('abdominal-polia-rope-crunch')
@@ -858,8 +858,8 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('desenvolvimento-com-halteres'),
           getEx('elevacao-lateral-polia'),
-          getEx('crucifixo-invertido-halteres'),
-          getEx('rosca-scott-barra-w'),
+          getEx('crucifixo-invertido-maquina'),
+          getEx('rosca-scott-maquina'),
           getEx('triceps-pulley-barra-reta'),
           getEx('rosca-concentrada')
         ].filter(Boolean)
@@ -878,7 +878,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-halteres'),
-          getEx('elevacao-pelvica-barra'),
+          getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
           getEx('cadeira-abdutora'),
           getEx('panturrilha-sentado-gemeos'),
@@ -946,7 +946,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('puxada-com-triangulo'),
           getEx('face-pull'),
           getEx('rosca-direta-barra'),
-          getEx('rosca-martelo-halteres')
+          getEx('rosca-martelo-cruzada-cross-body')
         ].filter(Boolean)
       },
       {
@@ -964,7 +964,7 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('agachamento-bulgaro'),
+          getEx('passada-walking-lunges'),
           getEx('cadeira-extensora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('abdominal-polia-rope-crunch')
@@ -984,7 +984,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('supino-inclinado-halteres'),
-          getEx('crossover-polia-media'),
+          getEx('crossover-polia-alta'),
           getEx('desenvolvimento-com-halteres'),
           getEx('elevacao-lateral-polia'),
           getEx('paralelas-foco-peito'),
@@ -1007,8 +1007,8 @@ export function generatePersonalizedWorkoutPlan({
           getEx('remada-cavalinho'),
           getEx('remada-unilateral-serrote'),
           getEx('pulldown-com-corda'),
-          getEx('crucifixo-invertido-halteres'),
-          getEx('rosca-scott-barra-w'),
+          getEx('crucifixo-invertido-maquina'),
+          getEx('rosca-scott-maquina'),
           getEx('rosca-concentrada')
         ].filter(Boolean)
       },
@@ -1026,7 +1026,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-halteres'),
-          getEx('elevacao-pelvica-barra'),
+          getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
           getEx('cadeira-abdutora'),
           getEx('panturrilha-sentado-gemeos'),
@@ -1069,7 +1069,7 @@ export function generatePersonalizedWorkoutPlan({
       exercises: [
         getEx('supino-reto-barra'),
         getEx('supino-inclinado-halteres'),
-        getEx('crossover-polia-media'),
+        getEx('crossover-polia-alta'),
         getEx('desenvolvimento-militar'),
         getEx('elevacao-lateral-halteres'),
         getEx('triceps-corda')
@@ -1093,7 +1093,7 @@ export function generatePersonalizedWorkoutPlan({
         getEx('remada-unilateral-serrote'),
         getEx('face-pull'),
         getEx('rosca-direta-barra'),
-        getEx('rosca-martelo-halteres')
+        getEx('rosca-martelo-cruzada-cross-body')
       ].filter(Boolean)
     },
     {
@@ -1111,7 +1111,7 @@ export function generatePersonalizedWorkoutPlan({
       exercises: [
         getEx('agachamento-livre-barra'),
         getEx('leg-press-45'),
-        getEx('agachamento-bulgaro'),
+        getEx('passada-walking-lunges'),
         getEx('stiff-com-halteres'),
         getEx('panturrilha-em-pe-maquina'),
         getEx('prancha-abdominal-frontal')
@@ -1133,7 +1133,7 @@ export function generatePersonalizedWorkoutPlan({
         getEx('crucifixo-inclinado-halteres'),
         getEx('puxada-com-triangulo'),
         getEx('elevacao-lateral-polia'),
-        getEx('rosca-scott-barra-w'),
+        getEx('rosca-scott-maquina'),
         getEx('triceps-pulley-barra-reta')
       ].filter(Boolean)
     },
@@ -1150,7 +1150,7 @@ export function generatePersonalizedWorkoutPlan({
       description: 'Finalize a semana com posterior blindado e glúteos ativos.',
       isRestDay: false,
       exercises: [
-        getEx('elevacao-pelvica-barra'),
+        getEx('ponte-gluteos-barra-glute-bridge'),
         getEx('mesa-flexora'),
         getEx('cadeira-extensora'),
         getEx('cadeira-abdutora'),
