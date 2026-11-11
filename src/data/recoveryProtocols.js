@@ -26,7 +26,7 @@ export const DRILLS = {
   'forearm-rotation': D('Pronação e supinação com halter leve', 'forca', '2 × 15', 'Cotovelo apoiado; roda o halter devagar nos dois sentidos.'),
   cobra: D('Extensão em cobra', 'estatico', '2 × 30 s', 'Púbis no chão e ombros longe das orelhas; sobe só até ser confortável.'),
   'dead-bug': D('Dead bug', 'forca', '2 × 8 por lado', 'Lombar colada ao chão enquanto estendes braço e perna opostos.'),
-  'side-plank': D('Prancha lateral', 'forca', '2 × 30 s por lado', 'Linha reta da cabeça aos pés; a anca não cai.'),
+  'side-plank': D('Prancha lateral', 'forca', '2 × 30 s por lado', 'Linha reta da cabeça aos pés; a anca não cai.', 'prancha-lateral-isometrica'),
   'hip-flexor': D('Alongamento de flexores do quadril', 'estatico', '2 × 40 s por lado', 'Contrai o glúteo da perna de trás e leva a anca para a frente.', 'alongamento-flexores-quadril-psoas'),
   'foam-quads': D('Rolo miofascial nos quadríceps', 'libertacao', '60 a 90 s por perna', 'Rola devagar; pára 10 s nos pontos mais tensos.', 'liberacao-miofascial-quadriceps-foam-roller'),
   'quad-stretch': D('Alongamento de quadríceps em pé', 'estatico', '2 × 30 s por lado', 'Joelhos juntos e anca para a frente; não arqueies a lombar.'),
