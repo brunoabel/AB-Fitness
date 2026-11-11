@@ -81,3 +81,4 @@ describe('StrengthMetrics — Exercícios Isométricos e Temporizados', () => {
     assert.equal(best, 75);
   });
 });
+
