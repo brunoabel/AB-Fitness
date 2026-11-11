@@ -236,4 +236,3 @@ Quando obtiveres os ficheiros `.mp4` correspondentes:
    - Executa `node scripts/build_exercise_catalog.mjs`
    - Corre os testes: `npm test` (devem passar todos os testes)
    - Valida o build: `npm run build`
-
