@@ -112,7 +112,17 @@ export async function updateMyProfile(userId, patch) {
   let { data, error } = await supabase.from('profiles').update(row).eq('id', userId).select(PROFILE_COLUMNS).single();
 
   // Se o Supabase remoto falhar por violação de constraint de cover_style (ex: migration pendente na cloud)
-  if (error && (String(error.message || '').includes('profiles_cover_style_valid') || String(error.details || '').includes('profiles_cover_style_valid'))) {
+  const isConstraintViolation = Boolean(
+    error && (
+      error.code === '23514' ||
+      String(error.message || '').includes('profiles_cover_style_valid') ||
+      String(error.details || '').includes('profiles_cover_style_valid') ||
+      String(error.message || '').toLowerCase().includes('cover_style') ||
+      String(error.details || '').toLowerCase().includes('cover_style') ||
+      String(error.message || '').toLowerCase().includes('check constraint')
+    )
+  );
+  if (isConstraintViolation && desiredCoverStyle) {
     console.warn('Constraint de cover_style restritiva no Supabase remoto. Salvando no banco com fallback "midnight" e preservando estilo escolhido na aplicação.');
     const safeRow = { ...row, cover_style: 'midnight' };
     const retry = await supabase.from('profiles').update(safeRow).eq('id', userId).select(PROFILE_COLUMNS).single();
