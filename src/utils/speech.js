@@ -71,9 +71,9 @@ export const speakText = (text) => {
 };
 
 /**
- * Anúncio de KM Concluído (Split)
+ * Anúncio de KM Concluído (Split) com Audio-Coach Inteligente
  */
-export const announceSplit = (km, durationSeconds, paceStr) => {
+export const announceSplit = (km, durationSeconds, paceStr, previousDurationSeconds = null) => {
   if (!durationSeconds || durationSeconds <= 0) return;
 
   const splitMinutes = Math.floor(durationSeconds / 60);
@@ -93,11 +93,26 @@ export const announceSplit = (km, durationSeconds, paceStr) => {
   if (paceStr) {
     const match = paceStr.match(/(\d+)[':](\d+)/);
     if (match) {
-      paceText = `Ritmo médio: ${match[1]} e ${match[2]} por quilômetro.`;
+      paceText = `Ritmo: ${match[1]} e ${match[2]} por quilômetro.`;
     }
   }
 
-  const message = `Quilômetro ${km} concluído. Tempo da parcial: ${timeText}. ${paceText}`.trim();
+  // Feedback adaptativo de performance do Audio-Coach
+  let coachTip = '';
+  if (previousDurationSeconds && previousDurationSeconds > 0) {
+    const diff = Math.round(previousDurationSeconds - durationSeconds);
+    if (diff >= 5) {
+      coachTip = `Excelente aceleração! Estás ${diff} segundos mais rápido que o quilómetro anterior.`;
+    } else if (diff <= -6) {
+      coachTip = `Ritmo baixou ${Math.abs(diff)} segundos. Ajusta a respiração e foca na técnica de passada.`;
+    } else {
+      coachTip = 'Ritmo consistente e estável. Excelente controle de esforço!';
+    }
+  } else if (km === 1) {
+    coachTip = 'Primeiro quilômetro concluído. Aquece o corpo e encontra o teu ritmo ideal.';
+  }
+
+  const message = `Quilômetro ${km} concluído. Parcial: ${timeText}. ${paceText} ${coachTip}`.trim();
   speakText(message);
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Check
+  Check,
+  Zap
 } from 'lucide-react';
 import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
@@ -8,6 +9,7 @@ import WorkoutHeader from './workout/WorkoutHeader';
 import WorkoutDock from './workout/WorkoutDock';
 import ExerciseListView from './workout/ExerciseListView';
 import FocusExerciseCard from './workout/FocusExerciseCard';
+import SwapExerciseModal from './workout/SwapExerciseModal';
 import useWorkoutTimer from '../hooks/useWorkoutTimer';
 import useWorkoutDraft from '../hooks/useWorkoutDraft';
 import CelebrationModal from './CelebrationModal';
@@ -175,16 +177,46 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
   // Modo Casa: id original → exercício equivalente de casa (persistido no rascunho)
   const [homeSwaps, setHomeSwaps] = useState(() => activeDraft?.homeSwaps || {});
+  // Adaptação Imediata (Máquina Ocupada)
+  const [swappingExercise, setSwappingExercise] = useState(null);
+  const [liveSwaps, setLiveSwaps] = useState(() => activeDraft?.liveSwaps || {});
+  const [isExpressMode, setIsExpressMode] = useState(false);
 
   // Exercício atualmente focado
   const baseExercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
-  const currentExercisesList = baseExercises.map((ex) => homeSwaps[ex.id] || ex);
+  const currentExercisesList = baseExercises.map((ex) => liveSwaps[ex.id] || homeSwaps[ex.id] || ex);
   const [focusedExerciseId, setFocusedExerciseId] = useState(
     workout?.exercises?.[0]?.id || null
   );
 
   // Rascunho do treino ativo (ver hooks/useWorkoutDraft.js)
   const draftDataRef = useWorkoutDraft({ workoutDayId: currentWorkoutDayId, exercisesData, homeSwaps, computeElapsed, timerRef, finishingRef });
+
+  // Troca de Aparelho Ocupado (Adaptação ao Vivo com mesma porção e padrão motor)
+  const handleSwapExercise = (originalEx, substitute) => {
+    if (!originalEx || !substitute) return;
+    setExercisesData((prev) => {
+      const existing = prev[originalEx.id] || [];
+      return {
+        ...prev,
+        [substitute.id]: existing.length > 0
+          ? existing.map((s) => ({ ...s, weight: substitute.suggestedWeight || s.weight, done: false, completed: false }))
+          : [{ set: 1, weight: substitute.suggestedWeight || 20, reps: 10, done: false, completed: false }]
+      };
+    });
+    setLiveSwaps((prev) => ({ ...prev, [originalEx.id]: substitute }));
+    setFocusedExerciseId(substitute.id);
+    setSwappingExercise(null);
+    triggerHaptic(20);
+    try { sound.playSuccess(); } catch {}
+  };
+
+  const toggleExpressMode = () => {
+    const next = !isExpressMode;
+    setIsExpressMode(next);
+    setCurrentRestDefault(next ? 45 : (activeExercise?.restTime || 60));
+    triggerHaptic(15);
+  };
 
   // Troca 1 toque entre o exercício de ginásio e o equivalente de casa (e volta)
   const toggleHomeMode = (exercise) => {
@@ -230,7 +262,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     if (!wasCompleted && isNowCompleted) {
       sound.playTick();
       const ex = currentExercisesList.find((e) => e.id === exId);
-      setCurrentRestDefault(ex?.restTime || 60);
+      setCurrentRestDefault(isExpressMode ? 45 : (ex?.restTime || 60));
       setRestTimerTrigger(Date.now());
     }
   };
@@ -561,9 +593,24 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
             <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
               Sequência de Exercícios ({currentExercisesList.length})
             </span>
-            <span className="text-[11px] text-zinc-400 font-medium">
-              {isFocusMode ? 'Modo Foco' : 'Visão Geral'}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleExpressMode}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
+                  isExpressMode
+                    ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
+                    : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white'
+                }`}
+                title="Modo Express: intervalos rápidos de 45s para finalizar em 30 min"
+              >
+                <Zap className={`w-3 h-3 ${isExpressMode ? 'text-amber-400 fill-amber-400' : 'text-zinc-400'}`} />
+                <span>{isExpressMode ? 'Express 30m ON' : 'Express 30m'}</span>
+              </button>
+              <span className="text-[11px] text-zinc-400 font-medium hidden sm:inline">
+                {isFocusMode ? 'Modo Foco' : 'Visão Geral'}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
@@ -625,6 +672,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
               pastWeights={pastWeights}
               onOpenPlates={setPlateCalcWeight}
               onOpenGuide={setSelectedExerciseForModal}
+              onOpenSwap={setSwappingExercise}
               onToggleHome={toggleHomeMode}
               onSetUpdate={handleSetUpdate}
               onRemoveSet={handleRemoveSet}
@@ -679,6 +727,14 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
             key="exercise-modal"
             exercise={selectedExerciseForModal}
             onClose={() => setSelectedExerciseForModal(null)}
+          />
+        )}
+        {swappingExercise && (
+          <SwapExerciseModal
+            key="swap-exercise-modal"
+            exercise={swappingExercise}
+            onSelectSubstitute={handleSwapExercise}
+            onClose={() => setSwappingExercise(null)}
           />
         )}
       </AnimatePresence>

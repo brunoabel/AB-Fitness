@@ -1,12 +1,14 @@
-import React from 'react';
-import { AlertTriangle, Flame, Navigation2, Pause, Play, Square, Timer, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertTriangle, Flame, Navigation2, Pause, Play, Square, Timer, Zap, Volume2, VolumeX } from 'lucide-react';
 import { formatDuration, formatPace } from '../../utils/runningService';
 import { AUTO_PAUSE_PREF_KEY } from './runPrefs';
+import { getVoiceCuesPreference, saveVoiceCuesPreference } from '../../utils/speech';
 import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
 
 /** Secção extraída de RunningHub.jsx (estado e handlers recebidos por props). */
 export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, calories, coordinates, currentFix, currentPaceSeconds, distanceKm, elapsedSeconds, elevationGainM, gpsError, gpsErrorCode, handleFinishRun, handlePause, handleResetSession, handleResume, isAutoPaused, isAutoPausedRef, isSimulation, livePaceSeconds, sessionStatus, setAutoPauseEnabled, signalBadge, speedKmh, splits }) {
+  const [voiceEnabled, setVoiceEnabled] = useState(getVoiceCuesPreference);
   return (
     <>
       {/* 3. MODO AO VIVO (HUD DE CORRIDA ATIVA OU PAUSADA) */}
@@ -36,7 +38,26 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !voiceEnabled;
+                    setVoiceEnabled(next);
+                    saveVoiceCuesPreference(next);
+                    triggerHaptic(8);
+                  }}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-[11px] border transition-colors cursor-pointer ${
+                    voiceEnabled
+                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                      : 'bg-zinc-800 text-zinc-500 border-zinc-700'
+                  }`}
+                  title="Audio-Coach no fone de ouvido (splits e ritmo)"
+                >
+                  {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                  Coach: {voiceEnabled ? 'ON' : 'OFF'}
+                </button>
+
                 <button
                   onClick={() => {
                     const next = !autoPauseEnabled;

@@ -8,10 +8,11 @@ import {
   Satellite,
   Moon,
   Map as MapIcon,
-  Mountain
+  Mountain,
+  Activity
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
-import { getCoordinatesWithFallback } from '../utils/runningService';
+import { getCoordinatesWithFallback, haversineDistanceMeters } from '../utils/runningService';
 
 // Provedores Globais de Mapas Ultrarrápidos, 100% Livres de Watermark e Chaves de API
 const MAP_LAYERS = {
@@ -57,6 +58,21 @@ const MAP_LAYERS = {
   }
 };
 
+/** Calcula cor do segmento no Mapa de Ritmo (Pace Heatmap estilo Strava) */
+function getSegmentPaceColor(p1, p2) {
+  if (!p1 || !p2) return '#f59e0b';
+  const distM = haversineDistanceMeters(p1.lat, p1.lng, p2.lat, p2.lng);
+  const dtSec = Math.max(0.1, (Number(p2.timestamp || 0) - Number(p1.timestamp || 0)) / 1000);
+  const speedMs = p2.speed || (distM / dtSec);
+  if (!speedMs || speedMs <= 0.35) return '#f43f5e'; // Parado / Caminhada lenta
+
+  const paceSecKm = 1000 / speedMs;
+  if (paceSecKm < 280) return '#10b981'; // < 4'40"/km (Rápido - Esmeralda)
+  if (paceSecKm < 340) return '#06b6d4'; // 4'40" a 5'40"/km (Firme - Ciano)
+  if (paceSecKm < 420) return '#f59e0b'; // 5'40" a 7'00"/km (Moderado - Âmbar)
+  return '#f43f5e';                      // > 7'00"/km (Lento/Subida - Coral)
+}
+
 function RunningMapComponent({ 
   coordinates = [], 
   splits = [],
@@ -76,6 +92,7 @@ function RunningMapComponent({
   const startMarkerRef = useRef(null);
   const splitMarkersRef = useRef([]);
   const finishMarkerRef = useRef(null);
+  const paceSegmentsRef = useRef([]);
   const renderedCoordsCountRef = useRef(0);
   const renderedSplitsCountRef = useRef(-1);
   const hasCenteredOnUserRef = useRef(false);
@@ -84,6 +101,7 @@ function RunningMapComponent({
   const [isExpanded, setIsExpanded] = useState(false);
   const [autoFollow, setAutoFollow] = useState(true);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [paceHeatmapMode, setPaceHeatmapMode] = useState(false);
   const [currentLayerId, setCurrentLayerId] = useState(() => {
     try {
       return localStorage.getItem('ab_fitness_map_layer') || 'satellite';
@@ -212,6 +230,12 @@ function RunningMapComponent({
       }
       if (container) {
         container._leaflet_id = null;
+      }
+      if (paceSegmentsRef.current.length > 0) {
+        paceSegmentsRef.current.forEach((m) => {
+          try { m.remove(); } catch {}
+        });
+        paceSegmentsRef.current = [];
       }
       renderedCoordsCountRef.current = 0;
       renderedSplitsCountRef.current = -1;
@@ -485,6 +509,37 @@ function RunningMapComponent({
         }
       }
 
+      // Renderização do Mapa de Ritmo (Pace Heatmap estilo Strava Summit)
+      if (paceSegmentsRef.current.length > 0) {
+        paceSegmentsRef.current.forEach((layer) => {
+          try { map.removeLayer(layer); } catch {}
+        });
+        paceSegmentsRef.current = [];
+      }
+
+      if (paceHeatmapMode && effectiveCoordinates.length >= 2) {
+        if (corePolylineRef.current) {
+          corePolylineRef.current.setStyle({ opacity: 0 });
+        }
+        for (let i = 0; i < effectiveCoordinates.length - 1; i++) {
+          const p1 = effectiveCoordinates[i];
+          const p2 = effectiveCoordinates[i + 1];
+          const color = getSegmentPaceColor(p1, p2);
+          const seg = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
+            color,
+            weight: 6,
+            opacity: 0.98,
+            lineJoin: 'round',
+            lineCap: 'round'
+          }).addTo(map);
+          paceSegmentsRef.current.push(seg);
+        }
+      } else {
+        if (corePolylineRef.current) {
+          corePolylineRef.current.setStyle({ opacity: 0.98, color: routeColor });
+        }
+      }
+
       if (effectiveCoordinates.length > 1 && corePolylineRef.current) {
         try {
           const bounds = corePolylineRef.current.getBounds();
@@ -494,7 +549,7 @@ function RunningMapComponent({
         } catch {}
       }
     }
-  }, [effectiveCoordinates, currentPosition, autoFollow, isLive, routeColor]);
+  }, [effectiveCoordinates, currentPosition, autoFollow, isLive, routeColor, paceHeatmapMode]);
 
   // Atualizar Marcadores de KM (Splits) apenas quando a lista de splits muda
   useEffect(() => {
@@ -654,6 +709,26 @@ function RunningMapComponent({
             </div>
           )}
         </div>
+
+        {/* Alternador de Mapa de Ritmo (Pace Heatmap estilo Strava) */}
+        {effectiveCoordinates.length >= 2 && (
+          <button
+            type="button"
+            onClick={() => {
+              setPaceHeatmapMode((prev) => !prev);
+              triggerHaptic(10);
+            }}
+            className={`flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1 rounded-full border text-[11px] font-bold shadow-md active:scale-95 transition-all cursor-pointer ${
+              paceHeatmapMode
+                ? 'bg-emerald-500/25 border-emerald-400/50 text-emerald-300'
+                : 'bg-black/80 border-white/15 text-zinc-300 hover:text-white'
+            }`}
+            title="Alternar mapa de calor por ritmo (Pace Heatmap)"
+          >
+            <Activity className="w-3.5 h-3.5 text-emerald-400" strokeWidth={2} />
+            <span className="text-[11px] hidden sm:inline">{paceHeatmapMode ? 'Ritmo ON' : 'Ritmo'}</span>
+          </button>
+        )}
       </div>
 
       {/* Botões Flutuantes de Ação (Recentralizar e Expandir) */}
@@ -680,11 +755,20 @@ function RunningMapComponent({
         </button>
       </div>
 
-      {/* Selo Strava GPS Engine na parte inferior */}
-      <div className="absolute bottom-2 left-3 z-10 flex items-center gap-1.5 text-[11px] font-mono text-zinc-300 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/10 pointer-events-none">
-        <span className="text-orange-400 font-black">STRAVA</span>
-        <span>• AB GPS Engine (Kalman 2D)</span>
-      </div>
+      {/* Selo Strava GPS Engine ou Legenda de Ritmo */}
+      {paceHeatmapMode && effectiveCoordinates.length >= 2 ? (
+        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2 bg-black/85 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 text-[10px] font-mono text-zinc-300 pointer-events-none">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> &lt;4&apos;40&quot;</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400" /> 5&apos;20&quot;</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400" /> 6&apos;20&quot;</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> &gt;7&apos;00&quot;</span>
+        </div>
+      ) : (
+        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-1.5 text-[11px] font-mono text-zinc-300 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/10 pointer-events-none">
+          <span className="text-orange-400 font-black">STRAVA</span>
+          <span>• AB GPS Engine (Kalman 2D)</span>
+        </div>
+      )}
     </div>
   );
 }

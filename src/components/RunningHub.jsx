@@ -455,6 +455,7 @@ export default function RunningHub({ isDark = true }) {
     const { splits: calculatedSplits } = computeSplits(updatedCoords);
     if (calculatedSplits.length > splitsRef.current.length) {
       const latestSplit = calculatedSplits[calculatedSplits.length - 1];
+      const prevSplit = calculatedSplits.length >= 2 ? calculatedSplits[calculatedSplits.length - 2] : null;
       splitsRef.current = calculatedSplits;
       setSplits(calculatedSplits);
 
@@ -462,7 +463,12 @@ export default function RunningHub({ isDark = true }) {
       try { triggerHaptic(25); } catch {}
       if (voiceEnabledRef.current && latestSplit) {
         try {
-          announceSplit(latestSplit.km, latestSplit.durationSeconds, latestSplit.paceStr || latestSplit.pace);
+          announceSplit(
+            latestSplit.km,
+            latestSplit.durationSeconds,
+            latestSplit.paceStr || latestSplit.pace,
+            prevSplit?.durationSeconds || null
+          );
         } catch {}
       }
     }

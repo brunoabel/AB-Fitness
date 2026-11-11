@@ -30,3 +30,4 @@ export function isAthleteVerified(profileOrUser, contextUser, isAdmin = false) {
 
   return false;
 }
+

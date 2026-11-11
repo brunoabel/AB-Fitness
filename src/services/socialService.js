@@ -12,9 +12,14 @@ export const USERNAME_RE = /^[a-z0-9_.]{3,20}$/;
 export const BIO_MAX = 160;
 export const ATHLETE_TAGS = ['Hipertrofia', 'Força', 'Híbrido', 'Powerlifting', 'Recomposição', 'Corrida'];
 export const COVER_STYLES = [
-  { id: 'midnight', label: 'Midnight', className: 'bg-surface-2' },
-  { id: 'carbon', label: 'Carbono', className: 'bg-surface' },
-  { id: 'abyss', label: 'Abismo', className: 'bg-accent' }
+  { id: 'midnight', label: 'Midnight', className: 'bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900' },
+  { id: 'carbon', label: 'Carbono', className: 'bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:8px_8px] bg-zinc-950' },
+  { id: 'abyss', label: 'Abismo', className: 'bg-gradient-to-r from-slate-950 via-sky-950/80 to-slate-950' },
+  { id: 'gold', label: 'Ouro 24K', className: 'bg-gradient-to-r from-amber-950 via-yellow-700/50 to-amber-900 border-amber-500/30', badge: 'PRO' },
+  { id: 'titanium', label: 'Titânio', className: 'bg-gradient-to-r from-neutral-800 via-stone-700 to-neutral-900 border-white/20', badge: 'PRO' },
+  { id: 'cyberpunk', label: 'Neon Ciano', className: 'bg-gradient-to-r from-slate-950 via-cyan-950/80 to-teal-950 border-cyan-500/30', badge: 'PRO' },
+  { id: 'aurora', label: 'Aurora', className: 'bg-gradient-to-r from-emerald-950 via-teal-900/70 to-slate-950 border-emerald-500/30', badge: 'PRO' },
+  { id: 'crimson', label: 'Crimson', className: 'bg-gradient-to-r from-rose-950 via-red-950/80 to-zinc-950 border-rose-500/25', badge: 'PRO' }
 ];
 export const FEATURED_STATS = [
   { id: 'total_workouts', label: 'Total de treinos' },

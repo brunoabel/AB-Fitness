@@ -208,20 +208,37 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
         </div>
 
         <div>
-          <Label>Capa</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {COVER_STYLES.map((c) => (
-              <motion.button
-                key={c.id}
-                type="button"
-                aria-pressed={draft.cover_style === c.id}
-                whileTap={TAP}
-                onClick={() => set('cover_style', c.id)}
-                className={`h-14 rounded-xl border ${c.className} ${draft.cover_style === c.id ? 'border-white' : 'border-white/[0.08]'} text-[13px] font-semibold text-white cursor-pointer`}
-              >
-                {c.label}
-              </motion.button>
-            ))}
+          <div className="flex items-center justify-between mb-2">
+            <Label>Estilo de Capa</Label>
+            <span className="text-[12px] text-zinc-400 font-medium">8 Temas do Atleta</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {COVER_STYLES.map((c) => {
+              const isSelected = draft.cover_style === c.id;
+              return (
+                <motion.button
+                  key={c.id}
+                  type="button"
+                  aria-pressed={isSelected}
+                  whileTap={TAP}
+                  onClick={() => {
+                    triggerHaptic(8);
+                    set('cover_style', c.id);
+                  }}
+                  className={`relative h-14 rounded-xl border p-2 flex flex-col justify-between overflow-hidden cursor-pointer transition-all ${c.className} ${isSelected ? 'ring-2 ring-white border-white scale-[1.02]' : 'border-white/[0.1] hover:border-white/20'}`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[12px] font-bold text-white tracking-tight">{c.label}</span>
+                    {c.badge && (
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
+                        {c.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className="h-0.5 w-full bg-white/20 rounded-full" />
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 

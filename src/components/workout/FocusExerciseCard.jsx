@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Dumbbell, Eye, CheckCircle2, Plus, MessageSquareText } from 'lucide-react';
+import { Dumbbell, Eye, CheckCircle2, Plus, MessageSquareText, Shuffle } from 'lucide-react';
 import SetRow from '../SetRow';
 import ExerciseVideoPlayer from '../video/ExerciseVideoPlayer';
 import { workingSetLabels } from './ExerciseListView';
@@ -18,7 +18,7 @@ const HINT_STYLE = {
 
 export default function FocusExerciseCard({
   exercise, index, total, sets, pastHistory, prevIndex, pastWeights,
-  onOpenPlates, onOpenGuide, onToggleHome, onSetUpdate, onRemoveSet, onAddSet,
+  onOpenPlates, onOpenGuide, onToggleHome, onOpenSwap, onSetUpdate, onRemoveSet, onAddSet,
   progressionHint, onApplyProgressionHint
 }) {
   const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
@@ -65,6 +65,20 @@ export default function FocusExerciseCard({
               title="Abrir Calculadora de Anilhas para a Barra"
             >
               <Dumbbell className="w-4 h-4 stroke-[2]" />
+            </button>
+          )}
+          {onOpenSwap && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenSwap(exercise);
+                triggerHaptic(10);
+              }}
+              className="px-2.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
+              title="Trocar Aparelho (Máquina Ocupada)"
+            >
+              <Shuffle className="w-4 h-4 text-sky-400 stroke-[2]" />
+              <span className="hidden sm:inline">Trocar</span>
             </button>
           )}
           <button
