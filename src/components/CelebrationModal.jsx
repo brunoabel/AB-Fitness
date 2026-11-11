@@ -120,7 +120,7 @@ export default function CelebrationModal({
                   {newPRs.length === 1 ? 'Novo Recorde Pessoal (PR)!' : `${newPRs.length} Novos Recordes Pessoais!`}
                 </span>
                 <p className="text-xs font-bold text-zinc-100 truncate">
-                  {newPRs.map(p => `${p.exerciseName} (${p.e1RM}kg 1RM)`).join(' • ')}
+                  {newPRs.map(p => p.isTimed ? `${p.exerciseName} (${p.duration}s)` : `${p.exerciseName} (${p.e1RM}kg 1RM)`).join(' • ')}
                 </p>
               </div>
             </div>

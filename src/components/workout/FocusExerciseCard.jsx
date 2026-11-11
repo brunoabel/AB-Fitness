@@ -4,7 +4,7 @@ import { Dumbbell, Eye, CheckCircle2, Plus, MessageSquareText } from 'lucide-rea
 import SetRow from '../SetRow';
 import ExerciseVideoPlayer from '../video/ExerciseVideoPlayer';
 import { workingSetLabels } from './ExerciseListView';
-import { getBestHistorical1RM } from '../../utils/strengthMetrics';
+import { getBestHistorical1RM, getBestHistoricalDuration, formatDurationSeconds, isTimedExercise } from '../../utils/strengthMetrics';
 import { getHomeAlternative } from '../../data/exerciseMedia';
 import { triggerHaptic } from '../../utils/audio';
 
@@ -22,7 +22,9 @@ export default function FocusExerciseCard({
   progressionHint, onApplyProgressionHint
 }) {
   const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
-  const best1RM = getBestHistorical1RM(exercise.id, pastHistory);
+  const isTimed = isTimedExercise(exercise, exercise.id);
+  const best1RM = !isTimed ? getBestHistorical1RM(exercise.id, pastHistory) : null;
+  const bestDuration = isTimed ? getBestHistoricalDuration(exercise.id, pastHistory) : null;
   const labels = workingSetLabels(sets);
   const latestWeight = sets.find((s) => s.weight > 0)?.weight || exercise.suggestedWeight || 60;
 
@@ -44,20 +46,27 @@ export default function FocusExerciseCard({
               Melhor 1RM Histórico: <strong className="text-zinc-200 font-mono">{best1RM} kg</strong>
             </p>
           )}
+          {bestDuration && (
+            <p className="text-[11px] text-zinc-400 font-medium">
+              Recorde de Duração: <strong className="text-zinc-200 font-mono">{formatDurationSeconds(bestDuration)}</strong>
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => {
-              onOpenPlates(latestWeight);
-              triggerHaptic(10);
-            }}
-            className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
-            title="Abrir Calculadora de Anilhas para a Barra"
-          >
-            <Dumbbell className="w-4 h-4 stroke-[2]" />
-          </button>
+          {!isTimed && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenPlates(latestWeight);
+                triggerHaptic(10);
+              }}
+              className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title="Abrir Calculadora de Anilhas para a Barra"
+            >
+              <Dumbbell className="w-4 h-4 stroke-[2]" />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => {
@@ -128,11 +137,13 @@ export default function FocusExerciseCard({
           <SetRow
             key={setIdx}
             exerciseId={exercise.id}
+            exercise={exercise}
             index={setIdx}
             displayIndex={labels[setIdx]}
             set={set}
             prev={prevIndex[exercise.id]?.[setIdx] || (setIdx === 0 ? pastWeights[exercise.id]?.[0] : null)}
             bestHistorical1RM={best1RM}
+            bestHistoricalDuration={bestDuration}
             onChange={(updates) => onSetUpdate(exercise.id, setIdx, updates)}
             onRemove={() => onRemoveSet(exercise.id, setIdx)}
             canRemove={sets.length > 1}

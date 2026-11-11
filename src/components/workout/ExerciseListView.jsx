@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, Play, Eye, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import SetRow from '../SetRow';
-import { getBestHistorical1RM } from '../../utils/strengthMetrics';
+import { getBestHistorical1RM, getBestHistoricalDuration, isTimedExercise } from '../../utils/strengthMetrics';
 import { triggerHaptic } from '../../utils/audio';
 
 /** Números das séries de trabalho; aquecimentos aparecem como "W". */
@@ -21,7 +21,9 @@ export default function ExerciseListView({
         const sets = exercisesData[exercise.id] || [];
         const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
         const isExpanded = expandedId === exercise.id;
-        const best1RM = getBestHistorical1RM(exercise.id, pastHistory);
+        const isTimed = isTimedExercise(exercise, exercise.id);
+        const best1RM = !isTimed ? getBestHistorical1RM(exercise.id, pastHistory) : null;
+        const bestDuration = isTimed ? getBestHistoricalDuration(exercise.id, pastHistory) : null;
         const labels = workingSetLabels(sets);
         const withVideo = hasVideo(exercise);
 
@@ -80,11 +82,13 @@ export default function ExerciseListView({
                   <SetRow
                     key={setIdx}
                     exerciseId={exercise.id}
+                    exercise={exercise}
                     index={setIdx}
                     displayIndex={labels[setIdx]}
                     set={set}
                     prev={prevIndex[exercise.id]?.[setIdx] || (setIdx === 0 ? pastWeights[exercise.id]?.[0] : null)}
                     bestHistorical1RM={best1RM}
+                    bestHistoricalDuration={bestDuration}
                     onChange={(updates) => onSetUpdate(exercise.id, setIdx, updates)}
                     onRemove={() => onRemoveSet(exercise.id, setIdx)}
                     canRemove={sets.length > 1}

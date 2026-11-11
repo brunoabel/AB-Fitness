@@ -8,6 +8,8 @@
  * - Calculadora gráfica de anilhas (Plate Calculator)
  */
 
+import { findExerciseIn100 } from '../data/exercises100.js';
+
 export const SET_TYPES = {
   N: { code: 'N', label: '', title: 'Normal', cls: 'text-zinc-500 hover:text-zinc-300' },
   W: { code: 'W', label: 'W', title: 'Aquecimento (Warm-up)', cls: 'text-amber-400 font-bold' },
@@ -191,4 +193,118 @@ export function platesPerSide(targetWeight, barWeight = 20, availablePlates = [2
     remainder: +(rest * 2).toFixed(2), // se > 0, sobrou peso que não é atingível com as anilhas disponíveis
     perSideKg: +(plates.reduce((sum, p) => sum + p, 0)).toFixed(2)
   };
+}
+
+/**
+ * Deteção de exercícios isométricos / temporizados (ex: Prancha, Wall Sit, Dead Hang, Alongamentos).
+ * Aceita o objeto do exercício ou o ID/slug.
+ */
+export function isTimedExercise(exercise, exerciseId) {
+  let ex = exercise && typeof exercise === 'object' ? exercise : null;
+  const id = typeof exercise === 'string' || typeof exercise === 'number' ? exercise : exerciseId || ex?.id || ex?.slug;
+
+  if (!ex && id) {
+    try {
+      ex = findExerciseIn100(id);
+    } catch {
+      ex = null;
+    }
+  }
+
+  if (ex) {
+    if (ex.trackingType === 'time' || ex.trackingType === 'time_weight') return true;
+    if (ex.trackingType === 'reps_weight') return false;
+    if (typeof ex.reps === 'string' && /\d+\s*s\b|\d+-\d+\s*s\b/i.test(ex.reps)) return true;
+  }
+
+  const name = String(ex?.nome || ex?.name || id || '').toLowerCase();
+  if (name.includes('prancha') && !name.includes('spiderman') && !name.includes('toque nos ombros') && !name.includes('shoulder')) return true;
+  if (name.includes('plank') && !name.includes('shoulder') && !name.includes('tap') && !name.includes('spiderman')) return true;
+  if (name.includes('wall sit') || name.includes('dead hang') || name.includes('hollow body') || name.includes('vacuum') || name.includes('vácuo abdominal')) return true;
+  if (name.includes('cócoras isométrico') || name.includes('deep squat hold')) return true;
+  if (name.includes('pinch grip') || name.includes('pinçamento de dedos')) return true;
+  if (name.includes('copenhagen')) return true;
+  if ((ex?.mecanica === 'Alongamento' || ex?.grupo === 'Mobilidade') && typeof ex?.reps === 'string' && ex.reps.includes('s')) return true;
+
+  return false;
+}
+
+/**
+ * Determina se o exercício temporizado aceita sobrecarga adicional (+kg, ex: anilha nas costas ou cinto de carga).
+ */
+export function allowsAdditionalWeight(exercise, exerciseId) {
+  let ex = exercise && typeof exercise === 'object' ? exercise : null;
+  const id = typeof exercise === 'string' || typeof exercise === 'number' ? exercise : exerciseId || ex?.id || ex?.slug;
+
+  if (!ex && id) {
+    try {
+      ex = findExerciseIn100(id);
+    } catch {
+      ex = null;
+    }
+  }
+
+  const name = String(ex?.nome || ex?.name || id || '').toLowerCase();
+  if (ex?.mecanica === 'Alongamento' || ex?.grupo === 'Mobilidade') return false;
+  if (name.includes('alongamento') || name.includes('stretch') || name.includes('vacuum') || name.includes('vácuo') || name.includes('hollow')) return false;
+  return true;
+}
+
+/**
+ * Duração padrão sugerida em segundos para o exercício.
+ */
+export function getDefaultDurationSeconds(exercise, exerciseId) {
+  let ex = exercise && typeof exercise === 'object' ? exercise : null;
+  const id = typeof exercise === 'string' || typeof exercise === 'number' ? exercise : exerciseId || ex?.id || ex?.slug;
+
+  if (!ex && id) {
+    try {
+      ex = findExerciseIn100(id);
+    } catch {
+      ex = null;
+    }
+  }
+
+  const repsStr = String(ex?.reps || '');
+  const match = repsStr.match(/(\d+)\s*s/i);
+  if (match) return Number(match[1]);
+  return 60; // 60 segundos padrão
+}
+
+/**
+ * Formata segundos em texto limpo (ex: 60 -> "60s", 90 -> "1m 30s")
+ */
+export function formatDurationSeconds(seconds) {
+  const s = Math.round(Number(seconds) || 0);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return rem > 0 ? `${m}m ${rem}s` : `${m}m`;
+}
+
+/**
+ * Procura a melhor duração histórica (em segundos) de um exercício temporizado
+ */
+export function getBestHistoricalDuration(exId, history = [], fallbackWeights = {}) {
+  let maxSec = 0;
+  const testSets = (sets) => {
+    if (!Array.isArray(sets)) return;
+    for (const s of sets) {
+      if ((s.done || s.completed) && s.type !== 'W') {
+        const sec = Number(s.seconds !== undefined ? s.seconds : s.reps) || 0;
+        if (sec > maxSec) maxSec = sec;
+      }
+    }
+  };
+
+  for (const session of history) {
+    if (session.exercisesData?.[exId]) testSets(session.exercisesData[exId]);
+    if (Array.isArray(session.exercises)) {
+      const found = session.exercises.find((e) => e.id === exId);
+      if (found) testSets(found.sets);
+    }
+  }
+
+  if (fallbackWeights?.[exId]) testSets(fallbackWeights[exId]);
+  return maxSec > 0 ? maxSec : null;
 }

@@ -34,6 +34,9 @@ import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import {
   buildPrevIndex,
   getBestHistorical1RM,
+  getBestHistoricalDuration,
+  isTimedExercise,
+  getDefaultDurationSeconds,
   e1RM,
   calculateNextSessionPrescription
 } from '../utils/strengthMetrics';
@@ -92,11 +95,14 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     const initial = {};
     const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
     exercisesList.forEach((ex) => {
+      const isTimed = isTimedExercise(ex, ex.id);
+      const defaultDuration = isTimed ? getDefaultDurationSeconds(ex, ex.id) : 10;
       const prevSets = saved[ex.id];
       if (prevSets && prevSets.length > 0) {
         initial[ex.id] = prevSets.map((s) => ({
-          weight: s.weight ?? ex.suggestedWeight ?? 10,
-          reps: s.reps ?? ex.suggestedReps ?? 10,
+          weight: s.weight ?? (isTimed ? 0 : (ex.suggestedWeight ?? 10)),
+          reps: s.reps ?? (isTimed ? defaultDuration : (ex.suggestedReps ?? 10)),
+          seconds: s.seconds ?? (isTimed ? (Number(s.reps) || defaultDuration) : undefined),
           type: s.type || 'N',
           rpe: s.rpe || null,
           completed: false,
@@ -105,8 +111,9 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       } else {
         const setsCount = ex.defaultSets || 3;
         initial[ex.id] = Array.from({ length: setsCount }, () => ({
-          weight: ex.suggestedWeight ?? 10,
-          reps: ex.suggestedReps ?? 10,
+          weight: isTimed ? 0 : (ex.suggestedWeight ?? 10),
+          reps: isTimed ? defaultDuration : (ex.suggestedReps ?? 10),
+          seconds: isTimed ? defaultDuration : undefined,
           type: 'N',
           rpe: null,
           completed: false,
@@ -231,10 +238,22 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   // Adicionar / remover série: updaters funcionais e puros (dois toques rápidos não se perdem).
   // A gravação das cargas no LocalStorage acontece no efeito de persistência abaixo.
   const handleAddSet = (exId) => {
+    const ex = currentExercisesList.find((e) => e.id === exId);
+    const isTimed = isTimedExercise(ex, exId);
+    const defaultDuration = isTimed ? getDefaultDurationSeconds(ex, exId) : 10;
+
     setExercisesData((prev) => {
       const current = prev[exId] || [];
-      const lastSet = current[current.length - 1] || { weight: 10, reps: 10 };
-      return { ...prev, [exId]: [...current, { weight: lastSet.weight, reps: lastSet.reps, type: 'N', completed: false, done: false }] };
+      const lastSet = current[current.length - 1];
+      const newSet = {
+        weight: lastSet ? (lastSet.weight ?? 0) : (isTimed ? 0 : 10),
+        reps: lastSet ? (lastSet.seconds ?? lastSet.reps ?? defaultDuration) : (isTimed ? defaultDuration : 10),
+        seconds: isTimed ? (lastSet?.seconds ?? lastSet?.reps ?? defaultDuration) : undefined,
+        type: 'N',
+        completed: false,
+        done: false
+      };
+      return { ...prev, [exId]: [...current, newSet] };
     });
     triggerHaptic(10);
   };
@@ -262,19 +281,23 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
   // Métricas de progresso calculadas:
   // Volume efetivo e contagem de séries de trabalho EXCLUEM séries de aquecimento (type === 'W')
+  // Exercícios isométricos/temporizados não multiplicam segundos por peso no volume de carga (kg)
   let totalWorkingSetsCount = 0;
   let completedWorkingSetsCount = 0;
   let totalVolumeKg = 0;
 
   currentExercisesList.forEach((ex) => {
     const sets = exercisesData[ex.id] || [];
+    const isTimed = isTimedExercise(ex, ex.id);
     sets.forEach((s) => {
       const isDone = Boolean(s.completed || s.done);
       if (s.type !== 'W') {
         totalWorkingSetsCount++;
         if (isDone) {
           completedWorkingSetsCount++;
-          totalVolumeKg += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+          if (!isTimed) {
+            totalVolumeKg += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+          }
         }
       }
     });
@@ -299,29 +322,59 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     const detectedPRs = [];
     currentExercisesList.forEach((ex) => {
       const sets = exercisesData[ex.id] || [];
-      const bestHistorical = getBestHistorical1RM(ex.id, pastHistory);
-      let sessionBestE1RM = 0;
-      let sessionBestSet = null;
+      const isTimed = isTimedExercise(ex, ex.id);
 
-      sets.forEach((s) => {
-        if ((s.completed || s.done) && s.type !== 'W') {
-          const calc1RM = e1RM(s.weight, s.reps, s.rpe ? 10 - s.rpe : 0);
-          if (calc1RM && calc1RM > sessionBestE1RM) {
-            sessionBestE1RM = calc1RM;
-            sessionBestSet = s;
+      if (isTimed) {
+        const bestHistoricalDur = getBestHistoricalDuration(ex.id, pastHistory);
+        let sessionBestDur = 0;
+        let sessionBestSet = null;
+
+        sets.forEach((s) => {
+          if ((s.completed || s.done) && s.type !== 'W') {
+            const dur = Number(s.seconds !== undefined ? s.seconds : s.reps) || 0;
+            if (dur > sessionBestDur) {
+              sessionBestDur = dur;
+              sessionBestSet = s;
+            }
           }
-        }
-      });
-
-      if (sessionBestE1RM > 0 && bestHistorical && sessionBestE1RM > bestHistorical) {
-        detectedPRs.push({
-          exerciseId: ex.id,
-          exerciseName: ex.name,
-          e1RM: sessionBestE1RM,
-          previous1RM: bestHistorical,
-          weight: sessionBestSet?.weight,
-          reps: sessionBestSet?.reps
         });
+
+        if (sessionBestDur > 0 && bestHistoricalDur && sessionBestDur > bestHistoricalDur) {
+          detectedPRs.push({
+            exerciseId: ex.id,
+            exerciseName: ex.name,
+            isTimed: true,
+            duration: sessionBestDur,
+            previousDuration: bestHistoricalDur,
+            weight: sessionBestSet?.weight,
+            reps: sessionBestDur
+          });
+        }
+      } else {
+        const bestHistorical = getBestHistorical1RM(ex.id, pastHistory);
+        let sessionBestE1RM = 0;
+        let sessionBestSet = null;
+
+        sets.forEach((s) => {
+          if ((s.completed || s.done) && s.type !== 'W') {
+            const calc1RM = e1RM(s.weight, s.reps, s.rpe ? 10 - s.rpe : 0);
+            if (calc1RM && calc1RM > sessionBestE1RM) {
+              sessionBestE1RM = calc1RM;
+              sessionBestSet = s;
+            }
+          }
+        });
+
+        if (sessionBestE1RM > 0 && bestHistorical && sessionBestE1RM > bestHistorical) {
+          detectedPRs.push({
+            exerciseId: ex.id,
+            exerciseName: ex.name,
+            e1RM: sessionBestE1RM,
+            previous1RM: bestHistorical,
+            weight: sessionBestSet?.weight,
+            reps: sessionBestSet?.reps
+          });
+        }
       }
     });
     setSessionNewPRs(detectedPRs);

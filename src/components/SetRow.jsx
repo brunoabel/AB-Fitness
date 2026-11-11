@@ -1,25 +1,39 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Check, Trophy, Trash2 } from 'lucide-react';
-import { SET_TYPES, SET_TYPE_ORDER, e1RM } from '../utils/strengthMetrics';
+import { Check, Trophy, Trash2, Play, Square } from 'lucide-react';
+import {
+  SET_TYPES,
+  SET_TYPE_ORDER,
+  e1RM,
+  isTimedExercise,
+  allowsAdditionalWeight,
+  getDefaultDurationSeconds,
+  formatDurationSeconds
+} from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
 
 /**
- * SetRow — Linha de Série de Alta Ergonomia para Treino de Força
+ * SetRow — Linha de Série de Alta Ergonomia para Treino de Força e Isometria
  * 
  * - Alvos táteis amplos (≥ 56px para botão de conclusão)
- * - Steppers rápidos (±2,5 kg e ±1 rep)
+ * - Suporte híbrido automático:
+ *     * Exercícios clássicos: Carga (kg) e Repetições (steppers ±2,5 kg e ±1 rep)
+ *     * Exercícios isométricos / temporizados (ex: Prancha, Wall Sit, Alongamentos):
+ *       Duração (s) com steppers ±5s desktop / ±15s mobile, sobrecarga opcional (+kg)
+ *       ou chip "Livre", e cronómetro de isometria ao vivo (1 toque).
  * - Valores fantasma (Previous Set Hints) com cópia em 1 toque
  * - Ciclo de tipos de série: Normal (N), Aquecimento (W), Drop-set (D), Falha (F)
  * - Indicador visual discreto de Novo PR em tempo real
  */
 export default function SetRow({
   exerciseId,
+  exercise,
   index,
   displayIndex,
   set,
   prev,
   bestHistorical1RM,
+  bestHistoricalDuration,
   onChange,
   onRemove,
   canRemove = false,
@@ -29,15 +43,67 @@ export default function SetRow({
   const currentType = set.type || 'N';
   const typeConfig = SET_TYPES[currentType] || SET_TYPES.N;
 
-  // Cálculo de e1RM atual e deteção de PR
-  const currentE1RM = e1RM(set.weight, set.reps, set.rpe ? (10 - set.rpe) : 0);
+  // Deteção inteligente de exercício temporizado / isométrico
+  const isTimed = isTimedExercise(exercise, exerciseId);
+  const allowsWeight = isTimed ? allowsAdditionalWeight(exercise, exerciseId) : true;
+  const defaultDuration = isTimed ? getDefaultDurationSeconds(exercise, exerciseId) : 10;
+
+  // Duração atual normalizada
+  const currentDurationVal = set.seconds !== undefined ? set.seconds : set.reps;
+  const currentDurationNum = Number(currentDurationVal) || (isDone ? defaultDuration : 0);
+
+  // Cálculo de e1RM (para repetições) e deteção de PR
+  const currentE1RM = !isTimed ? e1RM(set.weight, set.reps, set.rpe ? (10 - set.rpe) : 0) : null;
   const isPR = Boolean(
-    isDone && 
-    currentType !== 'W' && 
-    currentE1RM && 
-    bestHistorical1RM && 
-    currentE1RM > bestHistorical1RM
+    isDone &&
+    currentType !== 'W' &&
+    (
+      (!isTimed && currentE1RM && bestHistorical1RM && currentE1RM > bestHistorical1RM) ||
+      (isTimed && currentDurationNum > 0 && bestHistoricalDuration && currentDurationNum > bestHistoricalDuration)
+    )
   );
+
+  // Cronómetro de isometria ao vivo no set row
+  const [isHoldingTimer, setIsHoldingTimer] = useState(false);
+  const [holdTimerSeconds, setHoldTimerSeconds] = useState(0);
+  const holdIntervalRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+    };
+  }, []);
+
+  // Para o cronómetro se a série for dada como concluída
+  useEffect(() => {
+    if (isDone && isHoldingTimer) {
+      if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+      setIsHoldingTimer(false);
+    }
+  }, [isDone, isHoldingTimer]);
+
+  const toggleHoldTimer = () => {
+    if (isDone) return;
+    if (isHoldingTimer) {
+      if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+      setIsHoldingTimer(false);
+      triggerHaptic(15);
+    } else {
+      triggerHaptic(15);
+      const initialSec = 0;
+      setHoldTimerSeconds(initialSec);
+      setIsHoldingTimer(true);
+      holdIntervalRef.current = setInterval(() => {
+        setHoldTimerSeconds((prevSec) => {
+          const nextSec = prevSec + 1;
+          onChange({ seconds: nextSec, reps: nextSec });
+          return nextSec;
+        });
+      }, 1000);
+    }
+  };
 
   // Ciclo entre tipos de série N -> W -> D -> F
   const cycleType = () => {
@@ -47,10 +113,17 @@ export default function SetRow({
     
     const updates = { type: nextType };
     
-    // Se mudou para Drop-set (D), pré-preenche 80% do peso anterior arredondado a 0.5kg
-    if (nextType === 'D' && prev?.weight) {
-      const dropWeight = Math.round((Number(prev.weight) * 0.8) * 2) / 2;
-      updates.weight = dropWeight;
+    // Se mudou para Drop-set (D)
+    if (nextType === 'D' && prev) {
+      if (isTimed) {
+        const prevDur = Number(prev.seconds !== undefined ? prev.seconds : prev.reps) || defaultDuration;
+        const dropDur = Math.max(10, Math.round((prevDur * 0.8) / 5) * 5);
+        updates.seconds = dropDur;
+        updates.reps = dropDur;
+      } else if (prev.weight) {
+        const dropWeight = Math.round((Number(prev.weight) * 0.8) * 2) / 2;
+        updates.weight = dropWeight;
+      }
     }
 
     // Se mudou para Falha (F), RIR é 0 (RPE 10)
@@ -65,10 +138,19 @@ export default function SetRow({
   const applyPreviousValues = () => {
     if (!prev || isDone) return;
     triggerHaptic(15);
-    onChange({
-      weight: prev.weight,
-      reps: prev.reps
-    });
+    if (isTimed) {
+      const prevDur = prev.seconds !== undefined ? prev.seconds : prev.reps;
+      onChange({
+        weight: allowsWeight ? (prev.weight ?? 0) : 0,
+        seconds: prevDur,
+        reps: prevDur
+      });
+    } else {
+      onChange({
+        weight: prev.weight,
+        reps: prev.reps
+      });
+    }
   };
 
   const weightInputRef = useRef(null);
@@ -83,6 +165,58 @@ export default function SetRow({
       return;
     }
 
+    // Se o cronómetro de isometria estiver ativo, para-o ao concluir
+    if (isHoldingTimer) {
+      if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+      setIsHoldingTimer(false);
+    }
+
+    if (isTimed) {
+      const prevSec = prev?.seconds !== undefined ? prev?.seconds : prev?.reps;
+      const rawSec = set.seconds !== undefined ? set.seconds : set.reps;
+      const duration = isEmpty(rawSec) || Number(rawSec) < 1 
+        ? Number(prevSec || defaultDuration) 
+        : Number(rawSec);
+
+      const finalWeight = allowsWeight
+        ? (isEmpty(set.weight) ? (prev?.weight !== undefined ? Number(prev.weight) : 0) : Number(set.weight))
+        : 0;
+
+      const willBePR = currentType !== 'W' && duration && bestHistoricalDuration && duration > bestHistoricalDuration;
+
+      if (willBePR) {
+        triggerHaptic([20, 40, 20, 40, 60]);
+        const rect = e.currentTarget.getBoundingClientRect();
+        try {
+          confetti({
+            particleCount: 60,
+            spread: 55,
+            startVelocity: 32,
+            ticks: 120,
+            colors: ['#ffffff', '#ffffff', '#c9d3e6'],
+            origin: {
+              x: (rect.left + rect.width / 2) / window.innerWidth,
+              y: (rect.top + rect.height / 2) / window.innerHeight
+            },
+            disableForReducedMotion: true
+          });
+        } catch {}
+      } else {
+        triggerHaptic(25);
+      }
+
+      onChange({
+        weight: finalWeight,
+        seconds: duration,
+        reps: duration,
+        done: true,
+        completed: true
+      });
+      return;
+    }
+
+    // Validação clássica para repetições
     const weight = isEmpty(set.weight) ? prev?.weight : set.weight;
     const reps = isEmpty(set.reps) || Number(set.reps) < 1 ? prev?.reps : set.reps;
 
@@ -140,6 +274,23 @@ export default function SetRow({
     onChange({ reps: nextVal });
   };
 
+  // Steppers de Duração para isometria (±5s ou ±15s)
+  const adjustDuration = (delta) => {
+    if (isDone) return;
+    triggerHaptic(8);
+    const rawVal = set.seconds !== undefined ? set.seconds : set.reps;
+    const curr = Number(rawVal) || (Number(prev?.seconds ?? prev?.reps) || defaultDuration);
+    const nextVal = Math.max(5, curr + delta);
+    onChange({ seconds: nextVal, reps: nextVal });
+  };
+
+  // Texto formatado para o hint anterior
+  const prevHintLabel = prev
+    ? (isTimed
+        ? `${formatDurationSeconds(prev.seconds ?? prev.reps)}${allowsWeight && Number(prev.weight) > 0 ? ` +${prev.weight}kg` : ''}`
+        : `${prev.weight}×${prev.reps}`)
+    : '—';
+
   return (
     <div 
       className={`rounded-xl border transition-all duration-150 p-2 sm:p-2.5 ${
@@ -184,145 +335,227 @@ export default function SetRow({
               ? 'hover:bg-zinc-800/80 active:scale-95 text-zinc-400' 
               : 'text-zinc-600 cursor-default'
           }`}
-          title={prev ? `Última vez: ${prev.weight}kg × ${prev.reps} reps. Toque para copiar.` : 'Sem registo anterior'}
+          title={
+            prev 
+              ? `Última vez: ${prevHintLabel}. Toque para copiar.` 
+              : 'Sem registo anterior'
+          }
         >
           <span className="text-[11px] font-semibold uppercase tracking-wider block text-zinc-500">
             Anterior
           </span>
           <span className="text-xs font-semibold tabular-nums text-zinc-300">
-            {prev ? `${prev.weight}×${prev.reps}` : '—'}
+            {prevHintLabel}
           </span>
         </button>
 
-        {/* 3. Input de Carga (kg) com Steppers ±2.5 kg */}
+        {/* 3. Coluna de Carga: Input de Carga (kg) para pesos normais / isometria com carga, ou chip "Livre" */}
         <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center w-full gap-0.5 sm:gap-1">
-            <button
-              type="button"
-              onClick={() => adjustWeight(-2.5)}
-              disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
-              title="-2.5 kg"
-            >
-              -
-            </button>
-            <div className="relative flex-1">
-              <input
-                ref={weightInputRef}
-                type="number"
-                inputMode="decimal"
-                step="0.5"
-                value={set.weight ?? ''}
-                placeholder={prev?.weight !== undefined ? String(prev.weight) : 'kg'}
-                onFocus={(e) => e.target.select()}
-                onChange={(e) => {
-                  if (invalidShake) setInvalidShake(false);
-                  onChange({ weight: e.target.value });
-                }}
-                disabled={isDone}
-                aria-invalid={invalidShake || undefined}
-                className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
-                  isDone
-                    ? 'bg-zinc-900 border-transparent text-zinc-400'
-                    : invalidShake
-                      ? 'bg-zinc-900 border-red-500 ring-2 ring-red-500/60 text-zinc-50'
-                      : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
-                }`}
-              />
-              <span className="absolute right-1.5 top-3.5 text-[11px] font-semibold text-zinc-400 pointer-events-none">
-                kg
-              </span>
+          {isTimed && !allowsWeight ? (
+            <div className="flex items-center justify-center w-full h-11 sm:h-12 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-xs select-none">
+              Livre
             </div>
-            <button
-              type="button"
-              onClick={() => adjustWeight(2.5)}
-              disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
-              title="+2.5 kg"
-            >
-              +
-            </button>
-          </div>
+          ) : (
+            <>
+              <div className="flex items-center w-full gap-0.5 sm:gap-1">
+                <button
+                  type="button"
+                  onClick={() => adjustWeight(-2.5)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="-2.5 kg"
+                >
+                  -
+                </button>
+                <div className="relative flex-1">
+                  <input
+                    ref={weightInputRef}
+                    type="number"
+                    inputMode="decimal"
+                    step="0.5"
+                    value={set.weight ?? ''}
+                    placeholder={prev?.weight !== undefined ? String(prev.weight) : (isTimed ? '0' : 'kg')}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      if (invalidShake) setInvalidShake(false);
+                      onChange({ weight: e.target.value });
+                    }}
+                    disabled={isDone}
+                    aria-invalid={invalidShake || undefined}
+                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
+                      isDone
+                        ? 'bg-zinc-900 border-transparent text-zinc-400'
+                        : invalidShake
+                          ? 'bg-zinc-900 border-red-500 ring-2 ring-red-500/60 text-zinc-50'
+                          : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
+                    }`}
+                  />
+                  <span className="absolute right-1.5 top-3.5 text-[11px] font-semibold text-zinc-400 pointer-events-none">
+                    {isTimed ? '+kg' : 'kg'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => adjustWeight(2.5)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="+2.5 kg"
+                >
+                  +
+                </button>
+              </div>
 
-          {/* Steppers Mobile Rápidos por baixo */}
-          <div className={`${isDone ? 'hidden' : 'flex'} sm:hidden items-center w-full gap-1 mt-1`}>
-            <button
-              type="button"
-              onClick={() => adjustWeight(-2.5)}
-              aria-label="Diminuir 2,5 kg"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
-            >
-              −2,5
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustWeight(2.5)}
-              aria-label="Aumentar 2,5 kg"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
-            >
-              +2,5
-            </button>
-          </div>
+              {/* Steppers Mobile Rápidos por baixo */}
+              <div className={`${isDone ? 'hidden' : 'flex'} sm:hidden items-center w-full gap-1 mt-1`}>
+                <button
+                  type="button"
+                  onClick={() => adjustWeight(-2.5)}
+                  aria-label="Diminuir 2,5 kg"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  −2,5
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustWeight(2.5)}
+                  aria-label="Aumentar 2,5 kg"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  +2,5
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* 4. Input de Repetições com Steppers ±1 rep */}
+        {/* 4. Coluna de Duração (s) para Isometria OU Repetições para Força */}
         <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center w-full gap-0.5 sm:gap-1">
-            <button
-              type="button"
-              onClick={() => adjustReps(-1)}
-              disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
-              title="-1 rep"
-            >
-              -
-            </button>
-            <div className="relative flex-1">
-              <input
-                type="number"
-                inputMode="numeric"
-                value={set.reps ?? ''}
-                placeholder={prev?.reps !== undefined ? String(prev.reps) : 'reps'}
-                onFocus={(e) => e.target.select()}
-                onChange={(e) => onChange({ reps: e.target.value })}
-                disabled={isDone}
-                className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
-                  isDone
-                    ? 'bg-zinc-900 border-transparent text-zinc-400'
-                    : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
-                }`}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => adjustReps(1)}
-              disabled={isDone}
-              className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
-              title="+1 rep"
-            >
-              +
-            </button>
-          </div>
+          {isTimed ? (
+            <>
+              <div className="flex items-center w-full gap-0.5 sm:gap-1">
+                <button
+                  type="button"
+                  onClick={() => adjustDuration(-5)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="-5 segundos"
+                >
+                  -
+                </button>
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    step="5"
+                    value={set.seconds !== undefined ? set.seconds : (set.reps ?? '')}
+                    placeholder={prev?.seconds !== undefined ? String(prev.seconds) : (prev?.reps !== undefined ? String(prev.reps) : String(defaultDuration))}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      onChange({ seconds: val, reps: val });
+                    }}
+                    disabled={isDone}
+                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
+                      isDone
+                        ? 'bg-zinc-900 border-transparent text-zinc-400'
+                        : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
+                    }`}
+                  />
+                  <span className="absolute right-2 top-3.5 text-[11px] font-semibold text-zinc-400 pointer-events-none">
+                    s
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => adjustDuration(5)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="+5 segundos"
+                >
+                  +
+                </button>
+              </div>
 
-          {/* Steppers Mobile Rápidos por baixo */}
-          <div className={`${isDone ? 'hidden' : 'flex'} sm:hidden items-center w-full gap-1 mt-1`}>
-            <button
-              type="button"
-              onClick={() => adjustReps(-1)}
-              aria-label="Diminuir 1 repetição"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
-            >
-              −1
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustReps(1)}
-              aria-label="Aumentar 1 repetição"
-              className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
-            >
-              +1
-            </button>
-          </div>
+              {/* Steppers Mobile Rápidos por baixo (±15s para isometria) */}
+              <div className={`${isDone ? 'hidden' : 'flex'} sm:hidden items-center w-full gap-1 mt-1`}>
+                <button
+                  type="button"
+                  onClick={() => adjustDuration(-15)}
+                  aria-label="Diminuir 15 segundos"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  −15s
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustDuration(15)}
+                  aria-label="Aumentar 15 segundos"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  +15s
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center w-full gap-0.5 sm:gap-1">
+                <button
+                  type="button"
+                  onClick={() => adjustReps(-1)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="-1 rep"
+                >
+                  -
+                </button>
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    value={set.reps ?? ''}
+                    placeholder={prev?.reps !== undefined ? String(prev.reps) : 'reps'}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => onChange({ reps: e.target.value })}
+                    disabled={isDone}
+                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-black text-base tabular-nums border transition-all ${
+                      isDone
+                        ? 'bg-zinc-900 border-transparent text-zinc-400'
+                        : 'bg-zinc-900 border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
+                    }`}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => adjustReps(1)}
+                  disabled={isDone}
+                  className="hidden sm:flex w-7 h-10 items-center justify-center rounded bg-zinc-800/90 text-zinc-300 text-xs font-bold active:scale-90 transition-transform cursor-pointer disabled:opacity-30"
+                  title="+1 rep"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Steppers Mobile Rápidos por baixo */}
+              <div className={`${isDone ? 'hidden' : 'flex'} sm:hidden items-center w-full gap-1 mt-1`}>
+                <button
+                  type="button"
+                  onClick={() => adjustReps(-1)}
+                  aria-label="Diminuir 1 repetição"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  −1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustReps(1)}
+                  aria-label="Aumentar 1 repetição"
+                  className="flex-1 h-11 rounded-lg text-xs font-bold tabular-nums text-zinc-200 bg-zinc-800 border border-white/[0.06] active:scale-95 active:bg-zinc-700 transition-transform select-none touch-manipulation"
+                >
+                  +1
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* 5. Botão Ergonómico de Conclusão (Alvo Tátil ≥ 56px) */}
@@ -343,7 +576,7 @@ export default function SetRow({
         </div>
       </div>
 
-      {/* Barra Inferior com PR / 1RM e Ações da Série */}
+      {/* Barra Inferior com PR / Métrica e Ações da Série */}
       <div className="flex items-center justify-between mt-1 px-1 pt-1 border-t border-zinc-800/60 text-[11px]">
         <div className="flex items-center gap-2 min-w-0">
           {/* Anterior (mobile): copia valores da última sessão */}
@@ -352,10 +585,10 @@ export default function SetRow({
               type="button"
               onClick={applyPreviousValues}
               className="sm:hidden flex items-center gap-1 min-h-[44px] px-2 -ml-1 rounded-md text-zinc-400 active:bg-zinc-800/80 tabular-nums select-none touch-manipulation"
-              aria-label={`Copiar última vez: ${prev.weight} kg por ${prev.reps} repetições`}
+              aria-label={`Copiar última vez: ${prevHintLabel}`}
             >
               <span className="uppercase tracking-wider font-semibold">Ant.</span>
-              <strong className="text-zinc-200 font-semibold">{prev.weight}×{prev.reps}</strong>
+              <strong className="text-zinc-200 font-semibold">{prevHintLabel}</strong>
             </button>
           )}
 
@@ -367,11 +600,43 @@ export default function SetRow({
             </span>
           )}
 
-          {/* e1RM Estimado */}
-          {currentE1RM && (
-            <span className="text-zinc-400 font-medium tabular-nums">
-              1RM est.: <strong className="text-zinc-200 font-semibold">{currentE1RM} kg</strong>
-            </span>
+          {/* Exibição de Métrica: e1RM para repetições OU Cronómetro / Duração para isometria */}
+          {isTimed ? (
+            <div className="flex items-center gap-2">
+              {!isDone && (
+                <button
+                  type="button"
+                  onClick={toggleHoldTimer}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                    isHoldingTimer
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse'
+                      : 'bg-zinc-850 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10'
+                  }`}
+                  title={isHoldingTimer ? "Parar cronómetro de isometria" : "Iniciar cronómetro de isometria ao vivo"}
+                >
+                  {isHoldingTimer ? (
+                    <>
+                      <Square className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                      <span className="tabular-nums font-mono">{holdTimerSeconds}s</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-2.5 h-2.5 fill-zinc-300 text-zinc-300" />
+                      <span>Cronometrar</span>
+                    </>
+                  )}
+                </button>
+              )}
+              <span className="text-zinc-400 font-medium tabular-nums">
+                Duração: <strong className="text-zinc-200 font-semibold">{formatDurationSeconds(currentDurationVal || defaultDuration)}</strong>
+              </span>
+            </div>
+          ) : (
+            currentE1RM && (
+              <span className="text-zinc-400 font-medium tabular-nums">
+                1RM est.: <strong className="text-zinc-200 font-semibold">{currentE1RM} kg</strong>
+              </span>
+            )
           )}
         </div>
 
