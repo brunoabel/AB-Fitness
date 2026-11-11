@@ -2,6 +2,7 @@ import test, { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildPlanFromProfile, toLegacyProfile } from './planFromProfile.js';
 import { formatTrainingDays } from '../components/onboarding/profileSchema.js';
+import { findExerciseIn100 } from './exercises100.js';
 
 describe('Plano a partir do perfil Onboarding (planFromProfile)', () => {
   const baseProfile = {
@@ -102,6 +103,65 @@ describe('Plano a partir do perfil Onboarding (planFromProfile)', () => {
     const legacy = toLegacyProfile({ ...baseProfile, trainingDays: [0, 2, 4] });
     assert.deepEqual(legacy.trainingDays, [0, 2, 4]);
     assert.equal(legacy.frequencyDays, 4);
+  });
+
+  describe('Motor biomecânico do atleta híbrido', () => {
+    const LEG_GROUPS = new Set(['Quadríceps', 'Posteriores', 'Glúteos']);
+    const legShare = (day) => {
+      if (!day.exercises?.length) return 0;
+      return day.exercises.filter((e) => LEG_GROUPS.has(findExerciseIn100(e.id)?.grupo)).length / day.exercises.length;
+    };
+
+    it('não altera o plano quando o utilizador não é atleta híbrido', () => {
+      const { plan } = buildPlanFromProfile({ ...baseProfile, hasSport: false });
+      assert.ok(plan.every((d) => !d.sportPrevention));
+    });
+
+    it('afasta o treino pesado de pernas da véspera/dia de um desporto de alto impacto competitivo', () => {
+      const profile = {
+        ...baseProfile,
+        daysPerWeek: 4,
+        trainingDays: [0, 1, 3, 4],
+        hasSport: true,
+        sports: ['futebol_futsal'],
+        sportDays: [2], // quarta
+        sportIntensity: 'competitive'
+      };
+      const { plan } = buildPlanFromProfile(profile);
+      // véspera (terça, idx 1) e dia do jogo (quarta, idx 2) não podem ser dominados por pernas
+      assert.ok(legShare(plan[1]) < 0.5, 'véspera do jogo não deve ser dia de pernas pesado');
+      assert.ok(legShare(plan[2]) < 0.5, 'dia do jogo não deve ser dia de pernas pesado');
+    });
+
+    it('reduz volume acessório e remove exercícios de terra/stiff em sessão dupla', () => {
+      const profile = {
+        ...baseProfile,
+        daysPerWeek: 4,
+        trainingDays: [0, 1, 3, 4],
+        hasSport: true,
+        sports: ['padel_tenis'],
+        sportDays: [0],
+        sportIntensity: 'moderate',
+        sessionOrder: 'gym_first'
+      };
+      const { plan, notes } = buildPlanFromProfile(profile);
+      const sameDay = plan[0];
+      assert.ok(sameDay.exercises.every((e) => !/terra|stiff/i.test(e.name)));
+      assert.ok(notes.some((n) => n.includes('sessão dupla')));
+    });
+
+    it('injeta mobilidade/prevenção específica do desporto nos dias praticados', () => {
+      const profile = {
+        ...baseProfile,
+        hasSport: true,
+        sports: ['boxe_lutas'],
+        sportDays: [5],
+        sportIntensity: 'recreational'
+      };
+      const { plan } = buildPlanFromProfile(profile);
+      assert.ok(Array.isArray(plan[5].sportPrevention) && plan[5].sportPrevention.length > 0);
+      assert.ok(plan[0].sportPrevention === undefined);
+    });
   });
 });
 

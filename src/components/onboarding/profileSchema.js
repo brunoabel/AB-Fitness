@@ -9,6 +9,9 @@
  * @typedef {'ppl'|'upper_lower'|'arnold'|'full_body'|'auto'} SplitPreference
  * @typedef {'shoulder'|'lower_back'|'knee'|'wrist_elbow'|'hip'} Injury
  * @typedef {'upper_chest'|'back_vtaper'|'glutes_hams'|'arms'|'shoulders'|'quads'} PriorityMuscle
+ * @typedef {'futebol_futsal'|'corrida'|'padel_tenis'|'boxe_lutas'|'basquetebol'|'natacao'|'ciclismo'|'outro'} Sport
+ * @typedef {'recreational'|'moderate'|'competitive'} SportIntensity
+ * @typedef {'gym_first'|'sport_first'|'split_hours'} SessionOrder
  *
  * @typedef {Object} FitnessProfile
  * @property {Gender} gender
@@ -23,6 +26,11 @@
  * @property {SplitPreference} splitPreference
  * @property {Injury[]} injuries
  * @property {PriorityMuscle[]} priorityMuscles
+ * @property {boolean|null} hasSport
+ * @property {Sport[]} sports
+ * @property {number[]} sportDays
+ * @property {SportIntensity|null} sportIntensity
+ * @property {SessionOrder|null} sessionOrder
  */
 
 export const GENDERS = [
@@ -114,6 +122,73 @@ export const PRIORITY_MUSCLES = [
 ];
 export const MAX_PRIORITY = 2;
 
+/** Catálogo de modalidades do screening de atleta híbrido. */
+export const SPORTS = [
+  { id: 'futebol_futsal', label: 'Futebol / Futsal' },
+  { id: 'corrida', label: 'Corrida / Running' },
+  { id: 'padel_tenis', label: 'Padel / Ténis' },
+  { id: 'boxe_lutas', label: 'Boxe / Lutas' },
+  { id: 'basquetebol', label: 'Basquetebol' },
+  { id: 'natacao', label: 'Natação' },
+  { id: 'ciclismo', label: 'Ciclismo' },
+  { id: 'outro', label: 'Outro' }
+];
+
+export const SPORT_INTENSITIES = [
+  { id: 'recreational', label: 'Lazer / Recreativo' },
+  { id: 'moderate', label: 'Moderado' },
+  { id: 'competitive', label: 'Competitivo / Alta Performance' }
+];
+
+export const SESSION_ORDERS = [
+  { id: 'gym_first', label: 'Antes do desporto' },
+  { id: 'sport_first', label: 'Depois do desporto' },
+  { id: 'split_hours', label: 'Em momentos totalmente separados' }
+];
+
+/** Desportos de alto impacto nos membros inferiores: disparam a regra anti-fadiga de pernas. */
+export const HIGH_IMPACT_LEG_SPORTS = ['futebol_futsal', 'corrida', 'padel_tenis', 'basquetebol'];
+
+/** Regiões do módulo de alongamentos/prevenção (src/data/recoveryProtocols.js) relevantes por desporto. */
+export const SPORT_PREVENTION_REGIONS = {
+  futebol_futsal: ['adutores', 'gemeos', 'posteriores', 'quadriceps'],
+  corrida: ['gemeos', 'posteriores', 'quadriceps'],
+  padel_tenis: ['ombros', 'trapezio', 'adutores'],
+  boxe_lutas: ['ombros', 'trapezio', 'triceps'],
+  basquetebol: ['gemeos', 'quadriceps', 'posteriores', 'adutores'],
+  natacao: ['ombros', 'trapezio', 'costas'],
+  ciclismo: ['quadriceps', 'posteriores', 'gemeos'],
+  outro: ['quadriceps', 'posteriores']
+};
+
+/** Dias (0–6) em que há desporto e também ginásio agendado. */
+export function overlapSportDays(profile) {
+  const gymDays = new Set(profile.trainingDays || []);
+  return (profile.sportDays || []).filter((d) => gymDays.has(d));
+}
+
+/** Veredito dinâmico do AB Coach para o screening de atleta híbrido. */
+export function sportVerdict(profile) {
+  if (profile.hasSport !== true) return null;
+  if (!profile.sports?.length || !profile.sportDays?.length || !profile.sportIntensity) {
+    return 'Escolhe a modalidade, os dias e o nível para o AB Coach calibrar a tua semana.';
+  }
+  const highImpact = profile.sports.some((s) => HIGH_IMPACT_LEG_SPORTS.includes(s));
+  const risky = profile.sportIntensity !== 'recreational';
+  const overlap = overlapSportDays(profile);
+
+  if (highImpact && risky) {
+    return 'Vou proteger os teus joelhos e tornozelos: nada de pernas pesadas na véspera ou no dia do desporto, com pelo menos 48h de recuperação até à próxima partida.';
+  }
+  if (overlap.length > 0) {
+    return 'Sessão dupla detetada: reduzo o volume acessório e removo exercícios de alta fadiga lombar nos dias partilhados.';
+  }
+  if (profile.sportIntensity === 'competitive') {
+    return 'Nível competitivo registado: vou equilibrar a carga de musculação com a tua rotina de alta performance.';
+  }
+  return 'Vou ajustar o teu plano com mobilidade e prevenção específicas para a tua modalidade.';
+}
+
 /** @type {FitnessProfile} */
 export const DEFAULT_PROFILE = {
   gender: null,
@@ -128,12 +203,22 @@ export const DEFAULT_PROFILE = {
   sessionMinutes: null,
   splitPreference: 'auto',
   injuries: [],
-  priorityMuscles: []
+  priorityMuscles: [],
+  hasSport: null,
+  sports: [],
+  otherSport: '',
+  sportDays: [],
+  sportIntensity: null,
+  sessionOrder: null
 };
 
-/** Uma etapa é válida quando todos os campos que exige estão preenchidos. */
+/** Uma etapa é válida quando todos os campos que exige estão preenchidos (arrays exigem pelo menos 1 item). */
 export function fieldsFilled(profile, fields = []) {
-  return fields.every((k) => profile[k] !== null && profile[k] !== undefined);
+  return fields.every((k) => {
+    const v = profile[k];
+    if (Array.isArray(v)) return v.length > 0;
+    return v !== null && v !== undefined;
+  });
 }
 
 /** Converte para uma linha da tabela user_fitness_profiles (snake_case). */
@@ -152,6 +237,12 @@ export function toRow(userId, p) {
     split_preference: p.splitPreference,
     injuries: p.injuries,
     priority_muscles: p.priorityMuscles,
+    has_sport: Boolean(p.hasSport),
+    sports: p.sports || [],
+    other_sport: p.otherSport || null,
+    sport_days: p.sportDays || [],
+    sport_intensity: p.sportIntensity || null,
+    session_order: p.sessionOrder || null,
     onboarding_completed_at: new Date().toISOString()
   };
 }

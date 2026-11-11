@@ -69,7 +69,13 @@ export async function fetchFitnessProfile(userId) {
     sessionMinutes: data.session_minutes,
     splitPreference: data.split_preference,
     injuries: data.injuries || [],
-    priorityMuscles: data.priority_muscles || []
+    priorityMuscles: data.priority_muscles || [],
+    hasSport: Boolean(data.has_sport),
+    sports: data.sports || [],
+    otherSport: data.other_sport || '',
+    sportDays: data.sport_days || [],
+    sportIntensity: data.sport_intensity || null,
+    sessionOrder: data.session_order || null
   };
   saveLocal(profile);
   return profile;

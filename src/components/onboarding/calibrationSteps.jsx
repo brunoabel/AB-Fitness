@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Pencil } from 'lucide-react';
 import { OptionCard, Segmented, PrecisionPicker, Chip, MicroLabel } from './controls';
 import {
   GENDERS, GOALS, LEVELS, LOCATIONS, INJURIES, PRIORITY_MUSCLES, MAX_PRIORITY, DAYS, MINUTES,
-  TRAINING_DAYS, WEEK_DAYS, formatTrainingDays, SPLIT_SUMMARY, labelOf
+  TRAINING_DAYS, WEEK_DAYS, formatTrainingDays, SPLIT_SUMMARY, labelOf,
+  SPORTS, SPORT_INTENSITIES, SESSION_ORDERS, overlapSportDays, sportVerdict
 } from './profileSchema';
 import { triggerHaptic } from '../../utils/audio';
 
@@ -250,16 +251,132 @@ function RestrictionsControl({ profile, set }) {
   );
 }
 
+function SportScreeningControl({ profile, set }) {
+  const overlap = overlapSportDays(profile);
+  const verdict = sportVerdict(profile);
+
+  const chooseHasSport = (value) => {
+    triggerHaptic(10);
+    set(value ? { hasSport: true } : { hasSport: false, sports: [], otherSport: '', sportDays: [], sportIntensity: null, sessionOrder: null });
+  };
+  const toggleSport = (id) => {
+    const has = profile.sports.includes(id);
+    set('sports', has ? profile.sports.filter((x) => x !== id) : [...profile.sports, id]);
+  };
+  const toggleSportDay = (idx) => {
+    triggerHaptic(10);
+    const has = profile.sportDays.includes(idx);
+    set('sportDays', has ? profile.sportDays.filter((x) => x !== idx) : [...profile.sportDays, idx].sort((a, b) => a - b));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div role="radiogroup" aria-label="É atleta híbrido?" className="space-y-2.5">
+        <OptionCard option={{ id: true, label: 'Sim, sou atleta híbrido', hint: 'Pratico desporto além do ginásio', icon: 'Trophy' }} selected={profile.hasSport === true} onSelect={() => chooseHasSport(true)} />
+        <OptionCard option={{ id: false, label: 'Não, foco exclusivo em musculação', hint: 'Avança diretamente para o treino', icon: 'Dumbbell' }} selected={profile.hasSport === false} onSelect={() => chooseHasSport(false)} />
+      </div>
+
+      <AnimatePresence initial={false}>
+        {profile.hasSport === true && (
+          <motion.div key="sport-layers" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={SPRING} className="overflow-hidden">
+            <div className="space-y-6 pt-1">
+              <div className="space-y-2.5">
+                <MicroLabel>Modalidade(s)</MicroLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  {SPORTS.map((o) => (
+                    <Chip key={o.id} label={o.label} selected={profile.sports.includes(o.id)} onToggle={() => toggleSport(o.id)} />
+                  ))}
+                </div>
+                <AnimatePresence initial={false}>
+                  {profile.sports.includes('outro') && (
+                    <motion.div key="other-sport" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={SPRING} className="overflow-hidden">
+                      <input
+                        type="text"
+                        value={profile.otherSport}
+                        onChange={(e) => set('otherSport', e.target.value)}
+                        placeholder="Qual modalidade?"
+                        className="w-full min-h-[48px] mt-2 px-4 rounded-2xl bg-surface-2 border border-white/[0.07] text-body text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-accent-hover"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {profile.sports.length > 0 && (
+                  <motion.div key="sport-days" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={SPRING} className="overflow-hidden">
+                    <div className="space-y-2">
+                      <MicroLabel>Dias de desporto</MicroLabel>
+                      <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Dias de desporto na semana">
+                        {WEEK_DAYS.map((w) => {
+                          const on = profile.sportDays.includes(w.index);
+                          return (
+                            <motion.button
+                              key={w.index}
+                              type="button"
+                              whileTap={{ scale: 0.94 }}
+                              onClick={() => toggleSportDay(w.index)}
+                              aria-pressed={on}
+                              aria-label={`${w.name}: ${on ? 'Dia de desporto' : 'Sem desporto'}`}
+                              className={`h-11 min-w-[44px] rounded-xl flex items-center justify-center text-[12px] font-bold tracking-tight border transition-all cursor-pointer select-none ${
+                                on ? 'bg-accent/80 text-white border-accent' : 'bg-surface-2 text-zinc-400 border-white/[0.07] hover:border-white/[0.15]'
+                              }`}
+                            >
+                              {w.letter}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence initial={false}>
+                {profile.sportDays.length > 0 && (
+                  <motion.div key="sport-intensity" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={SPRING} className="overflow-hidden">
+                    <Segmented label="Nível de intensidade" size="lg" value={profile.sportIntensity} onChange={(v) => set('sportIntensity', v)} options={SPORT_INTENSITIES} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence initial={false}>
+                {profile.sportIntensity && overlap.length > 0 && (
+                  <motion.div key="session-order" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={SPRING} className="overflow-hidden space-y-2">
+                    <MicroLabel>Nos dias partilhados, a musculação é feita</MicroLabel>
+                    <Segmented value={profile.sessionOrder} onChange={(v) => set('sessionOrder', v)} options={SESSION_ORDERS} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {verdict && (
+                <motion.div key={verdict} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={SPRING} className="rounded-2xl bg-surface-2 border border-white/[0.07] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" aria-live="polite">
+                  <MicroLabel>AB Coach</MicroLabel>
+                  <p className="mt-1.5 text-body text-zinc-100 leading-relaxed">{verdict}</p>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 const listOf = (ids, opts, empty) => (ids.length ? ids.map((id) => labelOf(opts, id)).join(', ') : empty);
 
 function ReviewControl({ profile, goTo }) {
   const formattedDays = formatTrainingDays(profile.trainingDays);
+  const sportSummary = profile.hasSport
+    ? `${listOf(profile.sports, SPORTS, '—')} · ${formatTrainingDays(profile.sportDays) || '—'} · ${labelOf(SPORT_INTENSITIES, profile.sportIntensity)}`
+    : 'Foco exclusivo em musculação';
   const rows = [
     ['Objetivo', labelOf(GOALS, profile.primaryGoal), 'goal'],
     ['Experiência', labelOf(LEVELS, profile.experienceLevel), 'level'],
     ['Biometria', `${profile.age} anos · ${profile.weightKg.toLocaleString('pt-PT')} kg · ${profile.heightCm} cm`, 'weight'],
     ['Frequência', `${profile.daysPerWeek} dias · ${splitSummaryOf(profile)}`, 'frequency'],
     ['Dias de treino', formattedDays || `${profile.daysPerWeek} dias`, 'frequency'],
+    ['Atleta híbrido', sportSummary, 'sport'],
     ['Sessão', `${profile.sessionMinutes === 75 ? '75+' : profile.sessionMinutes} min`, 'minutes'],
     ['Local', labelOf(LOCATIONS, profile.trainingLocation), 'location'],
     ['Restrições', listOf(profile.injuries, INJURIES, 'Nenhuma'), 'restrictions'],
@@ -291,6 +408,17 @@ export const CALIBRATION_STEPS = [
   { id: 'weight', title: 'Qual é o teu peso?', sub: 'Ponto de partida do teu portfólio corporal.', fields: ['weightKg'], render: (p) => <WeightControl {...p} /> },
   { id: 'height', title: 'Qual é a tua altura?', sub: 'Completa a tua biometria base.', fields: ['heightCm'], render: (p) => <HeightControl {...p} /> },
   { id: 'frequency', title: 'Quantos dias treinas por semana?', sub: 'A divisão do treino adapta-se em tempo real.', fields: ['daysPerWeek'], render: (p) => <FrequencyControl {...p} /> },
+  {
+    id: 'sport',
+    title: 'Praticas outro desporto?',
+    sub: 'Protegemos a recuperação entre a musculação e a tua modalidade.',
+    fields: (profile) => {
+      if (profile.hasSport !== true) return ['hasSport'];
+      const base = ['hasSport', 'sports', 'sportDays', 'sportIntensity'];
+      return overlapSportDays(profile).length > 0 ? [...base, 'sessionOrder'] : base;
+    },
+    render: (p) => <SportScreeningControl {...p} />
+  },
   { id: 'minutes', title: 'Quanto tempo tens por sessão?', sub: 'Controla o número de séries por exercício.', fields: ['sessionMinutes'], render: (p) => <Segmented label="Minutos por sessão" size="lg" value={p.profile.sessionMinutes} onChange={(v) => p.set('sessionMinutes', v)} options={MINUTES.map((m) => ({ id: m, label: m === 75 ? '75+ min' : `${m} min` }))} /> },
   { id: 'location', title: 'Onde vais treinar?', sub: 'O catálogo filtra-se pelo equipamento disponível.', fields: ['trainingLocation'], render: (p) => <LocationControl {...p} /> },
   { id: 'restrictions', title: 'Restrições e foco', sub: 'Protegemos zonas sensíveis e reforçamos as prioritárias.', fields: [], render: (p) => <RestrictionsControl {...p} /> },

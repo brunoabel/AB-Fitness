@@ -56,7 +56,7 @@ export default function OnboardingCoach({ userId, userName, onComplete, onClose 
     const idx = typeof target === 'number' ? target : CALIBRATION_STEPS.findIndex((s) => s.id === target);
     if (idx >= 0) dispatch({ type: 'go', step: idx });
   };
-  const valid = fieldsFilled(profile, current.fields);
+  const valid = fieldsFilled(profile, typeof current.fields === 'function' ? current.fields(profile) : current.fields);
   const isLast = step === TOTAL - 1;
 
   const submit = async () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
+import { CALIBRATION_STEPS } from './calibrationSteps';
 
 const EASE = [0.22, 1, 0.36, 1];
 const rise = (delay) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.45, ease: EASE, delay } });
@@ -37,7 +38,7 @@ export default function CoachIntro({ userName, onStart, onClose }) {
           Vou ser o teu treinador aqui dentro. Antes do primeiro treino preciso de te conhecer: objetivo, experiência, biometria e a tua rotina.
         </motion.p>
         <motion.p {...rise(0.33)} className="mt-2 text-body text-zinc-400">
-          São 11 perguntas rápidas, cerca de 2 minutos. No fim monto um protocolo feito para ti.
+          São {CALIBRATION_STEPS.length} perguntas rápidas, cerca de 2 minutos. No fim monto um protocolo feito para ti.
         </motion.p>
         <div className="mt-auto pt-8 pb-[calc(env(safe-area-inset-bottom,0px)+16px)]">
           <motion.button

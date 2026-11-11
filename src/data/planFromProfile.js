@@ -4,7 +4,8 @@
  */
 import { generatePersonalizedWorkoutPlan } from './workoutGenerator.js';
 import { EXERCISES_100, findExerciseIn100 } from './exercises100.js';
-import { SPLIT_BY_DAYS, TRAINING_DAYS, WEEK_DAYS } from '../components/onboarding/profileSchema.js';
+import { SPLIT_BY_DAYS, TRAINING_DAYS, WEEK_DAYS, HIGH_IMPACT_LEG_SPORTS, SPORT_PREVENTION_REGIONS } from '../components/onboarding/profileSchema.js';
+import { DRILLS, REGION_PLANS } from './recoveryProtocols.js';
 
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[-_]+/g, ' ');
 
@@ -47,6 +48,123 @@ const DURATION_MAP = { 45: 'express', 60: 'standard', 75: 'high_volume' };
 // Descanso máximo por meta (s): densidade maior para definição e condicionamento
 const REST_CAP = { fat_loss: 75, conditioning: 60 };
 const SPLIT_LABEL = { ppl: 'Push/Pull/Legs', upper_lower: 'Upper/Lower', full_body: 'Full Body', arnold: 'Arnold Split' };
+
+// Motor biomecânico do atleta híbrido: protege a cadeia inferior nos dias de desporto de alto impacto.
+const LEG_GROUPS = new Set(['Quadríceps', 'Posteriores', 'Glúteos']);
+const UPPER_GROUPS = new Set(['Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps']);
+// Exercícios de alta fadiga lombar/SNC a remover em dias de sessão dupla (ginásio + desporto no mesmo dia)
+const HIGH_CNS_LUMBAR = ['levantamento terra', 'terra ', 'stiff', 'good morning', 'bom dia', 'arremesso', 'arranco', 'clean'];
+
+function groupShareOf(day, groups) {
+  if (!Array.isArray(day.exercises) || day.exercises.length === 0) return 0;
+  const hits = day.exercises.filter((ex) => groups.has(findExerciseIn100(ex.id)?.grupo)).length;
+  return hits / day.exercises.length;
+}
+
+/** Devolve quantos dias (1–7) faltam, a partir de `from`, até ao próximo dia de desporto. */
+function daysUntilNextSport(from, sportDaySet) {
+  for (let d = 1; d <= 7; d += 1) {
+    if (sportDaySet.has((from + d) % 7)) return d;
+  }
+  return 7;
+}
+
+/**
+ * Regra anti-fadiga de membros inferiores: em desportos de alto impacto (Futebol, Corrida, Padel, Basquete)
+ * com intensidade Moderate/Competitive, proíbe pernas pesadas na véspera e no dia do desporto, e tenta
+ * mover esse treino para um dia com pelo menos 48h de recuperação até à próxima partida.
+ */
+function applyLegFatigueProtection(remappedPlan, profile, notes) {
+  const sportDaySet = new Set(profile.sportDays || []);
+  const highImpact = (profile.sports || []).some((s) => HIGH_IMPACT_LEG_SPORTS.includes(s));
+  const risky = profile.sportIntensity === 'moderate' || profile.sportIntensity === 'competitive';
+  if (!sportDaySet.size || !highImpact || !risky) return remappedPlan;
+
+  const blocked = new Set();
+  sportDaySet.forEach((s) => {
+    blocked.add(s);
+    blocked.add((s + 6) % 7); // véspera
+  });
+
+  const dayStats = remappedPlan.map((day, idx) => ({
+    idx,
+    isTraining: !day.isRestDay && Array.isArray(day.exercises) && day.exercises.length > 0,
+    isLegHeavy: groupShareOf(day, LEG_GROUPS) >= 0.5,
+    isUpperHeavy: groupShareOf(day, UPPER_GROUPS) >= 0.5
+  }));
+
+  let swapped = 0;
+  let capped = 0;
+  blocked.forEach((b) => {
+    const stat = dayStats[b];
+    if (!stat.isTraining || !stat.isLegHeavy) return;
+
+    const candidates = dayStats.filter((c) => c.isTraining && !blocked.has(c.idx) && !c.isLegHeavy && daysUntilNextSport(c.idx, sportDaySet) >= 2);
+    const target = candidates.find((c) => c.isUpperHeavy) || candidates[0];
+
+    if (target) {
+      const a = remappedPlan[b];
+      const t = remappedPlan[target.idx];
+      const keys = ['title', 'focus', 'duration', 'intensity', 'badge', 'color', 'description', 'exercises'];
+      const aCopy = {};
+      const tCopy = {};
+      keys.forEach((k) => {
+        aCopy[k] = a[k];
+        tCopy[k] = t[k];
+      });
+      keys.forEach((k) => {
+        remappedPlan[b][k] = tCopy[k];
+        remappedPlan[target.idx][k] = aCopy[k];
+      });
+      stat.isLegHeavy = false;
+      target.isLegHeavy = true;
+      swapped += 1;
+    } else {
+      remappedPlan[b].exercises = remappedPlan[b].exercises.map((ex) => {
+        if (!LEG_GROUPS.has(findExerciseIn100(ex.id)?.grupo)) return ex;
+        return { ...ex, defaultSets: Math.max(2, (Number(ex.defaultSets) || 3) - 1) };
+      });
+      capped += 1;
+    }
+  });
+
+  if (swapped) notes.push(`Movi ${swapped} treino${swapped > 1 ? 's' : ''} de pernas para longe do desporto, com pelo menos 48h de recuperação até à próxima partida.`);
+  if (capped) notes.push('Reduzi o volume de pernas nos dias sem alternativa segura de troca, perto do teu desporto.');
+  return remappedPlan;
+}
+
+/** Sessão dupla (ginásio + desporto no mesmo dia): corta ~25% do volume acessório e remove exercícios de alta fadiga lombar/SNC. */
+function applyDoubleSessionLoad(exercises, profile, dayIdx) {
+  const sportDaySet = new Set(profile.sportDays || []);
+  if (!sportDaySet.has(dayIdx)) return { exercises, touched: false };
+
+  let removed = 0;
+  let reduced = 0;
+  const next = exercises
+    .filter((ex) => {
+      const n = ` ${norm(`${ex.id} ${ex.name}`)} `;
+      const block = HIGH_CNS_LUMBAR.some((k) => n.includes(k));
+      if (block) removed += 1;
+      return !block;
+    })
+    .map((ex) => {
+      const meta = findExerciseIn100(ex.id);
+      if (meta?.mecanica !== 'Isolado') return ex;
+      const sets = Number(ex.defaultSets) || 3;
+      const cut = Math.max(2, Math.round(sets * 0.75));
+      if (cut < sets) reduced += 1;
+      return { ...ex, defaultSets: cut };
+    });
+
+  return { exercises: next, touched: removed > 0 || reduced > 0 };
+}
+
+/** Injeta a rotina de mobilidade/prevenção (src/data/recoveryProtocols.js) específica do desporto nos dias em que é praticado. */
+function sportPreventionDrills(profile) {
+  const regions = [...new Set((profile.sports || []).flatMap((s) => SPORT_PREVENTION_REGIONS[s] || []))];
+  const ids = [...new Set(regions.flatMap((r) => REGION_PLANS[r]?.prevent || []))];
+  return ids.slice(0, 4).map((id) => ({ id, ...DRILLS[id] }));
+}
 
 function isBlocked(nameOrId, profile) {
   const n = ` ${norm(nameOrId)} `;
@@ -174,11 +292,14 @@ export function buildPlanFromProfile(profile) {
     };
   });
 
+  applyLegFatigueProtection(remappedPlan, profile, notes);
+
   const priorityGroups = new Set((profile.priorityMuscles || []).flatMap((m) => PRIORITY_GROUPS[m] || []));
   let swapped = 0;
   let removed = 0;
+  let doubleSession = false;
 
-  const adapted = remappedPlan.map((day) => {
+  const adapted = remappedPlan.map((day, dayIdx) => {
     if (!Array.isArray(day.exercises) || day.exercises.length === 0) return day;
     const usedIds = new Set(day.exercises.flatMap((e) => [e.id, norm(e.name)]));
     const exercises = day.exercises
@@ -202,12 +323,26 @@ export function buildPlanFromProfile(profile) {
         if (profile.sessionMinutes === 45) next.defaultSets = Math.min(Number(next.defaultSets) || 3, 3);
         return next;
       });
-    return { ...day, exercises, badge: profile.primaryGoal === 'conditioning' ? 'Condicionamento & Resistência' : day.badge };
+
+    const doubled = applyDoubleSessionLoad(exercises, profile, dayIdx);
+    if (doubled.touched) doubleSession = true;
+
+    return { ...day, exercises: doubled.exercises, badge: profile.primaryGoal === 'conditioning' ? 'Condicionamento & Resistência' : day.badge };
   });
+
+  const sportDrills = profile.hasSport ? sportPreventionDrills(profile) : [];
+  if (sportDrills.length) {
+    const sportDaySet = new Set(profile.sportDays || []);
+    adapted.forEach((day, idx) => {
+      if (sportDaySet.has(idx)) day.sportPrevention = sportDrills;
+    });
+  }
 
   if (swapped) notes.push(`Troquei ${swapped} exercício${swapped > 1 ? 's' : ''} por alternativas seguras para o teu equipamento e articulações.`);
   if (removed) notes.push(removed > 1 ? `${removed} exercícios sem alternativa segura ficaram de fora.` : '1 exercício sem alternativa segura ficou de fora.');
   if (priorityGroups.size && profile.sessionMinutes !== 45) notes.push('Acrescentei uma série nos músculos prioritários.');
+  if (doubleSession) notes.push('Nos dias de sessão dupla, reduzi o volume acessório e removi exercícios de alta fadiga lombar.');
+  if (sportDrills.length) notes.push('Adicionei mobilidade e prevenção específicas para a tua modalidade nos dias de desporto.');
 
   return { plan: adapted, notes, appliedSplit };
 }
