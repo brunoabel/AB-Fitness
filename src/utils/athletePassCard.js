@@ -78,11 +78,6 @@ export function buildAthletePassContent({ profile = {}, stats = {} } = {}) {
   };
 
   const heroStat = featuredMap[featuredId] || featuredMap.total_workouts;
-  const secondaryStats = [
-    { id: 'total_workouts', label: 'Treinos', value: `${totalWorkouts}` },
-    { id: 'monthly_volume', label: 'Volume 30d', value: formatVolume(monthlyVolume) },
-    { id: 'streak', label: 'Sequência', value: streak ? `${streak}d` : '–' }
-  ].filter((s) => s.id !== heroStat.id);
 
   const inviteUrl = username
     ? `https://www.abfitness.app/?u=${encodeURIComponent(username)}`
@@ -102,7 +97,6 @@ export function buildAthletePassContent({ profile = {}, stats = {} } = {}) {
     homeGym: (profile?.home_gym || '').trim(),
     bio: (profile?.bio || '').trim(),
     heroStat,
-    secondaryStats,
     inviteUrl,
     footerCallout
   };
@@ -156,32 +150,25 @@ export async function buildAthletePassStoryBlob({ profile = {}, stats = {} } = {
 
   // 1. Fundo OLED profundo
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, palette.top);
-  bg.addColorStop(0.55, '#050608');
+  bg.addColorStop(0, '#07090d');
+  bg.addColorStop(0.45, '#030407');
   bg.addColorStop(1, '#000000');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // 2. Luz ambiente superior
-  const halo = ctx.createRadialGradient(W / 2, 420, 60, W / 2, 420, 680);
-  halo.addColorStop(0, palette.glow);
-  halo.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = halo;
-  ctx.fillRect(0, 0, W, 1200);
-
-  // 3. Marca superior discreta
-  textLine(ctx, 'AB FITNESS · ATHLETE PASS', W / 2, 165, {
+  // 2. Marca superior discreta
+  textLine(ctx, 'AB FITNESS · ATHLETE PASS', W / 2, 185, {
     size: 26,
     weight: 800,
     color: 'rgba(255,255,255,0.6)',
     align: 'center'
   });
 
-  // 4. Cartão principal centrado (estilo Apple / Revolut Metal)
+  // 3. Cartão principal centrado (estilo Apple / Revolut Metal, sem ruído decorativo)
   const cardX = 88;
-  const cardY = 260;
+  const cardY = 290;
   const cardW = W - 176;
-  const cardH = 1160;
+  const cardH = 980;
 
   const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
   cardGrad.addColorStop(0, palette.top);
@@ -286,31 +273,17 @@ export async function buildAthletePassStoryBlob({ profile = {}, stats = {} } = {
   ctx.stroke();
 
   // Métrica Hero central gigante
-  textLine(ctx, content.heroStat.label.toUpperCase(), W / 2, cardY + 610, {
+  textLine(ctx, content.heroStat.label.toUpperCase(), W / 2, cardY + 605, {
     size: 26,
     weight: 700,
     color: 'rgba(255,255,255,0.55)',
     align: 'center'
   });
-  textLine(ctx, content.heroStat.value, W / 2, cardY + 760, {
+  textLine(ctx, content.heroStat.value, W / 2, cardY + 755, {
     size: 148,
     weight: 900,
     color: '#ffffff',
     align: 'center'
-  });
-
-  // Painel de carreira inferior (2 métricas restantes)
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.beginPath();
-  ctx.moveTo(cardX + 70, cardY + 860);
-  ctx.lineTo(cardX + cardW - 70, cardY + 860);
-  ctx.stroke();
-
-  const halfW = (cardW - 140) / 2;
-  content.secondaryStats.forEach((st, idx) => {
-    const cx = cardX + 70 + halfW * idx + halfW / 2;
-    textLine(ctx, st.value, cx, cardY + 955, { size: 54, weight: 900, color: '#ffffff', align: 'center' });
-    textLine(ctx, st.label.toUpperCase(), cx, cardY + 1002, { size: 22, weight: 700, color: 'rgba(255,255,255,0.5)', align: 'center' });
   });
 
   // Assinatura oficial no fundo do cartão
@@ -321,20 +294,20 @@ export async function buildAthletePassStoryBlob({ profile = {}, stats = {} } = {
     align: 'center'
   });
 
-  // 5. CTA Viral abaixo do cartão para Stories
-  textLine(ctx, 'TREINA COMIGO NO AB FITNESS', W / 2, 1600, {
+  // 4. CTA Viral abaixo do cartão para Stories
+  textLine(ctx, 'TREINA COMIGO NO AB FITNESS', W / 2, 1475, {
     size: 32,
     weight: 900,
     color: '#ffffff',
     align: 'center'
   });
-  textLine(ctx, content.footerCallout, W / 2, 1655, {
+  textLine(ctx, content.footerCallout, W / 2, 1535, {
     size: 28,
     weight: 600,
     color: palette.accent,
     align: 'center'
   });
-  textLine(ctx, 'Toca no link ou pesquisa o @username na app', W / 2, 1735, {
+  textLine(ctx, 'Toca no link ou pesquisa o @username na app', W / 2, 1615, {
     size: 24,
     weight: 500,
     color: 'rgba(255,255,255,0.45)',
@@ -375,3 +348,4 @@ export async function shareAthletePassStory(blob, { username = '' } = {}) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   return 'downloaded';
 }
+

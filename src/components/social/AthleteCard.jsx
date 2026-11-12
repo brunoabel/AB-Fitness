@@ -41,24 +41,8 @@ export default function AthleteCard({
     isCeo
   });
 
-  // Painel de carreira (rodapé): as 3 métricas possíveis, menos a que já está em destaque no
-  // topo — nunca repete o mesmo número duas vezes no cartão.
-  const careerMetrics = [
-    { id: 'total_workouts', label: 'Treinos', value: fmtInt(stats?.total_workouts || 0) },
-    { id: 'monthly_volume', label: 'Volume', value: fmtKg(stats?.monthly_volume_kg || 0) },
-    { id: 'streak', label: 'Sequência', value: stats?.streak ? `${stats.streak}d` : '–' }
-  ].filter((m) => m.id !== featured.id);
-
   return (
     <article className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-all`}>
-      
-      {/* Luz ambiente de prestígio no topo */}
-      <div 
-        aria-hidden 
-        className={`absolute -top-20 -right-20 w-52 h-52 rounded-full opacity-30 blur-3xl pointer-events-none ${
-          isCeo ? 'bg-amber-500' : 'bg-white'
-        }`}
-      />
 
       {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
       <div className="flex items-start justify-between gap-4 relative z-10">
@@ -137,18 +121,6 @@ export default function AthleteCard({
           </div>
         )}
       </div>
-
-      {/* Painel de Carreira (Rodapé do Cartão) — nunca repete a métrica já em destaque acima */}
-      {!compact && stats && (
-        <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-center gap-8 relative z-10">
-          {careerMetrics.map((m) => (
-            <div key={m.id} className="text-center">
-              <span className="font-display font-black text-base text-white tabular-nums block">{m.value}</span>
-              <span className="text-xs text-zinc-500">{m.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Assinatura Oficial para Print / Stories + Gatilho de Modo Print Limpo */}
       {!compact && (

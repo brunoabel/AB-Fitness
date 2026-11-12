@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v11'; // v11: Athlete Pass viral, Modo Print, exportacao Stories 9:16 e deep-link ?u=username
+const CACHE_NAME = 'ab-fitness-v12'; // v12: AthleteCard limpo sem halo difuso e sem metricas redundantes
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

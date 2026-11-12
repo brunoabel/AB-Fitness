@@ -58,8 +58,7 @@ describe('AB Athlete Pass — Sanitização & Conteúdo (buildAthletePassContent
     assert.equal(pass.footerCallout, 'Segue @bruno_abel em abfitness.app');
     assert.equal(pass.heroStat.id, 'total_workouts');
     assert.equal(pass.heroStat.value, '34');
-    assert.equal(pass.secondaryStats.length, 2);
-    assert.ok(pass.secondaryStats.every((s) => s.id !== pass.heroStat.id));
+    assert.equal(pass.secondaryStats, undefined);
   });
 
   it('formata volume >= 1000kg em toneladas limpas e fallback sem username', () => {
@@ -72,6 +71,6 @@ describe('AB Athlete Pass — Sanitização & Conteúdo (buildAthletePassContent
     assert.equal(pass.handle, '');
     assert.equal(pass.inviteUrl, 'https://www.abfitness.app');
     assert.equal(pass.heroStat.value, '15.5 t');
-    assert.ok(!pass.secondaryStats.some((s) => s.id === 'monthly_volume'));
   });
 });
+
