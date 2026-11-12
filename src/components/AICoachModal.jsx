@@ -321,7 +321,7 @@ export default function AICoachModal({
 
         {/* Notificação Toast Interna */}
         {toastMessage && (
-          <div className="p-2 text-center text-xs font-semibold bg-accent text-white border-b border-zinc-800 animate-fadeIn">
+          <div className="p-2 text-center text-xs font-semibold bg-accent text-white border-b border-white/10 animate-fadeIn">
             {toastMessage}
           </div>
         )}

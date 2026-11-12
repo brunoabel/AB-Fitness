@@ -79,8 +79,8 @@ export default function ExerciseModal({ exercise, onClose }) {
               <Dumbbell className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
-                Guia Técnico · {bio?.grupo || official100?.grupo || exercise.target || visual?.targetGroup}
+              <p className="text-xs text-zinc-500">
+                Guia técnico · {bio?.grupo || official100?.grupo || exercise.target || visual?.targetGroup}
               </p>
               <h2 className="text-base sm:text-lg font-bold text-white leading-tight">
                 {bio?.nome || official100?.nome || exercise.name}

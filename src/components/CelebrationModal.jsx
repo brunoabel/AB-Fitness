@@ -107,9 +107,9 @@ export default function CelebrationModal({
         </div>
         <div className="relative -mt-2 pb-5 px-6 text-center flex flex-col items-center border-b border-white/10">
 
-          <span className="px-3 py-1 rounded-full bg-zinc-800 text-zinc-300 text-[11px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5 border border-zinc-700">
+          <span className="px-3 py-1 rounded-full bg-white/[0.06] text-zinc-300 text-xs font-semibold mb-1 flex items-center gap-1.5 border border-white/[0.1]">
             <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Sessão Finalizada</span>
+            <span>Sessão finalizada</span>
           </span>
 
           <h2 className="text-xl font-black text-white tracking-tight">
@@ -144,12 +144,12 @@ export default function CelebrationModal({
 
           {/* Destaque de Análise do Treinador Inteligente (AB Coach) */}
           {coachNarrative && (
-            <div className="p-3.5 rounded-xl bg-accent text-white border border-zinc-200 text-left flex items-start gap-3 shadow-md">
-              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center font-black shrink-0 mt-0.5">
+            <div className="p-3.5 rounded-xl bg-accent text-white border border-accent-hover text-left flex items-start gap-3 shadow-md">
+              <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center font-black shrink-0 mt-0.5">
                 <Sparkles className="w-4 h-4 stroke-[2.5]" />
               </div>
               <div className="min-w-0 flex-1">
-                <span className="text-[11px] font-black uppercase tracking-wider text-zinc-900 block">
+                <span className="text-xs font-bold text-white/80 block">
                   Análise AB Coach
                 </span>
                 <p className="text-xs font-semibold leading-relaxed mt-0.5">
@@ -163,7 +163,7 @@ export default function CelebrationModal({
           {insights?.highlights && insights.highlights.length > 0 && !coachNarrative && (
             <div className="space-y-1.5">
               {insights.highlights.slice(0, 2).map((h, i) => (
-                <div key={i} className="p-2.5 rounded-xl bg-zinc-900 border border-white/10 text-left text-xs text-zinc-200 flex items-center gap-2">
+                <div key={i} className="p-2.5 rounded-xl bg-surface border border-white/10 text-left text-xs text-zinc-200 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-accent shrink-0" />
                   <span className="font-medium text-[11px] leading-tight">{h.text}</span>
                 </div>
@@ -172,37 +172,32 @@ export default function CelebrationModal({
           )}
         </div>
 
-        {/* Resumo Estatístico do Treino */}
+        {/* Resumo Estatístico do Treino: texto corrido, sem caixa */}
         <div className="px-5 py-2">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex justify-center text-zinc-400 mb-1">
-                <Clock className="w-4 h-4" />
-              </div>
-              <div className="text-base font-black text-white font-mono tabular-nums">
-                {durationMinutes} <span className="text-[11px] font-normal text-zinc-400 font-sans">min</span>
-              </div>
-              <div className="text-[11px] text-zinc-500 font-bold uppercase">Tempo</div>
+          <div className="flex items-center justify-center gap-6 text-center">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-zinc-500" />
+              <span className="text-base font-black text-white font-mono tabular-nums">
+                {durationMinutes}<span className="text-xs font-normal text-zinc-400 font-sans"> min</span>
+              </span>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex justify-center text-emerald-500 mb-1">
-                <CheckCircle className="w-4 h-4" />
-              </div>
-              <div className="text-base font-black text-white font-mono tabular-nums">
-                {totalSetsCompleted}
-              </div>
-              <div className="text-[11px] text-zinc-500 font-bold uppercase">Séries</div>
+            <div className="w-px h-5 bg-white/10" aria-hidden />
+
+            <div className="flex items-center gap-1.5">
+              <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <span className="text-base font-black text-white font-mono tabular-nums">
+                {totalSetsCompleted}<span className="text-xs font-normal text-zinc-400 font-sans"> séries</span>
+              </span>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex justify-center text-zinc-400 mb-1">
-                <Dumbbell className="w-4 h-4" />
-              </div>
-              <div className="text-base font-black text-white font-mono tabular-nums">
-                {totalVolumeKg} <span className="text-[11px] font-normal text-zinc-400 font-sans">kg</span>
-              </div>
-              <div className="text-[11px] text-zinc-500 font-bold uppercase">Volume</div>
+            <div className="w-px h-5 bg-white/10" aria-hidden />
+
+            <div className="flex items-center gap-1.5">
+              <Dumbbell className="w-4 h-4 text-zinc-500" />
+              <span className="text-base font-black text-white font-mono tabular-nums">
+                {totalVolumeKg}<span className="text-xs font-normal text-zinc-400 font-sans"> kg</span>
+              </span>
             </div>
           </div>
         </div>

@@ -130,10 +130,10 @@ export default function AuthScreen() {
         </div>
 
         {/* Caixa Principal de Autenticação */}
-        <div className="bg-zinc-900 rounded-2xl p-6 shadow-xl border border-white/10">
-          
+        <div className="bg-surface rounded-2xl p-6 shadow-xl border border-white/[0.08]">
+
           {/* Alternador de Abas: Iniciar Sessão / Registar */}
-          <div className="grid grid-cols-2 p-1 bg-zinc-950 rounded-xl mb-6 border border-white/10">
+          <div className="grid grid-cols-2 p-1 bg-black/40 rounded-xl mb-6 border border-white/[0.08]">
             <button
               type="button"
               onClick={() => {
@@ -146,7 +146,7 @@ export default function AuthScreen() {
               }}
               className={`min-h-[40px] py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 mode === 'login'
-                  ? 'bg-zinc-800 text-white shadow-xs'
+                  ? 'bg-white/10 text-white shadow-xs'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
@@ -164,7 +164,7 @@ export default function AuthScreen() {
               }}
               className={`min-h-[40px] py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 mode === 'register'
-                  ? 'bg-zinc-800 text-white shadow-xs'
+                  ? 'bg-white/10 text-white shadow-xs'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
@@ -208,7 +208,7 @@ export default function AuthScreen() {
                 type="button"
                 onClick={handleResendConfirmation}
                 disabled={resending}
-                className="w-full min-h-[38px] py-2 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 active:scale-[0.99] border border-white/10 text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full min-h-[38px] py-2 px-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] active:scale-[0.99] border border-white/[0.08] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {resending ? (
                   <div className="w-4 h-4 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
@@ -304,7 +304,7 @@ export default function AuthScreen() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10" />
             </div>
-            <span className="relative bg-zinc-900 px-3 text-[11px] text-zinc-400 font-semibold uppercase tracking-wider">
+            <span className="relative bg-surface px-3 text-xs text-zinc-400 font-medium">
               ou acesso rápido
             </span>
           </div>
@@ -313,7 +313,7 @@ export default function AuthScreen() {
           <button
             type="button"
             onClick={handleGuestAccess}
-            className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-zinc-950 hover:bg-zinc-800/80 border border-white/10 text-zinc-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 text-left">
               <UserCheck className="w-4 h-4 text-zinc-300 flex-shrink-0" />
@@ -330,7 +330,7 @@ export default function AuthScreen() {
 
         {/* Badge Informativo de Segurança */}
         <div className="mt-5 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900 text-[11px] text-zinc-400 border border-white/10 shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] text-[11px] text-zinc-400 border border-white/[0.08] shadow-xs">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             <span>Dados e histórico protegidos com encriptação</span>
           </div>

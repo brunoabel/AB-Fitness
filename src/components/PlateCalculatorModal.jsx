@@ -232,7 +232,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-white text-zinc-950 font-bold text-xs uppercase tracking-wider cursor-pointer"
+            className="w-full py-3 rounded-xl bg-white text-zinc-950 font-bold text-sm cursor-pointer"
           >
             Entendido
           </button>
