@@ -146,32 +146,22 @@ export default function HistoryView() {
               Rendimento Acumulado
             </h2>
 
-            <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/10">
-              <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-                <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                  Treinos
-                </span>
-                <span className="text-xl font-bold text-zinc-50 mt-0.5 block tabular-nums">
-                  {totalWorkouts}
-                </span>
+            <div className="flex items-center gap-6 pt-3 border-t border-white/10">
+              <div>
+                <span className="text-xl font-bold text-zinc-50 block tabular-nums">{totalWorkouts}</span>
+                <span className="text-xs text-zinc-500">Treinos</span>
               </div>
-
-              <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-                <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                  Volume Total
-                </span>
-                <span className="text-xl font-bold text-zinc-50 mt-0.5 block tabular-nums">
+              <div className="w-px h-8 bg-white/[0.08]" aria-hidden />
+              <div>
+                <span className="text-xl font-bold text-zinc-50 block tabular-nums">
                   {totalVolume > 1000 ? `${(totalVolume / 1000).toFixed(1)}t` : `${totalVolume}kg`}
                 </span>
+                <span className="text-xs text-zinc-500">Volume total</span>
               </div>
-
-              <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-                <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                  Tempo Ativo
-                </span>
-                <span className="text-xl font-bold text-zinc-50 mt-0.5 block tabular-nums">
-                  {totalMinutes}m
-                </span>
+              <div className="w-px h-8 bg-white/[0.08]" aria-hidden />
+              <div>
+                <span className="text-xl font-bold text-zinc-50 block tabular-nums">{totalMinutes}m</span>
+                <span className="text-xs text-zinc-500">Tempo ativo</span>
               </div>
             </div>
           </div>
@@ -216,7 +206,7 @@ export default function HistoryView() {
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
+                          <span className="text-[11px] text-zinc-500 block">
                             {displayName}
                           </span>
                           <h4 className="text-sm font-semibold text-zinc-50">
@@ -224,7 +214,7 @@ export default function HistoryView() {
                           </h4>
                         </div>
 
-                        <span className="text-[11px] font-semibold text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.08] tabular-nums">
+                        <span className="text-[11px] text-zinc-500 tabular-nums">
                           {displayDate}
                         </span>
                       </div>

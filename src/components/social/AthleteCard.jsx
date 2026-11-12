@@ -57,7 +57,7 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
 
         {/* Estatística de Destaque */}
         <div className="text-right">
-          <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+          <span className="block text-xs text-zinc-500">
             {featured.label}
           </span>
           <span className="block font-display font-black text-2xl sm:text-3xl text-white tabular-nums tracking-tight mt-0.5">
@@ -113,11 +113,11 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
 
       {/* Painel de Carreira (Rodapé do Cartão) — nunca repete a métrica já em destaque acima */}
       {!compact && stats && (
-        <div className="mt-4 pt-3.5 border-t border-white/[0.06] grid grid-cols-2 gap-2 text-center relative z-10">
+        <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-center gap-8 relative z-10">
           {careerMetrics.map((m) => (
-            <div key={m.id} className="p-2 rounded-xl bg-white/[0.02]">
-              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">{m.label}</span>
-              <span className="font-display font-black text-base text-white tabular-nums">{m.value}</span>
+            <div key={m.id} className="text-center">
+              <span className="font-display font-black text-base text-white tabular-nums block">{m.value}</span>
+              <span className="text-xs text-zinc-500">{m.label}</span>
             </div>
           ))}
         </div>

@@ -142,12 +142,12 @@ function FeedCard({ item, onRespect }) {
       <h3 className="mt-3 font-heading text-section font-semibold text-white">{item.workout_title}</h3>
       <dl className="mt-2.5 flex items-center gap-4 pt-2.5 border-t border-white/[0.04]">
         <div>
-          <dt className="text-[11px] text-zinc-500 uppercase tracking-wider">Duração</dt>
+          <dt className="text-xs text-zinc-500">Duração</dt>
           <dd className="text-body font-semibold text-white tabular-nums">{fmtDuration(item.duration_seconds)}</dd>
         </div>
         <div className="w-px h-7 bg-white/[0.08]" aria-hidden />
         <div>
-          <dt className="text-[11px] text-zinc-500 uppercase tracking-wider">Volume</dt>
+          <dt className="text-xs text-zinc-500">Volume</dt>
           <dd className="text-body font-semibold text-white tabular-nums">{fmtKg(item.volume_kg)}</dd>
         </div>
       </dl>

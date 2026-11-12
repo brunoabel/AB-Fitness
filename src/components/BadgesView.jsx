@@ -56,10 +56,10 @@ export default function BadgesView() {
     <div className="space-y-4 animate-fadeIn">
       
       {/* 1. Header de Conquistas & Barra de Progresso */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl relative overflow-hidden">
+      <div className="p-5 sm:p-6 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
         <div className="flex items-center justify-between mb-3 gap-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-zinc-800 text-amber-400 border border-zinc-700/60 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
               <Trophy className="w-5 h-5 text-amber-400" />
             </div>
             <div>
@@ -85,7 +85,7 @@ export default function BadgesView() {
             <span>Progresso de Conquistas</span>
             <span className="text-amber-400 font-mono tabular-nums">{progressPercent}%</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
             <div 
               className="h-full bg-amber-400 rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
@@ -95,7 +95,7 @@ export default function BadgesView() {
       </div>
 
       {/* 2. Filtros de Categoria */}
-      <div className="flex rounded-xl bg-zinc-900 p-1 border border-white/10 text-xs font-bold shadow-xs">
+      <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] text-xs font-bold shadow-xs">
         {[
           { id: 'all', label: 'Todas' },
           { id: 'running', label: 'Corrida' },
@@ -110,7 +110,7 @@ export default function BadgesView() {
             }}
             className={`flex-1 min-h-[44px] py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
               filter === f.id
-                ? 'bg-zinc-800 text-white shadow-xs'
+                ? 'bg-white/10 text-white shadow-xs'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
@@ -131,16 +131,16 @@ export default function BadgesView() {
               key={badge.id}
               className={`p-3.5 rounded-xl border transition-all relative overflow-hidden flex items-start gap-3 ${
                 isUnlocked
-                  ? 'bg-zinc-900 border-zinc-700 shadow-sm'
-                  : 'bg-zinc-900/40 border-zinc-800/80 opacity-70'
+                  ? 'bg-surface border-white/[0.1] shadow-sm'
+                  : 'bg-surface/40 border-white/[0.06] opacity-70'
               }`}
             >
               {/* Ícone */}
-              <div 
+              <div
                 className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
                   isUnlocked
                     ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-zinc-800 text-zinc-600 border-zinc-700'
+                    : 'bg-white/[0.04] text-zinc-600 border-white/[0.08]'
                 }`}
               >
                 {isUnlocked ? (
@@ -160,10 +160,7 @@ export default function BadgesView() {
                   </h3>
                   
                   {isUnlocked && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0">
-                      <CheckCircle2 className="w-2.5 h-2.5" />
-                      OK
-                    </span>
+                    <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
                   )}
                 </div>
 
