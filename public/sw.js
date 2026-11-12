@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v13'; // v13: redesign PRO MAX da aba Corrida (sem jargoes, meta semanal, HUD e resumo limpos)
+const CACHE_NAME = 'ab-fitness-v14'; // v14: limpeza editorial em Meus Treinos e Historico no Perfil
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

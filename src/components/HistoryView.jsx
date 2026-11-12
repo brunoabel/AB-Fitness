@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Trophy, 
-  Clock, 
-  Dumbbell, 
-  CheckCircle2, 
+import {
+  Trophy,
+  Dumbbell,
   TrendingUp,
   Award,
-  Database,
   Download,
   FileSpreadsheet,
   Scale
@@ -27,7 +24,7 @@ function formatHistoryDate(item) {
   if (typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}/.test(raw)) {
     const parsed = new Date(raw);
     if (!Number.isNaN(parsed.getTime())) {
-      return parsed.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' });
+      return parsed.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }).replace('.', '');
     }
   }
   return raw;
@@ -44,153 +41,108 @@ export default function HistoryView() {
   const totalWorkouts = history.length;
   const totalVolume = history.reduce((acc, curr) => acc + (curr.totalVolumeKg || 0), 0);
   const totalMinutes = history.reduce(
-    (acc, curr) => acc + (curr.durationMinutes || Math.round((curr.durationSeconds || 0) / 60) || 0), 
+    (acc, curr) => acc + (curr.durationMinutes || Math.round((curr.durationSeconds || 0) / 60) || 0),
     0
   );
 
+  const formattedVolume = totalVolume >= 1000
+    ? `${(totalVolume / 1000).toFixed(1).replace(/\.0$/, '')} t`
+    : `${totalVolume} kg`;
+
   return (
-    <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fadeIn transition-colors">
-      
-      {/* Controlo de Segmentos do Atleta (Apple-grade segmented horizon) */}
-      <div className="p-1.5 rounded-2xl bg-surface-2/60 border border-white/[0.06] backdrop-blur-xl shadow-xs">
+    <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-10 space-y-6 animate-fadeIn">
+      {/* Navegação por segmentos (pílulas limpas sobre OLED preto) */}
+      <div className="p-1 rounded-full bg-white/[0.04] border border-white/[0.07]">
         <div className="grid grid-cols-4 gap-1">
-          <button
-            type="button"
-            onClick={() => {
-              setSubTab('history');
-              triggerHaptic(10);
-            }}
-            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
-              subTab === 'history'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-            }`}
-          >
-            <Trophy className="w-3.5 h-3.5 stroke-[2]" />
-            <span className="truncate">Sessões ({totalWorkouts})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSubTab('charts');
-              triggerHaptic(10);
-            }}
-            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
-              subTab === 'charts'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-            }`}
-          >
-            <TrendingUp className="w-3.5 h-3.5 stroke-[2]" />
-            <span className="truncate">Evolução</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSubTab('badges');
-              triggerHaptic(10);
-            }}
-            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
-              subTab === 'badges'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5 stroke-[2]" />
-            <span className="truncate">Medalhas ({unlockedCount})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSubTab('body');
-              triggerHaptic(10);
-            }}
-            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
-              subTab === 'body'
-                ? 'bg-white text-black shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-            }`}
-          >
-            <Scale className="w-3.5 h-3.5 stroke-[2]" />
-            <span className="truncate">Corpo</span>
-          </button>
+          {[
+            { id: 'history', label: `Sessões (${totalWorkouts})`, icon: Trophy },
+            { id: 'charts', label: 'Evolução', icon: TrendingUp },
+            { id: 'badges', label: `Medalhas (${unlockedCount})`, icon: Award },
+            { id: 'body', label: 'Corpo', icon: Scale }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const active = subTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setSubTab(tab.id);
+                  triggerHaptic(10);
+                }}
+                className={`min-h-[40px] px-1.5 sm:px-3 rounded-full transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none text-xs font-bold ${
+                  active
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 stroke-[2] shrink-0" />
+                <span className="truncate">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {subTab === 'body' && <BodyPortfolio />}
+      {subTab === 'charts' && <ProgressionCharts />}
+      {subTab === 'badges' && <BadgesView />}
 
-      {/* 1. MÓDULO DE GRÁFICOS DE PROGRESSÃO DE CARGA */}
-      {subTab === 'charts' && (
-        <ProgressionCharts />
-      )}
-
-      {/* 2. MÓDULO DE MEDALHAS & CONQUISTAS */}
-      {subTab === 'badges' && (
-        <BadgesView />
-      )}
-
-      {/* 3. MÓDULO DE HISTÓRICO DE SESSÕES */}
       {subTab === 'history' && (
         <div className="space-y-6 animate-fadeIn">
-          {/* Resumo Acumulado */}
-          <div className="p-5 rounded-xl bg-surface border border-white/10 shadow-xs space-y-3 transition-colors">
-            <div className="flex items-center gap-2 text-zinc-400 text-xs font-semibold uppercase tracking-wider">
-              <Trophy className="w-4 h-4 stroke-[1.8]" />
-              <span>Consistência e Histórico de Sessões</span>
+          {/* Resumo acumulado editorial diretamente sobre o preto */}
+          <div className="flex items-center justify-between gap-4 py-2">
+            <div>
+              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
+                {totalWorkouts}
+              </span>
+              <span className="text-xs text-zinc-400">Treinos</span>
             </div>
 
-            <h2 className="text-xl font-bold text-zinc-50 tracking-tight">
-              Rendimento Acumulado
-            </h2>
+            <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
 
-            <div className="flex items-center gap-6 pt-3 border-t border-white/10">
-              <div>
-                <span className="text-xl font-bold text-zinc-50 block tabular-nums">{totalWorkouts}</span>
-                <span className="text-xs text-zinc-500">Treinos</span>
-              </div>
-              <div className="w-px h-8 bg-white/[0.08]" aria-hidden />
-              <div>
-                <span className="text-xl font-bold text-zinc-50 block tabular-nums">
-                  {totalVolume > 1000 ? `${(totalVolume / 1000).toFixed(1)}t` : `${totalVolume}kg`}
-                </span>
-                <span className="text-xs text-zinc-500">Volume total</span>
-              </div>
-              <div className="w-px h-8 bg-white/[0.08]" aria-hidden />
-              <div>
-                <span className="text-xl font-bold text-zinc-50 block tabular-nums">{totalMinutes}m</span>
-                <span className="text-xs text-zinc-500">Tempo ativo</span>
-              </div>
+            <div>
+              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
+                {formattedVolume}
+              </span>
+              <span className="text-xs text-zinc-400">Volume total</span>
+            </div>
+
+            <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
+
+            <div>
+              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
+                {totalMinutes} min
+              </span>
+              <span className="text-xs text-zinc-400">Tempo ativo</span>
             </div>
           </div>
 
-          {/* Lista de Sessões Anteriores */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Registo de Treinos Efetuados ({totalWorkouts})
+          {/* Lista editorial de sessões concluídas (sem grelha de caixas cinzentas) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading text-base font-bold text-white tracking-tight">
+                Histórico de sessões
               </h3>
               {pendingSyncCount > 0 && (
-                <span className="text-[11px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-md tabular-nums">
+                <span className="text-xs font-medium text-amber-300 tabular-nums">
                   {pendingSyncCount} por sincronizar
                 </span>
               )}
             </div>
 
             {history.length === 0 ? (
-              <div className="p-8 text-center rounded-xl bg-surface border border-white/10">
-                <Dumbbell className="w-8 h-8 text-zinc-400 mx-auto mb-2 opacity-50 stroke-[1.8]" />
-                <p className="text-xs font-semibold text-zinc-300">
-                  Nenhum treino gravado no histórico até ao momento.
+              <div className="py-8 border-t border-white/[0.06] text-center space-y-2">
+                <Dumbbell className="w-6 h-6 text-zinc-600 mx-auto stroke-[1.6]" />
+                <p className="text-sm font-medium text-zinc-300">
+                  Ainda sem treinos registados.
                 </p>
-                <p className="text-[11px] text-zinc-400 mt-1 max-w-sm mx-auto">
-                  Ao concluir uma sessão de musculação, ela surgirá detalhada aqui com registo de cargas, repetições e volume.
+                <p className="text-xs text-zinc-500 max-w-xs mx-auto">
+                  Conclui o teu primeiro treino para acompanhar cargas, séries e evolução aqui.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <ul className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
                 {history.map((item, index) => {
                   const displayName = item.dayName || item.workoutName || `Dia ${item.workoutDayId || index + 1}`;
                   const displayTitle = item.workoutTitle || item.dayTitle || item.title || 'Sessão de Treino';
@@ -200,87 +152,67 @@ export default function HistoryView() {
                   const displayVolume = item.totalVolumeKg || 0;
 
                   return (
-                    <div 
+                    <li
                       key={item.id || `hist_${index}`}
-                      className="p-4 rounded-xl bg-surface border border-white/10 shadow-xs space-y-2 hover:border-white/[0.16] transition-colors"
+                      className="py-3.5 flex items-center justify-between gap-4"
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[11px] text-zinc-500 block">
-                            {displayName}
-                          </span>
-                          <h4 className="text-sm font-semibold text-zinc-50">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-bold text-white truncate">
                             {displayTitle}
                           </h4>
+                          <span className="text-xs text-zinc-500 truncate">
+                            · {displayName}
+                          </span>
                         </div>
-
-                        <span className="text-[11px] text-zinc-500 tabular-nums">
-                          {displayDate}
-                        </span>
+                        <p className="text-xs text-zinc-400 mt-0.5 font-mono tabular-nums">
+                          {displayMinutes} min · {displaySets} séries · {displayVolume} kg
+                        </p>
                       </div>
 
-                      <div className="flex items-center gap-4 text-xs text-zinc-400 pt-2 border-t border-white/10">
-                        <div className="flex items-center gap-1.5 tabular-nums">
-                          <Clock className="w-3.5 h-3.5 stroke-[1.8]" />
-                          <span>{displayMinutes} min</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 tabular-nums">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 stroke-[2]" />
-                          <span>{displaySets} séries</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 tabular-nums">
-                          <Dumbbell className="w-3.5 h-3.5 stroke-[1.8]" />
-                          <span>{displayVolume} kg</span>
-                        </div>
-                      </div>
-                    </div>
+                      <span className="text-xs text-zinc-500 tabular-nums shrink-0">
+                        {displayDate}
+                      </span>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             )}
           </div>
 
-          {/* Secção de Cópia de Segurança & Exportação */}
-          <div className="p-5 rounded-xl bg-surface-2/80 border border-white/10 space-y-3">
+          {/* Exportação discreta no rodapé (sem cartão extra pesado) */}
+          <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3">
+            <span className="text-xs text-zinc-500">
+              Cópia dos teus dados
+            </span>
             <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-zinc-400 stroke-[1.8]" />
-              <div>
-                <h4 className="text-xs font-semibold text-zinc-100 uppercase tracking-wider">
-                  Cópia de Segurança & Exportação de Dados
-                </h4>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  Exporta todo o teu histórico de treinos e corridas em formatos abertos (CSV e JSON).
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 pt-1">
               <button
+                type="button"
                 onClick={() => {
                   exportAppDataAsCSV();
                   triggerHaptic(15);
                 }}
-                className="py-2.5 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.08] text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
+                className="min-h-[38px] px-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-400 stroke-[1.8]" />
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Exportar CSV</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   exportAppDataAsJSON();
                   triggerHaptic(15);
                 }}
-                className="py-2.5 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.08] text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
+                className="min-h-[38px] px-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <Download className="w-4 h-4 text-zinc-400 stroke-[1.8]" />
+                <Download className="w-3.5 h-3.5" />
                 <span>Cópia JSON</span>
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
