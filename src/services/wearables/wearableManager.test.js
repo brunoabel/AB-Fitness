@@ -81,3 +81,4 @@ describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica
     assert.ok(data.calories_burned > 1500);
   });
 });
+

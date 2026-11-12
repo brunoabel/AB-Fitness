@@ -81,3 +81,4 @@ drop policy if exists "biometrics_update_own" on public.athlete_biometrics;
 create policy "biometrics_update_own"
   on public.athlete_biometrics for update
   using (auth.uid() = user_id);
+

@@ -132,3 +132,4 @@ export function generateSimulatedWhoopData(dateIso = new Date().toISOString().sl
     last_synced_at: new Date().toISOString()
   };
 }
+

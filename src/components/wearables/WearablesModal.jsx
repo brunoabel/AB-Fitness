@@ -452,3 +452,4 @@ export default function WearablesModal({ isOpen, onClose }) {
     </AnimatePresence>
   );
 }
+

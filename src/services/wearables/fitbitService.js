@@ -126,3 +126,4 @@ export function generateSimulatedFitbitData(dateIso = new Date().toISOString().s
     last_synced_at: new Date().toISOString()
   };
 }
+
