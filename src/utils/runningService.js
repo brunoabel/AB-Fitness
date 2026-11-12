@@ -96,6 +96,29 @@ export function calculateRunningCalories(distanceKm, userWeightKg = 72) {
 }
 
 /**
+ * Estima o VO2 Max (ml/kg/min) a partir do pace de uma corrida, pela fórmula de
+ * Daniels & Gilbert (1979) — a mesma base da tabela VDOT. Exige esforço contínuo
+ * de pelo menos 6 minutos (abaixo disso a fórmula não é validada); devolve null
+ * fora desse intervalo ou se o resultado não for fisiologicamente plausível.
+ */
+export function estimateVO2Max(distanceKm, durationSeconds) {
+  if (!distanceKm || distanceKm <= 0 || !durationSeconds || durationSeconds < 360) return null;
+
+  const t = durationSeconds / 60; // minutos
+  const velocity = (distanceKm * 1000) / t; // metros por minuto
+
+  const vo2 = -4.6 + 0.182258 * velocity + 0.000104 * velocity * velocity;
+  const percentMax = 0.8
+    + 0.1894393 * Math.exp(-0.012778 * t)
+    + 0.2989558 * Math.exp(-0.1932605 * t);
+
+  const vo2Max = vo2 / percentMax;
+  if (!isFinite(vo2Max) || vo2Max <= 0 || vo2Max > 90) return null;
+
+  return Math.round(vo2Max * 10) / 10;
+}
+
+/**
  * Validação detalhada de ponto GPS com diagnóstico da causa de rejeição:
  * - Verifica coordenadas válidas e precisão (accuracy <= maxAccuracyMeters)
  * - Deteta localização aproximada (Android 12+ / iOS 14+ com accuracy >= 100m)

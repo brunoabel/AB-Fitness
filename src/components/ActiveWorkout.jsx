@@ -49,6 +49,7 @@ import {
 } from '../services/abCoach/coachInsightsService';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getLocalConnections, getLocalBiometrics, computeReadinessIndex } from '../services/wearables/wearableManager';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
@@ -69,7 +70,20 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const [pastHistory] = useState(() => getWorkoutHistory());
   const prevIndex = useMemo(() => buildPrevIndex(pastHistory), [pastHistory]);
 
+  // Prontidão fisiológica (wearables) do dia — trava progressão de carga/reps em dias de fadiga alta
+  const [readinessScore] = useState(() => {
+    const conns = getLocalConnections();
+    if (!conns || Object.keys(conns).length === 0) return null;
+    const bios = getLocalBiometrics();
+    const readiness = computeReadinessIndex({
+      whoop: conns.whoop ? bios.whoop : null,
+      fitbit: conns.fitbit ? bios.fitbit : null
+    });
+    return readiness ? readiness.score : null;
+  });
+
   // Progressão RIR/dupla progressão: uma sugestão por exercício, calculada da última sessão
+  // e autorregulada pela prontidão wearable (ver calculateNextSessionPrescription).
   const progressionHints = useMemo(() => {
     const hints = {};
     const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
@@ -79,11 +93,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       const hint = calculateNextSessionPrescription(prevSets, {
         repRange: ex.repRange,
         progressionIncrementKg: ex.progressionIncrementKg
-      });
+      }, readinessScore);
       if (hint) hints[ex.id] = hint;
     });
     return hints;
-  }, [prevIndex, workout]);
+  }, [prevIndex, workout, readinessScore]);
 
   // Modo Foco (ativo por defeito para máxima concentração desportiva)
   const [isFocusMode, setIsFocusMode] = useState(true);

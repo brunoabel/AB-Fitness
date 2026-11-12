@@ -109,8 +109,11 @@ export function getBestHistorical1RM(exId, history = [], fallbackWeights = {}) {
  * `prevSets`: array de sets da última sessão (vindo de buildPrevIndex). `exerciseConfig`:
  * { repRange: [min,max], progressionIncrementKg }, ambos opcionais (fallback pra exercícios
  * sem esses campos, ex. catálogo de treinos personalizados).
+ * `readinessScore`: 0-100 do Índice de Prontidão dos wearables (computeReadinessIndex), ou
+ * null sem dados. Abaixo de 55 (mesmo limiar de "Fadiga Elevada" do wearableManager) qualquer
+ * progressão de carga/reps é travada para MANTER — autorregulação real, não apenas exibição.
  */
-export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}) {
+export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}, readinessScore = null) {
   const repRange = Array.isArray(exerciseConfig.repRange) && exerciseConfig.repRange.length === 2
     ? exerciseConfig.repRange
     : [8, 12];
@@ -127,6 +130,7 @@ export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}) 
 
   const failedBelowRangeAtLimit = working.some((s) => Number(s.reps) < repRange[0] && rirOf(s) <= 0);
   const allAtTopOfRange = working.every((s) => Number(s.reps) >= repRange[1]);
+  const isLowReadiness = typeof readinessScore === 'number' && readinessScore < 55;
 
   if (failedBelowRangeAtLimit) {
     return {
@@ -139,6 +143,15 @@ export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}) 
   }
 
   if (allAtTopOfRange && avgRir >= 2) {
+    if (isLowReadiness) {
+      return {
+        type: 'MAINTAIN',
+        suggestedWeight: prevWeight,
+        suggestedReps: working[0].reps,
+        badge: 'MANTER (RECUPERAÇÃO)',
+        rationale: `Bateste o topo da faixa, mas a tua recuperação wearable está baixa (${readinessScore}%) — mantém a carga hoje e sobe na próxima sessão com o corpo mais fresco.`
+      };
+    }
     return {
       type: 'OVERLOAD',
       suggestedWeight: Math.round((prevWeight + increment) * 2) / 2,
@@ -149,6 +162,15 @@ export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}) 
   }
 
   if (maxReps < repRange[1] && avgRir >= 1) {
+    if (isLowReadiness) {
+      return {
+        type: 'MAINTAIN',
+        suggestedWeight: prevWeight,
+        suggestedReps: working[0].reps,
+        badge: 'MANTER (RECUPERAÇÃO)',
+        rationale: `Ainda há reserva técnica, mas a tua recuperação wearable está baixa (${readinessScore}%) — consolida a carga atual em vez de somar volume.`
+      };
+    }
     return {
       type: 'REP_BUMP',
       suggestedWeight: prevWeight,

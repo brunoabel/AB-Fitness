@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { 
   Play, 
   Calendar, 
@@ -19,7 +19,8 @@ import { WEEKLY_SCHEDULE } from '../data/workouts';
 import { ATHLETE_MANUALS } from '../data/athleteManuals';
 import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
-import MuscleRecoveryMap from './MuscleRecoveryMap';
+// Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial só por este mapa.
+const MuscleRecoveryMap = lazy(() => import('./MuscleRecoveryMap'));
 import { useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
 import WearableReadinessCard from './wearables/WearableReadinessCard';
 
@@ -411,7 +412,9 @@ export default function WeeklyDashboard({
       </div>
 
       {/* Mapa Fisiológico de Recuperação Muscular do Atleta */}
-      <MuscleRecoveryMap />
+      <Suspense fallback={<div className="rounded-3xl bg-app border border-white/[0.08] h-[380px] animate-pulse" />}>
+        <MuscleRecoveryMap />
+      </Suspense>
 
     </div>
   );

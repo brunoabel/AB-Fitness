@@ -5,7 +5,8 @@ import {
   allowsAdditionalWeight,
   getDefaultDurationSeconds,
   formatDurationSeconds,
-  getBestHistoricalDuration
+  getBestHistoricalDuration,
+  calculateNextSessionPrescription
 } from './strengthMetrics.js';
 
 describe('StrengthMetrics — Exercícios Isométricos e Temporizados', () => {
@@ -79,6 +80,48 @@ describe('StrengthMetrics — Exercícios Isométricos e Temporizados', () => {
 
     const best = getBestHistoricalDuration(95, history);
     assert.equal(best, 75);
+  });
+});
+
+describe('StrengthMetrics — Autorregulação da Prescrição por Prontidão Wearable', () => {
+  const repRange = [8, 12];
+  const overloadSets = [{ weight: 100, reps: 12, rpe: 7, completed: true }];
+  const repBumpSets = [{ weight: 50, reps: 10, rpe: 8, completed: true }];
+  const deloadSets = [{ weight: 80, reps: 6, rpe: 10, completed: true }];
+
+  it('sugere OVERLOAD normalmente quando não há dados de prontidão (readinessScore null)', () => {
+    const hint = calculateNextSessionPrescription(overloadSets, { repRange, progressionIncrementKg: 2.5 });
+    assert.equal(hint.type, 'OVERLOAD');
+    assert.equal(hint.suggestedWeight, 102.5);
+  });
+
+  it('trava o OVERLOAD para MANTER quando a prontidão wearable está baixa (<55%)', () => {
+    const hint = calculateNextSessionPrescription(overloadSets, { repRange, progressionIncrementKg: 2.5 }, 40);
+    assert.equal(hint.type, 'MAINTAIN');
+    assert.equal(hint.suggestedWeight, 100);
+    assert.match(hint.rationale, /40%/);
+  });
+
+  it('não trava o OVERLOAD quando a prontidão está no limiar (55, não é "baixa")', () => {
+    const hint = calculateNextSessionPrescription(overloadSets, { repRange, progressionIncrementKg: 2.5 }, 55);
+    assert.equal(hint.type, 'OVERLOAD');
+  });
+
+  it('trava o REP_BUMP para MANTER quando a prontidão wearable está baixa', () => {
+    const hint = calculateNextSessionPrescription(repBumpSets, { repRange }, 30);
+    assert.equal(hint.type, 'MAINTAIN');
+    assert.equal(hint.suggestedWeight, 50);
+  });
+
+  it('sugere REP_BUMP normalmente com boa prontidão', () => {
+    const hint = calculateNextSessionPrescription(repBumpSets, { repRange }, 90);
+    assert.equal(hint.type, 'REP_BUMP');
+    assert.equal(hint.suggestedReps, 11);
+  });
+
+  it('nunca trava o DELOAD — baixa prontidão não deve agravar uma falha já detetada', () => {
+    const hint = calculateNextSessionPrescription(deloadSets, { repRange }, 20);
+    assert.equal(hint.type, 'DELOAD');
   });
 });
 

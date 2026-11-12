@@ -16,6 +16,7 @@ import TrainModeSwitch from './components/TrainModeSwitch';
 import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
+import { flushWearableSyncQueue } from './services/wearables/wearableManager';
 import { 
   getCompletedDays, 
   getSoundPreference, 
@@ -184,10 +185,14 @@ function AppContent() {
     sound.toggleSound(soundEnabled);
   }, [soundEnabled]);
 
-  // Reenvia treinos que ficaram por sincronizar (sem rede no ginásio) no arranque e quando a ligação volta
+  // Reenvia treinos e biometria de wearables que ficaram por sincronizar (sem rede
+  // no ginásio) no arranque e quando a ligação volta
   useEffect(() => {
     if (!user?.id || user.id === 'guest-local-user') return undefined;
-    const flush = () => flushWorkoutSyncQueue(user.id).catch(() => {});
+    const flush = () => {
+      flushWorkoutSyncQueue(user.id).catch(() => {});
+      flushWearableSyncQueue(user.id).catch(() => {});
+    };
     flush();
     window.addEventListener('online', flush);
     return () => window.removeEventListener('online', flush);

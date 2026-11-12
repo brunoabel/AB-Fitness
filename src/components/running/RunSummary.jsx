@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, Download, Flag, Flame, Navigation2, RotateCcw, Satellite, Share2, Timer, Trophy, Zap } from 'lucide-react';
+import { CheckCircle2, Download, Flag, Flame, HeartPulse, Navigation2, RotateCcw, Satellite, Share2, Timer, Trophy, Zap } from 'lucide-react';
 import { downloadGPX, formatDuration } from '../../utils/runningService';
 import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
@@ -154,6 +154,19 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   </span>
                   <span className="text-[11px] text-zinc-400 block">Média horária</span>
                 </div>
+
+                {Boolean(lastCompletedRun.vo2Max) && (
+                  <div className="col-span-2 bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                    <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
+                      <HeartPulse className="w-3.5 h-3.5 text-white" />
+                      <span>VO2 Max Estimado</span>
+                    </div>
+                    <span className="text-xl font-black text-white font-mono tabular-nums">
+                      {lastCompletedRun.vo2Max} <span className="text-xs font-normal text-zinc-400 font-sans">ml/kg/min</span>
+                    </span>
+                    <span className="text-[11px] text-zinc-400 block">Capacidade aeróbica estimada pelo ritmo desta corrida</span>
+                  </div>
+                )}
               </div>
 
               {/* Splits / KM a KM */}

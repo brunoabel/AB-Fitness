@@ -7,9 +7,14 @@
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
 import { generateSimulatedWhoopData } from './whoopService.js';
 import { generateSimulatedFitbitData } from './fitbitService.js';
+import { enqueueJob, flushQueue } from '../../utils/syncQueue.js';
 
 const STORAGE_KEY_CONNECTIONS = 'ab_wearable_connections_v1';
 const STORAGE_KEY_BIOMETRICS = 'ab_wearable_biometrics_v1';
+// Fila de retry: conexões e biometria de wearables que falharam a sincronizar com o
+// Supabase (sem rede no ginásio) ficam aqui até haver ligação, em vez de se perderem.
+const SYNC_QUEUE_KEY = 'ab_wearable_sync_queue_v1';
+const canSyncUser = (userId) => Boolean(isSupabaseConfigured() && supabase && userId && userId !== 'guest-local-user');
 
 /**
  * Lê conexões salvas localmente (cache ou modo convidado/offline).
@@ -92,6 +97,29 @@ export async function getConnectedWearables(userId) {
   }
 }
 
+/** Escreve a conexão de um wearable no Supabase. Devolve `false` em caso de falha (sem lançar). */
+async function pushConnectionToCloud(job) {
+  try {
+    const { error } = await supabase.from('wearable_connections').upsert(
+      {
+        user_id: job.userId,
+        provider: job.provider,
+        status: job.status,
+        access_token: job.access_token,
+        refresh_token: job.refresh_token,
+        expires_at: job.expires_at,
+        connected_at: job.connected_at,
+        last_synced_at: job.last_synced_at,
+        metadata: job.metadata
+      },
+      { onConflict: 'user_id,provider' }
+    );
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Conecta ou simula a conexão de um wearable.
  */
@@ -116,26 +144,12 @@ export async function connectWearable(userId, provider, mode = 'simulated', toke
   // 2. Gerar dados biométricos iniciais
   await syncWearableData(userId, provider);
 
-  // 3. Sincronizar com Supabase se aplicável
-  if (userId && userId !== 'guest-local-user' && isSupabaseConfigured() && supabase) {
-    try {
-      await supabase.from('wearable_connections').upsert(
-        {
-          user_id: userId,
-          provider,
-          status: mode,
-          access_token: connRecord.access_token,
-          refresh_token: connRecord.refresh_token,
-          expires_at: connRecord.expires_at,
-          connected_at: connRecord.connected_at,
-          last_synced_at: connRecord.last_synced_at,
-          metadata: connRecord.metadata
-        },
-        { onConflict: 'user_id,provider' }
-      );
-    } catch (e) {
-      console.warn('Falha ao sincronizar conexão wearable com a nuvem:', e);
-    }
+  // 3. Sincronizar com Supabase se aplicável — se falhar (sem rede no ginásio), fica
+  // em fila e é reenviado automaticamente quando a ligação voltar (ver flushWearableSyncQueue).
+  if (canSyncUser(userId)) {
+    const job = { key: `conn:${userId}:${provider}`, type: 'connection', userId, provider, ...connRecord };
+    const ok = await pushConnectionToCloud(job);
+    if (!ok) enqueueJob(SYNC_QUEUE_KEY, job);
   }
 
   return connRecord;
@@ -153,7 +167,7 @@ export async function disconnectWearable(userId, provider) {
   delete bio[provider];
   saveLocalBiometrics(bio);
 
-  if (userId && userId !== 'guest-local-user' && isSupabaseConfigured() && supabase) {
+  if (canSyncUser(userId)) {
     try {
       await supabase
         .from('wearable_connections')
@@ -166,6 +180,31 @@ export async function disconnectWearable(userId, provider) {
   }
 
   return true;
+}
+
+/** Escreve a biometria diária de um wearable no Supabase. Devolve `false` em caso de falha. */
+async function pushBiometricsToCloud(job) {
+  try {
+    const { error } = await supabase.from('athlete_biometrics').upsert(
+      {
+        user_id: job.userId,
+        date: job.date,
+        provider: job.provider,
+        recovery_score: job.bioData.recovery_score,
+        hrv_ms: job.bioData.hrv_ms,
+        resting_hr_bpm: job.bioData.resting_hr_bpm,
+        sleep_score: job.bioData.sleep_score,
+        sleep_duration_seconds: job.bioData.sleep_duration_seconds,
+        day_strain: job.bioData.day_strain,
+        calories_burned: job.bioData.calories_burned,
+        raw_data: job.bioData
+      },
+      { onConflict: 'user_id,date,provider' }
+    );
+    return !error;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -195,31 +234,27 @@ export async function syncWearableData(userId, provider) {
     saveLocalConnections(currentConns);
   }
 
-  // Persistir no Supabase se disponível
-  if (userId && userId !== 'guest-local-user' && isSupabaseConfigured() && supabase) {
-    try {
-      await supabase.from('athlete_biometrics').upsert(
-        {
-          user_id: userId,
-          date: today,
-          provider,
-          recovery_score: bioData.recovery_score,
-          hrv_ms: bioData.hrv_ms,
-          resting_hr_bpm: bioData.resting_hr_bpm,
-          sleep_score: bioData.sleep_score,
-          sleep_duration_seconds: bioData.sleep_duration_seconds,
-          day_strain: bioData.day_strain,
-          calories_burned: bioData.calories_burned,
-          raw_data: bioData
-        },
-        { onConflict: 'user_id,date,provider' }
-      );
-    } catch (e) {
-      console.warn('Falha ao persistir biometria no Supabase:', e);
-    }
+  // Persistir no Supabase se disponível — se falhar (sem rede), fica em fila e é
+  // reenviado automaticamente quando a ligação voltar (ver flushWearableSyncQueue).
+  if (canSyncUser(userId)) {
+    const job = { key: `bio:${userId}:${provider}:${today}`, type: 'biometrics', userId, provider, date: today, bioData };
+    const ok = await pushBiometricsToCloud(job);
+    if (!ok) enqueueJob(SYNC_QUEUE_KEY, job);
   }
 
   return bioData;
+}
+
+/**
+ * Reenvia conexões e biometria de wearables pendentes deste utilizador — chamado
+ * no arranque da app e quando o evento `online` dispara (ver App.jsx).
+ */
+export function flushWearableSyncQueue(userId) {
+  if (!canSyncUser(userId)) return Promise.resolve(0);
+  return flushQueue(SYNC_QUEUE_KEY, {
+    filterFn: (job) => job.userId === userId,
+    sendFn: (job) => (job.type === 'connection' ? pushConnectionToCloud(job) : pushBiometricsToCloud(job))
+  });
 }
 
 /**

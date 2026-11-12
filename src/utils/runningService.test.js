@@ -17,7 +17,8 @@ import {
   calculateRollingPace,
   computeSplits,
   simplifyRoute,
-  generateSimulatedStep
+  generateSimulatedStep,
+  estimateVO2Max
 } from './runningService.js';
 
 describe('AB Running Club — Motor GPS, Filtro de Ruído, Distância e Pace', () => {
@@ -235,6 +236,29 @@ describe('AB Running Club — Motor GPS, Filtro de Ruído, Distância e Pace', (
       const validation = validateAndFilterGpsPoint(spikeStep, prev);
       assert.equal(validation.accepted, false);
     });
+  });
+});
+
+describe('AB Running Club — Estimativa de VO2 Max (Daniels & Gilbert)', () => {
+  it('estima um VO2 Max fisiologicamente plausível para 5km em 25 minutos', () => {
+    const vo2Max = estimateVO2Max(5, 25 * 60);
+    assert.ok(vo2Max > 35 && vo2Max < 42);
+  });
+
+  it('devolve um valor mais alto para um ritmo mais rápido na mesma distância', () => {
+    const slow = estimateVO2Max(5, 30 * 60);
+    const fast = estimateVO2Max(5, 20 * 60);
+    assert.ok(fast > slow);
+  });
+
+  it('devolve null para corridas demasiado curtas (< 6 minutos) para validar a fórmula', () => {
+    assert.equal(estimateVO2Max(1, 300), null);
+  });
+
+  it('devolve null sem distância ou duração', () => {
+    assert.equal(estimateVO2Max(0, 1200), null);
+    assert.equal(estimateVO2Max(5, 0), null);
+    assert.equal(estimateVO2Max(null, 1200), null);
   });
 });
 

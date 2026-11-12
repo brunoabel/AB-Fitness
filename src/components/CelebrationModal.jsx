@@ -3,6 +3,7 @@ import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
 import { Trophy, Clock, CheckCircle, Dumbbell, Sparkles, Share2, ArrowRight } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
+import { buildWorkoutResultCard, shareWorkoutResultCard } from '../utils/workoutResultCard';
 
 export default function CelebrationModal({ 
   workout, 
@@ -47,20 +48,31 @@ export default function CelebrationModal({
   }, []);
 
   const handleShare = async () => {
-    const textToShare = `Treino concluído no AB Fitness!\n"Consistência gera evolução permanente."\nTempo: ${durationMinutes} min • ${totalSetsCompleted} séries • ${totalVolumeKg} kg levantados.\nFoco e evolução contínua!`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Treino Concluído — AB Fitness',
-          text: textToShare,
-        });
-      } catch {}
-    } else {
-      try {
-        await navigator.clipboard.writeText(textToShare);
-        alert('Resumo copiado para a área de transferência!');
-      } catch {}
+    triggerHaptic(10);
+    try {
+      const blob = await buildWorkoutResultCard({
+        workoutName: (workout?.title && workout?.name && workout.title !== workout.name)
+          ? `${workout.title} • ${workout.name}`
+          : (workout?.title || workout?.name),
+        durationMinutes,
+        totalSetsCompleted,
+        totalVolumeKg,
+        newPRs
+      });
+      await shareWorkoutResultCard(blob, { hasPRs: newPRs?.length > 0 });
+    } catch {
+      // Falha a gerar/partilhar o cartão (ex.: navegador sem suporte a Canvas/Share) -> texto simples
+      const textToShare = `Treino concluído no AB Fitness!\n"Consistência gera evolução permanente."\nTempo: ${durationMinutes} min • ${totalSetsCompleted} séries • ${totalVolumeKg} kg levantados.\nFoco e evolução contínua!`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Treino Concluído — AB Fitness', text: textToShare });
+        } catch {}
+      } else {
+        try {
+          await navigator.clipboard.writeText(textToShare);
+          alert('Resumo copiado para a área de transferência!');
+        } catch {}
+      }
     }
   };
 
@@ -206,7 +218,7 @@ export default function CelebrationModal({
             className="w-full min-h-[44px] py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5 text-zinc-500" />
-            <span>Partilhar Resumo do Treino</span>
+            <span>{newPRs?.length > 0 ? 'Partilhar Cartão do Recorde' : 'Partilhar Cartão do Treino'}</span>
           </button>
         </div>
       </ModalPanel>
