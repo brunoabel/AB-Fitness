@@ -51,67 +51,73 @@ export default function HistoryView() {
   return (
     <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fadeIn transition-colors">
       
-      {/* Controlo de Segmentos do Histórico */}
-      <div className="flex rounded-xl bg-zinc-800/80 p-1 border border-zinc-700/60 text-xs font-semibold">
-        <button
-          onClick={() => {
-            setSubTab('history');
-            triggerHaptic(10);
-          }}
-          className={`flex-1 min-w-0 py-2 px-1 sm:px-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] ${
-            subTab === 'history'
-              ? 'bg-surface text-zinc-50 shadow-xs border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-100'
-          }`}
-        >
-          <Trophy className="hidden sm:block w-3.5 h-3.5 stroke-[1.8]" />
-          <span>Sessões ({totalWorkouts})</span>
-        </button>
+      {/* Controlo de Segmentos do Atleta (Apple-grade segmented horizon) */}
+      <div className="p-1.5 rounded-2xl bg-surface-2/60 border border-white/[0.06] backdrop-blur-xl shadow-xs">
+        <div className="grid grid-cols-4 gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setSubTab('history');
+              triggerHaptic(10);
+            }}
+            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
+              subTab === 'history'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
+            }`}
+          >
+            <Trophy className="w-3.5 h-3.5 stroke-[2]" />
+            <span className="truncate">Sessões ({totalWorkouts})</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setSubTab('charts');
-            triggerHaptic(10);
-          }}
-          className={`flex-1 min-w-0 py-2 px-1 sm:px-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] ${
-            subTab === 'charts'
-              ? 'bg-surface text-zinc-50 shadow-xs border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-100'
-          }`}
-        >
-          <TrendingUp className="hidden sm:block w-3.5 h-3.5 stroke-[1.8]" />
-          <span>Evolução</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSubTab('charts');
+              triggerHaptic(10);
+            }}
+            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
+              subTab === 'charts'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5 stroke-[2]" />
+            <span className="truncate">Evolução</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setSubTab('badges');
-            triggerHaptic(10);
-          }}
-          className={`flex-1 min-w-0 py-2 px-1 sm:px-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] ${
-            subTab === 'badges'
-              ? 'bg-surface text-zinc-50 shadow-xs border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-100'
-          }`}
-        >
-          <Award className="hidden sm:block w-3.5 h-3.5 stroke-[1.8]" />
-          <span>Medalhas ({unlockedCount})</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSubTab('badges');
+              triggerHaptic(10);
+            }}
+            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
+              subTab === 'badges'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5 stroke-[2]" />
+            <span className="truncate">Medalhas ({unlockedCount})</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setSubTab('body');
-            triggerHaptic(10);
-          }}
-          className={`flex-1 min-w-0 py-2 px-1 sm:px-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px] ${
-            subTab === 'body'
-              ? 'bg-surface text-zinc-50 shadow-xs border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-100'
-          }`}
-        >
-          <Scale className="hidden sm:block w-3.5 h-3.5 stroke-[1.8]" />
-          <span>Corpo</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSubTab('body');
+              triggerHaptic(10);
+            }}
+            className={`py-2 px-1 sm:px-2 rounded-xl transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px] select-none text-xs font-bold ${
+              subTab === 'body'
+                ? 'bg-white text-black shadow-md'
+                : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
+            }`}
+          >
+            <Scale className="w-3.5 h-3.5 stroke-[2]" />
+            <span className="truncate">Corpo</span>
+          </button>
+        </div>
       </div>
 
       {subTab === 'body' && <BodyPortfolio />}

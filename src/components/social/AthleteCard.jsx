@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Crown } from 'lucide-react';
+import { MapPin, Crown, Flame, Dumbbell, Award } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
@@ -12,7 +12,6 @@ const statValue = (id, stats) => {
   return fmtInt(stats.total_workouts);
 };
 
-/** Athlete Card: preto puro com faixa marinho; usado no perfil e como pré-visualização ao vivo na edição. */
 export default function AthleteCard({ profile, stats, avatarPreview, compact = false }) {
   const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
@@ -22,46 +21,105 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
   const isVerified = Boolean(profile?.is_verified) || isAthleteVerified(profile);
 
   return (
-    <article className="relative overflow-hidden rounded-3xl bg-app border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-      <div className={`h-20 ${cover.className} border-b border-white/[0.06] relative transition-colors`} aria-hidden />
-      <div className="px-5 pb-5 -mt-10">
-        <div className="flex items-end justify-between gap-3">
-          <Avatar url={avatarPreview || profile?.avatar_url} name={name} size={compact ? 64 : 76} className="ring-4 ring-app" />
-          <div className="text-right pb-1">
-            <span className="block text-[12px] text-zinc-400">{featured.label}</span>
-            <span className="block font-display font-bold text-[30px] leading-none tracking-tight text-white tabular-nums">{statValue(featured.id, stats)}</span>
-          </div>
+    <article className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-surface-2/95 via-surface-2/70 to-surface-1 border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-all">
+      
+      {/* Luz ambiente de prestígio no topo */}
+      <div 
+        aria-hidden 
+        className={`absolute -top-20 -right-20 w-52 h-52 rounded-full opacity-30 blur-3xl pointer-events-none ${
+          isCeo ? 'bg-amber-500' : 'bg-white'
+        }`}
+      />
+
+      {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
+      <div className="flex items-start justify-between gap-4 relative z-10">
+        <div className="relative">
+          <Avatar 
+            url={avatarPreview || profile?.avatar_url} 
+            name={name} 
+            size={compact ? 60 : 72} 
+            className={`ring-2 ${isCeo ? 'ring-amber-500/50' : 'ring-white/20'} shadow-xl`} 
+          />
+          {isCeo && (
+            <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center shadow-lg border-2 border-black" title="Fundador / CEO">
+              <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
+            </span>
+          )}
         </div>
-        <div className="mt-3 flex items-center gap-2 min-w-0 flex-wrap">
-          <h3 className="font-heading text-title-xl font-bold tracking-tight text-white truncate">{name}</h3>
-          {isVerified && <VerifiedBadge size={compact ? 18 : 22} />}
+
+        {/* Estatística de Destaque */}
+        <div className="text-right">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+            {featured.label}
+          </span>
+          <span className="block font-display font-black text-2xl sm:text-3xl text-white tabular-nums tracking-tight mt-0.5">
+            {statValue(featured.id, stats)}
+          </span>
+        </div>
+      </div>
+
+      {/* Identidade do Atleta */}
+      <div className="mt-4 relative z-10 space-y-1">
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <h2 className="font-heading font-black text-xl sm:text-2xl text-white tracking-tight truncate">
+            {name}
+          </h2>
+          {isVerified && <VerifiedBadge size={compact ? 16 : 20} />}
           {isCeo ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[11px] font-black uppercase tracking-wider shadow-[0_0_12px_rgba(245,158,11,0.25)]">
-              <Crown className="w-3.5 h-3.5 text-amber-400" />
-              CEO
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+              CEO & Founder
             </span>
           ) : isPro ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-black uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/10 text-white border border-white/20 text-[10px] font-black uppercase tracking-wider">
               PRO
             </span>
           ) : null}
         </div>
-        <p className="text-body text-zinc-400 truncate">
-          {profile?.username ? `@${profile.username}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Escolhe o teu @username' : 'Atleta AB Fitness'}
+
+        <p className="text-xs font-medium text-zinc-400 truncate">
+          {profile?.username ? `@${profile.username}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Atleta Registado' : 'Atleta AB Fitness'}
         </p>
-        {profile?.bio && !compact && <p className="mt-2.5 text-body text-zinc-300 leading-relaxed">{profile.bio}</p>}
+
+        {profile?.bio && !compact && (
+          <p className="text-xs text-zinc-300 leading-relaxed pt-1.5 font-normal">
+            {profile.bio}
+          </p>
+        )}
+
         {(profile?.athlete_tag || profile?.home_gym) && (
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {profile.athlete_tag && <span className="px-2.5 py-1 rounded-lg bg-accent/70 border border-accent-hover text-[12px] font-semibold text-white">{profile.athlete_tag}</span>}
+          <div className="pt-2 flex flex-wrap items-center gap-2">
+            {profile.athlete_tag && (
+              <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-[11px] font-bold text-zinc-200">
+                {profile.athlete_tag}
+              </span>
+            )}
             {profile.home_gym && (
-              <span className="inline-flex items-center gap-1 text-[13px] text-zinc-400">
-                <MapPin className="w-3.5 h-3.5" strokeWidth={1.75} />
+              <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
+                <MapPin className="w-3 h-3 text-zinc-500" strokeWidth={1.75} />
                 {profile.home_gym}
               </span>
             )}
           </div>
         )}
       </div>
+
+      {/* Grelha de Métricas da Carreira (Rodapé do Cartão) */}
+      {!compact && stats && (
+        <div className="mt-4 pt-3.5 border-t border-white/[0.06] grid grid-cols-3 gap-2 text-center relative z-10">
+          <div className="p-2 rounded-xl bg-white/[0.02]">
+            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Treinos</span>
+            <span className="font-display font-black text-base text-white tabular-nums">{fmtInt(stats.total_workouts || 0)}</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white/[0.02]">
+            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Volume</span>
+            <span className="font-display font-black text-base text-white tabular-nums">{fmtKg(stats.monthly_volume_kg || 0)}</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white/[0.02]">
+            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Sequência</span>
+            <span className="font-display font-black text-base text-white tabular-nums">{stats.streak ? `${stats.streak}d` : '–'}</span>
+          </div>
+        </div>
+      )}
     </article>
   );
 }
