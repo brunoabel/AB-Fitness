@@ -243,7 +243,7 @@ export default function RestTimer({
     <>
       {/* Dynamic Island: cápsula líquida que expande ao toque, física e proporções da ilha nativa da Apple */}
       {isActive && (
-        <div className="fixed top-[calc(env(safe-area-inset-top,0px)+80px)] inset-x-4 z-20 flex justify-center">
+        <div className="fixed top-[calc(env(safe-area-inset-top,0px)+10px)] inset-x-4 z-40 flex justify-center">
           <motion.div
             layout
             onClick={toggleIsland}
