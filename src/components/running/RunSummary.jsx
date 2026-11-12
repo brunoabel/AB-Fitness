@@ -1,195 +1,165 @@
 import React from 'react';
-import { CheckCircle2, Download, Flag, Flame, HeartPulse, Navigation2, RotateCcw, Satellite, Share2, Timer, Trophy, Zap } from 'lucide-react';
+import { Award, Download, RotateCcw, Share2 } from 'lucide-react';
 import { downloadGPX, formatDuration } from '../../utils/runningService';
+import { evaluateRunAchievements, formatRunRelativeDate, getRunTargetById } from '../../utils/runGoals';
 import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
 
-/** Secção extraída de RunningHub.jsx (estado e handlers recebidos por props). */
-export default function RunSummary({ isDark, handleResetSession, lastCompletedRun, sessionStatus, setSelectedRunForShare }) {
+/** Resumo pós-corrida estilo Nike Run Club / Strava: mapa-herói, zero caixas redundantes, partilha em 1 toque. */
+export default function RunSummary({
+  handleResetSession,
+  isDark,
+  lastCompletedRun,
+  runsHistory,
+  sessionStatus,
+  setSelectedRunForShare
+}) {
+  if (sessionStatus !== 'completed' || !lastCompletedRun) return null;
+
+  const target = getRunTargetById(lastCompletedRun.targetId);
+  const achievement = evaluateRunAchievements(lastCompletedRun, runsHistory, target);
+
   return (
-    <>
-      {/* 4. TELA DE PÓS-CORRIDA / RESUMO CELEBRATÓRIO (COMPLETED) */}
-      {sessionStatus === 'completed' && lastCompletedRun && (
-        <div className="space-y-4 animate-fadeIn pb-12">
-          {/* Header de Celebração */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <Trophy className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Treino concluído · Running Club
-                </span>
-                <h2 className="text-xl font-black text-white tracking-tight">
-                  Excelente Corrida, Atleta!
-                </h2>
-              </div>
-            </div>
+    <div className="space-y-6 animate-fadeIn pb-12">
+      {/* Mapa do Percurso em Hero */}
+      <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl">
+        <RunningMap
+          coordinates={lastCompletedRun.coordinates}
+          splits={lastCompletedRun.splits}
+          isLive={false}
+          isDark={isDark}
+          height="280px"
+        />
+        <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/[0.1] text-xs font-semibold text-white">
+          Corrida concluída · {formatRunRelativeDate(lastCompletedRun.date || lastCompletedRun.timestamp)}
+        </div>
+      </div>
 
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              O seu percurso suavizado, ritmo médio e parciais foram guardados com sucesso no seu perfil do Running Club.
-            </p>
+      {/* Conquista + Distância Herói sobre OLED preto */}
+      <div className="space-y-2">
+        {achievement.badgeLabel && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold">
+            <Award className="w-3.5 h-3.5" />
+            {achievement.badgeLabel}
+          </span>
+        )}
 
-            {/* Ações Rápidas no Topo */}
-            <div className="mt-4 pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row items-center gap-2">
-              <button
-                onClick={() => {
-                  setSelectedRunForShare(lastCompletedRun);
-                  triggerHaptic(15);
-                }}
-                className="w-full sm:flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-xs flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer shadow-sm"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>PARTILHAR CARTÃO (INSTAGRAM)</span>
-              </button>
+        <div className="flex items-baseline gap-2">
+          <span className="font-display font-black text-5xl sm:text-6xl tracking-tight text-white tabular-nums">
+            {Number(lastCompletedRun.distanceKm).toFixed(2)}
+          </span>
+          <span className="text-xl font-bold text-zinc-400">km</span>
+        </div>
+      </div>
 
-              <button
-                onClick={() => {
-                  triggerHaptic(15);
-                  downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
-                }}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl text-zinc-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
-                title="Descarregar ficheiro GPX compatível com Strava e Garmin"
-              >
-                <Download className="w-4 h-4 text-white" />
-                <span>Exportar GPX</span>
-              </button>
+      {/* Métricas em texto corrido tabular (sem caixas aninhadas) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-5 gap-x-6 py-4 border-y border-white/[0.08]">
+        <div>
+          <span className="text-xs text-zinc-400 block">Ritmo médio</span>
+          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+            {lastCompletedRun.avgPace}
+          </span>
+        </div>
 
-              <button
-                onClick={handleResetSession}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl text-zinc-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4 text-zinc-400" />
-                <span>Nova Corrida</span>
-              </button>
-            </div>
+        <div>
+          <span className="text-xs text-zinc-400 block">Tempo</span>
+          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+            {formatDuration(lastCompletedRun.durationSeconds)}
+          </span>
+        </div>
+
+        <div>
+          <span className="text-xs text-zinc-400 block">Calorias</span>
+          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+            {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-500 font-sans">kcal</span>
+          </span>
+        </div>
+
+        <div>
+          <span className="text-xs text-zinc-400 block">Velocidade</span>
+          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+            {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-500 font-sans">km/h</span>
+          </span>
+        </div>
+
+        {Boolean(lastCompletedRun.vo2Max) && (
+          <div className="col-span-2 sm:col-span-4 pt-3 border-t border-white/[0.06] flex items-baseline justify-between">
+            <span className="text-xs text-zinc-400">Capacidade aeróbica estimada (VO2 Max)</span>
+            <span className="text-base font-black text-white font-mono tabular-nums">
+              {lastCompletedRun.vo2Max} <span className="text-xs font-normal text-zinc-500 font-sans">ml/kg/min</span>
+            </span>
           </div>
+        )}
+      </div>
 
-          {/* Grid de Mapa e Estatísticas */}
-          <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
-            {/* Mapa do Percurso Percorrido */}
-            <div className="md:col-span-6 space-y-1.5">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-semibold text-zinc-400">
-                  Trajeto do treino
-                </span>
-                <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5">
-                  <span className="flex items-center gap-1"><Satellite className="w-3 h-3 text-white" /> Satélite HD</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1"><Flag className="w-3 h-3 text-emerald-400" /> Chegada</span>
-                </span>
+      {/* Parciais por km (lista limpa) */}
+      {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
+        <div className="space-y-2">
+          <span className="text-xs font-semibold text-zinc-400 block">
+            Parciais por km
+          </span>
+          <div className="divide-y divide-white/[0.06] border-t border-white/[0.06] max-h-44 overflow-y-auto">
+            {lastCompletedRun.splits.map((s) => (
+              <div
+                key={s.km}
+                className="flex items-center justify-between text-xs py-2.5 font-mono tabular-nums"
+              >
+                <span className="font-bold text-white">KM {s.km}</span>
+                <span className="text-zinc-200">{s.pace || s.paceStr}</span>
+                <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
               </div>
-              <div className="rounded-2xl overflow-hidden border border-white/[0.08] shadow-sm">
-                <RunningMap 
-                  coordinates={lastCompletedRun.coordinates} 
-                  splits={lastCompletedRun.splits}
-                  isLive={false} 
-                  isDark={isDark} 
-                  height="300px" 
-                />
-              </div>
-            </div>
-
-            {/* Painel de Estatísticas Finais */}
-            <div className="md:col-span-6 p-5 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl space-y-4">
-              {/* Distância Gigante */}
-              <div className="text-center py-3 bg-black/40 rounded-xl border border-white/[0.06]">
-                <span className="text-xs text-zinc-400 block mb-0.5">
-                  Distância total
-                </span>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-black tracking-tighter text-white font-mono tabular-nums">
-                    {Number(lastCompletedRun.distanceKm).toFixed(2)}
-                  </span>
-                  <span className="text-lg font-black text-white font-sans">
-                    KM
-                  </span>
-                </div>
-              </div>
-
-              {/* Métricas: texto corrido, sem caixa nem legendas redundantes */}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-4 pt-1">
-                <div>
-                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                    <Zap className="w-3.5 h-3.5" />
-                    <span>Ritmo médio</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.avgPace}
-                  </span>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                    <Timer className="w-3.5 h-3.5" />
-                    <span>Tempo total</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {formatDuration(lastCompletedRun.durationSeconds)}
-                  </span>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                    <Flame className="w-3.5 h-3.5" />
-                    <span>Calorias</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
-                  </span>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                    <Navigation2 className="w-3.5 h-3.5" />
-                    <span>Velocidade</span>
-                  </div>
-                  <span className="text-xl font-black text-white font-mono tabular-nums">
-                    {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400 font-sans">km/h</span>
-                  </span>
-                </div>
-
-                {Boolean(lastCompletedRun.vo2Max) && (
-                  <div className="col-span-2 pt-3 border-t border-white/[0.06]">
-                    <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-                      <HeartPulse className="w-3.5 h-3.5" />
-                      <span>VO2 Max estimado</span>
-                    </div>
-                    <span className="text-xl font-black text-white font-mono tabular-nums">
-                      {lastCompletedRun.vo2Max} <span className="text-xs font-normal text-zinc-400 font-sans">ml/kg/min</span>
-                    </span>
-                    <span className="text-[11px] text-zinc-500 block mt-0.5">Capacidade aeróbica estimada pelo ritmo desta corrida</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Splits / KM a KM */}
-              {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
-                <div className="pt-2 border-t border-white/[0.08]">
-                  <span className="text-xs font-semibold text-zinc-400 block mb-2">
-                    Parciais por km
-                  </span>
-                  <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                    {lastCompletedRun.splits.map((s) => (
-                      <div 
-                        key={s.km}
-                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-black/40 border border-white/[0.06] font-mono tabular-nums"
-                      >
-                        <span className="font-bold text-white">KM {s.km}</span>
-                        <span className="text-zinc-200">{s.pace || s.paceStr}</span>
-                        <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            ))}
           </div>
         </div>
       )}
 
-    </>
+      {/* Ações finais */}
+      <div className="space-y-3 pt-1">
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedRunForShare(lastCompletedRun);
+            triggerHaptic(15);
+          }}
+          className="w-full min-h-[54px] px-5 rounded-full bg-white text-black hover:bg-zinc-100 font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer shadow-lg"
+        >
+          <Share2 className="w-4 h-4" />
+          <span>Partilhar Corrida</span>
+        </button>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            onClick={handleResetSession}
+            className="min-h-[48px] px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+          >
+            <RotateCcw className="w-4 h-4 text-zinc-400" />
+            <span>Nova Corrida</span>
+          </button>
+
+          {lastCompletedRun.coordinates && lastCompletedRun.coordinates.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic(15);
+                downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
+              }}
+              className="min-h-[48px] px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300 hover:text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              <Download className="w-4 h-4" />
+              <span>Exportar GPX</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResetSession}
+              className="min-h-[48px] px-4 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-sm cursor-pointer"
+            >
+              Concluir
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

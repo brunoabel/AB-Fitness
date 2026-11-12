@@ -39,7 +39,13 @@ import { syncRunToSupabase, syncUserRunsFromSupabase } from '../services/running
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { useAuth } from '../context';
 import { useWakeLock } from '../hooks/useWakeLock';
-import { AUTO_PAUSE_PREF_KEY, PERMISSION_EXPLAINED_KEY } from './running/runPrefs';
+import {
+  AUTO_PAUSE_PREF_KEY,
+  PERMISSION_EXPLAINED_KEY,
+  WEEKLY_GOAL_PREF_KEY,
+  RUN_TARGET_PREF_KEY
+} from './running/runPrefs';
+import { getRunTargetById, computeTargetProgress } from '../utils/runGoals';
 import RunHeader from './running/RunHeader';
 import RunPermissionModal from './running/RunPermissionModal';
 import RunLiveHud from './running/RunLiveHud';
@@ -63,8 +69,37 @@ export default function RunningHub({ isDark = true }) {
   });
   const [isAutoPaused, setIsAutoPaused] = useState(false);
 
-  const [isCloudSynced, setIsCloudSynced] = useState(false);
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
+
+  // Meta semanal e objetivo da corrida atual persistidos localmente
+  const [weeklyGoalKm, setWeeklyGoalKm] = useState(() => {
+    try {
+      const saved = Number(localStorage.getItem(WEEKLY_GOAL_PREF_KEY));
+      return saved > 0 ? saved : 10;
+    } catch {
+      return 10;
+    }
+  });
+  const [selectedTarget, setSelectedTarget] = useState(() => {
+    try {
+      return getRunTargetById(localStorage.getItem(RUN_TARGET_PREF_KEY));
+    } catch {
+      return getRunTargetById('free');
+    }
+  });
+  const targetReachedNotifiedRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(WEEKLY_GOAL_PREF_KEY, String(weeklyGoalKm));
+    } catch {}
+  }, [weeklyGoalKm]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(RUN_TARGET_PREF_KEY, selectedTarget?.id || 'free');
+    } catch {}
+  }, [selectedTarget]);
 
   // Rascunho de corrida recuperado (caso o utilizador tenha pausado ou recarregado a app)
   const initialDraft = React.useMemo(() => getActiveRunDraft(), []);
@@ -253,13 +288,23 @@ export default function RunningHub({ isDark = true }) {
     };
   }, []);
 
-  // Totais Acumulados
+  // Total acumulado de quilómetros
   const totalKmsAccumulated = runsHistory.reduce((acc, r) => acc + (Number(r.distanceKm) || 0), 0);
-  const totalRunsCount = runsHistory.length;
 
   const reloadHistory = () => {
     setRunsHistory(getRunsHistory());
   };
+
+  // Celebra uma única vez por corrida quando o atleta cumpre o objetivo selecionado
+  useEffect(() => {
+    if (sessionStatus !== 'running' || targetReachedNotifiedRef.current) return;
+    const prog = computeTargetProgress(selectedTarget, distanceKm, elapsedSeconds);
+    if (prog?.reached) {
+      targetReachedNotifiedRef.current = true;
+      try { triggerHaptic([20, 40, 20]); } catch {}
+      try { sound.playVictory(); } catch {}
+    }
+  }, [sessionStatus, selectedTarget, distanceKm, elapsedSeconds]);
 
   // Sincronizar corridas com o Supabase quando o utilizador estiver autenticado
   const syncUserId = user?.id;
@@ -270,7 +315,6 @@ export default function RunningHub({ isDark = true }) {
         .then((merged) => {
           if (active && Array.isArray(merged) && merged.length > 0) {
             setRunsHistory(merged);
-            setIsCloudSynced(true);
           }
         })
         .catch((err) => {
@@ -734,6 +778,7 @@ export default function RunningHub({ isDark = true }) {
     } catch {}
 
     clearActiveRunDraft();
+    targetReachedNotifiedRef.current = false;
     setDistanceKm(0);
     distanceKmRef.current = 0;
     setElapsedSeconds(0);
@@ -897,6 +942,7 @@ export default function RunningHub({ isDark = true }) {
       elevationGainM: elevationRef.current,
       splits: splitsRef.current,
       coordinates: simplifiedCoords,
+      targetId: selectedTarget?.id || 'free',
       isSimulation
     };
 
@@ -906,9 +952,6 @@ export default function RunningHub({ isDark = true }) {
     // 1. Sincronização em Nuvem (Supabase PostgreSQL)
     if (user?.id && user.id !== 'guest-local-user') {
       syncRunToSupabase(runRecord, user.id)
-        .then(() => {
-          setIsCloudSynced(true);
-        })
         .catch((err) => {
           console.warn('Erro ao guardar corrida na nuvem:', err);
         });
@@ -932,6 +975,7 @@ export default function RunningHub({ isDark = true }) {
   // Resetar após fechar resumo do treino ou descartar
   const handleResetSession = () => {
     clearActiveRunDraft();
+    targetReachedNotifiedRef.current = false;
     setSessionStatus('idle');
     setLastCompletedRun(null);
     setDistanceKm(0);
@@ -970,60 +1014,123 @@ export default function RunningHub({ isDark = true }) {
     }
   };
 
-  // Classificação da qualidade do sinal GPS para feedback visual claro
+  // Classificação simples e humana da qualidade do sinal GPS (sem jargões técnicos)
   const getGpsSignalBadge = () => {
     if (isSimulation) {
-      return { label: `Simulação (${simulationMode === 'noisy' ? 'Filtro Ruído' : 'Normal'})`, color: 'bg-amber-400', text: 'text-amber-400' };
+      return { label: 'Passadeira', color: 'bg-amber-400', text: 'text-amber-300' };
     }
     if (gpsErrorCode === 'DENIED' || permissionState === 'denied') {
-      return { label: 'Permissão GPS Negada', color: 'bg-rose-500', text: 'text-rose-400' };
+      return { label: 'GPS bloqueado', color: 'bg-rose-500', text: 'text-rose-400' };
     }
     if (gpsErrorCode === 'COARSE') {
-      return { label: `GPS Aproximado (±${gpsAccuracy}m)`, color: 'bg-rose-500', text: 'text-rose-400' };
+      return { label: 'Localização aproximada', color: 'bg-rose-500', text: 'text-rose-400' };
     }
     if (gpsAccuracy === null) {
-      return { label: 'A adquirir satélites GPS...', color: 'bg-amber-400', text: 'text-amber-400' };
-    }
-    if (gpsAccuracy <= 12) {
-      return { label: `GPS Alta Precisão (±${gpsAccuracy}m)`, color: 'bg-emerald-400', text: 'text-emerald-400' };
+      return { label: 'A localizar...', color: 'bg-amber-400', text: 'text-amber-300' };
     }
     if (gpsAccuracy <= DEFAULT_TRACKING_CONFIG.maxAccuracyMeters) {
-      return { label: `GPS Ativo (±${gpsAccuracy}m)`, color: 'bg-emerald-400', text: 'text-zinc-200' };
+      return { label: 'GPS pronto', color: 'bg-emerald-400', text: 'text-emerald-300' };
     }
-    return { label: `A calibrar precisão (±${gpsAccuracy}m)...`, color: 'bg-amber-400', text: 'text-amber-400' };
+    return { label: 'A ajustar sinal...', color: 'bg-amber-400', text: 'text-amber-300' };
   };
 
   const signalBadge = getGpsSignalBadge();
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 animate-fadeIn pb-24">
-      
-      <RunHeader {...{ isCloudSynced, setVoiceEnabled, totalKmsAccumulated, totalRunsCount, voiceEnabled }} />
+    <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24 space-y-6 animate-fadeIn">
+      <RunHeader
+        {...{
+          gpsAccuracy,
+          gpsErrorCode,
+          handlePrewarmGps,
+          isGpsWarmedUp,
+          isSimulation,
+          permissionState,
+          sessionStatus,
+          setVoiceEnabled,
+          voiceEnabled
+        }}
+      />
       <RunPermissionModal {...{ handleStartCountdown, setShowPermissionModal, showPermissionModal }} />
-      {/* 2. CONTAGEM REGRESSIVA 3.. 2.. 1.. (COM PRÉ-AQUECIMENTO DE GPS ATIVO) */}
+
+      {/* 2. Contagem regressiva limpa 3 · 2 · 1 em foco OLED */}
       {sessionStatus === 'countdown' && (
-        <div 
+        <div
           onClick={handleSkipCountdown}
-          className="rounded-2xl bg-zinc-950 border border-accent-hover p-12 text-center flex flex-col items-center justify-center animate-scaleUp shadow-xl cursor-pointer"
+          className="py-20 text-center flex flex-col items-center justify-center animate-scaleUp cursor-pointer select-none"
         >
-          <span className="text-xs font-bold text-white uppercase tracking-widest">
-            A PREPARAR E PRÉ-AQUECER GPS...
-          </span>
-          <span className="text-7xl font-black text-white mt-2 tracking-tighter animate-pulse font-mono tabular-nums">
+          <span className="font-display text-8xl sm:text-9xl font-black text-white tracking-tight tabular-nums animate-pulse">
             {countdown}
           </span>
-          <span className="text-xs text-zinc-400 mt-2">
-            {gpsAccuracy ? `Sinal GPS detetado (±${gpsAccuracy}m)` : 'A sincronizar satélites GNSS e filtro Kalman 2D'}
-          </span>
-          <span className="text-xs text-white mt-4 underline font-semibold">
-            Tocar para iniciar imediatamente
+          <p className="text-sm font-medium text-zinc-300 mt-4">
+            Prepara-te — a corrida vai começar
+          </p>
+          <span className="text-xs font-semibold text-zinc-500 hover:text-white mt-3 transition-colors">
+            Tocar para arrancar já
           </span>
         </div>
       )}
 
-      <RunLiveHud {...{ isDark, autoPauseEnabled, avgPaceSeconds, calories, coordinates, currentFix, currentPaceSeconds, distanceKm, elapsedSeconds, elevationGainM, gpsError, gpsErrorCode, handleFinishRun, handlePause, handleResetSession, handleResume, isAutoPaused, isAutoPausedRef, isSimulation, livePaceSeconds, sessionStatus, setAutoPauseEnabled, signalBadge, speedKmh, splits }} />
-      <RunSummary {...{ isDark, coordinates, handleResetSession, lastCompletedRun, sessionStatus, setSelectedRunForShare, splits }} />
-      <RunHome {...{ gpsAccuracy, gpsError, handleDeleteRun, handlePrewarmGps, handleRequestStartRun, isGpsWarmedUp, isSimulation, permissionState, runsHistory, sessionStatus, setIsSimulation, setSelectedRunForShare, setSimulationMode, simulationMode }} />
+      <RunLiveHud
+        {...{
+          isDark,
+          autoPauseEnabled,
+          avgPaceSeconds,
+          calories,
+          coordinates,
+          currentFix,
+          currentPaceSeconds,
+          distanceKm,
+          elapsedSeconds,
+          elevationGainM,
+          gpsError,
+          gpsErrorCode,
+          handleFinishRun,
+          handlePause,
+          handleResetSession,
+          handleResume,
+          isAutoPaused,
+          isAutoPausedRef,
+          isSimulation,
+          livePaceSeconds,
+          selectedTarget,
+          sessionStatus,
+          setAutoPauseEnabled,
+          signalBadge,
+          speedKmh,
+          splits
+        }}
+      />
+      <RunSummary
+        {...{
+          isDark,
+          handleResetSession,
+          lastCompletedRun,
+          runsHistory,
+          sessionStatus,
+          setSelectedRunForShare
+        }}
+      />
+      <RunHome
+        {...{
+          gpsError,
+          handleDeleteRun,
+          handleRequestStartRun,
+          isSimulation,
+          permissionState,
+          runsHistory,
+          selectedTarget,
+          sessionStatus,
+          setIsSimulation,
+          setSelectedRunForShare,
+          setSelectedTarget,
+          setSimulationMode,
+          setWeeklyGoalKm,
+          simulationMode,
+          totalKmsAccumulated,
+          weeklyGoalKm
+        }}
+      />
       {/* 5. MODAL DE COMPARTILHAMENTO ESTILO STRAVA */}
       {selectedRunForShare && (
         <RunningShareModal

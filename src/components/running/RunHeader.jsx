@@ -1,70 +1,82 @@
 import React from 'react';
-import { Cloud, Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import { saveVoiceCuesPreference } from '../../utils/speech';
 import { triggerHaptic } from '../../utils/audio';
 
-/** Secção extraída de RunningHub.jsx (estado e handlers recebidos por props). */
-export default function RunHeader({ isCloudSynced, setVoiceEnabled, totalKmsAccumulated, totalRunsCount, voiceEnabled }) {
+/** Cabeçalho editorial da Corrida: limpo, sem jargões nem cartões repetidos. */
+export default function RunHeader({
+  gpsAccuracy,
+  gpsErrorCode,
+  handlePrewarmGps,
+  isGpsWarmedUp,
+  isSimulation,
+  permissionState,
+  sessionStatus,
+  setVoiceEnabled,
+  voiceEnabled
+}) {
+  const gpsBlocked = permissionState === 'denied' || gpsErrorCode === 'DENIED' || gpsErrorCode === 'COARSE';
+  const gpsReady = isGpsWarmedUp || (gpsAccuracy !== null && gpsAccuracy <= 25);
+
+  const statusDot = isSimulation
+    ? 'bg-amber-400'
+    : gpsBlocked
+      ? 'bg-rose-500'
+      : gpsReady
+        ? 'bg-emerald-400'
+        : 'bg-zinc-500';
+
+  const statusText = isSimulation
+    ? 'Passadeira'
+    : gpsBlocked
+      ? 'Sem GPS'
+      : gpsReady
+        ? 'GPS Pronto'
+        : 'GPS';
+
   return (
-    <>
-      {/* 1. Header do AB Running Club */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-[11px] font-bold tracking-widest uppercase text-white">
-              AB FITNESS • RUNNING CLUB
-            </span>
-            {isCloudSynced && (
-              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1 font-mono">
-                <Cloud className="w-2.5 h-2.5" />
-                Nuvem OK
-              </span>
-            )}
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-0.5">
-            Running Club
-          </h1>
-          <p className="text-xs text-zinc-400">
-            Rastreio GPS com filtro de Kalman 2D, janela móvel de pace e Auto-Pause inteligente.
-          </p>
-        </div>
+    <header className="flex items-center justify-between gap-4">
+      <h1 className="font-heading text-2xl sm:text-3xl font-black text-white tracking-tight">
+        Corrida
+      </h1>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Toggle de Locução por Voz nos Fones */}
+      <div className="flex items-center gap-2 shrink-0">
+        {sessionStatus === 'idle' && (
           <button
+            type="button"
             onClick={() => {
-              const next = !voiceEnabled;
-              setVoiceEnabled(next);
-              saveVoiceCuesPreference(next);
-              triggerHaptic(10);
+              if (!isSimulation && handlePrewarmGps) {
+                triggerHaptic(8);
+                handlePrewarmGps();
+              }
             }}
-            className={`min-h-[44px] min-w-[44px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 ${
-              voiceEnabled 
-                ? 'bg-accent/70 text-white border-accent-hover' 
-                : 'bg-surface text-zinc-400 border-white/10'
-            }`}
-            title={voiceEnabled ? 'Locução por voz ativada nos fones' : 'Locução por voz desativada'}
+            className="min-h-[40px] inline-flex items-center gap-2 px-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-zinc-300 transition-colors cursor-pointer"
+            title={isSimulation ? 'Modo passadeira ativo' : 'Verificar sinal de localização'}
           >
-            {voiceEnabled ? (
-              <Volume2 className="w-4 h-4 text-white" />
-            ) : (
-              <VolumeX className="w-4 h-4 text-zinc-400" />
-            )}
+            <span className={`w-2 h-2 rounded-full ${statusDot}`} />
+            <span>{statusText}</span>
           </button>
+        )}
 
-          {/* Badges de Totais Acumulados */}
-          <div className="text-right bg-surface border border-white/10 px-3.5 py-2 rounded-xl">
-            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
-              Total ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
-            </span>
-            <span className="text-sm font-black text-white font-mono tabular-nums">
-              {totalKmsAccumulated.toFixed(1)} <span className="text-[11px] text-white font-sans">KM</span>
-            </span>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const next = !voiceEnabled;
+            setVoiceEnabled(next);
+            saveVoiceCuesPreference(next);
+            triggerHaptic(10);
+          }}
+          className={`min-h-[44px] min-w-[44px] rounded-full border transition-all flex items-center justify-center cursor-pointer active:scale-95 ${
+            voiceEnabled
+              ? 'bg-white text-black border-white'
+              : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
+          }`}
+          aria-label={voiceEnabled ? 'Desativar voz do treinador' : 'Ativar voz do treinador'}
+          title={voiceEnabled ? 'Voz nos fones ligada' : 'Voz nos fones desligada'}
+        >
+          {voiceEnabled ? <Volume2 className="w-4 h-4 stroke-[2.2]" /> : <VolumeX className="w-4 h-4 stroke-[2]" />}
+        </button>
       </div>
-
-    </>
+    </header>
   );
 }
