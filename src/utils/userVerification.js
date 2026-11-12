@@ -14,10 +14,6 @@ export function isAthleteCeo(profileOrUser, contextUser) {
 
   const email = (contextUser?.email || profileOrUser?.email || '').toLowerCase().trim();
   if (email === 'brunoaaraujo2005@gmail.com') return true;
-  if (email && email.startsWith('bruno') && (email.endsWith('@gmail.com') || email.endsWith('@abfitness.app'))) return true;
-
-  const username = (profileOrUser?.username || '').toLowerCase().trim();
-  if (username === 'bruno' || username === 'brunoaraujo' || username === 'ceo') return true;
 
   return false;
 }

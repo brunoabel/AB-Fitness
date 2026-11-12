@@ -338,8 +338,7 @@ function AppContent() {
   const isAuthorizedAdmin = Boolean(
     isAdmin || 
     isCeo || 
-    user?.email === 'brunoaaraujo2005@gmail.com' ||
-    (user?.email && user.email.toLowerCase().includes('bruno') && (user.email.endsWith('@gmail.com') || user.email.endsWith('@abfitness.app')))
+    user?.email === 'brunoaaraujo2005@gmail.com'
   );
 
   if (PRIVATE_LAUNCH_MODE && !isAuthorizedAdmin) {

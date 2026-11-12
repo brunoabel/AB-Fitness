@@ -196,8 +196,7 @@ export function AuthProvider({ children }) {
   const profileRole = roleState.userId === userId ? roleState.role : null;
   const isCeo = Boolean(
     profileRole === 'ceo' ||
-    user?.email === 'brunoaaraujo2005@gmail.com' ||
-    (user?.email && user.email.toLowerCase().includes('bruno') && (user.email.endsWith('@gmail.com') || user.email.endsWith('@abfitness.app')))
+    user?.email === 'brunoaaraujo2005@gmail.com'
   );
   const isAdmin = isCeo || Boolean(profileRole === 'admin');
   const isTrainer = isCeo || Boolean(profileRole === 'coach');
