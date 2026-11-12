@@ -7,10 +7,9 @@ import {
   HeartPulse,
   Moon,
   Flame,
-  Zap,
+  Link2,
   RefreshCw,
   CheckCircle2,
-  AlertCircle,
   ExternalLink,
   Sparkles
 } from 'lucide-react';
@@ -19,7 +18,6 @@ import { useAuth } from '../../context';
 import {
   getConnectedWearables,
   getLocalBiometrics,
-  connectWearable,
   disconnectWearable,
   syncWearableData,
   computeReadinessIndex
@@ -82,30 +80,13 @@ export default function WearablesModal({ isOpen, onClose }) {
     };
   }, [isOpen, onClose]);
 
-  const handleConnectSimulator = async (provider) => {
-    triggerHaptic(12);
-    setSyncingProvider(provider);
-    await connectWearable(userId, provider, 'simulated');
-    await loadData();
-    setSyncingProvider(null);
-  };
-
   const handleConnectOfficial = (provider) => {
     triggerHaptic(10);
     const redirectUri = `${window.location.origin}/auth/callback/wearable`;
-    let url = null;
-    if (provider === 'whoop') {
-      url = buildWhoopAuthUrl(redirectUri);
-    } else if (provider === 'fitbit') {
-      url = buildFitbitAuthUrl(redirectUri);
-    }
-
-    if (url) {
-      window.location.href = url;
-    } else {
-      // Credenciais ainda não configuradas no .env -> Conecta no simulador e avisa
-      handleConnectSimulator(provider);
-    }
+    const url = provider === 'whoop'
+      ? buildWhoopAuthUrl(redirectUri)
+      : buildFitbitAuthUrl(redirectUri);
+    if (url) window.location.href = url;
   };
 
   const handleDisconnect = async (provider) => {
@@ -308,25 +289,17 @@ export default function WearablesModal({ isOpen, onClose }) {
                 {/* Ações Whoop */}
                 <div className="mt-3.5 flex items-center gap-2">
                   {!whoopConn ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleConnectSimulator('whoop')}
-                        className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <Zap className="w-4 h-4" />
-                        Simular Atleta Elite
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleConnectOfficial('whoop')}
-                        className="min-h-[42px] px-3.5 rounded-xl bg-surface-3 hover:bg-surface-3/80 border border-white/[0.08] text-white text-[12px] font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                        title={getWhoopClientId() ? 'Conectar oficial' : 'Requer Client ID Whoop'}
-                      >
-                        <span>OAuth</span>
-                        <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={() => handleConnectOfficial('whoop')}
+                      disabled={!getWhoopClientId()}
+                      className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                      title={getWhoopClientId() ? undefined : 'Requer Client ID Whoop'}
+                    >
+                      <Link2 className="w-4 h-4" />
+                      Conectar Whoop
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
                   ) : (
                     <button
                       type="button"
@@ -410,25 +383,17 @@ export default function WearablesModal({ isOpen, onClose }) {
                 {/* Ações Fitbit */}
                 <div className="mt-3.5 flex items-center gap-2">
                   {!fitbitConn ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleConnectSimulator('fitbit')}
-                        className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <Zap className="w-4 h-4" />
-                        Simular Atleta Elite
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleConnectOfficial('fitbit')}
-                        className="min-h-[42px] px-3.5 rounded-xl bg-surface-3 hover:bg-surface-3/80 border border-white/[0.08] text-white text-[12px] font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                        title={getFitbitClientId() ? 'Conectar oficial' : 'Requer Client ID Fitbit'}
-                      >
-                        <span>OAuth</span>
-                        <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={() => handleConnectOfficial('fitbit')}
+                      disabled={!getFitbitClientId()}
+                      className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                      title={getFitbitClientId() ? undefined : 'Requer Client ID Fitbit'}
+                    >
+                      <Link2 className="w-4 h-4" />
+                      Conectar Fitbit
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
                   ) : (
                     <button
                       type="button"
