@@ -463,7 +463,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
     // 5. Avaliação de medalhas
     try {
-      const unlocked = evaluateAndUnlockBadges() || [];
+      const unlocked = evaluateAndUnlockBadges('workout') || [];
       if (unlocked.length > 0) {
         setNewlyUnlockedBadge(unlocked[0]);
       }

@@ -53,7 +53,7 @@ export default function FocusExerciseCard({
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {!isTimed && (
             <button
               type="button"
@@ -61,7 +61,7 @@ export default function FocusExerciseCard({
                 onOpenPlates(latestWeight);
                 triggerHaptic(10);
               }}
-              className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2.5 rounded-xl text-zinc-500 hover:text-white active:scale-90 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Abrir Calculadora de Anilhas para a Barra"
             >
               <Dumbbell className="w-4 h-4 stroke-[2]" />
@@ -74,11 +74,10 @@ export default function FocusExerciseCard({
                 onOpenSwap(exercise);
                 triggerHaptic(10);
               }}
-              className="px-2.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
+              className="p-2.5 rounded-xl text-zinc-500 hover:text-white active:scale-90 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Trocar Aparelho (Máquina Ocupada)"
             >
-              <Shuffle className="w-4 h-4 text-sky-400 stroke-[2]" />
-              <span className="hidden sm:inline">Trocar</span>
+              <Shuffle className="w-4 h-4 stroke-[2]" />
             </button>
           )}
           <button
@@ -87,7 +86,7 @@ export default function FocusExerciseCard({
               onOpenGuide(exercise);
               triggerHaptic(10);
             }}
-            className="px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
+            className="px-3 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 text-xs font-semibold"
             title="Ver guia biomecânico"
           >
             <Eye className="w-4 h-4 stroke-[1.8]" />

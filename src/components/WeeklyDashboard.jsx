@@ -249,22 +249,15 @@ export default function WeeklyDashboard({
             {/* Topo com Título do Treino */}
             <div className="p-5 border-b border-white/10 bg-surface-2/50 flex items-start justify-between">
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-100 font-semibold text-[11px] uppercase tracking-wider border border-zinc-700/60">
-                    {selectedWorkout.name}
+                <div className="flex flex-wrap items-center gap-2 mb-1.5 text-[11px] font-semibold uppercase tracking-wider">
+                  <span className="text-zinc-400">
+                    {selectedWorkout.name}{selectedWorkout.badge ? ` · ${selectedWorkout.badge}` : ''}
                   </span>
-                  {selectedWorkout.badge && (
-                    <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-medium text-[11px] border border-zinc-700/60">
-                      {selectedWorkout.badge}
-                    </span>
-                  )}
                   {currentJsDay === selectedWorkout.dayId && (
-                    <span className="px-2 py-0.5 rounded-md bg-primary text-app font-semibold text-[11px]">
-                      Hoje
-                    </span>
+                    <span className="text-white">· Hoje</span>
                   )}
                   {isSelectedDayCompleted && (
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-950/40 text-emerald-400 font-semibold text-[11px] border border-emerald-800/60 flex items-center gap-1">
+                    <span className="text-emerald-400 flex items-center gap-1">
                       <Check className="w-3 h-3" strokeWidth={2.5} /> Efetuado
                     </span>
                   )}
@@ -351,10 +344,10 @@ export default function WeeklyDashboard({
                         <div
                           key={ex.id}
                           onClick={() => onViewExercise(ex)}
-                          className="p-3 rounded-lg bg-surface-2/80 hover:bg-surface-3 border border-zinc-800/80 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                          className="p-3 rounded-lg bg-surface-2/80 hover:bg-surface-3 border border-t-white/[0.06] border-white/[0.04] transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-md bg-zinc-800 text-zinc-200 font-semibold text-xs flex items-center justify-center border border-zinc-700 tabular-nums shrink-0">
+                            <div className="w-5 text-zinc-500 font-display font-semibold text-sm tabular-nums shrink-0 text-center">
                               {index + 1}
                             </div>
                             <div>
@@ -378,10 +371,10 @@ export default function WeeklyDashboard({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-semibold text-zinc-200 bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-700 tabular-nums">
+                            <span className="text-xs font-semibold text-zinc-300 tabular-nums">
                               {ex.defaultSets} × {ex.suggestedReps}
                             </span>
-                            <Eye className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-300 transition-colors" />
+                            <Eye className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
                           </div>
                         </div>
                       ))}

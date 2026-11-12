@@ -916,7 +916,7 @@ export default function RunningHub({ isDark = true }) {
 
     // 2. Avaliação de Conquistas & Medalhas Desbloqueadas
     try {
-      const unlocked = evaluateAndUnlockBadges();
+      const unlocked = evaluateAndUnlockBadges('run');
       if (unlocked && unlocked.length > 0) {
         setNewlyUnlockedBadge(unlocked[0]);
       }
