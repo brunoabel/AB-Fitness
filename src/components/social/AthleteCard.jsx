@@ -20,8 +20,16 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
   const isPro = isCeo || Boolean(profile?.is_premium || profile?.is_pro) || isAthletePro(profile);
   const isVerified = Boolean(profile?.is_verified) || isAthleteVerified(profile);
 
+  // Painel de carreira (rodapé): as 3 métricas possíveis, menos a que já está em destaque no
+  // topo — nunca repete o mesmo número duas vezes no cartão.
+  const careerMetrics = [
+    { id: 'total_workouts', label: 'Treinos', value: fmtInt(stats?.total_workouts || 0) },
+    { id: 'monthly_volume', label: 'Volume', value: fmtKg(stats?.monthly_volume_kg || 0) },
+    { id: 'streak', label: 'Sequência', value: stats?.streak ? `${stats.streak}d` : '–' }
+  ].filter((m) => m.id !== featured.id);
+
   return (
-    <article className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-surface-2/95 via-surface-2/70 to-surface-1 border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-all">
+    <article className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-all`}>
       
       {/* Luz ambiente de prestígio no topo */}
       <div 
@@ -103,21 +111,15 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
         )}
       </div>
 
-      {/* Grelha de Métricas da Carreira (Rodapé do Cartão) */}
+      {/* Painel de Carreira (Rodapé do Cartão) — nunca repete a métrica já em destaque acima */}
       {!compact && stats && (
-        <div className="mt-4 pt-3.5 border-t border-white/[0.06] grid grid-cols-3 gap-2 text-center relative z-10">
-          <div className="p-2 rounded-xl bg-white/[0.02]">
-            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Treinos</span>
-            <span className="font-display font-black text-base text-white tabular-nums">{fmtInt(stats.total_workouts || 0)}</span>
-          </div>
-          <div className="p-2 rounded-xl bg-white/[0.02]">
-            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Volume</span>
-            <span className="font-display font-black text-base text-white tabular-nums">{fmtKg(stats.monthly_volume_kg || 0)}</span>
-          </div>
-          <div className="p-2 rounded-xl bg-white/[0.02]">
-            <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Sequência</span>
-            <span className="font-display font-black text-base text-white tabular-nums">{stats.streak ? `${stats.streak}d` : '–'}</span>
-          </div>
+        <div className="mt-4 pt-3.5 border-t border-white/[0.06] grid grid-cols-2 gap-2 text-center relative z-10">
+          {careerMetrics.map((m) => (
+            <div key={m.id} className="p-2 rounded-xl bg-white/[0.02]">
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">{m.label}</span>
+              <span className="font-display font-black text-base text-white tabular-nums">{m.value}</span>
+            </div>
+          ))}
         </div>
       )}
     </article>

@@ -212,7 +212,7 @@ export default function HistoryView() {
                   return (
                     <div 
                       key={item.id || `hist_${index}`}
-                      className="p-4 rounded-xl bg-surface border border-white/10 shadow-xs space-y-2 hover:border-zinc-700 transition-colors"
+                      className="p-4 rounded-xl bg-surface border border-white/10 shadow-xs space-y-2 hover:border-white/[0.16] transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -224,7 +224,7 @@ export default function HistoryView() {
                           </h4>
                         </div>
 
-                        <span className="text-[11px] font-semibold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 tabular-nums">
+                        <span className="text-[11px] font-semibold text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.08] tabular-nums">
                           {displayDate}
                         </span>
                       </div>
@@ -270,7 +270,7 @@ export default function HistoryView() {
                   exportAppDataAsCSV();
                   triggerHaptic(15);
                 }}
-                className="py-2.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
+                className="py-2.5 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.08] text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400 stroke-[1.8]" />
                 <span>Exportar CSV</span>
@@ -281,7 +281,7 @@ export default function HistoryView() {
                   exportAppDataAsJSON();
                   triggerHaptic(15);
                 }}
-                className="py-2.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
+                className="py-2.5 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 border border-white/[0.08] text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-xs min-h-[40px]"
               >
                 <Download className="w-4 h-4 text-zinc-400 stroke-[1.8]" />
                 <span>Cópia JSON</span>

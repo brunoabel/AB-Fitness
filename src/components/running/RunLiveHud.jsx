@@ -28,7 +28,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
           </div>
 
           {/* Painel Principal de Métricas */}
-          <div className="md:col-span-6 rounded-2xl bg-zinc-900 border border-zinc-800 p-5 text-white shadow-xl relative overflow-hidden">
+          <div className="md:col-span-6 rounded-2xl bg-surface border border-white/[0.08] p-5 text-white shadow-xl relative overflow-hidden">
             {/* Status do GPS e Auto-Pause no topo */}
             <div className="flex items-center justify-between mb-3 text-[11px] gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -49,8 +49,8 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                   }}
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-[11px] border transition-colors cursor-pointer ${
                     voiceEnabled
-                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                      : 'bg-zinc-800 text-zinc-500 border-zinc-700'
+                      ? 'bg-accent/70 text-white border-accent-hover'
+                      : 'bg-white/[0.04] text-zinc-500 border-white/[0.08]'
                   }`}
                   title="Audio-Coach no fone de ouvido (splits e ritmo)"
                 >
@@ -71,7 +71,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                   className={`px-2 py-0.5 rounded-md font-bold text-[11px] border transition-colors cursor-pointer ${
                     autoPauseEnabled
                       ? 'bg-accent/70 text-white border-accent-hover'
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                      : 'bg-white/[0.04] text-zinc-400 border-white/[0.08]'
                   }`}
                   title="Pausar automaticamente quando parado em semáforos"
                 >
@@ -108,7 +108,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
             )}
 
             {/* Distância Gigante de Alta Visibilidade */}
-            <div className="text-center py-2 bg-black/40 rounded-xl border border-zinc-800/60 mb-4">
+            <div className="text-center py-2 bg-black/40 rounded-xl border border-white/[0.06] mb-4">
               <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
                 Distância Percorrida
               </span>
@@ -124,7 +124,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
 
             {/* Grid 4 Métricas Técnicas */}
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Zap className="w-3.5 h-3.5 text-white" />
                   <span className="font-bold text-[11px] uppercase tracking-wider">Ritmo / Pace</span>
@@ -141,7 +141,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Timer className="w-3.5 h-3.5 text-white" />
                   <span className="font-bold text-[11px] uppercase tracking-wider">Tempo</span>
@@ -158,7 +158,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Flame className="w-3.5 h-3.5 text-orange-400" />
                   <span className="font-bold text-[11px] uppercase tracking-wider">Calorias</span>
@@ -168,7 +168,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                 </span>
               </div>
 
-              <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800">
+              <div className="bg-black/50 p-3.5 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
                   <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="font-bold text-[11px] uppercase tracking-wider">Elevação</span>
@@ -184,7 +184,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
               const minSec = Math.min(...splits.map((s) => Number(s.durationSeconds) || 999999));
               const maxSec = Math.max(...splits.map((s) => Number(s.durationSeconds) || 1));
               return (
-                <div className="mt-4 pt-3 border-t border-zinc-800">
+                <div className="mt-4 pt-3 border-t border-white/[0.08]">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
                       Parciais por KM (Splits Interpolados)
@@ -203,7 +203,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
                           className={`relative overflow-hidden py-1.5 px-3 rounded-lg border text-xs font-mono tabular-nums transition-colors ${
                             isFastest
                               ? 'bg-accent/70 border-accent-hover text-white'
-                              : 'bg-black/40 border-zinc-800/80 text-zinc-200'
+                              : 'bg-black/40 border-white/[0.06] text-zinc-200'
                           }`}
                         >
                           <div 
@@ -237,7 +237,7 @@ export default function RunLiveHud({ isDark, autoPauseEnabled, avgPaceSeconds, c
             })()}
 
             {/* Controles Principais de Corrida */}
-            <div className="mt-5 pt-3 border-t border-zinc-800 space-y-2.5">
+            <div className="mt-5 pt-3 border-t border-white/[0.08] space-y-2.5">
               <div className="flex items-center gap-3">
                 {sessionStatus === 'running' ? (
                   <button

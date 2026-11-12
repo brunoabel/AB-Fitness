@@ -104,7 +104,7 @@ export default function ProfileView() {
               triggerHaptic(10);
               setNewPostOpen(true);
             }}
-            className="min-h-[46px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-display font-bold text-xs inline-flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
+            className="min-h-[46px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
           >
             <Camera className="w-4 h-4 stroke-[2.2]" />
             <span>Publicar Foto</span>

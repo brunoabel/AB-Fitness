@@ -183,7 +183,7 @@ export default function WeeklyDashboard({
                   triggerHaptic(20);
                   onStartWorkout(selectedWorkout);
                 }}
-                className="w-full min-h-[52px] py-4 px-6 rounded-2xl bg-white text-black hover:bg-zinc-100 font-display font-black text-[15px] tracking-wide shadow-[0_10px_25px_rgba(255,255,255,0.18)] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer select-none"
+                className="w-full min-h-[52px] py-4 px-6 rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-[15px] shadow-[0_10px_25px_rgba(255,255,255,0.18)] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer select-none"
               >
                 <Play className="w-4 h-4 fill-current ml-0.5" />
                 <span>{isSelectedDayCompleted ? 'Rever Treino Concluído' : 'Iniciar Treino Agora'}</span>
@@ -210,7 +210,7 @@ export default function WeeklyDashboard({
                       setSelectedDayId(nextWorkoutDay.dayId);
                       triggerHaptic(12);
                     }}
-                    className="flex-1 min-h-[46px] px-4 rounded-xl bg-white text-black font-display font-bold text-xs hover:bg-zinc-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 min-h-[46px] px-4 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     <span>Antecipar {nextWorkoutDay.name}: {nextWorkoutDay.title}</span>

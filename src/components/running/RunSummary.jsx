@@ -12,7 +12,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
       {sessionStatus === 'completed' && lastCompletedRun && (
         <div className="space-y-4 animate-fadeIn pb-12">
           {/* Header de Celebração */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl relative overflow-hidden">
+          <div className="p-5 sm:p-6 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
                 <Trophy className="w-5 h-5 text-emerald-400" />
@@ -33,7 +33,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
             </p>
 
             {/* Ações Rápidas no Topo */}
-            <div className="mt-4 pt-3 border-t border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
+            <div className="mt-4 pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row items-center gap-2">
               <button
                 onClick={() => {
                   setSelectedRunForShare(lastCompletedRun);
@@ -50,7 +50,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   triggerHaptic(15);
                   downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
                 }}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl text-zinc-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
                 title="Descarregar ficheiro GPX compatível com Strava e Garmin"
               >
                 <Download className="w-4 h-4 text-white" />
@@ -59,7 +59,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
 
               <button
                 onClick={handleResetSession}
-                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] py-2.5 px-4 rounded-xl text-zinc-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 text-zinc-400" />
                 <span>Nova Corrida</span>
@@ -81,7 +81,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   <span className="flex items-center gap-1"><Flag className="w-3 h-3 text-emerald-400" /> Chegada</span>
                 </span>
               </div>
-              <div className="rounded-2xl overflow-hidden border border-zinc-800 shadow-sm">
+              <div className="rounded-2xl overflow-hidden border border-white/[0.08] shadow-sm">
                 <RunningMap 
                   coordinates={lastCompletedRun.coordinates} 
                   splits={lastCompletedRun.splits}
@@ -93,9 +93,9 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
             </div>
 
             {/* Painel de Estatísticas Finais */}
-            <div className="md:col-span-6 p-5 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-xl space-y-4">
+            <div className="md:col-span-6 p-5 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl space-y-4">
               {/* Distância Gigante */}
-              <div className="text-center py-3 bg-black/40 rounded-xl border border-zinc-800/60">
+              <div className="text-center py-3 bg-black/40 rounded-xl border border-white/[0.06]">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
                   Distância Total
                 </span>
@@ -111,7 +111,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
 
               {/* Grid 4 Métricas */}
               <div className="grid grid-cols-2 gap-2.5">
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
                   <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
                     <Zap className="w-3.5 h-3.5 text-white" />
                     <span>Ritmo Médio</span>
@@ -122,7 +122,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   <span className="text-[11px] text-zinc-400 block">Ritmo geral</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
                   <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
                     <Timer className="w-3.5 h-3.5 text-white" />
                     <span>Tempo Total</span>
@@ -133,7 +133,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   <span className="text-[11px] text-zinc-400 block">Tempo decorrido</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
                   <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
                     <Flame className="w-3.5 h-3.5 text-orange-400" />
                     <span>Calorias</span>
@@ -144,7 +144,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                   <span className="text-[11px] text-zinc-400 block">Energia queimada</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
                   <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
                     <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Velocidade</span>
@@ -156,7 +156,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                 </div>
 
                 {Boolean(lastCompletedRun.vo2Max) && (
-                  <div className="col-span-2 bg-black/50 p-3 rounded-xl border border-zinc-800/80">
+                  <div className="col-span-2 bg-black/50 p-3 rounded-xl border border-white/[0.06]">
                     <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
                       <HeartPulse className="w-3.5 h-3.5 text-white" />
                       <span>VO2 Max Estimado</span>
@@ -171,7 +171,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
 
               {/* Splits / KM a KM */}
               {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
-                <div className="pt-2 border-t border-zinc-800">
+                <div className="pt-2 border-t border-white/[0.08]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
                     Parciais por KM (Splits Registados)
                   </span>
@@ -179,7 +179,7 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                     {lastCompletedRun.splits.map((s) => (
                       <div 
                         key={s.km}
-                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-black/40 border border-zinc-800/60 font-mono tabular-nums"
+                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-black/40 border border-white/[0.06] font-mono tabular-nums"
                       >
                         <span className="font-bold text-white">KM {s.km}</span>
                         <span className="text-zinc-200">{s.pace || s.paceStr}</span>

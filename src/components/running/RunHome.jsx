@@ -12,10 +12,10 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
         <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start">
 
           {/* Card Principal: Iniciar Nova Corrida */}
-          <div className="md:col-span-7 rounded-2xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-xl relative overflow-hidden">
+          <div className="md:col-span-7 rounded-2xl bg-surface border border-white/[0.08] p-6 text-white shadow-xl relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
               <div className="flex items-center gap-2">
-                <span className="p-2.5 rounded-xl bg-zinc-800 text-white border border-zinc-700/60">
+                <span className="p-2.5 rounded-xl bg-white/[0.04] text-white border border-white/[0.08]">
                   <Footprints className="w-5 h-5" />
                 </span>
 
@@ -26,7 +26,7 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                     className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
                       isGpsWarmedUp
                         ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                        : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:text-white'
+                        : 'bg-white/[0.04] text-zinc-300 border-white/[0.08] hover:text-white'
                     }`}
                     title="Verificar permissão e adquirir sinal de satélite antes de iniciar"
                   >
@@ -48,9 +48,9 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                     triggerHaptic(10);
                   }}
                   className={`min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
-                    isSimulation 
-                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' 
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white'
+                    isSimulation
+                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                      : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                   }`}
                 >
                   <Smartphone className="w-3.5 h-3.5" />
@@ -63,7 +63,7 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                       setSimulationMode((prev) => (prev === 'normal' ? 'noisy' : 'normal'));
                       triggerHaptic(8);
                     }}
-                    className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white text-[11px] font-bold cursor-pointer"
+                    className="min-h-[44px] flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] text-zinc-300 hover:text-white text-[11px] font-bold cursor-pointer"
                     title="Alternar entre simulação limpa ou com picos de ruído GPS para testar o filtro"
                   >
                     <Settings className="w-3 h-3" />
@@ -123,10 +123,10 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                   <div
                     key={run.id}
                     onClick={() => setSelectedRunForShare(run)}
-                    className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-between hover:border-zinc-700 transition-all cursor-pointer shadow-xs group"
+                    className="p-3.5 rounded-xl bg-surface border border-white/[0.08] flex items-center justify-between hover:border-white/[0.16] transition-all cursor-pointer shadow-xs group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-zinc-800 text-zinc-300 border border-zinc-700/60 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-white/[0.04] text-zinc-300 border border-white/[0.08] flex items-center justify-center shrink-0">
                         <Footprints className="w-5 h-5" />
                       </div>
                       <div>
@@ -159,7 +159,7 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                             triggerHaptic(12);
                             downloadGPX(run.coordinates, `corrida_${run.date?.split('T')[0] || 'ab_fitness'}`);
                           }}
-                          className="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+                          className="min-h-[44px] min-w-[44px] p-2 rounded-lg text-zinc-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
                           title="Exportar GPX para Strava / Garmin"
                         >
                           <Download className="w-4 h-4" />
@@ -172,7 +172,7 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
                           e.stopPropagation();
                           setSelectedRunForShare(run);
                         }}
-                        className="min-h-[44px] min-w-[44px] p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+                        className="min-h-[44px] min-w-[44px] p-2 rounded-lg text-zinc-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
                         title="Gerar Cartão para o Instagram"
                       >
                         <Share2 className="w-4 h-4" />
