@@ -7,6 +7,9 @@ import { restMediaSessionService } from '../services/restMediaSessionService';
 // Física de mola nativa da Apple: compacta ↔ expandida, snappy e com ligeiro overshoot
 const ISLAND_SPRING = { type: 'spring', stiffness: 500, damping: 32 };
 const ISLAND_AUTO_COLLAPSE_MS = 4000;
+// A Dynamic Island simulada na UI web fica oculta por agora (na web/PWA pode parecer
+// artificial sem o ActivityKit do iOS). Reativar quando o app for empacotado para a App Store.
+const ENABLE_SIMULATED_DYNAMIC_ISLAND = false;
 
 export default function RestTimer({
   initialTime = 60,
@@ -241,8 +244,8 @@ export default function RestTimer({
 
   return (
     <>
-      {/* Dynamic Island: cápsula líquida que expande ao toque, física e proporções da ilha nativa da Apple */}
-      {isActive && (
+      {/* Dynamic Island: cápsula líquida no topo (oculta até deploy na App Store) */}
+      {ENABLE_SIMULATED_DYNAMIC_ISLAND && isActive && (
         <div className="fixed top-[calc(env(safe-area-inset-top,0px)+10px)] inset-x-4 z-40 flex justify-center">
           <motion.div
             layout
