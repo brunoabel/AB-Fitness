@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v8'; // v8: novo design oficial do logo AB Fitness (PWA e ícones renovados); v7: ícones PNG do manifesto
+const CACHE_NAME = 'ab-fitness-v9'; // v9: redesign visual, tipografia refinada e sem borders pesados
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;
