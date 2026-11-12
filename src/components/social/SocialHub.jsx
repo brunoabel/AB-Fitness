@@ -373,7 +373,7 @@ export default function SocialHub({ onNavigateTab }) {
               <X className="w-4 h-4" />
             </button>
           </div>
-          <AthleteCard athlete={invitePass} careerMetrics={invitePass} />
+          <AthleteCard profile={invitePass} stats={invitePass} />
           {(() => {
             const existing = friendships.find((f) => f.friend_id === invitePass.id);
             if (existing?.status === 'accepted') {
