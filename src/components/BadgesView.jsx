@@ -21,7 +21,7 @@ import { BADGES_CATALOG } from '../data/badges';
 import { getUnlockedBadges } from '../utils/badgeService';
 import { triggerHaptic } from '../utils/audio';
 
-const ICON_MAP = {
+export const ICON_MAP = {
   Footprints,
   Trophy,
   Crown,

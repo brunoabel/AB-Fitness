@@ -15,7 +15,7 @@ import useWorkoutDraft from '../hooks/useWorkoutDraft';
 import CelebrationModal from './CelebrationModal';
 import SessionCheckin from './coach/SessionCheckin';
 import { registerSessionAndCheckDue } from '../utils/sessionCheckin';
-import BadgeUnlockedToast from './BadgeUnlockedToast';
+import BadgeCelebrationModal from './BadgeCelebrationModal';
 import PlateCalculatorModal from './PlateCalculatorModal';
 import { getHomeAlternative, hasExerciseVideo as hasVerifiedExerciseVideo } from '../data/exerciseMedia';
 import { AnimatePresence } from 'motion/react';
@@ -794,6 +794,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           coachNarrative={coachNarrative}
           onClose={() => {
             setShowCelebration(false);
+            // Se houver medalha nova, a celebração dela continua a sequência (ver abaixo)
+            if (newlyUnlockedBadge) return;
             if (checkin === 'due') setCheckin('open');
             else if (checkin === 'assigned') setCheckin('open-assigned');
             else onBackToDashboard();
@@ -822,13 +824,21 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       )}
       </AnimatePresence>
 
-      {/* Notificação de Conquista Desbloqueada */}
-      {newlyUnlockedBadge && (
-        <BadgeUnlockedToast
-          badge={newlyUnlockedBadge}
-          onClose={() => setNewlyUnlockedBadge(null)}
-        />
-      )}
+      {/* Celebração Cinematográfica de Conquista Desbloqueada (depois do resumo do treino) */}
+      <AnimatePresence>
+        {!showCelebration && newlyUnlockedBadge && (
+          <BadgeCelebrationModal
+            key="badge-celebration"
+            badge={newlyUnlockedBadge}
+            onClose={() => {
+              setNewlyUnlockedBadge(null);
+              if (checkin === 'due') setCheckin('open');
+              else if (checkin === 'assigned') setCheckin('open-assigned');
+              else onBackToDashboard();
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

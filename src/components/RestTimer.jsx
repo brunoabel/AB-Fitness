@@ -380,9 +380,9 @@ export default function RestTimer({
 
         {/* Temporizador Ativo / Em Contagem */}
         {(isActive || timeLeft > 0) && (
-          <div className="rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-200 bg-surface/95 border-zinc-700/80 text-zinc-100 overflow-hidden animate-fadeIn">
+          <div className="rounded-2xl border shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-200 bg-black/85 border-white/[0.08] text-zinc-100 overflow-hidden animate-fadeIn">
             {/* Barra de Progresso Fina */}
-            <div className="h-1 w-full bg-zinc-800 rounded-t-xl overflow-hidden">
+            <div className="h-1 w-full bg-white/[0.08] rounded-t-2xl overflow-hidden">
               <div 
                 className="h-full bg-accent transition-all duration-1000"
                 style={{ width: `${progressPercent}%` }}
@@ -398,7 +398,7 @@ export default function RestTimer({
                   className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer select-none shrink-0 ${
                     isActive
                       ? 'bg-accent text-white hover:bg-accent-strong'
-                      : 'bg-zinc-800 text-zinc-100 hover:bg-zinc-700'
+                      : 'bg-white/[0.08] text-zinc-100 hover:bg-white/[0.14]'
                   } active:scale-95`}
                   aria-label={isActive ? 'Pausar Descanso' : 'Iniciar Descanso'}
                 >
@@ -435,7 +435,7 @@ export default function RestTimer({
                 {isActive && (
                   <button
                     onClick={() => addTime(15)}
-                    className="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold tabular-nums active:scale-95 transition-all cursor-pointer"
+                    className="px-2 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-xs font-bold tabular-nums active:scale-95 transition-all cursor-pointer"
                     title="+15 segundos"
                   >
                     +15s
@@ -444,7 +444,7 @@ export default function RestTimer({
 
                 <button
                   onClick={resetTimer}
-                  className="tap-44 p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
+                  className="tap-44 p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
                   title="Parar e ocultar temporizador"
                   aria-label="Ocultar temporizador"
                 >
@@ -454,7 +454,7 @@ export default function RestTimer({
                 {/* Botão de Expandir / Recolher Presets */}
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="tap-44 p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
+                  className="tap-44 p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all cursor-pointer"
                   aria-label="Opções de presets"
                 >
                   {isExpanded ? (
@@ -468,7 +468,7 @@ export default function RestTimer({
 
             {/* Painel Desdobrável com Tempos Pré-Definidos */}
             {isExpanded && (
-              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80">
+              <div className="px-3 pb-3 pt-1 border-t border-white/[0.08]">
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block mb-1.5">
                   Ajustar tempo de descanso
                 </span>
@@ -480,7 +480,7 @@ export default function RestTimer({
                       className={`py-1.5 px-1 rounded-lg text-xs font-bold tabular-nums transition-all cursor-pointer border ${
                         totalSeconds === sec
                           ? 'bg-accent text-white border-accent'
-                          : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-700'
+                          : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/[0.08]'
                       }`}
                     >
                       {sec}s

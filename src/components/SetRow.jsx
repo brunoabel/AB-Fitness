@@ -11,6 +11,7 @@ import {
   formatDurationSeconds
 } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
+import NumberField from './ui/NumberField';
 
 /**
  * SetRow — Linha de Série de Alta Ergonomia para Treino de Força e Isometria
@@ -368,27 +369,19 @@ export default function SetRow({
                   −
                 </button>
                 <div className="relative flex-1">
-                  <input
+                  <NumberField
                     ref={weightInputRef}
-                    type="number"
                     inputMode="decimal"
                     step="0.5"
                     value={set.weight ?? ''}
                     placeholder={prev?.weight !== undefined ? String(prev.weight) : (isTimed ? '0' : 'kg')}
-                    onFocus={(e) => e.target.select()}
-                    onChange={(e) => {
+                    onCommit={(val) => {
                       if (invalidShake) setInvalidShake(false);
-                      onChange({ weight: e.target.value });
+                      onChange({ weight: val });
                     }}
                     disabled={isDone}
-                    aria-invalid={invalidShake || undefined}
-                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-display font-black text-xl tabular-nums border bg-transparent transition-all ${
-                      isDone
-                        ? 'border-transparent text-zinc-400'
-                        : invalidShake
-                          ? 'border-red-500 ring-2 ring-red-500/60 text-zinc-50'
-                          : 'border-transparent text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
-                    }`}
+                    invalid={invalidShake}
+                    ariaLabel={`Carga: ${set.weight || 'por preencher'} kg. Mantém premido para editar.`}
                   />
                   <span className="absolute right-1.5 top-4 text-[11px] font-semibold text-zinc-500 pointer-events-none">
                     {isTimed ? '+kg' : 'kg'}
@@ -443,21 +436,14 @@ export default function SetRow({
                   −
                 </button>
                 <div className="relative flex-1">
-                  <input
-                    type="number"
+                  <NumberField
                     inputMode="numeric"
                     step="5"
                     value={set.seconds !== undefined ? set.seconds : (set.reps ?? '')}
                     placeholder={prev?.seconds !== undefined ? String(prev.seconds) : (prev?.reps !== undefined ? String(prev.reps) : String(defaultDuration))}
-                    onFocus={(e) => e.target.select()}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      onChange({ seconds: val, reps: val });
-                    }}
+                    onCommit={(val) => onChange({ seconds: val, reps: val })}
                     disabled={isDone}
-                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-display font-black text-xl tabular-nums border bg-transparent transition-all ${
-                      isDone ? 'border-transparent text-zinc-400' : 'border-transparent text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
-                    }`}
+                    ariaLabel={`Duração: ${currentDurationVal || 'por preencher'} segundos. Mantém premido para editar.`}
                   />
                   <span className="absolute right-2 top-4 text-[11px] font-semibold text-zinc-500 pointer-events-none">
                     s
@@ -507,17 +493,13 @@ export default function SetRow({
                   −
                 </button>
                 <div className="relative flex-1">
-                  <input
-                    type="number"
+                  <NumberField
                     inputMode="numeric"
                     value={set.reps ?? ''}
                     placeholder={prev?.reps !== undefined ? String(prev.reps) : 'reps'}
-                    onFocus={(e) => e.target.select()}
-                    onChange={(e) => onChange({ reps: e.target.value })}
+                    onCommit={(val) => onChange({ reps: val })}
                     disabled={isDone}
-                    className={`w-full h-11 sm:h-12 rounded-lg text-center font-display font-black text-xl tabular-nums border bg-transparent transition-all ${
-                      isDone ? 'border-transparent text-zinc-400' : 'border-transparent text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent'
-                    }`}
+                    ariaLabel={`Repetições: ${set.reps || 'por preencher'}. Mantém premido para editar.`}
                   />
                 </div>
                 <button

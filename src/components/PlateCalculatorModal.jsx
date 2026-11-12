@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Dumbbell } from 'lucide-react';
 import { platesPerSide } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
+import NumberField from './ui/NumberField';
 
 const PLATE_COLORS = {
   25: { bg: '#ef4444', text: '#ffffff', height: 110, width: 22 },
@@ -78,7 +79,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                   className={`py-2 px-2 rounded-xl text-xs font-bold transition-all border cursor-pointer text-center ${
                     barWeight === b.weight
                       ? 'bg-accent text-white border-accent shadow-xs'
-                      : 'bg-zinc-800/80 text-zinc-300 border-zinc-700'
+                      : 'bg-white/[0.03] text-zinc-300 border-white/[0.06]'
                   }`}
                 >
                   {b.label}
@@ -96,28 +97,28 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
               <button
                 type="button"
                 onClick={() => adjustWeight(-5)}
-                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-black text-sm active:scale-90 transition-transform cursor-pointer"
               >
-                -5
+                −5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(-2.5)}
-                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-bold text-xs active:scale-90 transition-transform cursor-pointer"
               >
-                -2.5
+                −2,5
               </button>
 
               <div className="flex-1 relative">
-                <input
-                  type="number"
+                <NumberField
                   inputMode="decimal"
                   step="0.5"
                   value={targetWeight}
-                  onChange={(e) => setTargetWeight(Math.max(barWeight, parseFloat(e.target.value) || barWeight))}
-                  className="w-full h-12 rounded-xl text-center font-black text-xl tabular-nums bg-zinc-900 border border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent"
+                  onCommit={(val) => setTargetWeight(Math.max(barWeight, parseFloat(val) || barWeight))}
+                  ariaLabel={`Carga alvo: ${targetWeight} kg. Mantém premido para editar.`}
+                  className="h-12"
                 />
-                <span className="absolute right-3 top-3.5 text-xs font-bold text-zinc-400 pointer-events-none">
+                <span className="absolute right-3 top-4 text-xs font-bold text-zinc-500 pointer-events-none">
                   kg
                 </span>
               </div>
@@ -125,14 +126,14 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
               <button
                 type="button"
                 onClick={() => adjustWeight(2.5)}
-                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-bold text-xs active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-bold text-xs active:scale-90 transition-transform cursor-pointer"
               >
-                +2.5
+                +2,5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(5)}
-                className="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-200 font-black text-sm active:scale-95 transition-transform border border-zinc-700 cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-black text-sm active:scale-90 transition-transform cursor-pointer"
               >
                 +5
               </button>
@@ -140,7 +141,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           </div>
 
           {/* Desenho da Barra em SVG */}
-          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800/80">
+          <div className="bg-app p-4 rounded-xl border border-white/[0.06]">
             <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2 text-center">
               Visualização por lado da barra
             </div>

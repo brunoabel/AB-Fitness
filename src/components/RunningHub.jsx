@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import confetti from 'canvas-confetti';
 import RunningShareModal from './RunningShareModal';
-import BadgeUnlockedToast from './BadgeUnlockedToast';
+import BadgeCelebrationModal from './BadgeCelebrationModal';
 import {
   DEFAULT_TRACKING_CONFIG,
   haversineDistanceMeters,
@@ -1035,9 +1035,9 @@ export default function RunningHub({ isDark = true }) {
         />
       )}
 
-      {/* Toast de Conquista / Medalha Desbloqueada */}
+      {/* Celebração Cinematográfica de Conquista / Medalha Desbloqueada */}
       {newlyUnlockedBadge && (
-        <BadgeUnlockedToast
+        <BadgeCelebrationModal
           badge={newlyUnlockedBadge}
           onClose={() => setNewlyUnlockedBadge(null)}
         />
