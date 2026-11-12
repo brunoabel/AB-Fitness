@@ -12,6 +12,8 @@ import {
 } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
 import NumberField from './ui/NumberField';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { isBeginnerProfile } from './onboarding/profileSchema';
 
 /**
  * SetRow — Linha de Série de Alta Ergonomia para Treino de Força e Isometria
@@ -43,6 +45,9 @@ export default function SetRow({
   const isDone = Boolean(set.done || set.completed);
   const currentType = set.type || 'N';
   const typeConfig = SET_TYPES[currentType] || SET_TYPES.N;
+
+  // Modo Iniciante: esconde jargão (tipo de série, 1RM estimado) que confunde quem começou agora
+  const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
 
   // Deteção inteligente de exercício temporizado / isométrico
   const isTimed = isTimedExercise(exercise, exerciseId);
@@ -301,28 +306,34 @@ export default function SetRow({
       }`}
     >
       <div className="grid grid-cols-[2.5rem_1fr_1fr_3.5rem] sm:grid-cols-[2.75rem_4rem_1fr_1fr_3.5rem] items-center gap-1.5 sm:gap-2 min-h-[56px]">
-        {/* 1. Tipo / Número de Série */}
+        {/* 1. Tipo / Número de Série — ciclo N/Aquecimento/Drop-set/Falha só no modo avançado */}
         <div className="flex flex-col items-center justify-center">
-          <button
-            type="button"
-            onClick={cycleType}
-            disabled={isDone}
-            className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums transition-transform active:scale-90 border cursor-pointer ${
-              currentType === 'N'
-                ? 'bg-transparent text-zinc-400 border-white/[0.08]'
-                : currentType === 'W'
-                  ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
-                  : currentType === 'D'
-                    ? 'bg-violet-400/15 text-violet-300 border-violet-400/30'
-                    : 'bg-red-400/15 text-red-400 border-red-400/30'
-            }`}
-            title={`Tipo: ${typeConfig.title}. Toque para alternar (Normal, Aquecimento, Drop-set, Falha)`}
-          >
-            {typeConfig.label || displayIndex}
-          </button>
-          
+          {isSimpleMode ? (
+            <span className="w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums border border-white/[0.08] text-zinc-400">
+              {displayIndex}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={cycleType}
+              disabled={isDone}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums transition-transform active:scale-90 border cursor-pointer ${
+                currentType === 'N'
+                  ? 'bg-transparent text-zinc-400 border-white/[0.08]'
+                  : currentType === 'W'
+                    ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
+                    : currentType === 'D'
+                      ? 'bg-violet-400/15 text-violet-300 border-violet-400/30'
+                      : 'bg-red-400/15 text-red-400 border-red-400/30'
+              }`}
+              title={`Tipo: ${typeConfig.title}. Toque para alternar (Normal, Aquecimento, Drop-set, Falha)`}
+            >
+              {typeConfig.label || displayIndex}
+            </button>
+          )}
+
           <span className="text-[11px] font-semibold text-zinc-500 mt-0.5 uppercase tracking-tighter truncate max-w-full">
-            {currentType === 'N' ? 'Série' : currentType === 'W' ? 'Aquec.' : currentType === 'D' ? 'Drop' : 'Falha'}
+            {isSimpleMode ? 'Série' : (currentType === 'N' ? 'Série' : currentType === 'W' ? 'Aquec.' : currentType === 'D' ? 'Drop' : 'Falha')}
           </span>
         </div>
 
@@ -610,7 +621,7 @@ export default function SetRow({
               </span>
             </div>
           ) : (
-            currentE1RM && (
+            currentE1RM && !isSimpleMode && (
               <span className="text-zinc-400 font-medium tabular-nums">
                 1RM est.: <strong className="text-zinc-200 font-semibold">{currentE1RM} kg</strong>
               </span>

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender_legal.mjs",
     "lint": "oxlint",
-    "test": "node --test src/services/abCoach/adapter.test.js src/utils/runningService.test.js src/data/planFromProfile.test.js src/utils/strengthMetrics.test.js src/services/wearables/wearableManager.test.js src/utils/workoutResultCard.test.js src/utils/syncQueue.test.js src/utils/badgeService.test.js",
+    "test": "node --test src/services/abCoach/adapter.test.js src/utils/runningService.test.js src/data/planFromProfile.test.js src/utils/strengthMetrics.test.js src/services/wearables/wearableManager.test.js src/utils/workoutResultCard.test.js src/utils/syncQueue.test.js src/utils/badgeService.test.js src/components/onboarding/profileSchema.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

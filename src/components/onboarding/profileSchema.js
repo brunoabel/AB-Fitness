@@ -248,3 +248,11 @@ export function toRow(userId, p) {
 }
 
 export const labelOf = (list, id) => list.find((o) => o.id === id)?.label || '—';
+
+/**
+ * Modo simples: esconde jargão de treino avançado (tipo de série, 1RM estimado, etc.) da
+ * interface para quem respondeu "Iniciante" no onboarding. Sem perfil guardado (convidado
+ * que ainda não passou pelo onboarding), assume-se o modo simples por omissão — mais seguro
+ * para quem nunca treinou do que mostrar jargão logo de início.
+ */
+export const isBeginnerProfile = (profile) => !profile || profile.experienceLevel === 'beginner';
