@@ -18,9 +18,9 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                 <Trophy className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  TREINO CONCLUÍDO • RUNNING CLUB
+                  Treino concluído · Running Club
                 </span>
                 <h2 className="text-xl font-black text-white tracking-tight">
                   Excelente Corrida, Atleta!
@@ -72,8 +72,8 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
             {/* Mapa do Percurso Percorrido */}
             <div className="md:col-span-6 space-y-1.5">
               <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                  Trajeto Oficial do Treino
+                <span className="text-xs font-semibold text-zinc-400">
+                  Trajeto do treino
                 </span>
                 <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5">
                   <span className="flex items-center gap-1"><Satellite className="w-3 h-3 text-white" /> Satélite HD</span>
@@ -96,8 +96,8 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
             <div className="md:col-span-6 p-5 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl space-y-4">
               {/* Distância Gigante */}
               <div className="text-center py-3 bg-black/40 rounded-xl border border-white/[0.06]">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-0.5">
-                  Distância Total
+                <span className="text-xs text-zinc-400 block mb-0.5">
+                  Distância total
                 </span>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-black tracking-tighter text-white font-mono tabular-nums">
@@ -109,62 +109,58 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
                 </div>
               </div>
 
-              {/* Grid 4 Métricas */}
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Zap className="w-3.5 h-3.5 text-white" />
-                    <span>Ritmo Médio</span>
+              {/* Métricas: texto corrido, sem caixa nem legendas redundantes */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-4 pt-1">
+                <div>
+                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Ritmo médio</span>
                   </div>
                   <span className="text-xl font-black text-white font-mono tabular-nums">
                     {lastCompletedRun.avgPace}
                   </span>
-                  <span className="text-[11px] text-zinc-400 block">Ritmo geral</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Timer className="w-3.5 h-3.5 text-white" />
-                    <span>Tempo Total</span>
+                <div>
+                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
+                    <Timer className="w-3.5 h-3.5" />
+                    <span>Tempo total</span>
                   </div>
                   <span className="text-xl font-black text-white font-mono tabular-nums">
                     {formatDuration(lastCompletedRun.durationSeconds)}
                   </span>
-                  <span className="text-[11px] text-zinc-400 block">Tempo decorrido</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Flame className="w-3.5 h-3.5 text-orange-400" />
+                <div>
+                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
+                    <Flame className="w-3.5 h-3.5" />
                     <span>Calorias</span>
                   </div>
                   <span className="text-xl font-black text-white font-mono tabular-nums">
                     {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
                   </span>
-                  <span className="text-[11px] text-zinc-400 block">Energia queimada</span>
                 </div>
 
-                <div className="bg-black/50 p-3 rounded-xl border border-white/[0.06]">
-                  <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                    <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
+                <div>
+                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
+                    <Navigation2 className="w-3.5 h-3.5" />
                     <span>Velocidade</span>
                   </div>
                   <span className="text-xl font-black text-white font-mono tabular-nums">
                     {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-400 font-sans">km/h</span>
                   </span>
-                  <span className="text-[11px] text-zinc-400 block">Média horária</span>
                 </div>
 
                 {Boolean(lastCompletedRun.vo2Max) && (
-                  <div className="col-span-2 bg-black/50 p-3 rounded-xl border border-white/[0.06]">
-                    <div className="flex items-center gap-1 text-zinc-400 text-[11px] uppercase font-bold mb-1">
-                      <HeartPulse className="w-3.5 h-3.5 text-white" />
-                      <span>VO2 Max Estimado</span>
+                  <div className="col-span-2 pt-3 border-t border-white/[0.06]">
+                    <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
+                      <HeartPulse className="w-3.5 h-3.5" />
+                      <span>VO2 Max estimado</span>
                     </div>
                     <span className="text-xl font-black text-white font-mono tabular-nums">
                       {lastCompletedRun.vo2Max} <span className="text-xs font-normal text-zinc-400 font-sans">ml/kg/min</span>
                     </span>
-                    <span className="text-[11px] text-zinc-400 block">Capacidade aeróbica estimada pelo ritmo desta corrida</span>
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">Capacidade aeróbica estimada pelo ritmo desta corrida</span>
                   </div>
                 )}
               </div>
@@ -172,8 +168,8 @@ export default function RunSummary({ isDark, handleResetSession, lastCompletedRu
               {/* Splits / KM a KM */}
               {lastCompletedRun.splits && lastCompletedRun.splits.length > 0 && (
                 <div className="pt-2 border-t border-white/[0.08]">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
-                    Parciais por KM (Splits Registados)
+                  <span className="text-xs font-semibold text-zinc-400 block mb-2">
+                    Parciais por km
                   </span>
                   <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                     {lastCompletedRun.splits.map((s) => (

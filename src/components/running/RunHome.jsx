@@ -106,8 +106,8 @@ export default function RunHome({ gpsAccuracy, gpsError, handleDeleteRun, handle
           {/* Histórico Recente de Corridas */}
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Corridas Concluídas ({runsHistory.length})
+              <h3 className="text-sm font-bold text-zinc-200">
+                Corridas concluídas <span className="text-zinc-500 font-normal">({runsHistory.length})</span>
               </h3>
             </div>
 
