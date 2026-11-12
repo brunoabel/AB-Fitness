@@ -8,6 +8,12 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    {
+      "source": "/((?!api/|assets/|favicon|robots\\.txt|sitemap\\.xml).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

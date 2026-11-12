@@ -75,6 +75,10 @@ for (const [path, doc] of Object.entries(LEGAL_DOCS)) {
   pages.push(path);
 }
 
+// Garante que o callback OAuth de wearables tem um ficheiro index.html físico
+mkdirSync('dist/auth/callback/wearable', { recursive: true });
+writeFileSync('dist/auth/callback/wearable/index.html', template);
+
 const urls = ['/', ...pages]
   .map((p) => {
     const isHome = p === '/';
