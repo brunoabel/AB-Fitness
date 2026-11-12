@@ -34,6 +34,19 @@ describe('StrengthMetrics — Exercícios Isométricos e Temporizados', () => {
     assert.equal(isTimedExercise({ name: 'Prancha com toque nos ombros' }), false);
   });
 
+  it('alongamento/mobilidade é sempre temporizado, nunca peso+reps de máquina (bug relatado)', () => {
+    // Exercício vindo de data/workouts.js: só tem `name`, sem mecanica/grupo nem reps em "s"
+    assert.equal(isTimedExercise({ name: 'Alongamento Ativo de Posteriores & Tornozelo' }), true);
+    assert.equal(isTimedExercise({ name: 'Stretch de Isquiotibiais' }), true);
+    assert.equal(isTimedExercise({ name: 'Mobilidade de Quadril 90/90' }), true);
+
+    // Exercício vindo do catálogo (exercises100.js): mecanica/grupo presentes, reps SEM "s"
+    // (ex: reps: "10"), que antes do fix fazia isTimedExercise devolver false
+    assert.equal(isTimedExercise({ mecanica: 'Alongamento', reps: '10' }), true);
+    assert.equal(isTimedExercise({ grupo: 'Mobilidade', reps: '12' }), true);
+    assert.equal(isTimedExercise({ mecanica: 'Alongamento', reps: '60s' }), true);
+  });
+
   it('deve determinar se aceita sobrecarga adicional (+kg)', () => {
     assert.equal(allowsAdditionalWeight({ nome: 'Prancha Abdominal' }), true);
     assert.equal(allowsAdditionalWeight({ nome: 'Wall Sit' }), true);

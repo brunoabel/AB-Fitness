@@ -115,6 +115,19 @@
     box-sizing: border-box;
   }
 
+  /* Esconde as setas nativas de incremento de <input type="number"> em todo o app: usamos
+     sempre steppers próprios (+/-), e no desktop as setas nativas do SO sobrepunham-se ao
+     sufixo de unidade (ex. "kg") posicionado à direita do campo. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   /* Foco visível para acessibilidade por teclado (WCAG AA) */
   :focus-visible {
     outline: 2px solid var(--accent-brand);

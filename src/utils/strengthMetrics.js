@@ -246,7 +246,11 @@ export function isTimedExercise(exercise, exerciseId) {
   if (name.includes('cócoras isométrico') || name.includes('deep squat hold')) return true;
   if (name.includes('pinch grip') || name.includes('pinçamento de dedos')) return true;
   if (name.includes('copenhagen')) return true;
-  if ((ex?.mecanica === 'Alongamento' || ex?.grupo === 'Mobilidade') && typeof ex?.reps === 'string' && ex.reps.includes('s')) return true;
+  // Alongamento/mobilidade nunca é carga+reps de máquina — mesma regra (por mecânica/grupo OU
+  // pelo nome) que allowsAdditionalWeight usa para nunca lhes dar +kg, independente do formato
+  // do campo `reps` vindo do catálogo (ex: "12" reps vs "60s").
+  if (ex?.mecanica === 'Alongamento' || ex?.grupo === 'Mobilidade') return true;
+  if (name.includes('alongamento') || name.includes('stretch') || name.includes('mobilidade') || name.includes('mobility')) return true;
 
   return false;
 }
