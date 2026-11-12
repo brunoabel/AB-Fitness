@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Layers, Check } from 'lucide-react';
 import { triggerHaptic } from '../../utils/audio';
 
@@ -8,10 +8,36 @@ export const formatElapsed = (sec) => {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
 
+/** Relógio isolado para atualizar apenas os dígitos a cada 1s sem re-renderizar o treino inteiro. */
+function WorkoutElapsedClock({ computeElapsed, isRunning }) {
+  const [seconds, setSeconds] = useState(() => (computeElapsed ? computeElapsed() : 0));
+
+  useEffect(() => {
+    if (!computeElapsed) return undefined;
+    const sync = () => setSeconds(computeElapsed());
+    sync();
+    if (!isRunning) return undefined;
+    const interval = setInterval(sync, 1000);
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', sync);
+    };
+  }, [computeElapsed, isRunning]);
+
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-xs font-bold tabular-nums text-white">
+      <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`} />
+      <span>{formatElapsed(seconds)}</span>
+    </div>
+  );
+}
+
 /** Barra superior fixa do treino ativo: pausar, cronómetro, modo foco, concluir e progresso. */
 export default function WorkoutHeader({
   workoutTitle,
-  elapsedSeconds,
+  computeElapsed,
+  isTimerRunning = true,
   completionPercentage,
   completedWorkingSetsCount,
   totalWorkingSetsCount,
@@ -40,10 +66,7 @@ export default function WorkoutHeader({
             <span className="truncate">{workoutTitle || 'Sessão de Treino'}</span>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-xs font-bold tabular-nums text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{formatElapsed(elapsedSeconds)}</span>
-            </div>
+            <WorkoutElapsedClock computeElapsed={computeElapsed} isRunning={isTimerRunning} />
             {totalWorkingSetsCount > 0 && (
               <span className="text-[11px] font-mono text-zinc-400 tabular-nums">
                 {completedWorkingSetsCount}/{totalWorkingSetsCount} séries

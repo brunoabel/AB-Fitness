@@ -144,8 +144,9 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   // Histórico das cargas anteriores imediatas
   const [pastWeights] = useState(() => getSavedWeights());
 
-  // Cronómetro do treino (ver hooks/useWorkoutTimer.js)
-  const { elapsedSeconds, setIsTimerRunning, computeElapsed, timerRef } = useWorkoutTimer(activeDraft);
+  // Cronómetro do treino (ver hooks/useWorkoutTimer.js — sem re-renders por segundo neste componente)
+  const { isTimerRunning, setIsTimerRunning, computeElapsed, timerRef } = useWorkoutTimer(activeDraft);
+  const [finalDurationMinutes, setFinalDurationMinutes] = useState(1);
 
   // Trigger para auto-iniciar o Rest Timer ao concluir uma série
   const [restTimerTrigger, setRestTimerTrigger] = useState(0);
@@ -428,6 +429,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
 
     // 2. Criação do registo local permanente para histórico offline
     const finalSeconds = computeElapsed();
+    const computedMinutes = Math.max(1, Math.round(finalSeconds / 60));
+    setFinalDurationMinutes(computedMinutes);
     const now = new Date();
     const workoutTitle = workout?.title || workout?.name || 'Treino Concluído';
     const dayName = workout?.name || workout?.shortName || 'Treino';
@@ -441,7 +444,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       dayTitle: workoutTitle,
       title: workoutTitle,
       workoutTitle,
-      durationMinutes: Math.max(1, Math.round(finalSeconds / 60)),
+      durationMinutes: computedMinutes,
       durationSeconds: finalSeconds,
       totalSets: completedWorkingSetsCount,
       totalSetsCompleted: completedWorkingSetsCount,
@@ -551,7 +554,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     <div className="min-h-screen bg-app text-zinc-100 pb-40 transition-colors">
       <WorkoutHeader
         workoutTitle={workout?.title || workout?.name}
-        elapsedSeconds={elapsedSeconds}
+        computeElapsed={computeElapsed}
+        isTimerRunning={isTimerRunning}
         completionPercentage={completionPercentage}
         completedWorkingSetsCount={completedWorkingSetsCount}
         totalWorkingSetsCount={totalWorkingSetsCount}
@@ -750,7 +754,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         <CelebrationModal
           key="celebration-modal"
           workout={workout}
-          durationMinutes={Math.max(1, Math.round(elapsedSeconds / 60))}
+          durationMinutes={finalDurationMinutes}
           totalSetsCompleted={completedWorkingSetsCount}
           totalVolumeKg={totalVolumeKg}
           unlockedBadge={newlyUnlockedBadge}

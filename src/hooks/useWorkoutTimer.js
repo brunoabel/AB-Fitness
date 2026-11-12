@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Cronómetro do treino baseado no relógio: base acumulada + (agora - início da contagem).
- * Não depende de setInterval contar segundos, por isso não perde tempo com o ecrã bloqueado.
+ * Não mantém estado de tick a cada segundo aqui para não re-renderizar todo o ActiveWorkout:
+ * quem precisa do relógio ao vivo (WorkoutElapsedClock no WorkoutHeader) subscreve isoladamente.
  * @param {{ timerBaseSeconds?: number, elapsedSeconds?: number, timerRunningSince?: number|null } | null} draft
  */
 export default function useWorkoutTimer(draft) {
@@ -14,31 +15,23 @@ export default function useWorkoutTimer(draft) {
     };
   }
 
-  const computeElapsed = () => {
+  const computeElapsed = useCallback(() => {
     const { base, since } = timerRef.current;
     return since ? base + Math.max(0, Math.floor((Date.now() - since) / 1000)) : base;
-  };
+  }, []);
 
-  const [elapsedSeconds, setElapsedSeconds] = useState(computeElapsed);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
-  // Atualiza o ecrã a cada segundo e ressincroniza ao voltar à app
   useEffect(() => {
     if (!isTimerRunning) {
       timerRef.current = { base: computeElapsed(), since: null };
       return undefined;
     }
-    if (!timerRef.current.since) timerRef.current = { ...timerRef.current, since: Date.now() };
-    const tick = () => setElapsedSeconds(computeElapsed());
-    tick();
-    const interval = setInterval(tick, 1000);
-    document.addEventListener('visibilitychange', tick);
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', tick);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTimerRunning]);
+    if (!timerRef.current.since) {
+      timerRef.current = { ...timerRef.current, since: Date.now() };
+    }
+    return undefined;
+  }, [isTimerRunning, computeElapsed]);
 
-  return { elapsedSeconds, isTimerRunning, setIsTimerRunning, computeElapsed, timerRef };
+  return { isTimerRunning, setIsTimerRunning, computeElapsed, timerRef };
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v9'; // v9: redesign visual, tipografia refinada e sem borders pesados
+const CACHE_NAME = 'ab-fitness-v10'; // v10: redesign editorial da Home, clock isolado 60fps no treino ativo e sync atómico
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

@@ -132,31 +132,38 @@ export async function seedDefaultPlanForUser(userId) {
       return;
     }
 
-    // 2. Inserir dias e exercícios padrão
-    for (const day of WEEKLY_SCHEDULE) {
-      const { data: dayRow, error: dayError } = await supabase
-        .from('workout_days')
-        .insert({
-          user_id: userId,
-          plan_id: plan.id,
-          day_number: day.dayId,
-          day_name: day.name,
-          title: day.title,
-          focus: day.focus,
-          duration: day.duration,
-          intensity: day.intensity,
-          is_rest_day: day.isRestDay,
-          badge: day.badge
-        })
-        .select()
-        .single();
+    // 2. Inserir todos os dias em lote (1 viagem HTTP em vez de 7 sequenciais)
+    const dayPayloads = WEEKLY_SCHEDULE.map((day) => ({
+      user_id: userId,
+      plan_id: plan.id,
+      day_number: day.dayId,
+      day_name: day.name,
+      title: day.title,
+      focus: day.focus,
+      duration: day.duration,
+      intensity: day.intensity,
+      is_rest_day: day.isRestDay,
+      badge: day.badge
+    }));
 
-      if (dayError || !dayRow) continue;
+    const { data: insertedDays, error: daysInsertError } = await supabase
+      .from('workout_days')
+      .insert(dayPayloads)
+      .select('id, day_number');
 
-      if (day.exercises && day.exercises.length > 0) {
-        const exercisePayloads = day.exercises.map((ex, index) => ({
+    if (daysInsertError || !insertedDays || insertedDays.length === 0) return;
+
+    const dayIdByNumber = new Map(insertedDays.map((d) => [d.day_number, d.id]));
+
+    // 3. Inserir todos os exercícios da semana num único lote
+    const allExercisePayloads = [];
+    WEEKLY_SCHEDULE.forEach((day) => {
+      const dayRowId = dayIdByNumber.get(day.dayId);
+      if (!dayRowId || !Array.isArray(day.exercises) || day.exercises.length === 0) return;
+      day.exercises.forEach((ex, index) => {
+        allExercisePayloads.push({
           user_id: userId,
-          workout_day_id: dayRow.id,
+          workout_day_id: dayRowId,
           exercise_code: ex.id,
           name: ex.name,
           target_muscle: ex.target,
@@ -170,10 +177,12 @@ export async function seedDefaultPlanForUser(userId) {
           badge: ex.badge,
           soccer_benefit: ex.soccerBenefit,
           tips: ex.steps || []
-        }));
+        });
+      });
+    });
 
-        await supabase.from('exercises').insert(exercisePayloads);
-      }
+    if (allExercisePayloads.length > 0) {
+      await supabase.from('exercises').insert(allExercisePayloads);
     }
   } catch (err) {
     console.error('Erro na semeadura inicial do usuário:', err);
@@ -299,8 +308,61 @@ function enqueueSync(job) {
 
 export const getPendingSyncCount = (userId) => readQueue().filter((j) => !userId || j.userId === userId).length;
 
+const VALID_SET_TYPES = new Set(['N', 'W', 'D', 'F']);
+
+function buildCloudLogPayloads(job) {
+  const logs = [];
+  Object.entries(job.exercisesData || {}).forEach(([exCode, sets]) => {
+    if (!Array.isArray(sets)) return;
+    sets.forEach((set, setIndex) => {
+      const rawType = String(set.type || 'N').toUpperCase();
+      const setType = VALID_SET_TYPES.has(rawType) ? rawType : 'N';
+      const rpeNum = set.rpe !== null && set.rpe !== undefined && set.rpe !== '' ? Number(set.rpe) : null;
+      const validRpe = rpeNum !== null && Number.isFinite(rpeNum) && rpeNum >= 1 && rpeNum <= 10 ? rpeNum : null;
+      const durNum = set.seconds !== undefined && set.seconds !== null ? Math.round(Number(set.seconds)) : null;
+      const validDuration = durNum !== null && Number.isFinite(durNum) && durNum >= 0 ? durNum : null;
+
+      logs.push({
+        exercise_code: exCode,
+        set_number: setIndex + 1,
+        weight_kg: Number(set.weight) || 0,
+        reps_completed: Number(set.reps) || 0,
+        completed: Boolean(set.completed || set.done),
+        set_type: setType,
+        rpe: validRpe,
+        duration_seconds: validDuration
+      });
+    });
+  });
+  return logs;
+}
+
 async function syncSessionToCloud(job) {
+  const notes = job.notes || 'Treino finalizado com sucesso no AB Fitness';
+  const richLogs = buildCloudLogPayloads(job);
+
   try {
+    // 1. Caminho preferencial: RPC transacional atómica (preserva set_type, rpe e duration_seconds)
+    const { error: rpcError } = await supabase.rpc('sync_workout_session_atomic', {
+      p_session_id: job.sessionId,
+      p_workout_day_name: job.workoutName,
+      p_workout_title: job.workoutTitle,
+      p_duration_seconds: job.durationSeconds,
+      p_notes: notes,
+      p_assigned_program_id: job.assignedProgramId || null,
+      p_logs: richLogs
+    });
+
+    if (!rpcError) return { synced: true };
+
+    const rpcMissing =
+      rpcError.code === 'PGRST202' ||
+      rpcError.code === '42883' ||
+      /sync_workout_session_atomic/i.test(rpcError.message || '');
+
+    if (!rpcMissing) return { synced: false, error: rpcError.message };
+
+    // 2. Fallback retrocompatível caso a migration 20261123 ainda não tenha sido aplicada na BD
     const { error: sessionError } = await supabase
       .from('workout_sessions')
       .upsert(
@@ -310,34 +372,27 @@ async function syncSessionToCloud(job) {
           workout_day_name: job.workoutName,
           workout_title: job.workoutTitle,
           duration_seconds: job.durationSeconds,
-          notes: job.notes || 'Treino finalizado com sucesso no AB Fitness',
+          notes,
           assigned_program_id: job.assignedProgramId || null
         },
         { onConflict: 'id', ignoreDuplicates: true }
       );
     if (sessionError) return { synced: false, error: sessionError.message };
 
-    const logPayloads = [];
-    Object.entries(job.exercisesData || {}).forEach(([exCode, sets]) => {
-      if (!Array.isArray(sets)) return;
-      sets.forEach((set, setIndex) => {
-        logPayloads.push({
-          user_id: job.userId,
-          session_id: job.sessionId,
-          exercise_code: exCode,
-          set_number: setIndex + 1,
-          weight_kg: Number(set.weight) || 0,
-          reps_completed: Number(set.reps) || 0,
-          completed: Boolean(set.completed || set.done)
-        });
-      });
-    });
+    const legacyPayloads = richLogs.map((l) => ({
+      user_id: job.userId,
+      session_id: job.sessionId,
+      exercise_code: l.exercise_code,
+      set_number: l.set_number,
+      weight_kg: l.weight_kg,
+      reps_completed: l.reps_completed,
+      completed: l.completed
+    }));
 
-    // Substitui os logs desta sessão (idempotente em reenvios)
     const { error: deleteError } = await supabase.from('exercise_logs').delete().eq('session_id', job.sessionId);
     if (deleteError) return { synced: false, error: deleteError.message };
-    if (logPayloads.length > 0) {
-      const { error: logsError } = await supabase.from('exercise_logs').insert(logPayloads);
+    if (legacyPayloads.length > 0) {
+      const { error: logsError } = await supabase.from('exercise_logs').insert(legacyPayloads);
       if (logsError) return { synced: false, error: logsError.message };
     }
     return { synced: true };
