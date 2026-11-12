@@ -33,7 +33,9 @@ export function buildWhoopAuthUrl(redirectUri) {
   const clientId = getWhoopClientId();
   if (!clientId) return null;
 
-  const state = Math.random().toString(36).substring(2, 15);
+  const state = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('whoop_oauth_state', state);
   }
