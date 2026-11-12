@@ -42,7 +42,7 @@ export default function ExerciseListView({
                   {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}
                 </div>
                 <div>
-                  <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">{exercise.target}</span>
+                  <span className="text-[11px] text-zinc-500 block">{exercise.target}</span>
                   <h2 className="text-sm font-bold text-zinc-100 leading-tight">{exercise.name}</h2>
                 </div>
               </div>
