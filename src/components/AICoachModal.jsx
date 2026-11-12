@@ -284,7 +284,7 @@ export default function AICoachModal({
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold tracking-tight text-zinc-50 flex items-center gap-1.5">
                   AB Coach
-                  <span className="text-[11px] font-semibold px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                  <span className="text-[11px] font-semibold px-1.5 py-0.2 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
                     IA
                   </span>
                 </h2>
@@ -300,7 +300,7 @@ export default function AICoachModal({
               <button
                 onClick={handleClearHistory}
                 title="Limpar conversa"
-                className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 stroke-[1.8]" />
               </button>
@@ -312,7 +312,7 @@ export default function AICoachModal({
                 onClose();
               }}
               title="Fechar"
-              className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5 stroke-[1.8]" />
             </button>
@@ -390,7 +390,7 @@ export default function AICoachModal({
 
                   {/* Cartão de Treino Prescrito */}
                   {msg.treino && (
-                    <div className="w-full bg-surface-2 border border-zinc-700 rounded-xl p-4 shadow-xs space-y-3">
+                    <div className="w-full bg-surface border border-white/[0.08] rounded-2xl p-4 shadow-xs space-y-3">
                       
                       {/* Topo do Cartão */}
                       <div className="flex items-start justify-between gap-2">
@@ -445,8 +445,8 @@ export default function AICoachModal({
                                 onClick={() => onViewExercise && onViewExercise(ex)}
                                 className={`p-2.5 rounded-lg border transition-all cursor-pointer ${
                                   isThisSwapping 
-                                    ? 'border-zinc-400 bg-zinc-800' 
-                                    : 'bg-surface border-white/10 hover:border-zinc-300'
+                                    ? 'border-white/30 bg-white/[0.06]' 
+                                    : 'bg-surface-2 border-white/10 hover:border-zinc-300'
                                 }`}
                               >
                                 <div className="flex items-center justify-between gap-2">
@@ -478,10 +478,10 @@ export default function AICoachModal({
                                         );
                                       }}
                                       title="Substituir por exercício biomecanicamente equivalente"
-                                      className={`tap-44 p-1.5 rounded border transition-all cursor-pointer ${
+                                      className={`tap-44 p-1.5 rounded-lg border transition-all cursor-pointer ${
                                         isThisSwapping
                                           ? 'bg-accent/70 text-white border-accent-hover'
-                                          : 'bg-zinc-800 hover:bg-zinc-100 text-zinc-300 border-zinc-700'
+                                          : 'bg-white/[0.04] hover:bg-white text-zinc-300 hover:text-black border-white/[0.08]'
                                       }`}
                                     >
                                       <RefreshCw className={`w-3.5 h-3.5 stroke-[1.8] ${isThisSwapping ? 'animate-spin' : ''}`} />
@@ -501,7 +501,7 @@ export default function AICoachModal({
                                 {isThisSwapping && (
                                   <div 
                                     onClick={(e) => e.stopPropagation()} 
-                                    className="mt-2.5 p-2.5 bg-surface-2 border border-zinc-700 rounded-lg space-y-2 animate-fadeIn"
+                                    className="mt-2.5 p-2.5 bg-surface border border-white/[0.08] rounded-xl space-y-2 animate-fadeIn"
                                   >
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
@@ -646,7 +646,7 @@ export default function AICoachModal({
                                     <button
                                       key={d.day}
                                       onClick={() => handleAssignToDay(msg.treino, d.day, d.label, idx)}
-                                      className="py-1.5 text-center rounded bg-zinc-800 hover:bg-zinc-100 hover:text-zinc-950 border border-zinc-700 text-xs font-semibold text-zinc-200 transition-colors cursor-pointer"
+                                      className="py-1.5 text-center rounded-lg bg-white/[0.04] hover:bg-white hover:text-black border border-white/[0.08] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer"
                                     >
                                       {d.label}
                                     </button>
@@ -688,7 +688,7 @@ export default function AICoachModal({
         {/* Barra de Entrada / Input Footer */}
         <div className="p-3 bg-surface-2 border-t border-white/10">
           {(!user || isGuest) && (
-            <div className="mb-2 p-2 px-3 rounded-lg bg-zinc-800/90 border border-zinc-700/70 flex items-center justify-between gap-2 text-xs">
+            <div className="mb-2 p-2 px-3 rounded-lg bg-surface/90 border border-white/[0.08] flex items-center justify-between gap-2 text-xs">
               <span className="text-zinc-300">
                 Inicia sessão para consultares o AB Coach com IA.
               </span>
@@ -718,7 +718,7 @@ export default function AICoachModal({
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Pede um treino específico (ex.: peitoral inferior, 35 min, dor no ombro)..."
               disabled={isLoading}
-              className="flex-1 bg-surface border border-zinc-700 focus:border-zinc-400 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
+              className="flex-1 bg-surface border border-white/[0.08] focus:border-white/30 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
             />
 
             <button
@@ -727,7 +727,7 @@ export default function AICoachModal({
               className={`p-2.5 rounded-lg font-semibold flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
                 inputText.trim() && !isLoading
                   ? 'bg-accent/70 text-white hover:opacity-90 active:scale-95 cursor-pointer shadow-xs'
-                  : 'bg-zinc-800 text-zinc-400 cursor-not-allowed'
+                  : 'bg-white/[0.04] text-zinc-500 cursor-not-allowed border border-white/[0.06]'
               }`}
             >
               <Send className="w-4 h-4 stroke-[2]" />

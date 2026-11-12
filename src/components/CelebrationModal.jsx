@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
-import { Trophy, Clock, CheckCircle, Dumbbell, Sparkles, Share2, ArrowRight } from 'lucide-react';
+import { Trophy, Clock, CheckCircle, Check, Dumbbell, Sparkles, Share2, ArrowRight } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
 import { buildWorkoutResultCard, shareWorkoutResultCard } from '../utils/workoutResultCard';
 
@@ -16,6 +16,8 @@ export default function CelebrationModal({
   coachNarrative = null,
   onClose 
 }) {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     // Tocar fanfarra e haptic
     sound.playCelebration();
@@ -70,7 +72,9 @@ export default function CelebrationModal({
       } else {
         try {
           await navigator.clipboard.writeText(textToShare);
-          alert('Resumo copiado para a área de transferência!');
+          triggerHaptic(15);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2500);
         } catch {}
       }
     }
@@ -215,10 +219,19 @@ export default function CelebrationModal({
 
           <button
             onClick={handleShare}
-            className="w-full min-h-[44px] py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
+            className="w-full min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
           >
-            <Share2 className="w-3.5 h-3.5 text-zinc-500" />
-            <span>{newPRs?.length > 0 ? 'Partilhar Cartão do Recorde' : 'Partilhar Cartão do Treino'}</span>
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
+                <span className="text-emerald-400">Resumo Copiado!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5 text-zinc-400" />
+                <span>{newPRs?.length > 0 ? 'Partilhar Cartão do Recorde' : 'Partilhar Cartão do Treino'}</span>
+              </>
+            )}
           </button>
         </div>
       </ModalPanel>

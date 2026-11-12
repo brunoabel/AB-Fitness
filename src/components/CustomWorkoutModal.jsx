@@ -222,7 +222,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
 
           <button
             onClick={onClose}
-            className="w-11 h-11 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.06] flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Fechar"
           >
             <X className="w-5 h-5" />
@@ -274,9 +274,9 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                   setIsPickerOpen(true);
                   triggerHaptic(15);
                 }}
-                className="p-6 rounded-xl border-2 border-dashed border-white/10 hover:border-zinc-700 text-center cursor-pointer transition-all group"
+                className="p-6 rounded-xl border-2 border-dashed border-white/10 hover:border-white/[0.2] text-center cursor-pointer transition-all group"
               >
-                <div className="w-10 h-10 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
                   <Plus className="w-5 h-5 text-white" />
                 </div>
                 <p className="text-xs font-bold text-white">
@@ -291,12 +291,12 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                 {exercises.map((ex, index) => (
                   <div
                     key={ex.tempId || index}
-                    className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-3"
+                    className="p-3.5 rounded-xl bg-surface border border-white/10 space-y-3"
                   >
                     {/* Topo do Exercício com Nome e Ações de Ordenação */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-lg bg-zinc-800 text-white text-xs font-mono tabular-nums font-bold flex items-center justify-center border border-zinc-700 shrink-0">
+                        <span className="w-6 h-6 rounded-lg bg-white/[0.04] text-zinc-300 text-xs font-mono tabular-nums font-bold flex items-center justify-center border border-white/[0.08] shrink-0">
                           {index + 1}
                         </span>
                         <div>
@@ -314,7 +314,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           type="button"
                           disabled={index === 0}
                           onClick={() => handleMoveExercise(index, -1)}
-                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] flex items-center justify-center disabled:opacity-30 cursor-pointer"
                           title="Mover para cima"
                           aria-label="Mover para cima"
                         >
@@ -324,7 +324,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           type="button"
                           disabled={index === exercises.length - 1}
                           onClick={() => handleMoveExercise(index, 1)}
-                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                          className="tap-44 w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] flex items-center justify-center disabled:opacity-30 cursor-pointer"
                           title="Mover para baixo"
                           aria-label="Mover para baixo"
                         >
@@ -351,7 +351,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           <button
                             type="button"
                             onClick={() => handleUpdateExercise(index, 'defaultSets', Math.max(1, (ex.defaultSets || 3) - 1))}
-                            className="tap-44 w-6 h-6 rounded-md bg-zinc-800 text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
+                            className="tap-44 w-6 h-6 rounded-md bg-white/[0.04] text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95 border border-white/[0.08]"
                           >
                             -
                           </button>
@@ -361,7 +361,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           <button
                             type="button"
                             onClick={() => handleUpdateExercise(index, 'defaultSets', Math.min(8, (ex.defaultSets || 3) + 1))}
-                            className="tap-44 w-6 h-6 rounded-md bg-zinc-800 text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95"
+                            className="tap-44 w-6 h-6 rounded-md bg-white/[0.04] text-xs font-bold text-zinc-300 flex items-center justify-center cursor-pointer active:scale-95 border border-white/[0.08]"
                           >
                             +
                           </button>
@@ -425,7 +425,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     setIsPickerOpen(true);
                     triggerHaptic(15);
                   }}
-                  className="min-h-[44px] w-full py-2.5 rounded-xl border border-dashed border-zinc-700 hover:border-zinc-500 text-xs font-bold text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-zinc-900 transition-colors cursor-pointer"
+                  className="min-h-[44px] w-full py-2.5 rounded-xl border border-dashed border-white/[0.12] hover:border-white/[0.24] text-xs font-bold text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-white/[0.02] transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4 text-zinc-300" />
                   <span>Adicionar Mais Exercícios</span>
@@ -436,11 +436,11 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
         </div>
 
         {/* Rodapé Fixo com Botão Guardar */}
-        <div className="p-4 sm:p-5 border-t border-white/10 bg-zinc-900 flex items-center gap-3 shrink-0">
+        <div className="p-4 sm:p-5 border-t border-white/10 bg-surface flex items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 min-h-[48px] py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs transition-colors cursor-pointer active:scale-95"
+            className="flex-1 min-h-[48px] py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 font-bold text-xs border border-white/[0.08] transition-colors cursor-pointer active:scale-95"
           >
             Cancelar
           </button>
@@ -459,7 +459,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
         {isPickerOpen && (
           <div className="absolute inset-0 z-60 bg-zinc-950 flex flex-col animate-slideUp">
             {/* Topo do Picker */}
-            <div className="p-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-zinc-900">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-surface">
               <div className="flex items-center gap-2">
                 <Dumbbell className="w-4 h-4 text-white" />
                 <h3 className="text-sm font-bold text-white">
@@ -470,7 +470,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
               <button
                 type="button"
                 onClick={() => setIsPickerOpen(false)}
-                className="w-10 h-10 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center cursor-pointer transition-colors"
+                className="w-10 h-10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.06] flex items-center justify-center cursor-pointer transition-colors"
                 aria-label="Fechar seleção"
               >
                 <X className="w-5 h-5" />
@@ -534,7 +534,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       className={`min-h-[44px] text-[11px] font-bold px-3 py-1 rounded-lg shrink-0 cursor-pointer border ${
                         selectedMuscleFilter === 'Todos'
                           ? 'bg-accent/70 text-white border-white'
-                          : 'bg-zinc-800 text-zinc-300 border-zinc-700'
+                          : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                       }`}
                     >
                       Todos
@@ -547,7 +547,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                         className={`min-h-[44px] text-[11px] font-bold px-3 py-1 rounded-lg shrink-0 cursor-pointer border ${
                           selectedMuscleFilter === group
                             ? 'bg-accent/70 text-white border-white'
-                            : 'bg-zinc-800 text-zinc-300 border-zinc-700'
+                            : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                         }`}
                       >
                         {group}
@@ -567,7 +567,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       <div
                         key={ex.id}
                         onClick={() => handleAddFromLibrary(ex)}
-                        className="p-3 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-white/10 transition-colors cursor-pointer flex items-center justify-between group active:scale-[0.99]"
+                        className="p-3 rounded-xl bg-surface hover:bg-surface-2 border border-white/10 transition-colors cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                       >
                         <div>
                           <h4 className="text-xs font-bold text-white transition-colors">
@@ -584,7 +584,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
 
                         <button
                           type="button"
-                          className="min-h-[44px] px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-100 text-[11px] font-bold group-hover:bg-white group-hover:text-zinc-950 transition-colors"
+                          className="min-h-[44px] px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white text-[11px] font-bold group-hover:bg-white group-hover:text-black transition-colors"
                         >
                           + Adicionar
                         </button>

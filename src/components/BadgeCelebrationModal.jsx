@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
-import { Trophy, Share2, ArrowRight } from 'lucide-react';
+import { Trophy, Share2, ArrowRight, Check } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
 import { ICON_MAP } from './BadgesView';
 import { buildBadgeResultCard, shareBadgeResultCard } from '../utils/badgeResultCard';
@@ -21,6 +21,7 @@ const CATEGORY_NARRATIVE = {
  */
 export default function BadgeCelebrationModal({ badge, onClose }) {
   const [isSharing, setIsSharing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const IconComponent = ICON_MAP[badge?.icon] || Trophy;
   const color = badge?.color || '#ffffff';
   const tierLabel = TIER_LABEL[badge?.tier] || 'Nova Conquista';
@@ -54,7 +55,9 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
       } else {
         try {
           await navigator.clipboard.writeText(textToShare);
-          alert('Resumo copiado para a área de transferência!');
+          triggerHaptic(15);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2500);
         } catch {}
       }
     } finally {
@@ -121,10 +124,19 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
           <button
             onClick={handleShare}
             disabled={isSharing}
-            className="w-full min-h-[44px] py-2.5 rounded-xl text-zinc-300 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
+            className="w-full min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
           >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>{isSharing ? 'A gerar cartão...' : 'Partilhar Troféu'}</span>
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
+                <span className="text-emerald-400">Resumo Copiado!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5 text-zinc-400" />
+                <span>{isSharing ? 'A gerar cartão...' : 'Partilhar Troféu'}</span>
+              </>
+            )}
           </button>
         </div>
       </ModalPanel>

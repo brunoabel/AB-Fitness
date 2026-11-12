@@ -100,7 +100,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
               setIsEditing(true);
               triggerHaptic(10);
             }}
-            className="min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 transition-colors cursor-pointer border border-zinc-700"
+            className="min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer border border-white/[0.08]"
           >
             <Sliders className="w-3.5 h-3.5" />
             <span>Ajustar / Sincronizar</span>
@@ -217,7 +217,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
               {biometrics.strain} / 21.0
             </span>
           </div>
-          <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-white/[0.06] overflow-hidden">
             <div 
               className="h-full rounded-full bg-accent transition-all duration-500"
               style={{ width: `${Math.min(100, (biometrics.strain / 21) * 100)}%` }}
@@ -246,7 +246,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
           {recommendation.description}
         </p>
 
-        <div className="pt-2 border-t border-zinc-700/50 flex items-center justify-between text-xs font-bold text-white">
+        <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs font-bold text-white">
           <span className="text-[11px] text-zinc-400 font-medium">Diretriz da Sessão:</span>
           <span className={`flex items-center gap-1 ${recommendation.textColor}`}>
             <ShieldCheck className="w-3.5 h-3.5" />
@@ -280,7 +280,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
                 <span className="text-[11px] font-mono tabular-nums font-bold text-zinc-400">
                   {day.recoveryScore}%
                 </span>
-                <div className="w-full max-w-[28px] h-16 bg-zinc-800 rounded-md flex items-end p-0.5">
+                <div className="w-full max-w-[28px] h-16 bg-white/[0.04] border border-white/[0.06] rounded-md flex items-end p-0.5">
                   <div 
                     className={`w-full rounded-sm ${colorClass} transition-all duration-500`}
                     style={{ height: `${barHeight}%` }}
@@ -406,7 +406,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition-colors cursor-pointer"
+                  className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-bold border border-white/[0.08] transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>

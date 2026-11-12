@@ -210,7 +210,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                 className={`py-2 px-1 rounded-lg border text-xs font-semibold transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center min-h-[44px] ${
                   isSelected
                     ? 'bg-accent/70 text-white border-accent-hover shadow-xs'
-                    : 'bg-surface border-white/10 text-zinc-400 hover:border-zinc-700'
+                    : 'bg-surface border-white/10 text-zinc-400 hover:border-white/[0.16]'
                 }`}
               >
                 <span>{tab.label}</span>
@@ -229,7 +229,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
       <div>
         {filteredWorkouts.length === 0 ? (
           <div className="p-8 rounded-xl bg-surface border border-white/10 text-center space-y-3">
-            <div className="w-12 h-12 rounded-lg bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-white/[0.04] text-zinc-400 border border-white/[0.08] flex items-center justify-center mx-auto">
               <Dumbbell className="w-6 h-6 stroke-[1.8]" />
             </div>
             <div>
@@ -252,7 +252,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
               </button>
               <button
                 onClick={handleResetTemplates}
-                className="px-4 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-semibold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-zinc-700 min-h-[40px]"
+                className="px-4 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-semibold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-white/[0.08] min-h-[40px]"
               >
                 <RotateCcw className="w-3.5 h-3.5 stroke-[1.8]" />
                 <span>Repor Modelos</span>
@@ -267,13 +267,13 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
               return (
                 <div
                   key={workout.id}
-                  className="rounded-xl bg-surface border border-white/10 shadow-xs overflow-hidden transition-all hover:border-zinc-700 flex flex-col justify-between"
+                  className="rounded-xl bg-surface border border-white/10 shadow-xs overflow-hidden transition-all hover:border-white/[0.16] flex flex-col justify-between"
                 >
                   {/* Topo do Cartão */}
                   <div className="p-4 sm:p-5 border-b border-white/10 bg-surface-2/50 space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider bg-zinc-800 text-zinc-200 border border-zinc-700">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
                           {workout.level}
                         </span>
 
@@ -287,7 +287,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                       <div className="flex items-center gap-1">
                         <button
                           onClick={(e) => handleOpenEditModal(workout, e)}
-                          className="tap-44 p-1.5 rounded-md text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                          className="tap-44 p-1.5 rounded-md text-zinc-500 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                           title="Editar plano"
                         >
                           <Pencil className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -295,7 +295,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
 
                         <button
                           onClick={(e) => handleDuplicate(workout.id, e)}
-                          className="tap-44 p-1.5 rounded-md text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                          className="tap-44 p-1.5 rounded-md text-zinc-500 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                           title="Duplicar plano"
                         >
                           <Copy className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -321,7 +321,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                     </div>
 
                     {workout.trainerNotes && (
-                      <div className="p-2.5 rounded-lg bg-surface border border-zinc-700/80 text-[11px] text-zinc-300 font-normal flex items-start gap-2">
+                      <div className="p-2.5 rounded-lg bg-surface border border-white/[0.08] text-[11px] text-zinc-300 font-normal flex items-start gap-2">
                         <Zap className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5 stroke-[2]" />
                         <span className="leading-relaxed">
                           <strong className="text-zinc-100 font-semibold">Nota técnica:</strong> {workout.trainerNotes}
@@ -352,7 +352,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                             className="p-2.5 rounded-lg bg-surface-2/80 hover:bg-surface-3 border border-white/10 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.99]"
                           >
                             <div className="flex items-center gap-2.5">
-                              <span className="w-5 h-5 rounded bg-zinc-800 text-zinc-300 font-semibold text-[11px] flex items-center justify-center border border-zinc-700 shrink-0 tabular-nums">
+                              <span className="w-5 h-5 rounded-md bg-white/[0.04] text-zinc-400 font-mono text-[11px] flex items-center justify-center border border-white/[0.06] shrink-0 tabular-nums">
                                 {idx + 1}
                               </span>
                               <div>
@@ -365,7 +365,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                               </div>
                             </div>
 
-                            <span className="text-[11px] font-semibold text-zinc-200 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 tabular-nums">
+                            <span className="text-[11px] font-semibold text-zinc-300 bg-white/[0.04] px-2 py-0.5 rounded-md border border-white/[0.08] tabular-nums font-mono">
                               {ex.defaultSets} × {ex.suggestedReps}
                             </span>
                           </div>
