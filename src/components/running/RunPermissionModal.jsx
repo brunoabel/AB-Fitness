@@ -8,7 +8,7 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
       {/* Modal Explicativo de Permissão Progressiva */}
       {showPermissionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-md rounded-3xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-3xl bg-surface border border-white/[0.06] p-6 text-white shadow-2xl space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-accent/70 border border-accent-hover flex items-center justify-center text-white shrink-0">
                 <ShieldCheck className="w-6 h-6" />
@@ -27,7 +27,7 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
               Para desenhar o seu percurso em tempo real, medir cada quilómetro com precisão e calcular o seu ritmo (pace), o <strong>AB Fitness</strong> precisa de acesso à sua <strong>Localização Precisa</strong> durante o treino.
             </p>
 
-            <div className="p-3.5 rounded-2xl bg-black/50 border border-zinc-800 text-[11px] text-zinc-400 space-y-1.5">
+            <div className="p-3.5 rounded-2xl bg-black/50 border border-white/[0.06] text-[11px] text-zinc-400 space-y-1.5">
               <div className="flex items-center gap-2 text-zinc-200 font-semibold">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Selecione &ldquo;Permitir durante o uso da app&rdquo;</span>
@@ -41,7 +41,7 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
             <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => setShowPermissionModal(false)}
-                className="flex-1 py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs cursor-pointer transition-colors"
+                className="flex-1 py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-bold text-xs cursor-pointer transition-colors"
               >
                 Agora Não
               </button>

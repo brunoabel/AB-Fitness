@@ -602,7 +602,7 @@ export default function RunningShareModal({
   // Render via React Portal diretamente no document.body para garantir isolamento total de z-index
   return createPortal(
     <ModalBackdrop className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-xl overflow-y-auto">
-      <ModalPanel className="w-full max-w-sm sm:max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
+      <ModalPanel className="w-full max-w-sm sm:max-w-md bg-surface border border-white/[0.06] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
         
         {/* Toast Notificação de Feedback */}
         {toastMessage && (
@@ -613,7 +613,7 @@ export default function RunningShareModal({
         )}
 
         {/* Cabeçalho Sticky do Modal */}
-        <div className="shrink-0 flex items-center justify-between p-3.5 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-md">
+        <div className="shrink-0 flex items-center justify-between p-3.5 border-b border-white/[0.06] bg-zinc-950/95 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
               <Sparkles className="w-4 h-4" />
@@ -625,7 +625,7 @@ export default function RunningShareModal({
           </div>
           <button
             onClick={onClose}
-            className="tap-44 w-8 h-8 rounded-full flex items-center justify-center bg-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.04] text-zinc-400 hover:text-white transition-colors cursor-pointer"
             title="Fechar"
           >
             <X className="w-4 h-4" />
@@ -638,10 +638,10 @@ export default function RunningShareModal({
           <ShareTitleEditor {...{ isEditingTitle, sessionTitle, setIsEditingTitle, setSessionTitle }} />
           <ShareThemePicker {...{ aspectRatio, bgMode, fileInputRef, handlePhotoUpload, setAspectRatio, setBgMode, setThemeId, themeId }} />
           {/* Pré-visualização do Card Compacto e Escalado */}
-          <div className="flex items-center justify-center p-2 bg-black/50 rounded-2xl border border-zinc-800/80 overflow-hidden">
+          <div className="flex items-center justify-center p-2 bg-black/50 rounded-2xl border border-white/[0.06] overflow-hidden">
             <div 
               ref={cardPreviewRef}
-              className={`relative rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex flex-col justify-between select-none transition-all ${
+              className={`relative rounded-2xl overflow-hidden border border-white/[0.06] shadow-2xl flex flex-col justify-between select-none transition-all ${
                 aspectRatio === 'story' 
                   ? 'w-[230px] h-[375px]' 
                   : 'w-[230px] h-[230px]'
@@ -754,7 +754,7 @@ export default function RunningShareModal({
         </div>
 
         {/* Rodapé Sticky com Botões de Ação */}
-        <div className="shrink-0 p-3 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-800 flex flex-col gap-2">
+        <div className="shrink-0 p-3 bg-zinc-950/95 backdrop-blur-md border-t border-white/[0.06] flex flex-col gap-2">
           {/* Botão Primário: Partilhar Cartão */}
           <button
             onClick={handleShare}
@@ -779,7 +779,7 @@ export default function RunningShareModal({
             <button
               onClick={handleDownload}
               disabled={isExporting}
-              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
               title="Descarregar Imagem HD"
             >
               <Download className="w-3.5 h-3.5" />
@@ -790,7 +790,7 @@ export default function RunningShareModal({
               <button
                 onClick={handleCopyImage}
                 disabled={isExporting}
-                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
                 title="Copiar Imagem para a Área de Transferência"
               >
                 {imageCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <ImageIcon className="w-3.5 h-3.5" />}
@@ -799,7 +799,7 @@ export default function RunningShareModal({
             ) : (
               <button
                 onClick={handleCopyCaption}
-                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+                className="min-h-[40px] py-2 px-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
                 title="Copiar Legenda"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}

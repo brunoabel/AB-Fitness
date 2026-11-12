@@ -7,7 +7,7 @@ export default function ShareTitleEditor({ isEditingTitle, sessionTitle, setIsEd
   return (
     <>
       {/* Customização: Título da Sessão */}
-      <div className="px-3 py-1.5 bg-zinc-950/60 border border-zinc-800/80 rounded-2xl flex items-center justify-between gap-2">
+      <div className="px-3 py-1.5 bg-zinc-950/60 border border-white/[0.06] rounded-2xl flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">
             Título:
@@ -19,7 +19,7 @@ export default function ShareTitleEditor({ isEditingTitle, sessionTitle, setIsEd
               onChange={(e) => setSessionTitle(e.target.value)}
               onBlur={() => setIsEditingTitle(false)}
               autoFocus
-              className="w-full px-2 py-0.5 rounded-lg bg-zinc-800 border border-orange-500/50 text-white text-xs font-bold outline-none"
+              className="w-full px-2 py-0.5 rounded-lg bg-white/[0.04] border border-orange-500/50 text-white text-xs font-bold outline-none"
             />
           ) : (
             <span 

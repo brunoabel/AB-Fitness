@@ -344,7 +344,7 @@ export default function SetRow({
           disabled={!prev || isDone}
           className={`hidden sm:flex flex-col items-center justify-center py-1 px-1 rounded-md text-center transition-colors cursor-pointer select-none ${
             prev && !isDone
-              ? 'hover:bg-zinc-800/80 active:scale-95 text-zinc-400' 
+              ? 'hover:bg-white/[0.08] active:scale-95 text-zinc-400' 
               : 'text-zinc-600 cursor-default'
           }`}
           title={
@@ -364,7 +364,7 @@ export default function SetRow({
         {/* 3. Coluna de Carga: Input de Carga (kg) para pesos normais / isometria com carga, ou chip "Livre" */}
         <div className="flex flex-col items-center justify-center">
           {isTimed && !allowsWeight ? (
-            <div className="flex items-center justify-center w-full h-11 sm:h-12 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-xs select-none">
+            <div className="flex items-center justify-center w-full h-11 sm:h-12 rounded-lg bg-surface border border-white/[0.06] text-zinc-400 font-bold text-xs select-none">
               Livre
             </div>
           ) : (
@@ -566,14 +566,14 @@ export default function SetRow({
       </div>
 
       {/* Barra Inferior com PR / Métrica e Ações da Série */}
-      <div className="flex items-center justify-between mt-1 px-1 pt-1 border-t border-zinc-800/60 text-[11px]">
+      <div className="flex items-center justify-between mt-1 px-1 pt-1 border-t border-white/[0.06] text-[11px]">
         <div className="flex items-center gap-2 min-w-0">
           {/* Anterior (mobile): copia valores da última sessão */}
           {prev && !isDone && (
             <button
               type="button"
               onClick={applyPreviousValues}
-              className="sm:hidden flex items-center gap-1 min-h-[44px] px-2 -ml-1 rounded-md text-zinc-400 active:bg-zinc-800/80 tabular-nums select-none touch-manipulation"
+              className="sm:hidden flex items-center gap-1 min-h-[44px] px-2 -ml-1 rounded-md text-zinc-400 active:bg-white/[0.04] tabular-nums select-none touch-manipulation"
               aria-label={`Copiar última vez: ${prevHintLabel}`}
             >
               <span className="uppercase tracking-wider font-semibold">Ant.</span>

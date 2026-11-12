@@ -25,10 +25,10 @@ const chip = (active) =>
   `px-3 min-h-[40px] rounded-lg text-xs font-semibold border transition-all active:scale-95 cursor-pointer select-none ${
     active
       ? 'bg-accent/70 text-white border-accent-hover'
-      : 'bg-zinc-900 text-zinc-300 border-zinc-700'
+      : 'bg-surface text-zinc-300 border-white/[0.08]'
   }`;
 const inputCls =
-  'w-full h-11 rounded-lg px-3 text-base tabular-nums bg-zinc-900 border border-zinc-700 text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent outline-none';
+  'w-full h-11 rounded-lg px-3 text-base tabular-nums bg-surface border border-white/[0.08] text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent outline-none';
 
 const daysBetween = (a, b) => Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
 const fmt = (n) => (Math.round(n * 10) / 10).toLocaleString('pt-PT');
@@ -43,7 +43,7 @@ function exerciseName(id) {
 function MetricChart({ series, unit }) {
   if (series.length < 2) {
     return (
-      <div className="h-36 flex items-center justify-center rounded-lg border border-dashed border-zinc-700 text-xs text-zinc-400 text-center px-6">
+      <div className="h-36 flex items-center justify-center rounded-lg border border-dashed border-white/[0.08] text-xs text-zinc-400 text-center px-6">
         {series.length === 0 ? 'Ainda sem registos desta medida.' : 'Registe mais uma medição para ver a linha de evolução.'}
       </div>
     );
@@ -92,7 +92,7 @@ function MetricChart({ series, unit }) {
 function CompareSlider({ beforeUrl, afterUrl, beforeDate, afterDate }) {
   const [pos, setPos] = useState(50);
   return (
-    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 select-none">
+    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-surface select-none">
       <img src={afterUrl} alt={`Depois, ${formatDatePt(afterDate)}`} className="absolute inset-0 w-full h-full object-cover" draggable="false" />
       <img
         src={beforeUrl}
@@ -302,7 +302,7 @@ export default function BodyPortfolio() {
             type="button"
             onClick={() => setFormOpen((v) => !v)}
             aria-expanded={formOpen}
-            className="flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg bg-zinc-800 text-zinc-100 text-xs font-semibold active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg bg-white/[0.04] text-zinc-100 text-xs font-semibold active:scale-95 cursor-pointer"
           >
             {formOpen ? <ChevronDown className="w-4 h-4 rotate-180" /> : <Plus className="w-4 h-4" />}
             <span>{formOpen ? 'Fechar' : 'Registar'}</span>
@@ -439,7 +439,7 @@ export default function BodyPortfolio() {
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoPicked} className="hidden" />
 
         {photosLoaded && photos.length === 0 && (
-          <div className="flex flex-col items-center gap-2 py-8 rounded-lg border border-dashed border-zinc-700 text-center px-6">
+          <div className="flex flex-col items-center gap-2 py-8 rounded-lg border border-dashed border-white/[0.08] text-center px-6">
             <ImageOff className="w-6 h-6 text-zinc-400" />
             <p className="text-xs text-zinc-400">
               Tire uma foto de frente, lado e costas, com a mesma luz e distância. Repita a cada 2–4 semanas.
@@ -478,7 +478,7 @@ export default function BodyPortfolio() {
 
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {[...posePhotos].reverse().map((p) => (
-                <div key={p.id} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-900 group">
+                <div key={p.id} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-surface group">
                   <img src={urls[p.id]} alt={`${PHOTO_POSES.find((x) => x.id === p.pose)?.label}, ${formatDatePt(p.date)}`} className="w-full h-full object-cover" loading="lazy" />
                   <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[11px] font-semibold tabular-nums">
                     {formatDatePt(p.date)}

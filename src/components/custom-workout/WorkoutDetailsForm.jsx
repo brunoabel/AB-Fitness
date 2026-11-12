@@ -18,7 +18,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex: Treino A - Peitoral e Tríceps"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-sm font-semibold text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-sm font-semibold text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
           />
         </div>
 
@@ -51,7 +51,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
                   className={`min-h-[48px] p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer text-center ${
                     isSelected
                       ? 'bg-accent/70 text-white border-accent-hover font-bold shadow-xs'
-                      : 'bg-zinc-900 border-white/10 text-zinc-300 hover:border-zinc-400'
+                      : 'bg-surface border-white/10 text-zinc-300 hover:border-zinc-400'
                   }`}
                 >
                   <span className="text-xs font-bold">{item.label}</span>
@@ -72,7 +72,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
             value={focus}
             onChange={(e) => setFocus(e.target.value)}
             placeholder="Ex: Peito, Ombros e Tríceps"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-sm font-semibold text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all mb-2"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-sm font-semibold text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all mb-2"
           />
 
           {/* Sugestões Rápidas de Foco */}
@@ -88,7 +88,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
                 className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
                   focus === opt
                     ? 'bg-accent/70 text-white border-white'
-                    : 'bg-zinc-900 text-zinc-300 border-white/10 hover:border-zinc-400'
+                    : 'bg-surface text-zinc-300 border-white/10 hover:border-zinc-400'
                 }`}
               >
                 {opt}
@@ -114,7 +114,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
                 className={`min-h-[44px] text-xs font-mono tabular-nums font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer border ${
                   duration === dur
                     ? 'bg-accent/70 text-white border-white'
-                    : 'bg-zinc-900 text-zinc-300 border-white/10 hover:border-zinc-400'
+                    : 'bg-surface text-zinc-300 border-white/10 hover:border-zinc-400'
                 }`}
               >
                 {dur}
@@ -133,7 +133,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Ex: Treino focado em força bruta e sobrecarga progressiva"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
           />
         </div>
 
@@ -147,7 +147,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
             onChange={(e) => setTrainerNotes(e.target.value)}
             placeholder="Ex: Descanso de 60s entre séries. Cadência 3s excêntrica. Focar em não usar impulsão."
             rows={2}
-            className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all resize-none"
+            className="w-full px-3.5 py-2 rounded-xl bg-surface border border-white/10 text-xs text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition-all resize-none"
           />
         </div>
       </div>

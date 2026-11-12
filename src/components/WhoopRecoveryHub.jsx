@@ -150,7 +150,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
           {/* Métricas-Chave em Grid */}
           <div className="w-full grid grid-cols-2 gap-2 text-xs">
             {/* Day Strain */}
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex flex-col justify-between">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Day Strain</span>
                 <Flame className="w-3.5 h-3.5 text-zinc-300" />
@@ -164,7 +164,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             </div>
 
             {/* HRV */}
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex flex-col justify-between">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider">HRV (SNC)</span>
                 <Activity className="w-3.5 h-3.5 text-zinc-300" />
@@ -178,7 +178,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             </div>
 
             {/* Sono */}
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex flex-col justify-between">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Sono</span>
                 <Moon className="w-3.5 h-3.5 text-zinc-300" />
@@ -192,7 +192,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             </div>
 
             {/* Frequência Cardíaca de Repouso */}
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex flex-col justify-between">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider">RHR (Repouso)</span>
                 <Heart className="w-3.5 h-3.5 text-zinc-300" />
@@ -208,7 +208,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
         </div>
 
         {/* Barra de Progresso de Strain Diário Whoop */}
-        <div className="mt-4 pt-3 border-t border-zinc-800/80 space-y-1.5">
+        <div className="mt-4 pt-3 border-t border-white/[0.06] space-y-1.5">
           <div className="flex items-center justify-between text-[11px]">
             <span className="font-semibold text-zinc-400">
               Carga Fisiológica Acumulada (Strain)
@@ -387,7 +387,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
                     type="number"
                     value={tempHrv}
                     onChange={(e) => setTempHrv(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 text-white text-xs font-mono tabular-nums font-bold border border-white/10 outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-surface text-white text-xs font-mono tabular-nums font-bold border border-white/10 outline-none"
                   />
                 </div>
                 <div>
@@ -397,7 +397,7 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
                     step="0.1"
                     value={tempSleep}
                     onChange={(e) => setTempSleep(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 text-white text-xs font-mono tabular-nums font-bold border border-white/10 outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-surface text-white text-xs font-mono tabular-nums font-bold border border-white/10 outline-none"
                   />
                 </div>
               </div>

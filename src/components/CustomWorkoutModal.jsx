@@ -205,7 +205,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
       <ModalPanel className="w-full max-w-xl bg-zinc-950 rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden transition-colors">
         
         {/* Topo do Modal com Título e Fechar */}
-        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-zinc-900">
+        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-surface">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold">
               <Dumbbell className="w-4 h-4 text-zinc-950" />
@@ -399,7 +399,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none cursor-pointer"
                         >
                           {REST_OPTIONS.map((sec) => (
-                            <option key={sec} value={sec} className="bg-zinc-900">
+                            <option key={sec} value={sec} className="bg-surface">
                               {sec}s
                             </option>
                           ))}
@@ -522,7 +522,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Pesquisar exercício por nome ou grupo..."
-                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-medium text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-surface border border-white/10 text-xs font-medium text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
                     />
                   </div>
 
@@ -596,7 +596,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
             ) : (
               /* Formulário de Criação de Exercício Avulso */
               <form onSubmit={handleAddCustomExercise} className="flex-1 overflow-y-auto p-4 space-y-3.5">
-                <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 text-zinc-300 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-surface border border-white/10 text-zinc-300 text-xs flex items-center gap-2">
                   <Sparkles className="w-4 h-4 shrink-0 text-white" />
                   <span>Registe um exercício exclusivo prescrito pelo seu treinador.</span>
                 </div>
@@ -611,7 +611,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     onChange={(e) => setCustomExName(e.target.value)}
                     placeholder="Ex: Supino Hammer com pega neutra"
                     required
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
+                    className="w-full px-3 py-2 rounded-xl bg-surface border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
                   />
                 </div>
 
@@ -623,7 +623,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     <select
                       value={customExGroup}
                       onChange={(e) => setCustomExGroup(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400 cursor-pointer"
+                      className="w-full px-3 py-2 rounded-xl bg-surface border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400 cursor-pointer"
                     >
                       {MUSCLE_GROUPS.map((g) => (
                         <option key={g} value={g}>{g}</option>
@@ -640,7 +640,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExEquip}
                       onChange={(e) => setCustomExEquip(e.target.value)}
                       placeholder="Ex: Máquina / Polia"
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
+                      className="w-full px-3 py-2 rounded-xl bg-surface border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400"
                     />
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       min={1}
                       max={10}
                       onChange={(e) => setCustomExSets(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -665,7 +665,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExReps}
                       onChange={(e) => setCustomExReps(e.target.value)}
                       placeholder="10-12"
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -675,7 +675,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       type="number"
                       value={customExWeight}
                       onChange={(e) => setCustomExWeight(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -686,7 +686,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExRest}
                       step={15}
                       onChange={(e) => setCustomExRest(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
                     />
                   </div>
                 </div>

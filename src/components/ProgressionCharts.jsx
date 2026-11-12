@@ -165,7 +165,7 @@ export default function ProgressionCharts() {
       </div>
 
       {/* 1. VISUALIZAÇÃO DE SOBRECARGA PROGRESSIVA POR EXERCÍCIO */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-zinc-900 border border-white/10 shadow-sm space-y-4 transition-colors">
+      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/10 shadow-sm space-y-4 transition-colors">
         
         {/* Seletor de Exercício do Arnold Split */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
@@ -186,7 +186,7 @@ export default function ProgressionCharts() {
               setSelectedExKey(e.target.value);
               triggerHaptic(10);
             }}
-            className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-zinc-800 text-zinc-100 text-xs font-semibold border border-zinc-700 outline-none cursor-pointer"
+            className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-white/[0.04] text-zinc-100 text-xs font-semibold border border-white/[0.08] outline-none cursor-pointer"
           >
             <option value="bench-press">Supino Plano (Peito)</option>
             <option value="barbell-row">Remada Curvada (Costas)</option>
@@ -199,12 +199,12 @@ export default function ProgressionCharts() {
 
         {/* Cards de Métricas do Exercício */}
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/10">
+          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
             <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Inicial</span>
             <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.initialWeight} kg</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-zinc-800/60 border border-white/10">
+          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
             <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Atual</span>
             <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.currentWeight} kg</span>
           </div>

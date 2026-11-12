@@ -195,7 +195,7 @@ export default function AthleteManualModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-0 sm:p-4 animate-fadeIn">
       <div 
-        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-[#0e0e11] text-zinc-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-zinc-800 animate-slideUp transition-all select-none"
+        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-[#0e0e11] text-zinc-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/[0.06] animate-slideUp transition-all select-none"
         onClick={(e) => e.stopPropagation()}
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -205,11 +205,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* CABEÇALHO SUPERIOR FIXO: Voltar, Paginação & Todos os Manuais */}
         {/* ========================================================= */}
-        <div className="p-3.5 sm:p-4 border-b border-zinc-800/90 bg-surface flex items-center justify-between gap-2 shrink-0">
+        <div className="p-3.5 sm:p-4 border-b border-white/[0.06] bg-surface flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="h-9 px-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold active:scale-95 transition-all cursor-pointer border border-zinc-700/60"
+              className="h-9 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
               title="Voltar"
               aria-label="Voltar para a aplicação"
             >
@@ -234,7 +234,7 @@ export default function AthleteManualModal({ onClose }) {
                 setShowIndexSheet(true);
                 triggerHaptic(10);
               }}
-              className="h-9 px-3 rounded-xl bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 hover:text-white flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer border border-zinc-700/60"
+              className="h-9 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.08] text-zinc-200 hover:text-white flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
               title="Ver Todos os Manuais"
             >
               <ListFilter className="w-3.5 h-3.5 text-white" />
@@ -243,7 +243,7 @@ export default function AthleteManualModal({ onClose }) {
 
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-zinc-800/90 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer border border-zinc-700/60"
+              className="w-9 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.08] text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
               title="Fechar"
               aria-label="Fechar"
             >
@@ -255,11 +255,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* CARROSSEL DE SELEÇÃO RÁPIDA DE MANUAIS (Setas + Tabs) */}
         {/* ========================================================= */}
-        <div className="px-2 py-2 bg-[#17171d] border-b border-zinc-800 flex items-center gap-1.5 shrink-0">
+        <div className="px-2 py-2 bg-[#17171d] border-b border-white/[0.06] flex items-center gap-1.5 shrink-0">
           <button
             onClick={goToPrevManual}
             disabled={currentIndex === 0}
-            className="tap-44 w-8 h-8 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
             title="Manual Anterior"
             aria-label="Manual Anterior"
           >
@@ -284,7 +284,7 @@ export default function AthleteManualModal({ onClose }) {
                   className={`min-h-[44px] py-1.5 px-3 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 active:scale-95 cursor-pointer border ${
                     isSelected
                       ? 'bg-accent text-white border-accent shadow-sm font-black'
-                      : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-800'
+                      : 'bg-surface/80 hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 border-white/[0.06]'
                   }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-zinc-950' : 'text-zinc-400'}`} />
@@ -303,7 +303,7 @@ export default function AthleteManualModal({ onClose }) {
           <button
             onClick={goToNextManual}
             disabled={currentIndex === tabOptions.length - 1}
-            className="tap-44 w-8 h-8 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
             title="Próximo Manual"
             aria-label="Próximo Manual"
           >
@@ -314,38 +314,38 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* PÍLULAS DE NAVEGAÇÃO INTERNA RÁPIDA (Saltar Secções) */}
         {/* ========================================================= */}
-        <div className="px-3 py-1.5 bg-surface border-b border-zinc-800/60 overflow-x-auto flex gap-1.5 scrollbar-none text-[11px] font-semibold text-zinc-400 shrink-0">
+        <div className="px-3 py-1.5 bg-surface border-b border-white/[0.06] overflow-x-auto flex gap-1.5 scrollbar-none text-[11px] font-semibold text-zinc-400 shrink-0">
           <button 
             onClick={() => scrollToSection('sec-philosophy')}
-            className="px-2 py-0.5 rounded-md hover:bg-zinc-800 hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
           >
             Filosofia
           </button>
           <span className="text-zinc-700">•</span>
           <button 
             onClick={() => scrollToSection('sec-calc')}
-            className="px-2 py-0.5 rounded-md hover:bg-zinc-800 hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
           >
             Calculadora
           </button>
           <span className="text-zinc-700">•</span>
           <button 
             onClick={() => scrollToSection('sec-split')}
-            className="px-2 py-0.5 rounded-md hover:bg-zinc-800 hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
           >
             Volume & Divisão
           </button>
           <span className="text-zinc-700">•</span>
           <button 
             onClick={() => scrollToSection('sec-nutrition')}
-            className="px-2 py-0.5 rounded-md hover:bg-zinc-800 hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
           >
             Nutrição
           </button>
           <span className="text-zinc-700">•</span>
           <button 
             onClick={() => scrollToSection('sec-injuries')}
-            className="px-2 py-0.5 rounded-md hover:bg-zinc-800 hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
+            className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
           >
             Prevenção de Lesões
           </button>
@@ -362,9 +362,9 @@ export default function AthleteManualModal({ onClose }) {
           className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-200"
         >
           {/* Banner do Manual Atual */}
-          <div id="sec-philosophy" className="p-4 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 space-y-2 shadow-sm">
+          <div id="sec-philosophy" className="p-4 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-white/[0.06] space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-zinc-800 text-zinc-200 border border-zinc-700">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-white/[0.04] text-zinc-200 border border-white/[0.08]">
                 {manual.tag}
               </span>
               {isCurrentGoal && (
@@ -391,7 +391,7 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Calculadora Interativa de Proteína & Hidratação */}
-          <div id="sec-calc" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-3 shadow-xs">
+          <div id="sec-calc" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
                 <Calculator className="w-4 h-4 text-white" />
@@ -405,14 +405,14 @@ export default function AthleteManualModal({ onClose }) {
                   max="160"
                   value={calcWeight}
                   onChange={(e) => setCalcWeight(Number(e.target.value) || 60)}
-                  className="w-16 text-center font-bold text-xs py-1.5 px-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white font-mono tabular-nums focus:border-accent focus:outline-none"
+                  className="w-16 text-center font-bold text-xs py-1.5 px-2 rounded-lg bg-surface border border-white/[0.08] text-white font-mono tabular-nums focus:border-accent focus:outline-none"
                 />
                 <span className="text-xs text-zinc-400 font-semibold font-sans">kg</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-center text-xs">
-              <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800">
+              <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
                 <span className="text-[11px] text-zinc-400 font-bold uppercase block">
                   Proteína Recomendada
                 </span>
@@ -424,7 +424,7 @@ export default function AthleteManualModal({ onClose }) {
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800">
+              <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
                 <span className="text-[11px] text-zinc-400 font-bold uppercase block">
                   Hidratação Mínima
                 </span>
@@ -439,7 +439,7 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Estrutura & Divisão do Treino */}
-          <div id="sec-split" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-3 shadow-xs">
+          <div id="sec-split" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-3 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <Layers className="w-4 h-4 text-white" />
               <span>Diretrizes de Volume & Carga</span>
@@ -447,7 +447,7 @@ export default function AthleteManualModal({ onClose }) {
 
             <div className="space-y-2 text-xs">
               {manual.weeklySplit.map((split, i) => (
-                <div key={i} className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800/80">
+                <div key={i} className="p-3 rounded-xl bg-surface/80 border border-white/[0.06]">
                   <div className="flex items-center justify-between mb-1">
                     <strong className="text-white font-bold">{split.day}</strong>
                     <span className="text-[11px] font-bold text-white">{split.focus}</span>
@@ -461,29 +461,29 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Estratégia Nutricional */}
-          <div id="sec-nutrition" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-2.5 shadow-xs">
+          <div id="sec-nutrition" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2.5 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <Droplets className="w-4 h-4 text-accent-hover" />
               <span>Plano Nutricional & Hidratação</span>
             </div>
 
             <div className="space-y-2 text-xs text-zinc-300">
-              <div className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800">
+              <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
                 <strong className="text-white block font-semibold mb-0.5">Energia & Calorias:</strong>
                 <span className="text-zinc-400">{manual.nutritionStrategy.calories}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800">
+              <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
                 <strong className="text-white block font-semibold mb-0.5">Proteínas & Aminoácidos:</strong>
                 <span className="text-zinc-400">{manual.nutritionStrategy.protein}</span>
               </div>
               {manual.nutritionStrategy.carbs && (
-                <div className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
                   <strong className="text-white block font-semibold mb-0.5">Hidratos de Carbono & Glicogénio:</strong>
                   <span className="text-zinc-400">{manual.nutritionStrategy.carbs}</span>
                 </div>
               )}
               {manual.nutritionStrategy.matchMeal && (
-                <div className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
                   <strong className="text-white block font-semibold mb-0.5">Refeição Pré-Partida (Matchday):</strong>
                   <span className="text-zinc-400">{manual.nutritionStrategy.matchMeal}</span>
                 </div>
@@ -492,7 +492,7 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Prevenção de Lesões & Saúde Articular */}
-          <div id="sec-injuries" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-2.5 shadow-xs">
+          <div id="sec-injuries" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2.5 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <HeartPulse className="w-4 h-4 text-rose-500" />
               <span>Prevenção de Lesões & Blindagem Articular</span>
@@ -500,7 +500,7 @@ export default function AthleteManualModal({ onClose }) {
 
             <div className="space-y-2 text-xs">
               {manual.injuryPrevention.map((item, idx) => (
-                <div key={idx} className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <div key={idx} className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
                   <strong className="text-white font-bold block mb-0.5">{item.name}</strong>
                   <span className="text-zinc-400 leading-relaxed block">{item.solution}</span>
                 </div>
@@ -509,7 +509,7 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Rotina de Recuperação & Sono */}
-          <div className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <Moon className="w-4 h-4 text-amber-400" />
               <span>Regeneração & Sono</span>
@@ -529,11 +529,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* RODAPÉ DOCK FIXO: Anterior, Adotar Objetivo & Próximo */}
         {/* ========================================================= */}
-        <div className="p-3 sm:p-4 border-t border-zinc-800 bg-surface flex items-center justify-between gap-2 shrink-0">
+        <div className="p-3 sm:p-4 border-t border-white/[0.06] bg-surface flex items-center justify-between gap-2 shrink-0">
           <button
             onClick={goToPrevManual}
             disabled={currentIndex === 0}
-            className="py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-zinc-700/60 shrink-0"
+            className="py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-white/[0.08] shrink-0"
             title="Manual Anterior"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -564,7 +564,7 @@ export default function AthleteManualModal({ onClose }) {
           <button
             onClick={goToNextManual}
             disabled={currentIndex === tabOptions.length - 1}
-            className="py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-zinc-700/60 shrink-0"
+            className="py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-white/[0.08] shrink-0"
             title="Próximo Manual"
           >
             <span className="hidden xs:inline">Próximo</span>
@@ -578,10 +578,10 @@ export default function AthleteManualModal({ onClose }) {
         {showIndexSheet && (
           <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col justify-end sm:justify-center p-0 sm:p-6 animate-fadeIn">
             <div 
-              className="bg-surface text-zinc-100 rounded-t-2xl sm:rounded-2xl border border-zinc-800 max-h-[85vh] flex flex-col overflow-hidden animate-slideUp shadow-2xl"
+              className="bg-surface text-zinc-100 rounded-t-2xl sm:rounded-2xl border border-white/[0.06] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-[#191920]">
+              <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-[#191920]">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-white" />
                   <h4 className="font-bold text-sm text-white">
@@ -590,7 +590,7 @@ export default function AthleteManualModal({ onClose }) {
                 </div>
                 <button
                   onClick={() => setShowIndexSheet(false)}
-                  className="tap-44 w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
+                  className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -613,11 +613,11 @@ export default function AthleteManualModal({ onClose }) {
                       className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer active:scale-[0.99] ${
                         isSelected
                           ? 'bg-accent/70 border-accent text-white'
-                          : 'bg-zinc-900/60 hover:bg-zinc-800/80 border-zinc-800 text-zinc-300'
+                          : 'bg-surface/60 hover:bg-white/[0.08] border-white/[0.06] text-zinc-300'
                       }`}
                     >
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        isSelected ? 'bg-accent text-white' : 'bg-zinc-800 text-zinc-400'
+                        isSelected ? 'bg-accent text-white' : 'bg-white/[0.04] text-zinc-400'
                       }`}>
                         <Icon className="w-4 h-4 stroke-[2]" />
                       </div>

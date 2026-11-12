@@ -42,7 +42,7 @@ export default function RunHeader({ isCloudSynced, setVoiceEnabled, totalKmsAccu
             className={`min-h-[44px] min-w-[44px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 ${
               voiceEnabled 
                 ? 'bg-accent/70 text-white border-accent-hover' 
-                : 'bg-zinc-900 text-zinc-400 border-white/10'
+                : 'bg-surface text-zinc-400 border-white/10'
             }`}
             title={voiceEnabled ? 'Locução por voz ativada nos fones' : 'Locução por voz desativada'}
           >
@@ -54,7 +54,7 @@ export default function RunHeader({ isCloudSynced, setVoiceEnabled, totalKmsAccu
           </button>
 
           {/* Badges de Totais Acumulados */}
-          <div className="text-right bg-zinc-900 border border-white/10 px-3.5 py-2 rounded-xl">
+          <div className="text-right bg-surface border border-white/10 px-3.5 py-2 rounded-xl">
             <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
               Total ({totalRunsCount} {totalRunsCount === 1 ? 'sessão' : 'sessões'})
             </span>

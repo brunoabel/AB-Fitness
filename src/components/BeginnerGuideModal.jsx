@@ -30,7 +30,7 @@ export default function BeginnerGuideModal({ onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header do Guia */}
-        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-zinc-900">
+        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-surface">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold">
               <Zap className="w-4 h-4 fill-current" />
@@ -47,7 +47,7 @@ export default function BeginnerGuideModal({ onClose }) {
 
           <button
             onClick={onClose}
-            className="w-11 h-11 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.08] flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Fechar"
           >
             <X className="w-5 h-5" />
@@ -57,7 +57,7 @@ export default function BeginnerGuideModal({ onClose }) {
         {/* Conteúdo com scroll */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4">
           {/* Boas-Vindas do Atleta */}
-          <div className="p-4 rounded-xl bg-zinc-900 border border-white/10">
+          <div className="p-4 rounded-xl bg-surface border border-white/10">
             <div className="flex items-center gap-2 text-white font-bold text-xs uppercase mb-1">
               <BookOpen className="w-4 h-4 text-zinc-300" />
               Princípios Científicos de Treino & Evolução
@@ -68,7 +68,7 @@ export default function BeginnerGuideModal({ onClose }) {
           </div>
 
           {/* Calculadora Didática de Carga Segura */}
-          <div className="p-4 rounded-xl bg-zinc-900 border border-white/10 space-y-3">
+          <div className="p-4 rounded-xl bg-surface border border-white/10 space-y-3">
             <div className="flex items-center gap-2 text-white font-bold text-xs uppercase">
               <Calculator className="w-4 h-4 text-zinc-300" />
               Calculadora de Carga Inicial Recomendada
@@ -121,19 +121,19 @@ export default function BeginnerGuideModal({ onClose }) {
 
           {/* Os 3 Pilares da Recuperação */}
           <div className="grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 space-y-1">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 space-y-1">
               <Droplets className="w-4 h-4 text-zinc-300 mx-auto" />
               <div className="font-bold text-white text-[11px]">Hidratação</div>
               <div className="text-[11px] text-zinc-400 font-mono tabular-nums">35–45 ml/kg diário</div>
             </div>
 
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 space-y-1">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 space-y-1">
               <Moon className="w-4 h-4 text-zinc-300 mx-auto" />
               <div className="font-bold text-white text-[11px]">Sono Anabólico</div>
               <div className="text-[11px] text-zinc-400 font-mono tabular-nums">7 a 9h por noite</div>
             </div>
 
-            <div className="p-3 rounded-xl bg-zinc-900 border border-white/10 space-y-1">
+            <div className="p-3 rounded-xl bg-surface border border-white/10 space-y-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400 mx-auto" />
               <div className="font-bold text-white text-[11px]">RIR (Reserva)</div>
               <div className="text-[11px] text-zinc-400 font-mono tabular-nums">1–2 reps de reserva</div>
@@ -146,12 +146,12 @@ export default function BeginnerGuideModal({ onClose }) {
               Diretrizes de Fisiologia & Treino
             </h3>
             {BEGINNER_GUIDE.map((guide, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-1">
+              <div key={idx} className="p-3.5 rounded-xl bg-surface border border-white/10 space-y-1">
                 <div className="flex items-center justify-between gap-2">
                   <h4 className="text-xs font-bold text-white">
                     {guide.title}
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700 shrink-0">
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08] shrink-0">
                     {guide.tag}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export default function BeginnerGuideModal({ onClose }) {
         </div>
 
         {/* Botão de Fechar */}
-        <div className="p-4 border-t border-white/10 bg-zinc-900">
+        <div className="p-4 border-t border-white/10 bg-surface">
           <button
             onClick={onClose}
             className="w-full min-h-[48px] py-3 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-sm transition-colors cursor-pointer active:scale-[0.99]"
