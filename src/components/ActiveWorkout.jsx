@@ -7,7 +7,7 @@ import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
 import WorkoutHeader from './workout/WorkoutHeader';
 import WorkoutDock from './workout/WorkoutDock';
-import ExerciseListView from './workout/ExerciseListView';
+import ExerciseListView, { workingSetLabels } from './workout/ExerciseListView';
 import FocusExerciseCard from './workout/FocusExerciseCard';
 import SwapExerciseModal from './workout/SwapExerciseModal';
 import useWorkoutTimer from '../hooks/useWorkoutTimer';
@@ -39,6 +39,7 @@ import {
   getBestHistoricalDuration,
   isTimedExercise,
   getDefaultDurationSeconds,
+  formatDurationSeconds,
   e1RM,
   calculateNextSessionPrescription
 } from '../utils/strengthMetrics';
@@ -501,6 +502,21 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const currentFocusedIndex = currentExercisesList.findIndex((e) => e.id === focusedExerciseId);
   const activeExercise = currentExercisesList[currentFocusedIndex] || currentExercisesList[0];
 
+  // Próxima série pendente do exercício em foco: alimenta o Live Activity do descanso
+  // (ecrã de bloqueio / Dynamic Island) com "Série X · carga" ou "Série X · duração".
+  const activeExerciseSets = exercisesData[activeExercise?.id] || [];
+  const activeSetLabels = workingSetLabels(activeExerciseSets);
+  const isActiveExerciseTimed = activeExercise ? isTimedExercise(activeExercise, activeExercise.id) : false;
+  const nextPendingSetIdx = activeExerciseSets.findIndex((s) => !(s.completed || s.done));
+  const nextPendingSet = nextPendingSetIdx >= 0 ? activeExerciseSets[nextPendingSetIdx] : null;
+  const nextSetInfo = nextPendingSet
+    ? `Série ${activeSetLabels[nextPendingSetIdx]} · ${
+        isActiveExerciseTimed
+          ? formatDurationSeconds(nextPendingSet.seconds ?? nextPendingSet.reps)
+          : `${nextPendingSet.weight || 0} kg`
+      }`
+    : undefined;
+
   const handlePrevExercise = () => {
     if (currentFocusedIndex > 0) {
       triggerHaptic(10);
@@ -710,6 +726,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       <RestTimer
         initialTime={currentRestDefault}
         autoStartTrigger={restTimerTrigger}
+        exerciseName={activeExercise?.name}
+        nextSetInfo={nextSetInfo}
       />
 
       <WorkoutDock

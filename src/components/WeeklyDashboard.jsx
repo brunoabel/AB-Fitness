@@ -21,6 +21,7 @@ import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 import MuscleRecoveryMap from './MuscleRecoveryMap';
 import { useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
+import WearableReadinessCard from './wearables/WearableReadinessCard';
 
 
 export default function WeeklyDashboard({ 
@@ -56,8 +57,11 @@ export default function WeeklyDashboard({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         
         {/* COLUNA ESQUERDA: Resumo Semanal & Seletor de Dias */}
-        <div className="md:col-span-5 space-y-6">
+        <div className="md:col-span-5 space-y-4 sm:space-y-6">
           
+          {/* Prontidão Fisiológica Biomecânica (Wearables) */}
+          <WearableReadinessCard />
+
           {/* Cartão de Performance Semanal */}
           <div className="p-5 rounded-xl bg-surface border border-white/10 transition-colors shadow-xs">
             <div className="flex items-center justify-between mb-3">

@@ -20,7 +20,8 @@ import {
   Sparkles,
   Calculator,
   Bell,
-  LifeBuoy
+  LifeBuoy,
+  Watch
 } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import VerifiedBadge from './ui/VerifiedBadge';
@@ -28,9 +29,11 @@ import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../utils/userVeri
 import { canUseSocial, getMyProfile } from '../services/socialService';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
+import { getLocalConnections } from '../services/wearables/wearableManager';
 
 const DeleteAccountSheet = lazy(() => import('./legal/DeleteAccountSheet'));
 const LinkTrainerSheet = lazy(() => import('./trainer/LinkTrainerSheet'));
+const WearablesModal = lazy(() => import('./wearables/WearablesModal'));
 
 const SPRING = { type: 'spring', stiffness: 400, damping: 38 };
 
@@ -79,6 +82,22 @@ export default function SidebarDrawer({
   const [deleting, setDeleting] = useState(false);
   const [linkingTrainer, setLinkingTrainer] = useState(false);
   const [confirmingLogout, setConfirmingLogout] = useState(false);
+  const [wearablesOpen, setWearablesOpen] = useState(false);
+  const [wearablesStatus, setWearablesStatus] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      const conns = getLocalConnections();
+      const keys = Object.keys(conns || {});
+      if (keys.length > 1) {
+        setWearablesStatus('Whoop & Fitbit ativos');
+      } else if (keys.length === 1) {
+        setWearablesStatus(keys[0] === 'whoop' ? 'Whoop 4.0 ativo' : 'Fitbit ativo');
+      } else {
+        setWearablesStatus('Ligar Whoop & Fitbit');
+      }
+    }
+  }, [isOpen, wearablesOpen]);
 
   useEffect(() => {
     if (!isOpen || !canUseSocial(userId)) return;
@@ -237,19 +256,28 @@ export default function SidebarDrawer({
               </div>
             </div>
 
-            {/* Secção 3 · Conexão & Treinador */}
-            {!isGuest && (
-              <div className="mt-5 px-2">
-                <SectionLabel>Conexão &amp; Treinador</SectionLabel>
-                <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] overflow-hidden">
-                  {isTrainer ? (
+            {/* Secção 3 · Dispositivos & Conexão */}
+            <div className="mt-5 px-2">
+              <SectionLabel>Dispositivos &amp; Conexão</SectionLabel>
+              <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
+                <Row
+                  icon={Watch}
+                  label="Dispositivos & Wearables"
+                  hint={wearablesStatus || 'Ligar Whoop & Fitbit'}
+                  onClick={() => {
+                    triggerHaptic(10);
+                    setWearablesOpen(true);
+                  }}
+                />
+                {!isGuest && (
+                  isTrainer ? (
                     <Row icon={Dumbbell} label="Trainer Hub" hint="Os teus atletas e prescrições" onClick={run(onOpenTrainerHub)} />
                   ) : (
                     <Row icon={Link2} label="Vincular Personal Trainer" hint="Insere o código de 6 dígitos do teu PT" onClick={() => { triggerHaptic(10); setLinkingTrainer(true); }} />
-                  )}
-                </div>
+                  )
+                )}
               </div>
-            )}
+            </div>
 
             {/* Secção 4 · Administração (condicional) */}
             {isAdmin && (
@@ -335,6 +363,11 @@ export default function SidebarDrawer({
           {linkingTrainer && (
             <Suspense fallback={null}>
               <LinkTrainerSheet onClose={() => setLinkingTrainer(false)} />
+            </Suspense>
+          )}
+          {wearablesOpen && (
+            <Suspense fallback={null}>
+              <WearablesModal isOpen={wearablesOpen} onClose={() => setWearablesOpen(false)} />
             </Suspense>
           )}
         </div>

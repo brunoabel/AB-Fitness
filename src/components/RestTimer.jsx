@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Bell, ChevronUp, ChevronDown } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
+import { restMediaSessionService } from '../services/restMediaSessionService';
 
-export default function RestTimer({ 
-  initialTime = 60, 
+export default function RestTimer({
+  initialTime = 60,
   autoStartTrigger = 0,
-  onFinish 
+  exerciseName,
+  nextSetInfo,
+  onFinish
 }) {
   const [totalSeconds, setTotalSeconds] = useState(initialTime);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -19,8 +22,35 @@ export default function RestTimer({
   const endAtRef = useRef(null);
   const onFinishRef = useRef(onFinish);
   const finishedAtRef = useRef(null);
+  const lastReportedSecondRef = useRef(null);
   const [, setNowTick] = useState(0);
   onFinishRef.current = onFinish;
+
+  // Refs sempre atualizados: usados pelos handlers remotos (lock screen / auscultadores),
+  // que são registados uma única vez e não podem depender de closures desatualizadas.
+  const exerciseNameRef = useRef(exerciseName);
+  exerciseNameRef.current = exerciseName;
+  const nextSetInfoRef = useRef(nextSetInfo);
+  nextSetInfoRef.current = nextSetInfo;
+  const isActiveRef = useRef(isActive);
+  isActiveRef.current = isActive;
+  const timeLeftRef = useRef(timeLeft);
+  timeLeftRef.current = timeLeft;
+
+  // Finaliza o descanso imediatamente (fim natural da contagem ou skip remoto)
+  const finishNow = () => {
+    finishedAtRef.current = Date.now();
+    endAtRef.current = null;
+    setIsActive(false);
+    setTimeLeft(0);
+    setIsAlerting(true);
+    sound.playTimerComplete();
+    triggerHaptic([40, 100, 40, 120]);
+    restMediaSessionService.markFinished({ exerciseName: exerciseNameRef.current });
+    if (onFinishRef.current) onFinishRef.current();
+  };
+  const finishNowRef = useRef(finishNow);
+  finishNowRef.current = finishNow;
 
   const startCountdown = (seconds) => {
     endAtRef.current = Date.now() + seconds * 1000;
@@ -30,6 +60,23 @@ export default function RestTimer({
     setIsAlerting(false);
     sound.playStartRest();
     triggerHaptic(20);
+
+    lastReportedSecondRef.current = seconds;
+    restMediaSessionService.primeAudio();
+    restMediaSessionService.setActionHandlers({
+      onSkipRest: () => finishNowRef.current(),
+      onAddRest: (secs) => addTimeRef.current(secs ?? 30),
+      onTogglePause: (pause) => {
+        if (pause && isActiveRef.current) toggleTimerRef.current();
+        else if (!pause && !isActiveRef.current && timeLeftRef.current > 0) toggleTimerRef.current();
+      }
+    });
+    restMediaSessionService.updateRestSession({
+      timeLeft: seconds,
+      totalSeconds: seconds,
+      exerciseName: exerciseNameRef.current,
+      nextSetInfo: nextSetInfoRef.current
+    });
   };
 
   // Início automático quando uma série é marcada como efetuada (usa o descanso prescrito do exercício)
@@ -50,14 +97,18 @@ export default function RestTimer({
       const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
       setTimeLeft(remaining);
       if (remaining === 0) {
-        // Instante real em que o descanso acabou (pode ter sido com a app em segundo plano)
-        finishedAtRef.current = endAtRef.current;
-        endAtRef.current = null;
-        setIsActive(false);
-        setIsAlerting(true);
-        sound.playTimerComplete();
-        triggerHaptic([40, 100, 40, 120]);
-        if (onFinishRef.current) onFinishRef.current();
+        finishNowRef.current();
+        return;
+      }
+      // Media Session: só atualiza quando o segundo exibido muda (evita trabalho a cada 250ms)
+      if (remaining !== lastReportedSecondRef.current) {
+        lastReportedSecondRef.current = remaining;
+        restMediaSessionService.updateRestSession({
+          timeLeft: remaining,
+          totalSeconds,
+          exerciseName: exerciseNameRef.current,
+          nextSetInfo: nextSetInfoRef.current
+        });
       }
     };
 
@@ -68,7 +119,7 @@ export default function RestTimer({
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [isActive]);
+  }, [isActive, totalSeconds]);
 
   // Enquanto o aviso está visível, atualiza "terminou há Xs" a cada segundo
   useEffect(() => {
@@ -92,12 +143,27 @@ export default function RestTimer({
       setTimeLeft(remaining);
       setIsActive(false);
       triggerHaptic(10);
+      restMediaSessionService.updateRestSession({
+        timeLeft: remaining,
+        totalSeconds,
+        exerciseName: exerciseNameRef.current,
+        nextSetInfo: nextSetInfoRef.current,
+        paused: true
+      });
     } else {
       endAtRef.current = Date.now() + timeLeft * 1000;
       setIsActive(true);
       triggerHaptic(10);
+      restMediaSessionService.updateRestSession({
+        timeLeft,
+        totalSeconds,
+        exerciseName: exerciseNameRef.current,
+        nextSetInfo: nextSetInfoRef.current
+      });
     }
   };
+  const toggleTimerRef = useRef(toggleTimer);
+  toggleTimerRef.current = toggleTimer;
 
   const resetTimer = () => {
     endAtRef.current = null;
@@ -105,17 +171,28 @@ export default function RestTimer({
     setTimeLeft(0);
     setIsAlerting(false);
     triggerHaptic(15);
+    restMediaSessionService.clearRestSession();
   };
 
   const addTime = (seconds) => {
     if (isActive && endAtRef.current) {
       endAtRef.current += seconds * 1000;
-      setTimeLeft(Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000)));
+      const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      lastReportedSecondRef.current = remaining;
+      restMediaSessionService.updateRestSession({
+        timeLeft: remaining,
+        totalSeconds,
+        exerciseName: exerciseNameRef.current,
+        nextSetInfo: nextSetInfoRef.current
+      });
     } else {
       setTimeLeft((prev) => Math.max(0, prev + seconds));
     }
     triggerHaptic(10);
   };
+  const addTimeRef = useRef(addTime);
+  addTimeRef.current = addTime;
 
   const selectPreset = (seconds) => {
     startCountdown(seconds);
@@ -127,11 +204,46 @@ export default function RestTimer({
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const progressPercent = totalSeconds > 0 && timeLeft > 0 
-    ? ((totalSeconds - timeLeft) / totalSeconds) * 100 
+  // Para o áudio de fundo e limpa a media session quando o temporizador desmonta
+  // (ex.: o atleta fecha o treino) — nunca deixa nada a correr em segundo plano.
+  useEffect(() => () => restMediaSessionService.clearRestSession(), []);
+
+  const progressPercent = totalSeconds > 0 && timeLeft > 0
+    ? ((totalSeconds - timeLeft) / totalSeconds) * 100
     : 0;
+  const ringRadius = 9;
+  const ringCircumference = 2 * Math.PI * ringRadius;
 
   return (
+    <>
+      {/* Dynamic Island: cápsula flutuante no topo, visível durante toda a contagem */}
+      {isActive && (
+        <div className="fixed top-[calc(env(safe-area-inset-top,0px)+80px)] inset-x-4 max-w-[280px] mx-auto z-20 animate-fadeIn">
+          <div className="flex items-center gap-2 min-h-[44px] pl-2.5 pr-1.5 rounded-full backdrop-blur-2xl bg-black/80 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+            <svg width="22" height="22" viewBox="0 0 22 22" className="-rotate-90 shrink-0" aria-hidden>
+              <circle cx="11" cy="11" r={ringRadius} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2.5" />
+              <circle
+                cx="11" cy="11" r={ringRadius} fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringCircumference * (1 - progressPercent / 100)}
+                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+              />
+            </svg>
+            <span className="flex-1 min-w-0 text-center font-mono text-[13px] font-bold tabular-nums text-white truncate">
+              {formatTime(timeLeft)} <span className="text-white/50 font-normal">· Descanso</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => addTime(15)}
+              aria-label="Adicionar 15 segundos de descanso"
+              className="shrink-0 min-h-[40px] min-w-[40px] px-2 rounded-full bg-white/10 hover:bg-white/15 text-white text-[11px] font-bold active:scale-95 transition-all cursor-pointer"
+            >
+              +15s
+            </button>
+          </div>
+        </div>
+      )}
+
     <div className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+88px)] left-0 right-0 z-30 pointer-events-none px-3 transition-all duration-200">
       <div className="max-w-md mx-auto pointer-events-auto">
         {/* Alerta de Fim de Descanso */}
@@ -293,5 +405,6 @@ export default function RestTimer({
         )}
       </div>
     </div>
+    </>
   );
 }
