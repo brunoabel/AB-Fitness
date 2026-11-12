@@ -52,23 +52,15 @@ export function buildWhoopAuthUrl(redirectUri) {
  * Troca o código de autorização pelo token de acesso.
  */
 export async function exchangeWhoopCodeForToken(code, redirectUri) {
-  const clientId = getWhoopClientId();
-  if (!clientId) throw new Error('VITE_WHOOP_CLIENT_ID não configurado');
-
-  const res = await fetch(WHOOP_TOKEN_URL, {
+  const res = await fetch('/api/whoop-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: clientId,
-      redirect_uri: redirectUri
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, redirectUri })
   });
 
   if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Falha ao obter token da Whoop: ${errText}`);
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error_description || errData.error || `Falha ao obter token da Whoop (${res.status})`);
   }
 
   return res.json();

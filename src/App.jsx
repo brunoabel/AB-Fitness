@@ -31,6 +31,7 @@ import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
 import SidebarDrawer from './components/SidebarDrawer';
 import { connectWearable } from './services/wearables/wearableManager';
+import { exchangeWhoopCodeForToken, fetchLiveWhoopBiometrics } from './services/wearables/whoopService';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -138,11 +139,37 @@ function AppContent() {
     if (path.includes('/auth/callback/wearable')) {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
+      const redirectUri = `${window.location.origin}/auth/callback/wearable`;
+
       if (code) {
-        connectWearable(user?.id, 'whoop', 'connected', { code }).then(() => {
-          window.history.replaceState({}, document.title, '/');
-          sound.playLevelUp?.();
-        });
+        exchangeWhoopCodeForToken(code, redirectUri)
+          .then(async (tokenData) => {
+            const expiresAt = tokenData.expires_in
+              ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+              : null;
+            await connectWearable(user?.id, 'whoop', 'connected', {
+              accessToken: tokenData.access_token,
+              refreshToken: tokenData.refresh_token,
+              expiresAt
+            });
+            try {
+              const bio = await fetchLiveWhoopBiometrics(tokenData.access_token);
+              const currentBio = JSON.parse(localStorage.getItem('ab_wearable_biometrics_v1') || '{}');
+              currentBio.whoop = { ...bio, provider: 'whoop', date: new Date().toISOString().slice(0, 10), last_synced_at: new Date().toISOString() };
+              localStorage.setItem('ab_wearable_biometrics_v1', JSON.stringify(currentBio));
+            } catch (e) {
+              console.warn('Erro ao carregar biometria live Whoop inicial:', e);
+            }
+          })
+          .catch((err) => {
+            console.warn('Erro no exchange de token Whoop:', err);
+            return connectWearable(user?.id, 'whoop', 'simulated', { code });
+          })
+          .finally(() => {
+            window.history.replaceState({}, document.title, '/');
+            sound.playLevelUp?.();
+            window.dispatchEvent(new Event('storage'));
+          });
       } else {
         window.history.replaceState({}, document.title, '/');
       }
