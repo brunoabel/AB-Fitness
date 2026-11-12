@@ -29,6 +29,7 @@ import { sound } from './utils/audio';
 import ABLogo from './components/ABLogo';
 import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
+import SidebarDrawer from './components/SidebarDrawer';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -113,6 +114,7 @@ function AppContent() {
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showAICoachModal, setShowAICoachModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // O modal do Coach só é montado na primeira abertura e depois mantém-se (preserva a conversa)
   const [coachMounted, setCoachMounted] = useState(false);
   if (showAICoachModal && !coachMounted) setCoachMounted(true);
@@ -357,6 +359,7 @@ function AppContent() {
                 onNavigateTab={handleTabChange}
                 completedDays={completedDays}
                 schedule={schedule}
+                onOpenSidebar={() => setIsSidebarOpen(true)}
               />
 
               <InstallPrompt />
@@ -390,23 +393,7 @@ function AppContent() {
                   <RunningHub isDark={isDark} />
                 )}
 
-                {activeTab === 'profile' && (
-                  <ProfileView
-                    onOpenGuide={() => setShowGuideModal(true)}
-                    onOpenCustomize={() => setShowOnboardingModal(true)}
-                    onOpenAICoach={() => setShowAICoachModal(true)}
-                    onOpenAdmin={() => {
-                      setCurrentView('admin');
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    onOpenTrainerHub={() => {
-                      setCurrentView('trainer-hub');
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    soundEnabled={soundEnabled}
-                    onToggleSound={handleToggleSound}
-                  />
-                )}
+                {activeTab === 'profile' && <ProfileView />}
 
                 {activeTab === 'social' && <SocialHub onNavigateTab={handleTabChange} />}
               </Suspense>
@@ -507,6 +494,26 @@ function AppContent() {
             />
           </Suspense>
         )}
+
+        {/* Gaveta lateral: gestão do atleta, acessível a partir do Header em qualquer ecrã */}
+        <SidebarDrawer
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onNavigateTab={handleTabChange}
+          onOpenCustomize={() => setShowOnboardingModal(true)}
+          onOpenGuide={() => setShowGuideModal(true)}
+          onOpenAICoach={() => setShowAICoachModal(true)}
+          onOpenAdmin={() => {
+            setCurrentView('admin');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onOpenTrainerHub={() => {
+            setCurrentView('trainer-hub');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          soundEnabled={soundEnabled}
+          onToggleSound={handleToggleSound}
+        />
       </div>
     </div>
   );

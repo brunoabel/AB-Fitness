@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Settings, PencilLine, UserPlus, Camera, Dumbbell, Image as ImageIcon, HandMetal, X, Sparkles } from 'lucide-react';
+import { PencilLine, UserPlus, Camera, Dumbbell, Image as ImageIcon, HandMetal, X, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
@@ -12,20 +12,18 @@ import NewPostModal from '../social/NewPostModal';
 
 const HistoryView = lazy(() => import('../HistoryView'));
 const EditProfileSheet = lazy(() => import('../social/EditProfileSheet'));
-const AccountSheet = lazy(() => import('../AccountSheet'));
 
 /**
- * Separador Perfil: "eu como atleta". Athlete Card + edição, definições (engrenagem) e,
- * por baixo, o histórico completo (sessões, gráficos, conquistas, corpo).
+ * Separador Perfil: "eu como atleta". Athlete Card + edição e, por baixo,
+ * o histórico completo (sessões, gráficos, conquistas, corpo).
  */
-export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoach, onOpenAdmin, onOpenTrainerHub, soundEnabled, onToggleSound }) {
+export default function ProfileView() {
   const { user, isGuest, isCeo, isAdmin, isPro } = useAuth();
   const userId = user?.id;
   const social = canUseSocial(userId);
 
   const [state, setState] = useState({ loaded: !social, profile: null, stats: null, error: '' });
   const [editing, setEditing] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('history'); // 'history' | 'photos'
   const [photos, setPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
@@ -89,7 +87,7 @@ export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoac
           <Skeleton className="h-[248px] rounded-3xl" />
         )}
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {canEdit ? (
             <motion.button
               type="button"
@@ -117,19 +115,6 @@ export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoac
           >
             <Camera className="w-4 h-4" strokeWidth={2} />
             Postar foto
-          </motion.button>
-
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.96 }}
-            onClick={() => {
-              triggerHaptic(10);
-              setSettingsOpen(true);
-            }}
-            className="min-h-[46px] rounded-2xl bg-surface-2 border border-white/[0.08] text-white font-bold text-[13px] inline-flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-3 transition-colors"
-          >
-            <Settings className="w-4 h-4" strokeWidth={1.75} />
-            Definições
           </motion.button>
         </div>
 
@@ -283,22 +268,6 @@ export default function ProfileView({ onOpenGuide, onOpenCustomize, onOpenAICoac
                 setState((s) => ({ ...s, profile: { ...p, privacy_settings: { ...s.profile.privacy_settings, ...p.privacy_settings } } }));
                 setEditing(false);
               }}
-            />
-          </Suspense>
-        )}
-        {settingsOpen && (
-          <Suspense key="settings" fallback={null}>
-            <AccountSheet
-              identity={{ avatar: profile.avatar_url, fullName: profile.full_name }}
-              soundEnabled={soundEnabled}
-              onToggleSound={onToggleSound}
-              onClose={() => setSettingsOpen(false)}
-              onEditProfile={canEdit ? () => setEditing(true) : undefined}
-              onOpenCustomize={onOpenCustomize}
-              onOpenGuide={onOpenGuide}
-              onOpenAICoach={onOpenAICoach}
-              onOpenAdmin={onOpenAdmin}
-              onOpenTrainerHub={onOpenTrainerHub}
             />
           </Suspense>
         )}

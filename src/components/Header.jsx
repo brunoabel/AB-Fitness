@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import { Flame } from 'lucide-react';
+import { Flame, Menu } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -43,10 +43,13 @@ function useProfileIdentity(user) {
   };
 }
 
-function Avatar({ url, name }) {
+function Avatar({ url, name, size = 36 }) {
   const initials = (name || 'A').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   return (
-    <span className="relative w-9 h-9 rounded-full overflow-hidden bg-surface-3 border border-white/[0.1] flex items-center justify-center text-[13px] font-semibold text-white">
+    <span
+      style={{ width: size, height: size }}
+      className="relative rounded-full overflow-hidden bg-surface-3 border border-white/[0.1] flex items-center justify-center text-[11px] font-semibold text-white shrink-0"
+    >
       {url ? <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" /> : initials}
     </span>
   );
@@ -62,7 +65,8 @@ export default function Header({
   currentView = 'dashboard',
   onNavigateTab,
   completedDays = [],
-  schedule = []
+  schedule = [],
+  onOpenSidebar
 }) {
   const { user } = useAuth();
   const identity = useProfileIdentity(user);
@@ -99,36 +103,37 @@ export default function Header({
       <header className="sticky top-0 z-20 pt-[env(safe-area-inset-top,0px)]">
         <motion.div aria-hidden style={{ opacity: barOpacity }} className="absolute inset-0 bg-app/80 backdrop-blur-xl border-b border-white/[0.07]" />
         <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
-          <motion.span style={{ opacity: compactOpacity, y: compactY }} className="font-heading text-[17px] font-semibold text-white truncate" aria-hidden>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.96 }}
+            onClick={() => {
+              triggerHaptic(10);
+              onOpenSidebar?.();
+            }}
+            aria-label="Abrir menu do atleta"
+            className="flex items-center gap-2 min-h-[40px] pl-1 pr-2.5 -ml-1 rounded-full cursor-pointer shrink-0"
+          >
+            <Menu className="w-[22px] h-[22px] text-white" strokeWidth={1.9} />
+            <Avatar url={identity.avatar} name={identity.fullName || user?.email} size={28} />
+          </motion.button>
+
+          <motion.span style={{ opacity: compactOpacity, y: compactY }} className="flex-1 min-w-0 font-heading text-[17px] font-semibold text-white truncate" aria-hidden>
             {compactTitle}
           </motion.span>
-          <div className="flex items-center gap-2 shrink-0">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={() => {
-                triggerHaptic(8);
-                onNavigateTab?.('profile');
-              }}
-              aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
-              className="min-h-[36px] px-3 rounded-full bg-surface-2 border border-white/[0.08] inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer"
-            >
-              <Flame className={`w-4 h-4 ${streak > 0 ? 'text-white' : 'text-zinc-500'}`} strokeWidth={1.75} />
-              {streak}
-            </motion.button>
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.94 }}
-              onClick={() => {
-                triggerHaptic(10);
-                onNavigateTab?.('profile');
-              }}
-              aria-label="Abrir o teu perfil"
-              className="w-11 h-11 -mr-1 flex items-center justify-center rounded-full cursor-pointer"
-            >
-              <Avatar url={identity.avatar} name={identity.fullName || user?.email} />
-            </motion.button>
-          </div>
+
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.96 }}
+            onClick={() => {
+              triggerHaptic(8);
+              onNavigateTab?.('profile');
+            }}
+            aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
+            className="min-h-[36px] px-3 rounded-full bg-surface-2 border border-white/[0.08] inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0"
+          >
+            <Flame className={`w-4 h-4 ${streak > 0 ? 'text-white' : 'text-zinc-500'}`} strokeWidth={1.75} />
+            {streak}
+          </motion.button>
         </div>
       </header>
 
