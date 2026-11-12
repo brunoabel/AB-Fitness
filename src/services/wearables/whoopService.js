@@ -19,10 +19,10 @@ const SCOPES = [
  * Obtém o Client ID configurado nas variáveis de ambiente.
  */
 export function getWhoopClientId() {
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env.VITE_WHOOP_CLIENT_ID || '';
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_WHOOP_CLIENT_ID) {
+    return import.meta.env.VITE_WHOOP_CLIENT_ID;
   }
-  return '';
+  return '844f9ca9-cb10-4868-965c-d7746004f7f6';
 }
 
 /**

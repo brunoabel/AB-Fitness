@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Bell, ChevronUp, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Play, Pause, RotateCcw, Bell, ChevronUp, ChevronDown, SkipForward } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
 import { restMediaSessionService } from '../services/restMediaSessionService';
+
+// Física de mola nativa da Apple: compacta ↔ expandida, snappy e com ligeiro overshoot
+const ISLAND_SPRING = { type: 'spring', stiffness: 500, damping: 32 };
+const ISLAND_AUTO_COLLAPSE_MS = 4000;
 
 export default function RestTimer({
   initialTime = 60,
@@ -15,6 +20,9 @@ export default function RestTimer({
   const [isActive, setIsActive] = useState(false);
   const [isAlerting, setIsAlerting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  // Estado da Dynamic Island: cápsula compacta ↔ expandida (toque para abrir detalhe)
+  const [islandExpanded, setIslandExpanded] = useState(false);
+  const islandCollapseTimerRef = useRef(null);
 
   const prevTriggerRef = useRef(autoStartTrigger);
   // Instante absoluto (ms) em que o descanso termina. A contagem deriva do relógio,
@@ -44,6 +52,7 @@ export default function RestTimer({
     setIsActive(false);
     setTimeLeft(0);
     setIsAlerting(true);
+    setIslandExpanded(false);
     sound.playTimerComplete();
     triggerHaptic([40, 100, 40, 120]);
     restMediaSessionService.markFinished({ exerciseName: exerciseNameRef.current });
@@ -142,6 +151,7 @@ export default function RestTimer({
       endAtRef.current = null;
       setTimeLeft(remaining);
       setIsActive(false);
+      setIslandExpanded(false);
       triggerHaptic(10);
       restMediaSessionService.updateRestSession({
         timeLeft: remaining,
@@ -170,8 +180,21 @@ export default function RestTimer({
     setIsActive(false);
     setTimeLeft(0);
     setIsAlerting(false);
+    setIslandExpanded(false);
     triggerHaptic(15);
     restMediaSessionService.clearRestSession();
+  };
+
+  // Auto-colapsa a Dynamic Island alguns segundos depois de expandida (como o iOS faz)
+  useEffect(() => {
+    if (!islandExpanded) return undefined;
+    islandCollapseTimerRef.current = setTimeout(() => setIslandExpanded(false), ISLAND_AUTO_COLLAPSE_MS);
+    return () => clearTimeout(islandCollapseTimerRef.current);
+  }, [islandExpanded]);
+
+  const toggleIsland = () => {
+    triggerHaptic(10);
+    setIslandExpanded((v) => !v);
   };
 
   const addTime = (seconds) => {
@@ -211,36 +234,113 @@ export default function RestTimer({
   const progressPercent = totalSeconds > 0 && timeLeft > 0
     ? ((totalSeconds - timeLeft) / totalSeconds) * 100
     : 0;
-  const ringRadius = 9;
+  const ringRadius = 8;
   const ringCircumference = 2 * Math.PI * ringRadius;
+  const bigRingRadius = 14;
+  const bigRingCircumference = 2 * Math.PI * bigRingRadius;
 
   return (
     <>
-      {/* Dynamic Island: cápsula flutuante no topo, visível durante toda a contagem */}
+      {/* Dynamic Island: cápsula líquida que expande ao toque, física e proporções da ilha nativa da Apple */}
       {isActive && (
-        <div className="fixed top-[calc(env(safe-area-inset-top,0px)+80px)] inset-x-4 max-w-[280px] mx-auto z-20 animate-fadeIn">
-          <div className="flex items-center gap-2 min-h-[44px] pl-2.5 pr-1.5 rounded-full backdrop-blur-2xl bg-black/80 border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
-            <svg width="22" height="22" viewBox="0 0 22 22" className="-rotate-90 shrink-0" aria-hidden>
-              <circle cx="11" cy="11" r={ringRadius} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2.5" />
-              <circle
-                cx="11" cy="11" r={ringRadius} fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"
-                strokeDasharray={ringCircumference}
-                strokeDashoffset={ringCircumference * (1 - progressPercent / 100)}
-                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
-              />
-            </svg>
-            <span className="flex-1 min-w-0 text-center font-mono text-[13px] font-bold tabular-nums text-white truncate">
-              {formatTime(timeLeft)} <span className="text-white/50 font-normal">· Descanso</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => addTime(15)}
-              aria-label="Adicionar 15 segundos de descanso"
-              className="shrink-0 min-h-[40px] min-w-[40px] px-2 rounded-full bg-white/10 hover:bg-white/15 text-white text-[11px] font-bold active:scale-95 transition-all cursor-pointer"
-            >
-              +15s
-            </button>
-          </div>
+        <div className="fixed top-[calc(env(safe-area-inset-top,0px)+80px)] inset-x-4 z-20 flex justify-center">
+          <motion.div
+            layout
+            onClick={toggleIsland}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleIsland();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={islandExpanded ? 'Recolher descanso' : 'Expandir descanso'}
+            transition={ISLAND_SPRING}
+            className={`overflow-hidden bg-black border border-white/[0.14] shadow-[0_10px_30px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.14)] cursor-pointer select-none ${
+              islandExpanded ? 'w-[300px] rounded-[28px]' : 'w-[192px] rounded-full'
+            }`}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {islandExpanded ? (
+                <motion.div
+                  key="expanded"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 0.1, duration: 0.15 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.08 } }}
+                  className="p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <svg width="34" height="34" viewBox="0 0 34 34" className="-rotate-90 shrink-0" aria-hidden>
+                      <circle cx="17" cy="17" r={bigRingRadius} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="3" />
+                      <circle
+                        cx="17" cy="17" r={bigRingRadius} fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"
+                        strokeDasharray={bigRingCircumference}
+                        strokeDashoffset={bigRingCircumference * (1 - progressPercent / 100)}
+                        style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+                      />
+                    </svg>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-mono text-[22px] font-bold tabular-nums text-white leading-none">{formatTime(timeLeft)}</span>
+                        <span className="text-[11px] text-white/50 font-medium">Descanso</span>
+                      </div>
+                      {(nextSetInfo || exerciseName) && (
+                        <p className="text-[12px] text-white/55 truncate mt-0.5">{nextSetInfo || exerciseName}</p>
+                      )}
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-white/40 shrink-0" strokeWidth={2} />
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); addTime(15); }}
+                      className="flex-1 min-h-[36px] rounded-full bg-white/10 hover:bg-white/15 text-white text-[12px] font-bold active:scale-95 transition-all cursor-pointer"
+                    >
+                      +15s
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); finishNow(); }}
+                      aria-label="Terminar descanso agora"
+                      className="min-h-[36px] min-w-[36px] px-3 rounded-full bg-white/10 hover:bg-white/15 text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer"
+                    >
+                      <SkipForward className="w-4 h-4 fill-current" />
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="compact"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 0.1, duration: 0.12 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.06 } }}
+                  className="h-11 flex items-center gap-2 pl-2.5 pr-1.5"
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" className="-rotate-90 shrink-0" aria-hidden>
+                    <circle cx="9" cy="9" r={ringRadius} fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="2.5" />
+                    <circle
+                      cx="9" cy="9" r={ringRadius} fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"
+                      strokeDasharray={ringCircumference}
+                      strokeDashoffset={ringCircumference * (1 - progressPercent / 100)}
+                      style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+                    />
+                  </svg>
+                  <span className="flex-1 min-w-0 text-center font-mono text-[13px] font-bold tabular-nums text-white truncate">
+                    {formatTime(timeLeft)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); addTime(15); }}
+                    aria-label="Adicionar 15 segundos de descanso"
+                    className="shrink-0 w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white text-[10px] font-bold active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+                  >
+                    +15
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       )}
 

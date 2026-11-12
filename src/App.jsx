@@ -30,6 +30,7 @@ import ABLogo from './components/ABLogo';
 import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
 import SidebarDrawer from './components/SidebarDrawer';
+import { connectWearable } from './services/wearables/wearableManager';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -129,6 +130,24 @@ function AppContent() {
     const t = setTimeout(prefetch, 2500);
     return () => clearTimeout(t);
   }, []);
+
+  // Trata o retorno do fluxo OAuth de wearables (ex.: Whoop ou Fitbit)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = window.location.pathname;
+    if (path.includes('/auth/callback/wearable')) {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (code) {
+        connectWearable(user?.id, 'whoop', 'connected', { code }).then(() => {
+          window.history.replaceState({}, document.title, '/');
+          sound.playLevelUp?.();
+        });
+      } else {
+        window.history.replaceState({}, document.title, '/');
+      }
+    }
+  }, [user?.id]);
   const [soundEnabled, setSoundEnabled] = useState(() => getSoundPreference());
   // App exclusivamente escuro (design system AB Fitness): a classe .dark é fixa no <html>
   const isDark = true;
