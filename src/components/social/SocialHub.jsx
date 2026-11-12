@@ -140,13 +140,14 @@ function FeedCard({ item, onRespect }) {
         </div>
       </header>
       <h3 className="mt-3 font-heading text-section font-semibold text-white">{item.workout_title}</h3>
-      <dl className="mt-2.5 grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-surface-2 border border-white/[0.06] px-3 py-2">
-          <dt className="text-[12px] text-zinc-400">Duração</dt>
+      <dl className="mt-2.5 flex items-center gap-4 pt-2.5 border-t border-white/[0.04]">
+        <div>
+          <dt className="text-[11px] text-zinc-500 uppercase tracking-wider">Duração</dt>
           <dd className="text-body font-semibold text-white tabular-nums">{fmtDuration(item.duration_seconds)}</dd>
         </div>
-        <div className="rounded-xl bg-surface-2 border border-white/[0.06] px-3 py-2">
-          <dt className="text-[12px] text-zinc-400">Volume</dt>
+        <div className="w-px h-7 bg-white/[0.08]" aria-hidden />
+        <div>
+          <dt className="text-[11px] text-zinc-500 uppercase tracking-wider">Volume</dt>
           <dd className="text-body font-semibold text-white tabular-nums">{fmtKg(item.volume_kg)}</dd>
         </div>
       </dl>
@@ -453,39 +454,24 @@ export default function SocialHub({ onNavigateTab }) {
 
       {/* Feed */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <SectionTitle icon={Activity}>Atividade & Feed</SectionTitle>
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic(10);
-              setNewPostOpen(true);
-            }}
-            className="px-3 py-1.5 rounded-xl bg-primary text-app text-[12px] font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs hover:brightness-105 transition-all"
-          >
-            <Camera className="w-3.5 h-3.5" strokeWidth={2} />
-            Postar foto
-          </button>
-        </div>
+        <SectionTitle icon={Activity}>Atividade & Feed</SectionTitle>
 
-        {/* Quick Post Prompt */}
-        <div
+        {/* Entrada única para publicar (substitui o botão redundante do cabeçalho) */}
+        <button
+          type="button"
           onClick={() => {
             triggerHaptic(8);
             setNewPostOpen(true);
           }}
-          className="p-3.5 rounded-2xl bg-surface border border-white/[0.08] flex items-center justify-between gap-3 cursor-pointer hover:border-white/20 transition-colors shadow-xs"
+          className="w-full p-3.5 rounded-2xl bg-surface border border-white/[0.08] flex items-center gap-3 cursor-pointer hover:border-white/20 transition-colors shadow-xs text-left"
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <span className="w-9 h-9 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
-              <Camera className="w-4 h-4" />
-            </span>
-            <span className="text-[13px] text-zinc-300 font-medium truncate">
-              Publicar evolução ou foto de treino no feed...
-            </span>
-          </div>
-          <span className="text-[12px] text-accent font-bold shrink-0">Novo</span>
-        </div>
+          <span className="w-9 h-9 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
+            <Camera className="w-4 h-4" />
+          </span>
+          <span className="text-[13px] text-zinc-300 font-medium truncate">
+            Publicar evolução ou foto de treino no feed...
+          </span>
+        </button>
 
         {!loaded ? (
           <SkeletonList rows={2} label="A carregar atividade" />

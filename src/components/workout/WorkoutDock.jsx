@@ -11,7 +11,7 @@ export default function WorkoutDock({ index, total, exerciseName, onPrev, onNext
           type="button"
           onClick={onPrev}
           disabled={index <= 0}
-          className="py-3 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 disabled:opacity-30 disabled:pointer-events-none font-bold text-xs border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shrink-0"
+          className="py-3 px-3.5 rounded-xl text-zinc-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none font-bold text-xs active:scale-95 transition-all cursor-pointer min-h-[48px] flex items-center gap-1.5 shrink-0"
         >
           <ChevronLeft className="w-4 h-4" />
           <span className="hidden xs:inline sm:inline">Anterior</span>

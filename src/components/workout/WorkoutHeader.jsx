@@ -15,7 +15,7 @@ export default function WorkoutHeader({ elapsedSeconds, completionPercentage, is
       <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <button
           onClick={onPause}
-          className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900/90 hover:bg-zinc-800 px-3 py-2 rounded-xl border border-white/10 active:scale-95 transition-all cursor-pointer min-h-[44px]"
+          className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-xl active:scale-95 transition-all cursor-pointer min-h-[44px]"
           title="Pausar e regressar ao painel"
         >
           <ChevronLeft className="w-4 h-4 stroke-[2]" />

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { PencilLine, Camera, Sparkles } from 'lucide-react';
+import { PencilLine, Camera } from 'lucide-react';
 import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';

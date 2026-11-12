@@ -395,9 +395,9 @@ export default function AICoachModal({
                       {/* Topo do Cartão */}
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-800 text-zinc-200 text-[11px] font-semibold uppercase tracking-wider mb-1.5 border border-zinc-700">
+                          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1">
                             Prescrição do Treinador
-                          </div>
+                          </p>
                           <h4 className="text-sm font-bold text-zinc-50 leading-tight">
                             {msg.treino.nome}
                           </h4>
@@ -406,15 +406,15 @@ export default function AICoachModal({
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-1 text-[11px] font-semibold text-zinc-300 bg-zinc-800 px-2.5 py-1 rounded-md border border-zinc-700 shrink-0 tabular-nums">
-                          <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                        <div className="flex items-center gap-1 text-[11px] font-semibold text-zinc-300 shrink-0 tabular-nums">
+                          <Clock className="w-3.5 h-3.5 text-zinc-500" />
                           <span>{msg.treino.duracao_min} min</span>
                         </div>
                       </div>
 
                       {/* Observações */}
                       {msg.treino.observacoes && (
-                        <div className="p-2.5 rounded-lg bg-surface border border-white/10 text-[11px] text-zinc-300 flex items-start gap-2">
+                        <div className="pt-2.5 border-t border-white/[0.06] text-[11px] text-zinc-300 flex items-start gap-2">
                           <Info className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5 stroke-[2]" />
                           <span>{msg.treino.observacoes}</span>
                         </div>
@@ -451,7 +451,7 @@ export default function AICoachModal({
                               >
                                 <div className="flex items-center justify-between gap-2">
                                   <div className="flex items-center gap-2 min-w-0">
-                                    <span className="w-5 h-5 rounded bg-zinc-800 text-[11px] font-semibold text-zinc-400 flex items-center justify-center shrink-0 border border-zinc-700 tabular-nums">
+                                    <span className="w-4 text-[11px] font-semibold text-zinc-500 shrink-0 tabular-nums text-center">
                                       {exIdx + 1}
                                     </span>
                                     <span className="text-xs font-semibold text-zinc-100 truncate">
@@ -461,7 +461,7 @@ export default function AICoachModal({
 
                                   <div className="flex items-center gap-1.5 shrink-0">
                                     {ex.porcao && (
-                                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 font-medium">
+                                      <span className="text-[11px] text-zinc-400 font-medium">
                                         {ex.porcao}
                                       </span>
                                     )}
@@ -579,10 +579,10 @@ export default function AICoachModal({
                           <button
                             onClick={() => handleSaveToMyWorkouts(msg.treino, idx)}
                             disabled={savedWorkouts[idx]}
-                            className={`w-full py-2.5 px-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 border transition-all active:scale-95 cursor-pointer min-h-[40px] ${
+                            className={`w-full py-2.5 px-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer min-h-[40px] ${
                               savedWorkouts[idx]
-                                ? 'bg-zinc-800 text-zinc-500 border-zinc-700 cursor-default'
-                                : 'bg-zinc-800 hover:bg-zinc-100 text-zinc-200 border-zinc-700'
+                                ? 'text-zinc-500 cursor-default'
+                                : 'text-zinc-300 hover:text-white'
                             }`}
                           >
                             {savedWorkouts[idx] ? (
@@ -604,7 +604,7 @@ export default function AICoachModal({
                           type="button"
                           onClick={() => handleShareCard(msg.treino)}
                           disabled={isSharing}
-                          className="w-full py-2 px-3 rounded-lg bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px]"
+                          className="w-full py-2 px-3 rounded-lg text-zinc-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px]"
                         >
                           <Share2 className="w-3.5 h-3.5 stroke-[1.8]" />
                           <span>{isSharing ? 'A gerar Stories...' : 'Partilhar Treino (Stories 9:16)'}</span>
@@ -618,7 +618,7 @@ export default function AICoachModal({
                                 triggerHaptic(10);
                                 setShowDayPickerIndex(showDayPickerIndex === idx ? null : idx);
                               }}
-                              className="w-full py-2 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-100 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
+                              className="w-full py-2 px-3 rounded-lg text-zinc-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
                             >
                               <Calendar className="w-3.5 h-3.5 stroke-[1.8]" />
                               <span>
