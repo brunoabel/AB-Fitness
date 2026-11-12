@@ -185,7 +185,7 @@ export default function SidebarDrawer({
                     </span>
                   )}
                   {!ceo && pro && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[9px] font-black uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/70 text-white border border-accent-hover text-[9px] font-black uppercase tracking-wider">
                       PRO
                     </span>
                   )}

@@ -13,9 +13,7 @@ import {
   Target,
   BookOpen,
   Check,
-  Flame,
-  Sparkles,
-  Layers
+  Flame
 } from 'lucide-react';
 import { weekProgress } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
@@ -126,21 +124,19 @@ export default function WeeklyDashboard({
             className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" 
           />
 
-          {/* Cabeçalho do Treino: Eyebrow + Status */}
-          <div className="flex items-center justify-between gap-3 text-[11px] font-bold uppercase tracking-wider mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-zinc-400">
-                {isToday ? 'Hoje' : selectedWorkout.name} · {selectedWorkout.badge || 'Musculação'}
-              </span>
+          {/* Estado do treino: data e duração — texto corrido, sem caixa alta gritada */}
+          <div className="flex items-center justify-between gap-3 text-xs text-zinc-400 mb-2">
+            <span className="flex items-center gap-2 min-w-0">
+              <span className="truncate">{isToday ? 'Hoje' : selectedWorkout.name} · {selectedWorkout.badge || 'Musculação'}</span>
               {isSelectedDayCompleted && (
-                <span className="inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 text-[11px] font-bold shrink-0">
                   <Check className="w-3 h-3 stroke-[2.5]" /> Concluído
                 </span>
               )}
-            </div>
+            </span>
 
             {!selectedWorkout.isRestDay && selectedWorkout.duration && (
-              <span className="flex items-center gap-1 text-zinc-400 tabular-nums font-mono text-xs">
+              <span className="flex items-center gap-1 tabular-nums shrink-0">
                 <Clock className="w-3.5 h-3.5 text-zinc-500" strokeWidth={1.8} />
                 {selectedWorkout.duration}
               </span>
@@ -159,21 +155,12 @@ export default function WeeklyDashboard({
           {/* Se for Dia de Treino Ativo */}
           {!selectedWorkout.isRestDay ? (
             <div className="mt-5 space-y-4">
-              
-              {/* Métricas Rápidas do Treino */}
-              <div className="grid grid-cols-3 gap-2 py-3 px-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Exercícios</span>
-                  <span className="font-display font-black text-lg text-white tabular-nums">{totalExercisesCount}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Séries Totais</span>
-                  <span className="font-display font-black text-lg text-white tabular-nums">{totalSetsCount}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Método</span>
-                  <span className="font-display font-bold text-sm text-zinc-300 truncate block mt-0.5">Sobrecarga</span>
-                </div>
+
+              {/* Estatísticas rápidas: texto corrido, sem caixa nem rótulos gritados */}
+              <div className="flex items-center gap-4 text-sm text-zinc-300">
+                <span><strong className="font-display font-black text-white text-base tabular-nums">{totalExercisesCount}</strong> exercícios</span>
+                <span className="w-px h-4 bg-white/[0.08]" aria-hidden />
+                <span><strong className="font-display font-black text-white text-base tabular-nums">{totalSetsCount}</strong> séries</span>
               </div>
 
               {/* Botão Primário Hero: Tátil, Alto Contraste, Padrão Apple */}
@@ -192,12 +179,10 @@ export default function WeeklyDashboard({
           ) : (
             /* Se for Dia de Descanso */
             <div className="mt-5 pt-4 border-t border-white/[0.06] space-y-4">
-              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                  <Coffee className="w-5 h-5 stroke-[1.8]" />
-                </div>
+              <div className="flex items-center gap-3">
+                <Coffee className="w-5 h-5 text-amber-400 stroke-[1.8] shrink-0" />
                 <div>
-                  <h4 className="text-xs font-bold text-white">Regeneração Biomecânica Ativa</h4>
+                  <h4 className="text-xs font-bold text-white">Regeneração biomecânica ativa</h4>
                   <p className="text-[12px] text-zinc-400 mt-0.5">O músculo sintetiza fibras durante o repouso. Hidrata-te e foca no sono.</p>
                 </div>
               </div>
@@ -244,11 +229,11 @@ export default function WeeklyDashboard({
         {/* Card B: Meta e Consistência da Semana */}
         <div className="p-4 rounded-2xl bg-surface-2/60 border border-white/[0.06] backdrop-blur-xl flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
               <Flame className="w-3.5 h-3.5 text-amber-400 stroke-[2]" />
-              <span>Consistência Semanal</span>
+              <span>Consistência semanal</span>
             </span>
-            <span className="font-mono text-xs font-bold text-white tabular-nums">
+            <span className="text-xs font-bold text-white tabular-nums">
               {completedCount} / {weeklyTarget} treinos
             </span>
           </div>
@@ -285,13 +270,10 @@ export default function WeeklyDashboard({
       {!selectedWorkout.isRestDay && totalExercisesCount > 0 && (
         <section aria-label="Sequência de Exercícios" className="space-y-2.5">
           <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-white/40" />
-              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                Sequência do Treino ({totalExercisesCount})
-              </h2>
-            </div>
-            <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+            <h2 className="text-sm font-bold text-zinc-200">
+              Sequência do Treino <span className="text-zinc-500 font-normal">({totalExercisesCount})</span>
+            </h2>
+            <span className="text-xs text-zinc-500">
               {totalSetsCount} séries previstas
             </span>
           </div>
@@ -334,7 +316,7 @@ export default function WeeklyDashboard({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 pl-3">
-                    <span className="font-mono text-xs font-bold text-zinc-300 tabular-nums bg-white/[0.04] px-2.5 py-1 rounded-lg border border-white/[0.06]">
+                    <span className="font-display font-bold text-sm text-zinc-300 tabular-nums">
                       {ex.defaultSets} × {ex.suggestedReps}
                     </span>
                     <Eye className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
@@ -365,7 +347,7 @@ export default function WeeklyDashboard({
                 <BookOpen className="w-4 h-4 stroke-[1.8]" />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">
+                <span className="text-xs text-zinc-500 block">
                   {currentManual.tag}
                 </span>
                 <h4 className="text-xs font-bold text-zinc-200 mt-0.5">

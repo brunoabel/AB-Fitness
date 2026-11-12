@@ -428,7 +428,7 @@ export default function AthleteManualModal({ onClose }) {
                 <span className="text-[11px] text-zinc-400 font-bold uppercase block">
                   Hidratação Mínima
                 </span>
-                <span className="text-lg font-black text-sky-400 block mt-0.5 font-mono tabular-nums">
+                <span className="text-lg font-black text-accent-hover block mt-0.5 font-mono tabular-nums">
                   {getWaterTarget()} <span className="text-xs font-normal text-zinc-400 font-sans">L/dia</span>
                 </span>
                 <span className="text-[11px] text-zinc-400 mt-0.5 block">
@@ -463,7 +463,7 @@ export default function AthleteManualModal({ onClose }) {
           {/* Estratégia Nutricional */}
           <div id="sec-nutrition" className="p-4 rounded-2xl bg-surface border border-zinc-800 space-y-2.5 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-              <Droplets className="w-4 h-4 text-sky-400" />
+              <Droplets className="w-4 h-4 text-accent-hover" />
               <span>Plano Nutricional & Hidratação</span>
             </div>
 

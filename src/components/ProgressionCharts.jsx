@@ -152,7 +152,7 @@ export default function ProgressionCharts() {
       {/* Abas Superiores dos Gráficos — Apenas Sobrecarga Ativa, Whoop e Arnold ocultos */}
       <div className="flex items-center justify-between px-1 text-xs font-bold text-white">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-sky-400" />
+          <TrendingUp className="w-4 h-4 text-accent-hover" />
           <span>Evolução de Sobrecarga Progressiva (PRs)</span>
         </div>
 

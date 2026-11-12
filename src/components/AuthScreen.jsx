@@ -316,7 +316,7 @@ export default function AuthScreen() {
             className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-zinc-950 hover:bg-zinc-800/80 border border-white/10 text-zinc-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 text-left">
-              <UserCheck className="w-4 h-4 text-sky-500 flex-shrink-0" />
+              <UserCheck className="w-4 h-4 text-zinc-300 flex-shrink-0" />
               <div>
                 <span className="block font-bold">Entrar como Convidado</span>
                 <span className="block text-[11px] text-zinc-400 font-normal">
