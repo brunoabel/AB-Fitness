@@ -550,8 +550,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   return (
     <div className="min-h-screen bg-app text-zinc-100 pb-40 transition-colors">
       <WorkoutHeader
+        workoutTitle={workout?.title || workout?.name}
         elapsedSeconds={elapsedSeconds}
         completionPercentage={completionPercentage}
+        completedWorkingSetsCount={completedWorkingSetsCount}
+        totalWorkingSetsCount={totalWorkingSetsCount}
         isFocusMode={isFocusMode}
         onToggleFocus={() => setIsFocusMode(!isFocusMode)}
         onPause={handlePauseAndExit}
@@ -560,59 +563,21 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       />
 
       {/* Conteúdo Principal do Treino */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-5 pb-48 space-y-4">
-        {/* Cartão de Identificação da Sessão */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/10 shadow-xs flex items-center justify-between transition-colors">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">
-                Sessão Ativa • {workout?.name || 'Treino'}
-              </span>
-              {isResumed && (
-                <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-accent/70 text-white border border-accent-hover uppercase tracking-wider">
-                  Recuperado
-                </span>
-              )}
-              {workout?.assignedProgramId && (
-                <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-accent text-white border border-accent-hover uppercase tracking-wider">
-                  Prescrito por {workout.trainerName || 'o teu PT'}
-                </span>
-              )}
-            </div>
-            <h1 className="text-base sm:text-lg font-bold text-zinc-50 leading-tight">
-              {workout?.title || 'Treino do Atleta'}
-            </h1>
-            <p className="text-xs text-zinc-400 font-medium mt-0.5">
-              {workout?.focus || 'Sobrecarga Progressiva'}
-            </p>
-          </div>
-
-          <div className="text-right">
-            <div className="text-xl font-black text-white font-mono tabular-nums">
-              {completionPercentage}%
-            </div>
-            <div className="text-[11px] text-zinc-400 font-medium uppercase tabular-nums">
-              {completedWorkingSetsCount}/{totalWorkingSetsCount} séries
-            </div>
-          </div>
-        </div>
-
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-48 space-y-3.5">
         {fatigueWarning && !fatigueDismissed && (
-          <div className="p-3.5 rounded-2xl bg-[#E1AD57]/10 border border-[#E1AD57]/40 flex items-start gap-2.5">
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] text-zinc-200 leading-relaxed">
-                <strong className="text-[#E1AD57] font-semibold">
-                  Grupo ainda fadigado ({Math.round(fatigueWarning.fatigue)}%):
-                </strong>{' '}
-                este treino ataca uma zona que ainda não recuperou de uma sessão recente. Considera deixar +1 RIR nas primeiras séries.
+          <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3 text-xs animate-fadeIn">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+              <p className="text-zinc-200 truncate">
+                <strong className="text-amber-400 font-semibold">Músculo em recuperação:</strong> Treina com margem de segurança e preserva a técnica hoje.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setFatigueDismissed(true)}
-              className="shrink-0 text-[11px] font-semibold text-[#E1AD57] cursor-pointer"
+              className="text-[11px] font-bold text-amber-400 hover:text-white shrink-0 px-2 py-1 rounded cursor-pointer"
             >
-              Entendi
+              OK
             </button>
           </div>
         )}
@@ -620,8 +585,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         {/* NAVEGAÇÃO RÁPIDA ENTRE EXERCÍCIOS (Carrossel Horizontal de Pílulas) */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
-              Sequência de Exercícios ({currentExercisesList.length})
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              Exercícios ({currentExercisesList.length})
             </span>
             <div className="flex items-center gap-2">
               <button
@@ -629,15 +594,15 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                 onClick={toggleExpressMode}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                   isExpressMode
-                    ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
-                    : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white'
+                    ? 'bg-amber-500/20 border-amber-400/40 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
+                    : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                 }`}
                 title="Modo Express: intervalos rápidos de 45s para finalizar em 30 min"
               >
                 <Zap className={`w-3 h-3 ${isExpressMode ? 'text-amber-400 fill-amber-400' : 'text-zinc-400'}`} />
                 <span>{isExpressMode ? 'Express 30m ON' : 'Express 30m'}</span>
               </button>
-              <span className="text-[11px] text-zinc-400 font-medium hidden sm:inline">
+              <span className="text-[11px] text-zinc-500 font-medium hidden sm:inline">
                 {isFocusMode ? 'Modo Foco' : 'Visão Geral'}
               </span>
             </div>
@@ -660,18 +625,18 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                   }}
                   className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer min-h-[44px] ${
                     isCurrent
-                      ? 'bg-zinc-800 text-white border-accent shadow-xs'
+                      ? 'bg-white/10 text-white border-white/20 shadow-xs'
                       : isAllDone
-                        ? 'bg-zinc-900/80 text-emerald-400 border-emerald-500/30'
-                        : 'bg-zinc-900/60 text-zinc-400 border-white/10 hover:border-zinc-700'
+                        ? 'bg-white/[0.03] text-emerald-400 border-emerald-500/30'
+                        : 'bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:border-white/[0.12]'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-black ${
                     isAllDone
-                      ? 'bg-emerald-500 text-zinc-950'
+                      ? 'bg-emerald-500 text-black'
                       : isCurrent
-                        ? 'bg-accent text-white'
-                        : 'bg-zinc-800 text-zinc-400'
+                        ? 'bg-white text-black font-black'
+                        : 'bg-white/[0.06] text-zinc-400'
                   }`}>
                     {isAllDone ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
                   </div>
@@ -679,7 +644,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                     <span className="block truncate max-w-[110px] leading-tight text-[11px]">
                       {ex.name}
                     </span>
-                    <span className="text-[11px] text-zinc-500 font-mono block">
+                    <span className="text-[10px] text-zinc-500 font-mono block">
                       {doneCount}/{sets.length} séries
                     </span>
                   </div>

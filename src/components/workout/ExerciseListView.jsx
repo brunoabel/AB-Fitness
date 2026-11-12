@@ -56,7 +56,7 @@ export default function ExerciseListView({
                     triggerHaptic(10);
                   }}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border active:scale-95 transition-all cursor-pointer min-h-[44px] ${
-                    withVideo ? 'bg-zinc-900 hover:bg-zinc-800 text-white border-accent-hover shadow-xs' : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-white/10'
+                    withVideo ? 'bg-white/10 hover:bg-white/15 text-white border-white/20 shadow-xs' : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/[0.08]'
                   }`}
                   title={withVideo ? 'Ver vídeo de execução técnica' : 'Ver guia biomecânico'}
                 >
@@ -98,7 +98,7 @@ export default function ExerciseListView({
                   <button
                     type="button"
                     onClick={() => onAddSet(exercise.id)}
-                    className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center gap-1.5 border border-white/10 cursor-pointer min-h-[44px]"
+                    className="py-2 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold flex items-center gap-1.5 border border-white/[0.08] cursor-pointer min-h-[44px] active:scale-95 transition-all"
                   >
                     <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Adicionar Série</span>
