@@ -1,9 +1,10 @@
 import React from 'react';
-import { MapPin, Crown, Flame, Dumbbell, Award } from 'lucide-react';
+import { MapPin, Crown, Maximize2, ShieldCheck } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { COVER_STYLES, FEATURED_STATS } from '../../services/socialService';
+import { getAthleteRank, sanitizeUsername } from '../../utils/athletePassCard';
 
 const statValue = (id, stats) => {
   if (!stats) return '–';
@@ -12,13 +13,33 @@ const statValue = (id, stats) => {
   return fmtInt(stats.total_workouts);
 };
 
-export default function AthleteCard({ profile, stats, avatarPreview, compact = false }) {
+const RANK_TONES = {
+  gold: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+  platinum: 'bg-white/10 text-zinc-100 border-white/25',
+  emerald: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  neutral: 'bg-white/[0.06] text-zinc-300 border-white/[0.1]'
+};
+
+export default function AthleteCard({
+  profile,
+  stats,
+  avatarPreview,
+  compact = false,
+  showcase = false,
+  onOpenPrintMode
+}) {
   const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
   const name = profile?.full_name || 'Atleta AB';
+  const cleanUsername = sanitizeUsername(profile?.username);
   const isCeo = Boolean(profile?.is_ceo) || isAthleteCeo(profile);
   const isPro = isCeo || Boolean(profile?.is_premium || profile?.is_pro) || isAthletePro(profile);
   const isVerified = Boolean(profile?.is_verified) || isAthleteVerified(profile);
+  const rank = getAthleteRank({
+    totalWorkouts: stats?.total_workouts,
+    streak: stats?.streak,
+    isCeo
+  });
 
   // Painel de carreira (rodapé): as 3 métricas possíveis, menos a que já está em destaque no
   // topo — nunca repete o mesmo número duas vezes no cartão.
@@ -85,7 +106,7 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
         </div>
 
         <p className="text-xs font-medium text-zinc-400 truncate">
-          {profile?.username ? `@${profile.username}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Atleta Registado' : 'Atleta AB Fitness'}
+          {cleanUsername ? `@${cleanUsername}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Atleta Registado' : 'Atleta AB Fitness'}
         </p>
 
         {profile?.bio && !compact && (
@@ -94,14 +115,20 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
           </p>
         )}
 
-        {(profile?.athlete_tag || profile?.home_gym) && (
+        {(profile?.athlete_tag || profile?.home_gym || !isCeo) && (
           <div className="pt-2 flex flex-wrap items-center gap-2">
-            {profile.athlete_tag && (
+            {!isCeo && (
+              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border text-[11px] font-bold ${RANK_TONES[rank.tone] || RANK_TONES.neutral}`}>
+                <ShieldCheck className="w-3 h-3 stroke-[2.2]" />
+                {rank.label}
+              </span>
+            )}
+            {profile?.athlete_tag && (
               <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-[11px] font-bold text-zinc-200">
                 {profile.athlete_tag}
               </span>
             )}
-            {profile.home_gym && (
+            {profile?.home_gym && (
               <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
                 <MapPin className="w-3 h-3 text-zinc-500" strokeWidth={1.75} />
                 {profile.home_gym}
@@ -120,6 +147,37 @@ export default function AthleteCard({ profile, stats, avatarPreview, compact = f
               <span className="text-xs text-zinc-500">{m.label}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Assinatura Oficial para Print / Stories + Gatilho de Modo Print Limpo */}
+      {!compact && (
+        <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2 relative z-10 text-[11px]">
+          <span className="font-medium text-zinc-400 truncate">
+            {cleanUsername ? (
+              <>
+                <strong className="text-white font-semibold">@{cleanUsername}</strong> · abfitness.app
+              </>
+            ) : (
+              'AB Fitness · abfitness.app'
+            )}
+          </span>
+
+          {onOpenPrintMode && !showcase ? (
+            <button
+              type="button"
+              onClick={onOpenPrintMode}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-200 hover:text-white font-semibold transition-colors cursor-pointer shrink-0"
+              title="Abrir cartão em ecrã limpo para tirar print"
+            >
+              <Maximize2 className="w-3 h-3 stroke-[2]" />
+              <span>Modo Print</span>
+            </button>
+          ) : (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 shrink-0">
+              Athlete Pass
+            </span>
+          )}
         </div>
       )}
     </article>

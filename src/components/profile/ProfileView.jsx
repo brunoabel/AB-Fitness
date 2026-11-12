@@ -1,14 +1,19 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { PencilLine, Camera } from 'lucide-react';
+import { PencilLine, Camera, Share2, Link2, Check, X, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
-import { canUseSocial, getMyCardStats, getMyProfile, listAthletePosts } from '../../services/socialService';
+import { athleteLink, canUseSocial, getMyCardStats, getMyProfile } from '../../services/socialService';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
 import NewPostModal from '../social/NewPostModal';
+import {
+  buildAthletePassContent,
+  buildAthletePassStoryBlob,
+  shareAthletePassStory
+} from '../../utils/athletePassCard';
 
 const HistoryView = lazy(() => import('../HistoryView'));
 const EditProfileSheet = lazy(() => import('../social/EditProfileSheet'));
@@ -25,6 +30,9 @@ export default function ProfileView() {
   const [state, setState] = useState({ loaded: !social, profile: null, stats: null, error: '' });
   const [editing, setEditing] = useState(false);
   const [newPostOpen, setNewPostOpen] = useState(false);
+  const [printModeOpen, setPrintModeOpen] = useState(false);
+  const [exportingStory, setExportingStory] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
     if (!social) return undefined;
@@ -65,19 +73,76 @@ export default function ProfileView() {
   })();
   const stats = state.stats || localStats;
   const canEdit = social && Boolean(state.profile);
+  const passContent = buildAthletePassContent({
+    profile: { ...profile, username: state.profile?.username },
+    stats
+  });
+
+  const handleShareStory = async () => {
+    if (exportingStory) return;
+    triggerHaptic(14);
+    setExportingStory(true);
+    try {
+      const blob = await buildAthletePassStoryBlob({
+        profile: { ...profile, username: state.profile?.username },
+        stats
+      });
+      await shareAthletePassStory(blob, { username: state.profile?.username || '' });
+    } catch (err) {
+      console.warn('Erro ao gerar Story do perfil:', err);
+    } finally {
+      setExportingStory(false);
+    }
+  };
+
+  const handleCopyInviteLink = async () => {
+    triggerHaptic(12);
+    const url = state.profile?.username ? athleteLink(state.profile.username) : 'https://www.abfitness.app';
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2200);
+    } catch {}
+  };
 
   return (
     <section aria-label="Perfil do Atleta" className="space-y-4">
       <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 space-y-3">
         {/* Cartão de Identidade do Atleta (Design Apple Design Award) */}
         {state.loaded ? (
-          <AthleteCard profile={{ ...profile, username: state.profile?.username }} stats={stats} />
+          <AthleteCard
+            profile={{ ...profile, username: state.profile?.username }}
+            stats={stats}
+            onOpenPrintMode={() => {
+              triggerHaptic(10);
+              setPrintModeOpen(true);
+            }}
+          />
         ) : (
           <Skeleton className="h-[220px] rounded-3xl" />
         )}
 
-        {/* Barra de Ações Rápidas do Atleta */}
-        <div className="grid grid-cols-2 gap-2.5">
+        {/* Convite discreto para definir @username caso ainda não tenha */}
+        {canEdit && !state.profile?.username && (
+          <div className="flex items-center justify-between gap-3 py-2 px-1 border-b border-white/[0.06] text-xs">
+            <span className="text-zinc-400">
+              Define o teu <strong className="text-white">@username</strong> para amigos te encontrarem e partilhares o teu Pass.
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic(8);
+                setEditing(true);
+              }}
+              className="shrink-0 font-bold text-white hover:underline cursor-pointer"
+            >
+              Criar @username
+            </button>
+          </div>
+        )}
+
+        {/* Barra de Ações Rápidas do Atleta (Limpa, Tátil e Pronta para Partilha) */}
+        <div className="grid grid-cols-3 gap-2">
           {canEdit ? (
             <motion.button
               type="button"
@@ -86,10 +151,10 @@ export default function ProfileView() {
                 triggerHaptic(8);
                 setEditing(true);
               }}
-              className="min-h-[46px] rounded-2xl bg-surface-2/80 hover:bg-surface-2 border border-white/[0.08] text-white font-bold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+              className="min-h-[46px] rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-all"
             >
-              <PencilLine className="w-4 h-4 text-zinc-400" strokeWidth={2} />
-              <span>Editar Perfil</span>
+              <PencilLine className="w-3.5 h-3.5 text-zinc-400" strokeWidth={2} />
+              <span>Editar</span>
             </motion.button>
           ) : (
             <div className="min-h-[46px] rounded-2xl border border-dashed border-white/[0.08] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
@@ -100,13 +165,24 @@ export default function ProfileView() {
           <motion.button
             type="button"
             whileTap={{ scale: 0.97 }}
+            disabled={exportingStory}
+            onClick={handleShareStory}
+            className="min-h-[46px] rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-all disabled:opacity-60"
+          >
+            <Share2 className="w-3.5 h-3.5 text-zinc-300" strokeWidth={2} />
+            <span>{exportingStory ? 'A gerar…' : 'Story Pass'}</span>
+          </motion.button>
+
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
               triggerHaptic(10);
               setNewPostOpen(true);
             }}
-            className="min-h-[46px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
+            className="min-h-[46px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
           >
-            <Camera className="w-4 h-4 stroke-[2.2]" />
+            <Camera className="w-3.5 h-3.5 stroke-[2.2]" />
             <span>Publicar Foto</span>
           </motion.button>
         </div>
@@ -143,6 +219,73 @@ export default function ProfileView() {
               }}
             />
           </Suspense>
+        )}
+
+        {printModeOpen && (
+          <motion.div
+            key="print-showcase"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] bg-black flex flex-col items-center justify-center px-5 py-8"
+          >
+            <button
+              type="button"
+              onClick={() => setPrintModeOpen(false)}
+              className="absolute top-[max(env(safe-area-inset-top,0px),20px)] right-5 w-10 h-10 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-white flex items-center justify-center cursor-pointer transition-colors"
+              aria-label="Fechar modo print"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-full max-w-md space-y-6">
+              <div className="text-center space-y-1">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+                  AB Fitness · Athlete Pass
+                </p>
+                <p className="text-xs text-zinc-400">
+                  Pronto para tirar print ou exportar em HD para os Stories
+                </p>
+              </div>
+
+              <AthleteCard
+                profile={{ ...profile, username: state.profile?.username }}
+                stats={stats}
+                showcase
+              />
+
+              <div className="text-center text-xs text-zinc-400">
+                {passContent.handle ? (
+                  <span>
+                    Procura <strong className="text-white">{passContent.handle}</strong> ou entra em <strong className="text-white">abfitness.app</strong>
+                  </span>
+                ) : (
+                  <span>Treina com precisão em <strong className="text-white">abfitness.app</strong></span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCopyInviteLink}
+                  className="min-h-[48px] rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-zinc-300" />}
+                  <span>{copiedLink ? 'Link Copiado!' : 'Copiar Link'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={exportingStory}
+                  onClick={handleShareStory}
+                  className="min-h-[48px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{exportingStory ? 'A preparar…' : 'Exportar Story'}</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

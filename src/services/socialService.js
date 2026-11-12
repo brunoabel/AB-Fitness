@@ -236,13 +236,49 @@ export async function getHeadToHead(friendId, days = 7) {
   return { data: { me: by.me || null, friend: by.friend || null }, error: null };
 }
 
+const PENDING_INVITE_KEY = 'ab_pending_invite_username';
+
 export function athleteLink(username) {
-  return `${window.location.origin}/?add=${encodeURIComponent(username)}`;
+  const clean = String(username || '').trim().replace(/^@+/, '').toLowerCase();
+  if (!clean) return window.location.origin;
+  return `${window.location.origin}/?u=${encodeURIComponent(clean)}`;
+}
+
+export function savePendingInviteUsername(username) {
+  const clean = String(username || '').trim().replace(/^@+/, '').toLowerCase();
+  if (!clean) return;
+  try {
+    localStorage.setItem(PENDING_INVITE_KEY, clean);
+  } catch {}
+}
+
+export function readPendingInviteUsername() {
+  try {
+    return localStorage.getItem(PENDING_INVITE_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+export function clearPendingInviteUsername() {
+  try {
+    localStorage.removeItem(PENDING_INVITE_KEY);
+  } catch {}
+}
+
+export async function getPublicAthletePass(username) {
+  if (!isSupabaseConfigured() || !supabase) return { data: null, error: 'Sem ligação' };
+  const clean = String(username || '').trim().replace(/^@+/, '').toLowerCase();
+  if (clean.length < 3) return { data: null, error: null };
+  const { data, error } = await supabase.rpc('get_public_athlete_pass', { p_username: clean });
+  if (error) return fail(error);
+  return { data: data?.[0] || null, error: null };
 }
 
 export async function shareAthleteLink(username) {
   const url = athleteLink(username);
-  const payload = { title: 'AB Fitness', text: `Treina comigo no AB Fitness: @${username}`, url };
+  const clean = String(username || '').trim().replace(/^@+/, '');
+  const payload = { title: 'AB Fitness', text: `Treina comigo no AB Fitness: @${clean}`, url };
   try {
     if (navigator.share) {
       await navigator.share(payload);

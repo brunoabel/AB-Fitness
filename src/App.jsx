@@ -17,6 +17,7 @@ import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
 import { flushWearableSyncQueue } from './services/wearables/wearableManager';
+import { savePendingInviteUsername, readPendingInviteUsername } from './services/socialService';
 import { 
   getCompletedDays, 
   getSoundPreference, 
@@ -97,8 +98,26 @@ function AppContent() {
 
   const [schedule, setSchedule] = useState(() => getLocalCustomPlan() || WEEKLY_SCHEDULE);
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'active-workout'
-  // Link de atleta partilhado (?add=username) abre diretamente os Amigos
-  const [activeTab, setActiveTab] = useState(() => (new URLSearchParams(window.location.search).has('add') ? 'social' : 'dashboard')); // 'dashboard' | 'custom-workouts' | 'running' | 'history'
+  // Link de atleta partilhado (?u=username ou ?add=username) persiste no browser e abre Amigos
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const invited = (params.get('u') || params.get('add') || '').replace(/^@/, '').trim();
+      if (invited) {
+        savePendingInviteUsername(invited);
+        return 'social';
+      }
+      return readPendingInviteUsername() ? 'social' : 'dashboard';
+    } catch {
+      return 'dashboard';
+    }
+  }); // 'dashboard' | 'custom-workouts' | 'running' | 'history'
+  // Ao concluir autenticação após visitar link ?u=username, encaminha para Amigos
+  useEffect(() => {
+    if (user && !isGuest && readPendingInviteUsername()) {
+      setActiveTab('social');
+    }
+  }, [user, isGuest]);
   // Link de convite do PT (?trainer=CODE) abre a folha de vínculo já com o código preenchido
   const [trainerCodeFromUrl] = useState(() => new URLSearchParams(window.location.search).get('trainer') || '');
   const [showLinkTrainer, setShowLinkTrainer] = useState(() => Boolean(new URLSearchParams(window.location.search).get('trainer')));

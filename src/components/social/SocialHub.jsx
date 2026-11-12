@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Search, Share2, UserPlus, Check, Clock3, Inbox, Users, Activity, HandMetal, Flame, ChevronRight, MessageCircle, Camera, Crown } from 'lucide-react';
+import { Search, Share2, UserPlus, Check, Clock3, Inbox, Users, Activity, HandMetal, Flame, ChevronRight, MessageCircle, Camera, Crown, X } from 'lucide-react';
 import { useAuth } from '../../context';
+import AthleteCard from './AthleteCard';
 import HeadToHeadSheet from './HeadToHeadSheet';
 import DirectMessageSheet from './DirectMessageSheet';
 import NewPostModal from './NewPostModal';
@@ -10,8 +11,9 @@ import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo } from '../../utils/userVerification';
 import { SkeletonList } from '../ui/Skeleton';
 import {
-  canUseSocial, getFriendFeed, getFriendsWeeklySummary, getMyProfile, listFriendships,
-  respondFriendRequest, searchAthletes, sendFriendRequest, shareAthleteLink, toggleRespect,
+  canUseSocial, clearPendingInviteUsername, getFriendFeed, getFriendsWeeklySummary, getMyProfile,
+  getPublicAthletePass, listFriendships, readPendingInviteUsername, respondFriendRequest,
+  searchAthletes, sendFriendRequest, shareAthleteLink, toggleRespect,
   listFeedPosts, togglePostRespect
 } from '../../services/socialService';
 import { triggerHaptic } from '../../utils/audio';
@@ -20,9 +22,10 @@ const EXIT = { opacity: 0, x: 24, transition: { duration: 0.18 } };
 
 function readAddParam() {
   try {
-    return new URLSearchParams(window.location.search).get('add') || '';
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('u') || params.get('add') || readPendingInviteUsername() || '').replace(/^@/, '').trim();
   } catch {
-    return '';
+    return readPendingInviteUsername() || '';
   }
 }
 
@@ -185,12 +188,42 @@ export default function SocialHub({ onNavigateTab }) {
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState('');
 
+  const [inviteUsername, setInviteUsername] = useState(readAddParam);
+  const [invitePass, setInvitePass] = useState(null);
+  const [inviteRequested, setInviteRequested] = useState(false);
+
   const [query, setQuery] = useState(readAddParam);
   const [results, setResults] = useState({ q: '', items: [] });
   const [h2h, setH2h] = useState(null);
   const [notice, setNotice] = useState('');
   const [activeChatFriend, setActiveChatFriend] = useState(null);
   const [newPostOpen, setNewPostOpen] = useState(false);
+
+  useEffect(() => {
+    if (!enabled || !inviteUsername) return undefined;
+    let alive = true;
+    (async () => {
+      const { data } = await getPublicAthletePass(inviteUsername);
+      if (!alive) return;
+      clearPendingInviteUsername();
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('u') || url.searchParams.has('add')) {
+          url.searchParams.delete('u');
+          url.searchParams.delete('add');
+          window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+        }
+      } catch {
+        // Ambiente sem history API
+      }
+      if (data && data.id !== userId) {
+        setInvitePass(data);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [enabled, inviteUsername, userId]);
 
   const refreshSocial = useCallback(async () => {
     const [f, s, fd, fp] = await Promise.all([
@@ -320,6 +353,83 @@ export default function SocialHub({ onNavigateTab }) {
 
   return (
     <section className="max-w-md mx-auto w-full px-4 pt-5 pb-28 space-y-7" aria-label="Amigos">
+      {/* Convite direto via link ?u=username */}
+      {invitePass && (
+        <div className="space-y-3 rounded-3xl bg-white/[0.03] border border-white/[0.10] p-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-zinc-400">
+              Athlete Pass · Convite
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setInvitePass(null);
+                setInviteUsername('');
+                setQuery('');
+              }}
+              aria-label="Fechar convite"
+              className="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <AthleteCard athlete={invitePass} careerMetrics={invitePass} />
+          {(() => {
+            const existing = friendships.find((f) => f.friend_id === invitePass.id);
+            if (existing?.status === 'accepted') {
+              return (
+                <div className="min-h-[44px] rounded-2xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-200 text-[13px] font-bold flex items-center justify-center gap-2">
+                  <Check className="w-4 h-4" /> Já são amigos de treino
+                </div>
+              );
+            }
+            if (existing?.status === 'pending' && existing.incoming) {
+              return (
+                <motion.button
+                  type="button"
+                  whileTap={TAP}
+                  transition={SPRING}
+                  onClick={() => respond(existing, true)}
+                  className="w-full min-h-[48px] rounded-2xl bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
+                >
+                  <Check className="w-4 h-4" /> Aceitar convite de @{invitePass.username}
+                </motion.button>
+              );
+            }
+            if (inviteRequested || (existing?.status === 'pending' && !existing.incoming)) {
+              return (
+                <div className="min-h-[44px] rounded-2xl bg-white/[0.06] border border-white/[0.12] text-zinc-200 text-[13px] font-semibold flex items-center justify-center gap-2">
+                  <Clock3 className="w-4 h-4 text-zinc-400" /> Pedido enviado a @{invitePass.username}
+                </div>
+              );
+            }
+            return (
+              <motion.button
+                type="button"
+                whileTap={TAP}
+                transition={SPRING}
+                onClick={async () => {
+                  triggerHaptic([10, 30, 10]);
+                  setInviteRequested(true);
+                  const { error } = await sendFriendRequest(userId, invitePass.id);
+                  if (error) {
+                    setInviteRequested(false);
+                    flash(error);
+                  } else {
+                    flash(`Pedido enviado a @${invitePass.username}`);
+                  }
+                  refreshSocial();
+                }}
+                className="w-full min-h-[48px] rounded-2xl bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
+              >
+                <UserPlus className="w-4 h-4" strokeWidth={2.2} />
+                Seguir & Treinar Junto
+              </motion.button>
+            );
+          })()}
+        </div>
+      )}
+
       {/* Convite: partilhar o link do perfil (o cartão e a edição vivem no separador Perfil) */}
       <div className="space-y-2">
         <motion.button type="button" whileTap={TAP} transition={SPRING} onClick={share} disabled={!loaded} className="w-full min-h-[52px] rounded-2xl bg-accent border border-accent-hover text-white font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
