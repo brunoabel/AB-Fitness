@@ -39,45 +39,40 @@ export default function AthleteManualModal({ onClose }) {
 
   // Lista ordenada de manuais
   const tabOptions = [
-    { 
-      key: 'athlete', 
-      label: 'Atleta / Futebol', 
+    {
+      key: 'athlete',
+      label: 'Atleta / Futebol',
       shortLabel: 'Atleta',
       icon: Zap,
-      tag: 'Futebol & Alta Performance',
-      color: 'sky'
+      tag: 'Futebol & Alta Performance'
     },
-    { 
-      key: 'hypertrophy', 
-      label: 'Ganhar Peso & Hipertrofia', 
+    {
+      key: 'hypertrophy',
+      label: 'Ganhar Peso & Hipertrofia',
       shortLabel: 'Hipertrofia',
       icon: Dumbbell,
-      tag: 'Hipertrofia & Massa',
-      color: 'emerald'
+      tag: 'Hipertrofia & Massa'
     },
-    { 
-      key: 'fat_loss', 
-      label: 'Emagrecimento & Definição', 
+    {
+      key: 'fat_loss',
+      label: 'Emagrecimento & Definição',
       shortLabel: 'Definição',
       icon: Flame,
-      tag: 'Perda de Gordura',
-      color: 'amber'
+      tag: 'Perda de Gordura'
     },
-    { 
-      key: 'strength', 
-      label: 'Força Pura & Cargas', 
+    {
+      key: 'strength',
+      label: 'Força Pura & Cargas',
       shortLabel: 'Força Pura',
       icon: Activity,
-      tag: 'Cargas Pesadas',
-      color: 'rose'
+      tag: 'Cargas Pesadas'
     },
-    { 
-      key: 'health', 
-      label: 'Saúde & Longevidade', 
+    {
+      key: 'health',
+      label: 'Saúde & Longevidade',
       shortLabel: 'Longevidade',
       icon: ShieldCheck,
-      tag: 'Postura & Articulações',
-      color: 'purple'
+      tag: 'Postura & Articulações'
     }
   ];
 
@@ -195,7 +190,7 @@ export default function AthleteManualModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-0 sm:p-4 animate-fadeIn">
       <div 
-        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-[#0e0e11] text-zinc-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/[0.06] animate-slideUp transition-all select-none"
+        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-surface text-zinc-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/[0.06] animate-slideUp transition-all select-none"
         onClick={(e) => e.stopPropagation()}
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -255,7 +250,7 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* CARROSSEL DE SELEÇÃO RÁPIDA DE MANUAIS (Setas + Tabs) */}
         {/* ========================================================= */}
-        <div className="px-2 py-2 bg-[#17171d] border-b border-white/[0.06] flex items-center gap-1.5 shrink-0">
+        <div className="px-2 py-2 bg-surface-2 border-b border-white/[0.06] flex items-center gap-1.5 shrink-0">
           <button
             onClick={goToPrevManual}
             disabled={currentIndex === 0}
@@ -545,7 +540,7 @@ export default function AthleteManualModal({ onClose }) {
             className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer border ${
               isCurrentGoal || justSavedGoal
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-xs' 
-                : 'bg-accent text-white hover:bg-[#d5fa52] border-accent shadow-sm font-black'
+                : 'bg-accent text-white hover:bg-accent-hover border-accent shadow-sm font-black'
             }`}
           >
             {isCurrentGoal || justSavedGoal ? (
@@ -581,7 +576,7 @@ export default function AthleteManualModal({ onClose }) {
               className="bg-surface text-zinc-100 rounded-t-2xl sm:rounded-2xl border border-white/[0.06] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-[#191920]">
+              <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-2">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-white" />
                   <h4 className="font-bold text-sm text-white">

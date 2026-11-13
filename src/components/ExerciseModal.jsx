@@ -216,18 +216,6 @@ export default function ExerciseModal({ exercise, onClose }) {
                 </div>
               </div>
 
-              {/* Informações Anatómicas de Apoio */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-xl bg-surface border border-white/[0.08]">
-                  <span className="text-zinc-400 block text-[11px] font-bold uppercase">Equipamento</span>
-                  <span className="font-bold text-zinc-200 mt-0.5 block">{bio?.equipamento || visual?.equipment || 'Livre / Máquina'}</span>
-                </div>
-                <div className="p-3 rounded-xl bg-surface border border-white/[0.08]">
-                  <span className="text-zinc-400 block text-[11px] font-bold uppercase">Sinergistas</span>
-                  <span className="font-bold text-zinc-200 mt-0.5 block">{bio?.sinergistas || visual?.secondary || 'Estabilizadores'}</span>
-                </div>
-              </div>
-
               {/* Dica Científica Baseada em Evidências & Para Que Serve */}
               <div className="p-3.5 rounded-xl bg-surface border border-white/[0.08] text-xs text-zinc-300 flex items-start gap-2.5">
                 <Award className="w-4 h-4 text-accent-hover shrink-0 mt-0.5" />
