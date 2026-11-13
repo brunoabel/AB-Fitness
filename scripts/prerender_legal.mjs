@@ -40,7 +40,7 @@ const pages = [];
 for (const [path, doc] of Object.entries(LEGAL_DOCS)) {
   const url = `${SITE}${path}`;
   const title = `${doc.title} · AB Fitness`;
-  let html = template;
+  let html = template.replace(/\s*<link rel="modulepreload"[^>]*data-app-preload[^>]*>/g, '');
   html = setTag(html, /<title>.*?<\/title>/s, `<title>${esc(title)}</title>`);
   html = setTag(html, /<meta name="description" content=".*?" \/>/s, `<meta name="description" content="${esc(doc.description)}" />`);
   html = setTag(html, /<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${url}" />`);

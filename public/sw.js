@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v18'; // v18: reconstrução AB Athletic Club na aba Amigos
+const CACHE_NAME = 'ab-fitness-v19'; // v19: studio de fotos (galeria + câmara) + zero flash SEO no arranque
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

@@ -78,8 +78,19 @@ export default function Header({
 
   const tabKey = currentView === 'admin' ? 'admin' : activeTab;
   const isHome = tabKey === 'dashboard';
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const syncClock = () => {
+      if (document.visibilityState === 'visible') {
+        setNow(new Date());
+      }
+    };
+    document.addEventListener('visibilitychange', syncClock);
+    return () => document.removeEventListener('visibilitychange', syncClock);
+  }, []);
+
   const greetingText = useMemo(() => {
-    const now = new Date();
     const todayIso = now.toISOString().slice(0, 10); // formato gravado por markDayCompleted
     return buildGreeting({
       name: identity.firstName,
@@ -90,7 +101,7 @@ export default function Header({
       trainedToday: completedDays.some((c) => c?.date === todayIso),
       now
     });
-  }, [identity.firstName, streak, week, schedule, completedDays]);
+  }, [identity.firstName, streak, week, schedule, completedDays, now]);
   const largeTitle = isHome ? greetingText : TAB_TITLES[tabKey] || 'AB Fitness';
   const compactTitle = isHome ? 'Treino' : TAB_TITLES[tabKey] || 'AB Fitness';
   // Corrida e Amigos já têm cabeçalho editorial dedicado — evita repetir o título no topo

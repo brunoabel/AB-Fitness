@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 /**
  * Selo de Perfil Verificado (estilo Instagram / Meta / Apple).
  * Atribuído ao criador do app, atletas certificados e futuros membros Premium.
+ * Cada instância gera o seu próprio ID de gradiente para nunca colidir com
+ * elementos ocultos no DOM (ex.: Sidebar desktop escondida em mobile).
  */
 export default function VerifiedBadge({
   size = 18,
   className = '',
   title = 'Perfil Verificado'
 }) {
+  const rawId = useId();
+  const gradientId = `ab-verified-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
+
   return (
     <span
       className={`inline-flex items-center justify-center shrink-0 align-middle select-none ${className}`}
@@ -25,7 +30,7 @@ export default function VerifiedBadge({
       >
         <path
           d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"
-          fill="url(#ab-verified-sky)"
+          fill={`url(#${gradientId})`}
         />
         <path
           d="m8.8 12.1 2.2 2.25 4.5-4.7"
@@ -35,7 +40,7 @@ export default function VerifiedBadge({
           strokeLinejoin="round"
         />
         <defs>
-          <linearGradient id="ab-verified-sky" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+          <linearGradient id={gradientId} x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
             <stop stopColor="#38BDF8" />
             <stop offset="1" stopColor="#0284C7" />
           </linearGradient>
@@ -44,4 +49,3 @@ export default function VerifiedBadge({
     </span>
   );
 }
-

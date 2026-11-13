@@ -11,11 +11,11 @@ import { triggerHaptic } from '../../utils/audio';
 
 const Label = ({ children, aside, htmlFor }) => (
   <div className="flex items-baseline justify-between mb-2">
-    <label htmlFor={htmlFor} className="text-[13px] font-medium text-zinc-400">{children}</label>
+    <label htmlFor={htmlFor} className="text-[12px] font-medium uppercase tracking-[0.1em] text-zinc-500">{children}</label>
     {aside}
   </div>
 );
-const inputCls = 'w-full min-h-[50px] px-4 rounded-2xl bg-surface-2 border border-white/[0.08] text-body text-white placeholder:text-zinc-600 focus:outline-none focus:border-accent-hover transition-colors';
+const inputCls = 'w-full min-h-[48px] px-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-body text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 focus:bg-white/[0.06] transition-colors';
 
 function Chip({ selected, onClick, children }) {
   return (
@@ -28,7 +28,11 @@ function Chip({ selected, onClick, children }) {
         triggerHaptic(8);
         onClick();
       }}
-      className={`min-h-[42px] px-3.5 rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors duration-150 ${selected ? 'bg-accent/70 border-accent-hover text-white' : 'bg-surface-2 border-white/[0.08] text-zinc-300 hover:text-white'}`}
+      className={`min-h-[40px] px-4 rounded-full border text-[13px] cursor-pointer touch-manipulation transition-colors duration-150 ${
+        selected
+          ? 'bg-white text-black border-white font-bold shadow-[0_4px_16px_rgba(255,255,255,0.12)]'
+          : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 font-medium hover:text-white hover:bg-white/[0.07]'
+      }`}
     >
       {children}
     </motion.button>
@@ -126,7 +130,7 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
           onClick={save}
           disabled={blocked}
           whileTap={blocked ? undefined : { scale: 0.98 }}
-          className="w-full min-h-[54px] rounded-2xl bg-primary text-app font-bold text-body cursor-pointer disabled:bg-surface-2 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors"
+          className="w-full min-h-[52px] rounded-full bg-white text-black hover:bg-zinc-200 font-heading font-bold text-[15px] cursor-pointer touch-manipulation disabled:bg-white/[0.08] disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors shadow-[0_8px_28px_rgba(255,255,255,0.12)]"
         >
           {saving ? 'A guardar…' : 'Guardar perfil'}
         </motion.button>
@@ -243,9 +247,9 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
 
         <div>
           <Label>Privacidade</Label>
-          <ul className="rounded-2xl bg-surface-2 border border-white/[0.08] divide-y divide-white/[0.06]">
+          <ul className="border-y border-white/[0.06] divide-y divide-white/[0.06]">
             {PRIVACY_FIELDS.map((p) => (
-              <li key={p.id} className="flex items-center gap-4 px-4 py-3.5">
+              <li key={p.id} className="flex items-center gap-4 py-3.5">
                 <div className="flex-1 min-w-0">
                   <span className="block text-body text-white">{p.label}</span>
                   <span className="block text-[13px] text-zinc-400 leading-snug">{p.hint}</span>

@@ -274,7 +274,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                   setIsPickerOpen(true);
                   triggerHaptic(15);
                 }}
-                className="p-6 rounded-xl border-2 border-dashed border-white/10 hover:border-white/[0.2] text-center cursor-pointer transition-all group"
+                className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-white/[0.2] hover:bg-white/[0.04] text-center cursor-pointer transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
                   <Plus className="w-5 h-5 text-white" />
@@ -425,7 +425,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     setIsPickerOpen(true);
                     triggerHaptic(15);
                   }}
-                  className="min-h-[44px] w-full py-2.5 rounded-xl border border-dashed border-white/[0.12] hover:border-white/[0.24] text-xs font-bold text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-white/[0.02] transition-colors cursor-pointer"
+                  className="min-h-[44px] w-full py-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.2] text-xs font-bold text-zinc-300 flex items-center justify-center gap-1.5 hover:bg-white/[0.06] transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4 text-zinc-300" />
                   <span>Adicionar Mais Exercícios</span>

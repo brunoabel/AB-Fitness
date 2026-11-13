@@ -1,10 +1,11 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { PencilLine, Camera, Share2, Link2, Check, X, Sparkles } from 'lucide-react';
+import { PencilLine, Camera, Share2, Link2, Check, X, HandMetal } from 'lucide-react';
 import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
-import { athleteLink, canUseSocial, getMyCardStats, getMyProfile } from '../../services/socialService';
+import { athleteLink, canUseSocial, getMyCardStats, getMyProfile, listAthletePosts } from '../../services/socialService';
+import { timeAgo } from '../social/ui';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
@@ -34,6 +35,10 @@ export default function ProfileView() {
   const [printModeOpen, setPrintModeOpen] = useState(false);
   const [exportingStory, setExportingStory] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [postNotice, setPostNotice] = useState('');
+  const [selectedPost, setSelectedPost] = useState(null);
+  const noticeTimerRef = useRef(null);
 
   useEffect(() => {
     if (!social) return undefined;
@@ -45,6 +50,35 @@ export default function ProfileView() {
       alive = false;
     };
   }, [social, userId]);
+
+  useEffect(() => {
+    let alive = true;
+    listAthletePosts(userId).then(({ data }) => {
+      if (alive && Array.isArray(data)) setPosts(data);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+
+  useEffect(() => () => {
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPost) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedPost(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedPost]);
+
+  const flashPostNotice = (message) => {
+    setPostNotice(message);
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setPostNotice(''), 3200);
+  };
 
   // Sem perfil social (convidado ou offline): cartão local com nome da conta
   const fallbackProfile = {
@@ -66,12 +100,12 @@ export default function ProfileView() {
   };
 
   // Estatísticas locais quando o servidor não as dá (convidado / offline)
-  const localStats = (() => {
+  const [localStats] = useState(() => {
     const h = getWorkoutHistory() || [];
     const monthAgo = Date.now() - 30 * 86400000;
     const vol = h.filter((w) => new Date(w.completedAt || w.date || 0).getTime() >= monthAgo).reduce((a, w) => a + (Number(w.totalVolumeKg) || 0), 0);
     return { total_workouts: h.length, streak: null, monthly_volume_kg: vol };
-  })();
+  });
   const stats = state.stats || localStats;
   const canEdit = social && Boolean(state.profile);
   const passContent = buildAthletePassContent({
@@ -158,7 +192,7 @@ export default function ProfileView() {
               <span>Editar</span>
             </motion.button>
           ) : (
-            <div className="min-h-[46px] rounded-2xl border border-dashed border-white/[0.08] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
+            <div className="min-h-[46px] rounded-2xl bg-white/[0.03] border border-white/[0.06] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
               Atleta AB
             </div>
           )}
@@ -190,6 +224,66 @@ export default function ProfileView() {
 
         {/* Calendário de Consistência: o mês inteiro, de relance */}
         <ConsistencyCalendar />
+
+        {/* Feedback imediato ao publicar foto a partir do Perfil */}
+        <AnimatePresence>
+          {postNotice && (
+            <motion.div
+              role="status"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/[0.07] border border-white/[0.12] text-xs font-semibold text-white"
+            >
+              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{postNotice}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Publicações fotográficas do atleta no Clube */}
+        {posts.length > 0 && (
+          <div className="pt-2 border-t border-white/[0.06] space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-heading text-sm font-bold text-white tracking-tight">
+                Publicações no Clube
+              </h3>
+              <span className="text-xs font-mono tabular-nums text-zinc-500">
+                {posts.length} {posts.length === 1 ? 'foto' : 'fotos'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              {posts.map((post) => (
+                <motion.button
+                  key={post.id}
+                  type="button"
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    triggerHaptic(8);
+                    setSelectedPost(post);
+                  }}
+                  aria-label={post.caption ? `Abrir foto: ${post.caption}` : 'Abrir publicação no Clube'}
+                  className="relative aspect-square rounded-xl overflow-hidden bg-zinc-950 cursor-pointer touch-manipulation group"
+                >
+                  <img
+                    src={post.image_url}
+                    alt={post.caption || 'Foto publicada no Clube'}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {Number(post.respect_count) > 0 && (
+                    <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-bold text-white tabular-nums">
+                      <HandMetal className="w-2.5 h-2.5" />
+                      {post.respect_count}
+                    </span>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Painel Unificado da Carreira do Atleta (Sessões, Evolução, Medalhas, Corpo) */}
@@ -204,10 +298,66 @@ export default function ProfileView() {
             onClose={() => setNewPostOpen(false)}
             userId={userId}
             profile={profile}
-            onPostCreated={() => {
-              // Recarregar histórico ou avisar
+            onPostCreated={(createdPost) => {
+              if (createdPost) {
+                setPosts((prev) => [createdPost, ...prev.filter((p) => p.id !== createdPost.id)]);
+              } else {
+                listAthletePosts(userId).then(({ data }) => {
+                  if (Array.isArray(data)) setPosts(data);
+                });
+              }
+              flashPostNotice('Foto publicada no Clube e adicionada ao teu Perfil.');
             }}
           />
+        )}
+
+        {selectedPost && (
+          <motion.div
+            key="profile-post-lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Detalhe da publicação"
+            onClick={() => setSelectedPost(null)}
+            className="fixed inset-0 z-[92] bg-black/92 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md space-y-3"
+            >
+              <div className="flex items-center justify-between text-xs text-zinc-400">
+                <span>{timeAgo(selectedPost.created_at)}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPost(null)}
+                  aria-label="Fechar foto"
+                  className="min-w-[44px] min-h-[44px] -mr-2 rounded-full hover:bg-white/[0.08] text-white flex items-center justify-center cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="w-full aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950">
+                <img
+                  src={selectedPost.image_url}
+                  alt={selectedPost.caption || 'Foto publicada no Clube'}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {selectedPost.caption && (
+                <p className="text-[14px] text-zinc-100 leading-relaxed">{selectedPost.caption}</p>
+              )}
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400 tabular-nums">
+                <HandMetal className="w-3.5 h-3.5" />
+                <span>
+                  {Number(selectedPost.respect_count) > 0
+                    ? `${selectedPost.respect_count} ${selectedPost.respect_count === 1 ? 'respect' : 'respects'}`
+                    : 'Sem respects ainda'}
+                </span>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {editing && state.profile && (
@@ -284,7 +434,7 @@ export default function ProfileView() {
                   onClick={handleShareStory}
                   className="min-h-[48px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Share2 className="w-4 h-4" strokeWidth={2.2} />
                   <span>{exportingStory ? 'A preparar…' : 'Exportar Story'}</span>
                 </button>
               </div>

@@ -43,7 +43,7 @@ function exerciseName(id) {
 function MetricChart({ series, unit }) {
   if (series.length < 2) {
     return (
-      <div className="h-36 flex items-center justify-center rounded-lg border border-dashed border-white/[0.08] text-xs text-zinc-400 text-center px-6">
+      <div className="h-36 flex items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-zinc-400 text-center px-6">
         {series.length === 0 ? 'Ainda sem registos desta medida.' : 'Registe mais uma medição para ver a linha de evolução.'}
       </div>
     );
@@ -441,7 +441,7 @@ export default function BodyPortfolio() {
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoPicked} className="hidden" />
 
         {photosLoaded && photos.length === 0 && (
-          <div className="flex flex-col items-center gap-2 py-8 rounded-lg border border-dashed border-white/[0.08] text-center px-6">
+          <div className="flex flex-col items-center gap-2 py-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center px-6">
             <ImageOff className="w-6 h-6 text-zinc-400" />
             <p className="text-xs text-zinc-400">
               Tire uma foto de frente, lado e costas, com a mesma luz e distância. Repita a cada 2–4 semanas.
