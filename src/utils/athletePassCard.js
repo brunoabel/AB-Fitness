@@ -6,7 +6,8 @@
 const W = 1080;
 const H = 1920;
 
-const PASS_PALETTES = {
+/** Exportada para a aura ambiente do cabeçalho do Perfil (ProfileView.jsx) usar o mesmo tom do skin. */
+export const PASS_PALETTES = {
   midnight: { top: '#111827', mid: '#07090f', bottom: '#030407', glow: 'rgba(148, 163, 184, 0.22)', border: 'rgba(255,255,255,0.14)', accent: '#ffffff' },
   carbon: { top: '#18181b', mid: '#09090b', bottom: '#030304', glow: 'rgba(212, 212, 216, 0.16)', border: 'rgba(255,255,255,0.14)', accent: '#f4f4f5' },
   abyss: { top: '#0a1424', mid: '#060b16', bottom: '#02050a', glow: 'rgba(43, 74, 122, 0.24)', border: 'rgba(43, 74, 122, 0.3)', accent: '#6b86b8' },

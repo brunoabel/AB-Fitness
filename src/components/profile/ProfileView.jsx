@@ -14,7 +14,8 @@ import ConsistencyCalendar from './ConsistencyCalendar';
 import {
   buildAthletePassContent,
   buildAthletePassStoryBlob,
-  shareAthletePassStory
+  shareAthletePassStory,
+  PASS_PALETTES
 } from '../../utils/athletePassCard';
 
 const HistoryView = lazy(() => import('../HistoryView'));
@@ -140,9 +141,18 @@ export default function ProfileView() {
     } catch {}
   };
 
+  const glow = (PASS_PALETTES[profile.cover_style] || PASS_PALETTES.midnight).glow;
+
   return (
-    <section aria-label="Perfil do Atleta" className="space-y-4">
-      <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 space-y-3">
+    <section aria-label="Perfil do Atleta" className="relative overflow-hidden space-y-4">
+      {/* Aura ambiente: o tom do skin do cartão dissolve-se suavemente no preto, sem caixa */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-[320px] pointer-events-none -z-10"
+        style={{ background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${glow}, transparent 70%)` }}
+      />
+
+      <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 space-y-3">
         {/* Cartão de Identidade do Atleta (Design Apple Design Award) */}
         {state.loaded ? (
           <AthleteCard
