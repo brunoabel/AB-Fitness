@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v17'; // v17: reconstrução Luxury Command Navigation (Sidebar + Athlete Drawer)
+const CACHE_NAME = 'ab-fitness-v18'; // v18: reconstrução AB Athletic Club na aba Amigos
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

@@ -45,13 +45,9 @@ export function Avatar({ url, name, size = 44, className = '' }) {
 export function SectionTitle({ icon: Icon, children, aside }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="flex items-center gap-2.5 font-heading text-section font-semibold text-white">
-        {Icon && (
-          <span className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-300">
-            <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
-          </span>
-        )}
-        {children}
+      <h2 className="flex items-center gap-2 font-heading text-section font-semibold text-white">
+        {Icon && <Icon className="w-[18px] h-[18px] text-zinc-400 shrink-0" strokeWidth={1.75} />}
+        <span>{children}</span>
       </h2>
       {aside}
     </div>

@@ -93,8 +93,8 @@ export default function Header({
   }, [identity.firstName, streak, week, schedule, completedDays]);
   const largeTitle = isHome ? greetingText : TAB_TITLES[tabKey] || 'AB Fitness';
   const compactTitle = isHome ? 'Treino' : TAB_TITLES[tabKey] || 'AB Fitness';
-  // A Corrida já tem o seu próprio cabeçalho editorial (RunHeader.jsx) — evita duplicar "Corrida"
-  const hasOwnHeader = tabKey === 'running';
+  // Corrida e Amigos já têm cabeçalho editorial dedicado — evita repetir o título no topo
+  const hasOwnHeader = tabKey === 'running' || tabKey === 'social';
 
   // Só transform/opacity: o fundo e o título compacto aparecem com o scroll
   const { scrollY } = useScroll();
