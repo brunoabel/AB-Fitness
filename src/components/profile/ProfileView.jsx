@@ -9,6 +9,7 @@ import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userV
 import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
 import NewPostModal from '../social/NewPostModal';
+import ConsistencyCalendar from './ConsistencyCalendar';
 import {
   buildAthletePassContent,
   buildAthletePassStoryBlob,
@@ -186,6 +187,9 @@ export default function ProfileView() {
             <span>Publicar Foto</span>
           </motion.button>
         </div>
+
+        {/* Calendário de Consistência: o mês inteiro, de relance */}
+        <ConsistencyCalendar />
       </div>
 
       {/* Painel Unificado da Carreira do Atleta (Sessões, Evolução, Medalhas, Corpo) */}

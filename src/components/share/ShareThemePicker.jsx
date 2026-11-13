@@ -34,12 +34,12 @@ export default function ShareThemePicker({ aspectRatio, bgMode, fileInputRef, ha
         </div>
 
         {/* Temas */}
-        <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-white/[0.06]">
+        <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-white/[0.06] overflow-x-auto scrollbar-none max-w-full">
           {Object.values(THEMES).map((th) => (
             <button
               key={th.id}
               onClick={() => { setThemeId(th.id); setBgMode('map'); triggerHaptic(8); }}
-              className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+              className={`shrink-0 px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                 themeId === th.id && bgMode === 'map'
                   ? 'bg-white/[0.04] text-white border border-white/[0.08] shadow-xs'
                   : 'text-zinc-400 hover:text-zinc-200'
@@ -59,7 +59,7 @@ export default function ShareThemePicker({ aspectRatio, bgMode, fileInputRef, ha
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className={`px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+            className={`shrink-0 px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
               bgMode === 'custom-photo'
                 ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
                 : 'text-zinc-400 hover:text-white'

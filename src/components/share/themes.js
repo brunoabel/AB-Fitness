@@ -1,12 +1,13 @@
 /** Temas visuais do cartão de partilha da corrida. */
 export const THEMES = {
+  // id mantido por compatibilidade com preferências gravadas (era referenciado por nome de concorrente)
   'strava-orange': {
     id: 'strava-orange',
-    name: 'Strava Orange',
+    name: 'Ignição',
     accent: '#fc5200',
     glow: 'rgba(252, 82, 0, 0.85)',
     bgGrad: ['#1c0f08', '#0a0502'],
-    badge: 'Strava'
+    badge: 'Energia'
   },
   // id mantido por compatibilidade com preferências gravadas
   'ab-cyan': {
@@ -24,5 +25,27 @@ export const THEMES = {
     glow: 'rgba(52, 211, 153, 0.85)',
     bgGrad: ['#0f1715', '#050a08'],
     badge: 'Satélite'
+  },
+  'transparent-white': {
+    id: 'transparent-white',
+    name: 'Sticker Claro',
+    accent: '#ffffff',
+    glow: 'rgba(255, 255, 255, 0.4)',
+    bgGrad: null,
+    badge: 'Sticker Claro',
+    transparent: true,
+    ink: '#ffffff',
+    shadow: 'rgba(0,0,0,0.65)'
+  },
+  'transparent-dark': {
+    id: 'transparent-dark',
+    name: 'Sticker Escuro',
+    accent: '#0a0a0c',
+    glow: 'rgba(0, 0, 0, 0.3)',
+    bgGrad: null,
+    badge: 'Sticker Escuro',
+    transparent: true,
+    ink: '#0a0a0c',
+    shadow: 'rgba(255,255,255,0.55)'
   }
 };

@@ -255,6 +255,14 @@ export default function RunningShareModal({
       canvas.height = canvasHeight;
       const ctx = canvas.getContext('2d');
 
+      // Stickers transparentes: sem fundo nenhum (foto ou gradiente) — para colar por cima
+      // de qualquer foto no editor de Stories/Reels. Canal alfa preservado no PNG exportado.
+      if (currentTheme.transparent) {
+        drawGraphicOverlays(ctx, canvasWidth, canvasHeight, logoImg);
+        resolve(canvas);
+        return;
+      }
+
       // Fundo Base
       if (bgMode === 'custom-photo' && customPhotoUrl) {
         const photoImg = new Image();
@@ -318,6 +326,18 @@ export default function RunningShareModal({
   const drawGraphicOverlays = (ctx, w, h, logoImg) => {
     const isStoryMode = aspectRatio === 'story';
     const paddingX = 80;
+    const isSticker = Boolean(currentTheme.transparent);
+    // Em sticker, a tinta principal e secundária vêm do tema (claro ou escuro); fora disso,
+    // mantém-se sempre branco, tal como antes. A sombra garante legibilidade sem caixa opaca.
+    const ink = isSticker ? currentTheme.ink : '#FFFFFF';
+    const sub = isSticker
+      ? (currentTheme.ink === '#ffffff' ? 'rgba(255,255,255,0.6)' : 'rgba(10,10,12,0.6)')
+      : null;
+    if (isSticker) {
+      ctx.shadowColor = currentTheme.shadow;
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 3;
+    }
 
     // 1. Cabeçalho com Logo Oficial
     const logoSize = 100;
@@ -339,7 +359,7 @@ export default function RunningShareModal({
     ctx.restore();
 
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 36px system-ui, sans-serif';
     ctx.fillText('AB FITNESS', logoX + logoSize + 24, logoY + 44);
 
@@ -348,38 +368,40 @@ export default function RunningShareModal({
     ctx.fillText('RUNNING CLUB', logoX + logoSize + 24, logoY + 76);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
     ctx.font = '600 20px system-ui, sans-serif';
     ctx.fillText(`${dateFormatted} • ${timeFormatted}`, w - paddingX, logoY + 44);
     ctx.textAlign = 'left';
 
     // 2. Título da Atividade
     const titleY = logoY + logoSize + (isStoryMode ? 55 : 35);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.45)';
     ctx.font = '800 18px system-ui, sans-serif';
     ctx.fillText('ATIVIDADE REGISTRADA', paddingX, titleY);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 44px system-ui, sans-serif';
     ctx.fillText(sessionTitle, paddingX, titleY + 46);
 
-    // 3. Mapinha do Percurso
+    // 3. Mapinha do Percurso — sem caixa opaca em modo sticker (rota flutua sobre o alfa)
     const mapBoxY = titleY + 75;
     const mapBoxW = w - paddingX * 2;
     const mapBoxH = isStoryMode ? 520 : 360;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(10, 10, 15, 0.88)';
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(paddingX, mapBoxY, mapBoxW, mapBoxH, 32);
-    ctx.fill();
-    ctx.stroke();
+    if (!isSticker) {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.88)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(paddingX, mapBoxY, mapBoxW, mapBoxH, 32);
+      ctx.fill();
+      ctx.stroke();
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '700 16px system-ui, sans-serif';
-    ctx.fillText('MAPA DO PERCURSO • GPS AO VIVO', paddingX + 24, mapBoxY + 36);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '700 16px system-ui, sans-serif';
+      ctx.fillText('MAPA DO PERCURSO • GPS AO VIVO', paddingX + 24, mapBoxY + 36);
+    }
 
     if (effectiveCoordinates && effectiveCoordinates.length > 1) {
       const innerW = mapBoxW - 80;
@@ -442,14 +464,14 @@ export default function RunningShareModal({
     }
     ctx.restore();
 
-    // 4. Métricas Strava
+    // 4. Métricas
     const statsY = mapBoxY + mapBoxH + (isStoryMode ? 65 : 35);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
     ctx.font = '800 22px system-ui, sans-serif';
     ctx.fillText('DISTÂNCIA TOTAL', paddingX, statsY);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 144px system-ui, sans-serif';
     ctx.fillText(distanceKm, paddingX, statsY + 125);
 
@@ -458,50 +480,58 @@ export default function RunningShareModal({
     const distWidth = ctx.measureText(distanceKm).width;
     ctx.fillText('KM', paddingX + distWidth + 24, statsY + 125);
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(paddingX, statsY + 175);
-    ctx.lineTo(w - paddingX, statsY + 175);
-    ctx.stroke();
+    if (!isSticker) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(paddingX, statsY + 175);
+      ctx.lineTo(w - paddingX, statsY + 175);
+      ctx.stroke();
+    }
 
     const metricsRowY = statsY + 230;
     const colWidth = (w - paddingX * 2) / 3;
 
     // Pace
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
     ctx.font = '800 22px system-ui, sans-serif';
     ctx.fillText('RITMO MÉDIO', paddingX, metricsRowY);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 60px system-ui, sans-serif';
     ctx.fillText(paceStr, paddingX, metricsRowY + 68);
 
     // Tempo
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
     ctx.font = '800 22px system-ui, sans-serif';
     ctx.fillText('TEMPO TOTAL', paddingX + colWidth, metricsRowY);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 60px system-ui, sans-serif';
     ctx.fillText(durationStr, paddingX + colWidth, metricsRowY + 68);
 
     // Calorias
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
     ctx.font = '800 22px system-ui, sans-serif';
     ctx.fillText('CALORIAS', paddingX + colWidth * 2, metricsRowY);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = ink;
     ctx.font = '900 60px system-ui, sans-serif';
     ctx.fillText(`${calories} kcal`, paddingX + colWidth * 2, metricsRowY + 68);
 
     // 5. Rodapé
     const footerY = h - (isStoryMode ? 70 : 40);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.4)';
     ctx.font = '600 20px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('abfitness.app • AB Fitness Running Club', w / 2, footerY);
     ctx.textAlign = 'left';
+
+    if (isSticker) {
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+    }
   };
 
   const handleDownload = async () => {
@@ -646,15 +676,26 @@ export default function RunningShareModal({
                   ? 'w-[230px] h-[375px]' 
                   : 'w-[230px] h-[230px]'
               }`}
-              style={{
+              style={currentTheme.transparent ? {
+                backgroundImage: 'linear-gradient(45deg, #27272a 25%, transparent 25%), linear-gradient(-45deg, #27272a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #27272a 75%), linear-gradient(-45deg, transparent 75%, #27272a 75%)',
+                backgroundSize: '16px 16px',
+                backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+                backgroundColor: '#18181b'
+              } : {
                 backgroundColor: currentTheme.bgGrad[1],
                 backgroundImage: bgMode === 'custom-photo' && customPhotoUrl ? `url(${customPhotoUrl})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
             >
-              {/* Gradiente Escuro de Proteção de Contraste */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/40 to-black/95 pointer-events-none" />
+              {/* Fundo transparente: rótulo a explicar o xadrez. Fundo opaco: gradiente de contraste. */}
+              {currentTheme.transparent ? (
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-semibold text-zinc-500 text-center px-4 pointer-events-none z-0">
+                  Fundo transparente · Pronto para colar sobre fotos
+                </span>
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/40 to-black/95 pointer-events-none" />
+              )}
 
               {/* Cabeçalho do Card */}
               <div className="relative z-10 p-2.5 flex items-center justify-between">

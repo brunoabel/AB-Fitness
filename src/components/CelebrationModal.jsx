@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
-import { Trophy, Clock, CheckCircle, Check, Dumbbell, Sparkles, Share2, ArrowRight } from 'lucide-react';
+import { Trophy, Clock, CheckCircle, Check, Dumbbell, Sparkles, Share2, ArrowRight, Copy } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
-import { buildWorkoutResultCard, shareWorkoutResultCard } from '../utils/workoutResultCard';
+import { buildWorkoutResultCard, shareWorkoutResultCard, copyWorkoutResultCardToClipboard } from '../utils/workoutResultCard';
+
+const CARD_VARIANTS = [
+  { id: 'card', label: 'Cartão' },
+  { id: 'sticker-white', label: 'Sticker claro' },
+  { id: 'sticker-dark', label: 'Sticker escuro' }
+];
 
 export default function CelebrationModal({ 
   workout, 
@@ -17,6 +23,40 @@ export default function CelebrationModal({
   onClose 
 }) {
   const [copied, setCopied] = useState(false);
+  const [cardVariant, setCardVariant] = useState('card');
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isSharing, setIsSharing] = useState(false);
+  const previewUrlRef = useRef(null);
+
+  const cardParams = {
+    workoutName: (workout?.title && workout?.name && workout.title !== workout.name)
+      ? `${workout.title} • ${workout.name}`
+      : (workout?.title || workout?.name),
+    durationMinutes,
+    totalSetsCompleted,
+    totalVolumeKg,
+    newPRs
+  };
+
+  // Pré-visualização ao vivo: regenera o Canvas sempre que a variante muda
+  useEffect(() => {
+    let active = true;
+    buildWorkoutResultCard(cardParams, cardVariant).then((blob) => {
+      if (!active || !blob) return;
+      const url = URL.createObjectURL(blob);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = url;
+      setPreviewUrl(url);
+    }).catch(() => {});
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardVariant]);
+
+  useEffect(() => () => {
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+  }, []);
 
   useEffect(() => {
     // Tocar fanfarra e haptic
@@ -51,16 +91,9 @@ export default function CelebrationModal({
 
   const handleShare = async () => {
     triggerHaptic(10);
+    setIsSharing(true);
     try {
-      const blob = await buildWorkoutResultCard({
-        workoutName: (workout?.title && workout?.name && workout.title !== workout.name)
-          ? `${workout.title} • ${workout.name}`
-          : (workout?.title || workout?.name),
-        durationMinutes,
-        totalSetsCompleted,
-        totalVolumeKg,
-        newPRs
-      });
+      const blob = await buildWorkoutResultCard(cardParams, cardVariant);
       await shareWorkoutResultCard(blob, { hasPRs: newPRs?.length > 0 });
     } catch {
       // Falha a gerar/partilhar o cartão (ex.: navegador sem suporte a Canvas/Share) -> texto simples
@@ -77,7 +110,26 @@ export default function CelebrationModal({
           setTimeout(() => setCopied(false), 2500);
         } catch {}
       }
+    } finally {
+      setIsSharing(false);
     }
+  };
+
+  const handleCopyImage = async () => {
+    triggerHaptic(10);
+    setIsSharing(true);
+    try {
+      const blob = await buildWorkoutResultCard(cardParams, cardVariant);
+      const ok = await copyWorkoutResultCardToClipboard(blob);
+      if (ok) {
+        triggerHaptic(15);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      } else {
+        await shareWorkoutResultCard(blob, { hasPRs: newPRs?.length > 0 });
+      }
+    } catch {}
+    setIsSharing(false);
   };
 
   return (
@@ -202,6 +254,48 @@ export default function CelebrationModal({
           </div>
         </div>
 
+        {/* Pré-visualização & Escolha de Formato de Partilha */}
+        <div className="px-5 pt-1">
+          <div className="flex gap-3 items-start">
+            <div
+              className="w-20 shrink-0 rounded-xl overflow-hidden border border-white/10"
+              style={cardVariant === 'card' ? undefined : {
+                backgroundImage: 'linear-gradient(45deg, #27272a 25%, transparent 25%), linear-gradient(-45deg, #27272a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #27272a 75%), linear-gradient(-45deg, transparent 75%, #27272a 75%)',
+                backgroundSize: '10px 10px',
+                backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
+                backgroundColor: '#18181b'
+              }}
+            >
+              {previewUrl && (
+                <img src={previewUrl} alt="Pré-visualização do cartão de partilha" className="w-full aspect-[9/16] object-cover" />
+              )}
+            </div>
+
+            <div className="flex-1 min-w-0 space-y-1.5">
+              <p className="text-[11px] text-zinc-500">
+                {cardVariant === 'card' ? 'Cartão com fundo — pronto a partilhar sozinho.' : 'Fundo transparente — cola por cima de uma foto no Stories.'}
+              </p>
+              <div className="flex flex-col gap-1">
+                {CARD_VARIANTS.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic(8);
+                      setCardVariant(v.id);
+                    }}
+                    className={`text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      cardVariant === v.id ? 'bg-white text-black' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Botões de Ação */}
         <div className="p-5 pt-3 space-y-2">
           <button
@@ -212,22 +306,34 @@ export default function CelebrationModal({
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={handleShare}
-            className="w-full min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
-                <span className="text-emerald-400">Resumo Copiado!</span>
-              </>
-            ) : (
-              <>
-                <Share2 className="w-3.5 h-3.5 text-zinc-400" />
-                <span>{newPRs?.length > 0 ? 'Partilhar Cartão do Recorde' : 'Partilhar Cartão do Treino'}</span>
-              </>
-            )}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
+            >
+              <Share2 className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Partilhar</span>
+            </button>
+
+            <button
+              onClick={handleCopyImage}
+              disabled={isSharing}
+              className="min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
+                  <span className="text-emerald-400">Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Copiar imagem</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </ModalPanel>
     </ModalBackdrop>
