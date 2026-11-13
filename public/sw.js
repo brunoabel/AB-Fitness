@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v16'; // v16: limpeza estrutural anti-blocos (ondas 1-4, secções 1-7 do redesenho)
+const CACHE_NAME = 'ab-fitness-v17'; // v17: reconstrução Luxury Command Navigation (Sidebar + Athlete Drawer)
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

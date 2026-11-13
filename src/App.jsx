@@ -388,6 +388,9 @@ function AppContent() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenAICoach={() => setShowAICoachModal(true)}
+        onOpenAccountDrawer={() => setIsSidebarOpen(true)}
+        completedDays={completedDays}
+        schedule={schedule}
       />
       {/* Contentor Principal Adaptativo (Mobile até Desktop) */}
       <div className={`w-full min-h-screen bg-surface relative flex flex-col justify-between transition-colors duration-200 lg:flex-1 lg:min-w-0 ${isFullScreenView ? '' : 'max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto sm:border-x border-zinc-800/80'}`}>
@@ -582,6 +585,8 @@ function AppContent() {
           }}
           soundEnabled={soundEnabled}
           onToggleSound={handleToggleSound}
+          completedDays={completedDays}
+          schedule={schedule}
         />
       </div>
     </div>

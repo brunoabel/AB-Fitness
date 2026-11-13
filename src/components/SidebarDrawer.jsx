@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   X,
   UserRound,
@@ -18,18 +18,13 @@ import {
   Link2,
   Crown,
   Sparkles,
-  Calculator,
-  Bell,
-  LifeBuoy,
-  Watch
+  Watch,
+  Flame
 } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import VerifiedBadge from './ui/VerifiedBadge';
-import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../utils/userVerification';
-import { canUseSocial, getMyProfile } from '../services/socialService';
-import { useAuth } from '../context';
+import { useAthleteIdentity } from '../hooks/useAthleteIdentity';
 import { triggerHaptic } from '../utils/audio';
-import { getLocalConnections } from '../services/wearables/wearableManager';
 
 const DeleteAccountSheet = lazy(() => import('./legal/DeleteAccountSheet'));
 const LinkTrainerSheet = lazy(() => import('./trainer/LinkTrainerSheet'));
@@ -38,31 +33,54 @@ const WearablesModal = lazy(() => import('./wearables/WearablesModal'));
 const SPRING = { type: 'spring', stiffness: 400, damping: 38 };
 
 function SectionLabel({ children }) {
-  return <p className="px-2 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500">{children}</p>;
+  return (
+    <p className="px-5 pt-6 pb-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+      {children}
+    </p>
+  );
 }
 
-function Row({ icon: Icon, label, hint, onClick, trailing, danger = false }) {
+function DrawerRow({ icon: Icon, label, hint, onClick, trailing, danger = false, isLast = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full min-h-[52px] flex items-center gap-3 px-4 py-2.5 text-left cursor-pointer active:bg-white/[0.03] transition-colors"
+      className={`group w-full min-h-[52px] px-5 py-3 flex items-center gap-3.5 text-left cursor-pointer touch-manipulation hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors ${
+        isLast ? '' : 'border-b border-white/[0.04]'
+      }`}
     >
-      <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${danger ? 'border-red-400/20 text-red-400 bg-red-400/[0.06]' : 'bg-white/[0.04] border-white/[0.06] text-zinc-300'}`}>
-        <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
-      </span>
+      <Icon
+        className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+          danger ? 'text-rose-400/90 group-hover:text-rose-300' : 'text-zinc-400 group-hover:text-white'
+        }`}
+        strokeWidth={1.75}
+      />
       <span className="flex-1 min-w-0">
-        <span className={`block text-body font-medium ${danger ? 'text-red-400' : 'text-white'}`}>{label}</span>
-        {hint && <span className="block text-[13px] text-zinc-400 truncate">{hint}</span>}
+        <span className={`block text-[15px] font-medium leading-snug ${danger ? 'text-rose-400' : 'text-white'}`}>
+          {label}
+        </span>
+        {hint && (
+          <span className="block text-[12px] text-zinc-400 truncate mt-0.5">
+            {hint}
+          </span>
+        )}
       </span>
-      {trailing ?? <ChevronRight className="w-4 h-4 text-zinc-600" strokeWidth={1.75} />}
+      {trailing !== undefined ? (
+        trailing
+      ) : (
+        <ChevronRight
+          className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 transition-colors shrink-0"
+          strokeWidth={1.75}
+        />
+      )}
     </button>
   );
 }
 
 /**
- * Gaveta lateral (esquerda) de gestão do atleta: aberta pelo gatilho do Header em qualquer
- * ecrã. Substitui o antigo AccountSheet enquanto ponto único de definições, conta e sessão.
+ * Athlete Passport Drawer: folha editorial contínua em OLED Dark Luxury.
+ * Substitui pilhas de caixas fechadas por fluxo tipográfico limpo, ícones livres,
+ * identidade atlética em destaque e alvos táteis >= 52px.
  */
 export default function SidebarDrawer({
   isOpen,
@@ -74,48 +92,43 @@ export default function SidebarDrawer({
   onOpenAdmin,
   onOpenTrainerHub,
   soundEnabled,
-  onToggleSound
+  onToggleSound,
+  completedDays = null,
+  schedule = []
 }) {
-  const { user, isGuest, isCeo, isAdmin, isTrainer, isPro, isConfigured, signOut } = useAuth();
-  const userId = user?.id;
-  const [profile, setProfile] = useState(null);
+  const reducedMotion = useReducedMotion();
   const [deleting, setDeleting] = useState(false);
   const [linkingTrainer, setLinkingTrainer] = useState(false);
   const [confirmingLogout, setConfirmingLogout] = useState(false);
   const [wearablesOpen, setWearablesOpen] = useState(false);
-  const [wearablesStatus, setWearablesStatus] = useState('');
+
+  const {
+    isGuest,
+    isAdmin,
+    isTrainer,
+    signOut,
+    avatar,
+    fullName,
+    username,
+    initials,
+    ceo,
+    pro,
+    verified,
+    synced,
+    streak,
+    rank,
+    wearablesStatus,
+    refreshWearables
+  } = useAthleteIdentity({ refreshKey: isOpen, completedDays, schedule });
 
   useEffect(() => {
-    if (isOpen) {
-      const conns = getLocalConnections();
-      const keys = Object.keys(conns || {});
-      if (keys.length > 1) {
-        setWearablesStatus('Whoop & Fitbit ativos');
-      } else if (keys.length === 1) {
-        setWearablesStatus(keys[0] === 'whoop' ? 'Whoop 4.0 ativo' : 'Fitbit ativo');
-      } else {
-        setWearablesStatus('Ligar Whoop & Fitbit');
+    if (!isOpen) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setConfirmingLogout(false);
+        onClose();
       }
-    }
-  }, [isOpen, wearablesOpen]);
-
-  useEffect(() => {
-    if (!isOpen || !canUseSocial(userId)) return;
-    let alive = true;
-    getMyProfile(userId).then(({ data }) => {
-      if (alive && data) setProfile(data);
-    });
-    return () => {
-      alive = false;
     };
-  }, [isOpen, userId]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setConfirmingLogout(false);
-      return undefined;
-    }
-    const onKey = (e) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -125,21 +138,16 @@ export default function SidebarDrawer({
     };
   }, [isOpen, onClose]);
 
-  const identity = {
-    avatar: profile?.avatar_url || user?.user_metadata?.avatar_url || null,
-    fullName: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Atleta',
-    username: profile?.username || null
+  const handleClose = () => {
+    setConfirmingLogout(false);
+    triggerHaptic(8);
+    onClose?.();
   };
-  const ceo = isCeo || isAthleteCeo(profile || identity, user);
-  const pro = isPro || isAthletePro(profile || identity, user);
-  const verified = isAthleteVerified(profile || identity, user, isAdmin);
-  const name = identity.fullName;
-  const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
-  const synced = isConfigured && !isGuest;
 
   const run = (fn) => () => {
+    setConfirmingLogout(false);
     triggerHaptic(10);
-    onClose();
+    onClose?.();
     fn?.();
   };
 
@@ -148,98 +156,185 @@ export default function SidebarDrawer({
       {isOpen && (
         <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" aria-label="Menu do atleta">
           <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => {
-              triggerHaptic(8);
-              onClose();
-            }}
+            transition={{ duration: reducedMotion ? 0 : 0.2 }}
+            onClick={handleClose}
           />
 
           <motion.aside
-            className="relative h-full w-[86%] max-w-[360px] overflow-y-auto overscroll-contain bg-[#070709]/90 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] shadow-[12px_0_36px_rgba(0,0,0,0.7)] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),16px)] will-change-transform"
+            className="relative h-full w-[88%] max-w-[368px] overflow-y-auto overscroll-contain bg-[#06070a]/95 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] shadow-[16px_0_48px_rgba(0,0,0,0.85)] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),20px)] will-change-transform select-none"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
-            transition={SPRING}
+            transition={reducedMotion ? { duration: 0 } : SPRING}
           >
-            {/* Cabeçalho da gaveta: identidade do atleta */}
-            <div className="flex items-start gap-3.5 px-5 pb-4">
-              <span className="relative w-14 h-14 rounded-full overflow-hidden bg-surface-3 border-2 border-white/[0.14] flex items-center justify-center text-[18px] font-semibold text-white shrink-0">
-                {identity.avatar ? <img src={identity.avatar} alt="" className="absolute inset-0 w-full h-full object-cover" /> : initials}
+            {/* Halo sutil de fundo no topo do passaporte */}
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute top-0 inset-x-0 h-44 blur-2xl opacity-60 ${
+                ceo
+                  ? 'bg-gradient-to-b from-amber-500/[0.12] via-amber-500/[0.03] to-transparent'
+                  : 'bg-gradient-to-b from-white/[0.06] to-transparent'
+              }`}
+            />
+
+            {/* Hero: Cabeçalho de Dossiê Atlético */}
+            <div className="relative flex items-start gap-3.5 px-5 pb-5">
+              <span className="relative w-14 h-14 rounded-full overflow-hidden bg-zinc-900 ring-2 ring-white/[0.16] flex items-center justify-center text-[18px] font-semibold text-white shrink-0">
+                {avatar ? (
+                  <img src={avatar} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
               </span>
+
               <div className="flex-1 min-w-0 pt-0.5">
-                <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                  <p className="font-heading text-section font-semibold text-white truncate">{name}</p>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <p className="font-heading text-[20px] font-bold tracking-tight text-white truncate">
+                    {fullName}
+                  </p>
                   {verified && <VerifiedBadge size={15} />}
                 </div>
-                {identity.username && <p className="text-[13px] text-zinc-400 truncate">@{identity.username}</p>}
-                <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  {username && (
+                    <span className="text-[12px] text-zinc-400 truncate">@{username}</span>
+                  )}
                   {ceo && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(245,158,11,0.25)]">
-                      <Crown className="w-3 h-3 text-amber-400" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-black uppercase tracking-wider">
+                      <Crown className="w-2.5 h-2.5 text-amber-400" />
                       CEO
                     </span>
                   )}
                   {!ceo && pro && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/70 text-white border border-accent-hover text-[9px] font-black uppercase tracking-wider">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/[0.09] text-white border border-white/[0.15] text-[10px] font-bold uppercase tracking-wider">
                       PRO
                     </span>
                   )}
+                  {streak > 0 && (
+                    <span className="inline-flex items-center gap-1 font-display tabular-nums text-[12px] font-bold text-amber-300">
+                      <Flame className="w-3 h-3 text-amber-400" strokeWidth={2} />
+                      {streak}d
+                    </span>
+                  )}
                 </div>
-                <p className="mt-1.5 inline-flex items-center gap-1.5 text-[12px] text-zinc-400">
-                  {synced ? <Cloud className="w-3.5 h-3.5" strokeWidth={1.75} /> : <HardDrive className="w-3.5 h-3.5" strokeWidth={1.75} />}
-                  {synced ? 'Sincronizado na nuvem' : 'Guardado neste aparelho'}
+
+                <p className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-zinc-400">
+                  {synced ? (
+                    <Cloud className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.75} />
+                  ) : (
+                    <HardDrive className="w-3.5 h-3.5 text-zinc-500" strokeWidth={1.75} />
+                  )}
+                  <span>
+                    {rank.label} · {synced ? 'Sincronizado na nuvem' : 'Guardado neste aparelho'}
+                  </span>
                 </p>
               </div>
+
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic(8);
-                  onClose();
-                }}
+                onClick={handleClose}
                 aria-label="Fechar menu"
-                className="w-10 h-10 -mr-1.5 -mt-1 shrink-0 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
+                className="min-w-[44px] min-h-[44px] -mr-2 -mt-1.5 shrink-0 rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.06] cursor-pointer touch-manipulation transition-colors"
               >
                 <X className="w-5 h-5" strokeWidth={1.75} />
               </button>
             </div>
 
-            {/* AB Coach em destaque */}
-            <div className="px-4">
+            {/* Faixa Conversacional: AB Coach */}
+            <div className="px-5 pb-1">
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.98 }}
+                whileTap={reducedMotion ? undefined : { scale: 0.985 }}
                 onClick={run(onOpenAICoach)}
-                className="w-full min-h-[52px] flex items-center gap-3 p-3 rounded-2xl bg-accent border border-accent-hover text-left cursor-pointer"
+                className="group relative w-full min-h-[56px] px-4 py-3 rounded-2xl overflow-hidden bg-gradient-to-r from-accent/35 via-white/[0.05] to-white/[0.02] hover:from-accent/45 hover:via-white/[0.08] border border-white/[0.12] flex items-center gap-3 text-left cursor-pointer touch-manipulation transition-colors"
               >
-                <CoachAvatar size={40} alt="" />
-                <span className="flex-1 min-w-0">
-                  <span className="block text-body font-semibold text-white">Falar com o AB Coach</span>
-                  <span className="block text-[13px] text-zinc-300">Ajustes técnicos imediatos</span>
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                />
+                <span className="shrink-0 rounded-full p-0.5 ring-1 ring-white/[0.18]">
+                  <CoachAvatar size={36} alt="" />
                 </span>
-                <Sparkles className="w-4 h-4 text-white shrink-0" strokeWidth={1.75} />
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[14px] font-semibold text-white">
+                    Falar com o AB Coach
+                  </span>
+                  <span className="block text-[12px] text-zinc-300 truncate">
+                    Ajustes biomecânicos e metas
+                  </span>
+                </span>
+                <Sparkles className="w-4 h-4 text-zinc-200 group-hover:text-white shrink-0" strokeWidth={1.75} />
               </motion.button>
             </div>
 
-            {/* Secção 1 · Atleta & Treino */}
-            <div className="mt-5 px-2">
-              <SectionLabel>Atleta &amp; Treino</SectionLabel>
-              <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
-                <Row icon={UserRound} label="Perfil de atleta" hint="Foto, bio, @username e privacidade" onClick={run(() => onNavigateTab?.('profile'))} />
-                <Row icon={Target} label="Metas e planos" hint="Recalibrar dias, foco e divisão com o AB Coach" onClick={run(onOpenCustomize)} />
-                <Row icon={BookOpen} label="Manuais do atleta" hint="Biomecânica dos 348 exercícios, execução e nutrição" onClick={run(onOpenGuide)} />
+            {/* Fluxo Editorial Sem Blocos Empilhados */}
+            <div className="divide-y divide-white/[0.06]">
+              <div>
+                <SectionLabel>Carreira &amp; Treino</SectionLabel>
+                <DrawerRow
+                  icon={UserRound}
+                  label="Perfil de atleta"
+                  hint="Foto, bio, @username e privacidade"
+                  onClick={run(() => onNavigateTab?.('profile'))}
+                />
+                <DrawerRow
+                  icon={Target}
+                  label="Metas e planos"
+                  hint="Recalibrar dias, foco e divisão com o AB Coach"
+                  onClick={run(onOpenCustomize)}
+                />
+                <DrawerRow
+                  icon={BookOpen}
+                  label="Manuais do atleta"
+                  hint="Biomecânica dos 348 exercícios, execução e nutrição"
+                  onClick={run(onOpenGuide)}
+                  isLast
+                />
               </div>
-            </div>
 
-            {/* Secção 2 · Experiência & Som */}
-            <div className="mt-5 px-2">
-              <SectionLabel>Experiência &amp; Som</SectionLabel>
-              <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] overflow-hidden">
-                <Row
+              <div>
+                <SectionLabel>Sensores &amp; Dispositivos</SectionLabel>
+                <DrawerRow
+                  icon={Watch}
+                  label="Dispositivos &amp; Wearables"
+                  hint={wearablesStatus}
+                  onClick={() => {
+                    triggerHaptic(10);
+                    setWearablesOpen(true);
+                  }}
+                  isLast={isGuest}
+                />
+                {!isGuest && (
+                  isTrainer ? (
+                    <DrawerRow
+                      icon={Dumbbell}
+                      label="Trainer Hub"
+                      hint="Os teus atletas e prescrições"
+                      onClick={run(onOpenTrainerHub)}
+                      isLast
+                    />
+                  ) : (
+                    <DrawerRow
+                      icon={Link2}
+                      label="Vincular Personal Trainer"
+                      hint="Insere o código de 6 dígitos do teu PT"
+                      onClick={() => {
+                        triggerHaptic(10);
+                        setLinkingTrainer(true);
+                      }}
+                      isLast
+                    />
+                  )
+                )}
+              </div>
+
+              <div>
+                <SectionLabel>Preferências &amp; Som</SectionLabel>
+                <DrawerRow
                   icon={soundEnabled ? Volume2 : VolumeX}
                   label="Sons do treino"
                   hint={soundEnabled ? 'Efeitos e alertas de descanso ligados' : 'Efeitos e alertas de descanso desligados'}
@@ -247,80 +342,70 @@ export default function SidebarDrawer({
                     triggerHaptic(8);
                     onToggleSound?.(!soundEnabled);
                   }}
+                  isLast
                   trailing={
-                    <span className={`relative w-[46px] h-[28px] rounded-full border transition-colors duration-150 ${soundEnabled ? 'bg-accent border-accent-hover' : 'bg-surface-3 border-white/[0.08]'}`} aria-hidden>
-                      <motion.span className="absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full bg-white" animate={{ x: soundEnabled ? 18 : 0 }} transition={{ type: 'spring', stiffness: 520, damping: 40 }} />
+                    <span
+                      className={`relative w-[46px] h-[28px] rounded-full border transition-colors duration-150 shrink-0 ${
+                        soundEnabled ? 'bg-accent border-accent-hover' : 'bg-zinc-900 border-white/[0.12]'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <motion.span
+                        className="absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full bg-white shadow-xs"
+                        animate={{ x: soundEnabled ? 18 : 0 }}
+                        transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 40 }}
+                      />
                     </span>
                   }
                 />
               </div>
-            </div>
 
-            {/* Secção 3 · Dispositivos & Conexão */}
-            <div className="mt-5 px-2">
-              <SectionLabel>Dispositivos &amp; Conexão</SectionLabel>
-              <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
-                <Row
-                  icon={Watch}
-                  label="Dispositivos & Wearables"
-                  hint={wearablesStatus || 'Ligar Whoop & Fitbit'}
-                  onClick={() => {
-                    triggerHaptic(10);
-                    setWearablesOpen(true);
-                  }}
-                />
-                {!isGuest && (
-                  isTrainer ? (
-                    <Row icon={Dumbbell} label="Trainer Hub" hint="Os teus atletas e prescrições" onClick={run(onOpenTrainerHub)} />
-                  ) : (
-                    <Row icon={Link2} label="Vincular Personal Trainer" hint="Insere o código de 6 dígitos do teu PT" onClick={() => { triggerHaptic(10); setLinkingTrainer(true); }} />
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* Secção 4 · Administração (condicional) */}
-            {isAdmin && (
-              <div className="mt-5 px-2">
-                <SectionLabel>Administração</SectionLabel>
-                <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] overflow-hidden">
-                  <Row
+              {isAdmin && (
+                <div>
+                  <SectionLabel>Administração</SectionLabel>
+                  <DrawerRow
                     icon={ceo ? Crown : ShieldCheck}
-                    label={ceo ? 'Painel Executivo CEO' : 'Painel admin'}
+                    label={ceo ? 'Painel Executivo CEO' : 'Painel Admin'}
                     hint={ceo ? 'Waitlist, atletas e métricas de lançamento' : 'Atletas e sessões'}
                     onClick={run(onOpenAdmin)}
+                    isLast
                   />
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Secção 5 · Conta & Sessão */}
-            <div className="mt-5 px-2">
-              <SectionLabel>Conta &amp; Sessão</SectionLabel>
-              <div className="mx-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
-                <Row icon={Scale} label="Termos, privacidade e aviso médico" hint="Documentos legais" onClick={run(() => window.open('/privacidade', '_blank', 'noopener'))} />
+              <div>
+                <SectionLabel>Conta &amp; Segurança</SectionLabel>
+                <DrawerRow
+                  icon={Scale}
+                  label="Termos, privacidade e aviso médico"
+                  hint="Documentos legais"
+                  onClick={run(() => window.open('/privacidade', '_blank', 'noopener'))}
+                />
                 {confirmingLogout ? (
-                  <div className="px-4 py-3 space-y-2">
-                    <p className="text-[13px] text-zinc-300">Terminar sessão agora?</p>
-                    <div className="flex gap-2">
+                  <div className="px-5 py-3.5 space-y-2.5 border-b border-white/[0.04]">
+                    <p className="text-[13px] font-medium text-zinc-200">Terminar sessão agora?</p>
+                    <div className="flex gap-2.5">
                       <button
                         type="button"
-                        onClick={() => setConfirmingLogout(false)}
-                        className="flex-1 min-h-[40px] rounded-xl bg-surface-3 border border-white/[0.08] text-white text-[13px] font-semibold cursor-pointer"
+                        onClick={() => {
+                          triggerHaptic(8);
+                          setConfirmingLogout(false);
+                        }}
+                        className="flex-1 min-h-[44px] rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white text-[13px] font-semibold cursor-pointer touch-manipulation transition-colors"
                       >
                         Cancelar
                       </button>
                       <button
                         type="button"
                         onClick={run(signOut)}
-                        className="flex-1 min-h-[40px] rounded-xl bg-red-500/15 border border-red-400/30 text-red-300 text-[13px] font-bold cursor-pointer"
+                        className="flex-1 min-h-[44px] rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/35 text-rose-300 text-[13px] font-bold cursor-pointer touch-manipulation transition-colors"
                       >
                         Confirmar
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <Row
+                  <DrawerRow
                     icon={LogOut}
                     label={isGuest ? 'Sair do modo convidado' : 'Terminar sessão'}
                     onClick={() => {
@@ -329,28 +414,23 @@ export default function SidebarDrawer({
                     }}
                     trailing={null}
                     danger
+                    isLast={!synced}
                   />
                 )}
-                {synced && <Row icon={Trash2} label="Eliminar conta" hint="Apaga a conta e todos os dados" onClick={() => { triggerHaptic(10); setDeleting(true); }} trailing={null} danger />}
-              </div>
-            </div>
-
-            {/* Área extensível (placeholder elegante) */}
-            <div className="mt-5 px-2 pb-2">
-              <SectionLabel>Em breve</SectionLabel>
-              <div className="mx-2 rounded-2xl border border-dashed border-white/[0.1] p-3 flex items-center gap-4 text-zinc-600">
-                <span className="flex flex-col items-center gap-1">
-                  <Calculator className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-[10px]">1RM</span>
-                </span>
-                <span className="flex flex-col items-center gap-1">
-                  <Bell className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-[10px]">Alertas</span>
-                </span>
-                <span className="flex flex-col items-center gap-1">
-                  <LifeBuoy className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="text-[10px]">Suporte</span>
-                </span>
+                {synced && (
+                  <DrawerRow
+                    icon={Trash2}
+                    label="Eliminar conta"
+                    hint="Apaga a conta e todos os dados"
+                    onClick={() => {
+                      triggerHaptic(10);
+                      setDeleting(true);
+                    }}
+                    trailing={null}
+                    danger
+                    isLast
+                  />
+                )}
               </div>
             </div>
           </motion.aside>
@@ -367,7 +447,13 @@ export default function SidebarDrawer({
           )}
           {wearablesOpen && (
             <Suspense fallback={null}>
-              <WearablesModal isOpen={wearablesOpen} onClose={() => setWearablesOpen(false)} />
+              <WearablesModal
+                isOpen={wearablesOpen}
+                onClose={() => {
+                  setWearablesOpen(false);
+                  refreshWearables();
+                }}
+              />
             </Suspense>
           )}
         </div>
