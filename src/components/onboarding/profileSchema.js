@@ -90,19 +90,19 @@ export const SPLIT_SUMMARY = {
   6: 'Push / Pull / Legs × 2'
 };
 
+/** Mesma divisão que SPLIT_SUMMARY, em português simples — usada para quem é iniciante. */
+export const SPLIT_SUMMARY_SIMPLE = {
+  3: 'Corpo inteiro, 3 treinos diferentes',
+  4: 'Metade de cima e metade de baixo do corpo, 2 vezes por semana',
+  5: 'Empurrar, puxar e pernas, mais um dia de cima e um de baixo',
+  6: 'Empurrar, puxar e pernas, 2 vezes por semana'
+};
+
 export const DAYS = [3, 4, 5, 6];
 export const MINUTES = [45, 60, 75];
 
 /** Split que o gerador aplica para cada frequência semanal. */
 export const SPLIT_BY_DAYS = { 3: 'full_body', 4: 'upper_lower', 5: 'ppl', 6: 'ppl' };
-
-export const SPLITS = [
-  { id: 'auto', label: 'O AB Coach decide', hint: 'Melhor encaixe para os teus dias', icon: 'Sparkles' },
-  { id: 'ppl', label: 'Push / Pull / Legs', hint: 'Ideal com 5–6 dias', icon: 'Layers' },
-  { id: 'upper_lower', label: 'Upper / Lower', hint: 'Ideal com 4 dias', icon: 'ArrowUpDown' },
-  { id: 'arnold', label: 'Arnold Split', hint: 'Peito+costas, ombros+braços, pernas · 6 dias', icon: 'Crown' },
-  { id: 'full_body', label: 'Full Body', hint: 'Ideal com 3 dias', icon: 'Activity' }
-];
 
 export const INJURIES = [
   { id: 'shoulder', label: 'Ombro' },

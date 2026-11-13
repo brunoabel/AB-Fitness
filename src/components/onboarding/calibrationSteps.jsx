@@ -4,18 +4,22 @@ import { Pencil } from 'lucide-react';
 import { OptionCard, Segmented, PrecisionPicker, Chip, MicroLabel } from './controls';
 import {
   GENDERS, GOALS, LEVELS, LOCATIONS, INJURIES, PRIORITY_MUSCLES, MAX_PRIORITY, DAYS, MINUTES,
-  TRAINING_DAYS, WEEK_DAYS, formatTrainingDays, SPLIT_SUMMARY, labelOf,
-  SPORTS, SPORT_INTENSITIES, SESSION_ORDERS, overlapSportDays, sportVerdict
+  TRAINING_DAYS, WEEK_DAYS, formatTrainingDays, SPLIT_SUMMARY, SPLIT_SUMMARY_SIMPLE, labelOf,
+  SPORTS, SPORT_INTENSITIES, SESSION_ORDERS, overlapSportDays, sportVerdict, isBeginnerProfile
 } from './profileSchema';
 import { triggerHaptic } from '../../utils/audio';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 28 };
-const WEEK = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
 const LB = 2.20462;
 const IN = 2.54;
 export const ARNOLD_SUMMARY = 'Peito+Costas / Ombros+Braços / Pernas × 2';
 
-export const splitSummaryOf = (p) => (p.daysPerWeek === 6 && p.splitPreference === 'arnold' ? ARNOLD_SUMMARY : SPLIT_SUMMARY[p.daysPerWeek]);
+/** Para quem é iniciante, troca a nomenclatura inglesa (Push/Pull/Legs, Upper/Lower) por português simples. */
+export const splitSummaryOf = (p) => {
+  if (p.daysPerWeek === 6 && p.splitPreference === 'arnold') return ARNOLD_SUMMARY;
+  const table = isBeginnerProfile(p) ? SPLIT_SUMMARY_SIMPLE : SPLIT_SUMMARY;
+  return table[p.daysPerWeek];
+};
 
 function CardList({ options, value, onSelect, meta }) {
   return (
