@@ -107,15 +107,15 @@ export default function PrivateLaunchScreen() {
 
   return (
     <div className="min-h-screen bg-[#050608] text-zinc-100 flex flex-col justify-between selection:bg-zinc-200 selection:text-black antialiased">
-      {/* Barra superior de status do lançamento */}
-      <header className="w-full border-b border-white/[0.06] bg-black/40 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
+      {/* Barra superior de status do lançamento com suporte a safe area PWA/standalone */}
+      <header className="w-full border-b border-white/[0.06] bg-black/80 backdrop-blur-md sticky top-0 z-40 pt-[max(env(safe-area-inset-top,0px),12px)] pb-3 px-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
             </span>
-            <span className="text-[11px] font-semibold tracking-wider text-amber-400 uppercase">
+            <span className="text-[11px] font-semibold tracking-wider text-amber-400 uppercase truncate">
               Lançamento Privado · Acesso VIP
             </span>
           </div>
@@ -126,10 +126,16 @@ export default function PrivateLaunchScreen() {
               setActiveMode((prev) => (prev === 'admin-login' ? 'waitlist' : 'admin-login'));
               triggerHaptic(10);
             }}
-            className="text-[12px] font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-white/[0.05] cursor-pointer"
+            className="min-h-[44px] text-[13px] font-semibold text-zinc-200 hover:text-white transition-all flex items-center gap-2 py-2 px-3.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] active:scale-[0.96] border border-white/[0.1] shadow-xs cursor-pointer touch-manipulation select-none shrink-0"
           >
-            <Lock className="w-3.5 h-3.5 text-zinc-500" />
-            <span>{activeMode === 'admin-login' ? 'Voltar' : 'Acesso Fundador'}</span>
+            {activeMode === 'admin-login' ? (
+              <span>Voltar à Waitlist</span>
+            ) : (
+              <>
+                <Crown className="w-4 h-4 text-amber-400" />
+                <span>Acesso Fundador</span>
+              </>
+            )}
           </button>
         </div>
       </header>
@@ -294,6 +300,20 @@ export default function PrivateLaunchScreen() {
                     <span>{submitting ? 'A registar...' : 'Garantir Vaga na Lista VIP'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
+
+                  <div className="pt-1 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveMode('admin-login');
+                        triggerHaptic(10);
+                      }}
+                      className="min-h-[44px] text-[12px] font-medium text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer inline-flex items-center justify-center gap-1.5 py-1.5 px-3 touch-manipulation"
+                    >
+                      <Lock className="w-3.5 h-3.5 text-amber-400/80" />
+                      <span>És membro fundador ou admin? Entrar aqui</span>
+                    </button>
+                  </div>
                 </form>
               )}
 
@@ -374,6 +394,19 @@ export default function PrivateLaunchScreen() {
                   <span>{adminLoading ? 'A validar...' : 'Entrar como Administrador'}</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
+
+                <div className="pt-1 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMode('waitlist');
+                      triggerHaptic(10);
+                    }}
+                    className="min-h-[44px] text-[12px] font-medium text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer inline-flex items-center justify-center gap-1.5 py-1.5 px-3 touch-manipulation"
+                  >
+                    <span>← Voltar à lista de espera VIP</span>
+                  </button>
+                </div>
               </form>
             </div>
           )}
@@ -382,7 +415,7 @@ export default function PrivateLaunchScreen() {
       </main>
 
       {/* Rodapé com links legais obrigatórios */}
-      <footer className="w-full border-t border-white/[0.06] py-6 text-center text-[11px] text-zinc-500 space-y-2">
+      <footer className="w-full border-t border-white/[0.06] py-6 pb-[max(env(safe-area-inset-bottom,0px),24px)] text-center text-[11px] text-zinc-500 space-y-2">
         <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
           <a href="/termos" className="underline underline-offset-2 hover:text-zinc-300">Termos</a>
           <a href="/privacidade" className="underline underline-offset-2 hover:text-zinc-300">Privacidade</a>
