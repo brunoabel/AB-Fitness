@@ -87,7 +87,7 @@ export default function LinkTrainerSheet({ initialCode = '', onClose, onLinked }
                   className="flex-1 bg-transparent text-white tracking-[0.2em] font-mono text-body placeholder:text-zinc-600 focus:outline-none"
                 />
               </div>
-              {status === 'error' && <p className="mt-2 text-[13px] text-[#FF968A]">{error}</p>}
+              {status === 'error' && <p className="mt-2 text-[13px] text-rose-400">{error}</p>}
               <button
                 type="button"
                 onClick={submit}

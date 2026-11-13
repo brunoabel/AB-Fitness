@@ -11,9 +11,9 @@ const timeAgo = (iso) => {
 
 const rpeStyle = (rpe) => {
   if (rpe == null) return 'bg-white/[0.04] border-white/[0.08] text-zinc-400';
-  if (rpe >= 9.5) return 'bg-[#FF968A]/15 border-[#FF968A]/40 text-[#FF968A]';
-  if (rpe >= 8) return 'bg-[#E1AD57]/15 border-[#E1AD57]/40 text-[#E1AD57]';
-  return 'bg-[#73D083]/15 border-[#73D083]/40 text-[#73D083]';
+  if (rpe >= 9.5) return 'bg-rose-400/15 border-rose-400/40 text-rose-400';
+  if (rpe >= 8) return 'bg-amber-400/15 border-amber-400/40 text-amber-400';
+  return 'bg-emerald-400/15 border-emerald-400/40 text-emerald-400';
 };
 
 /** Últimas sessões do atleta com o feedback que ele já envia hoje (RPE, dor, nota livre). */
@@ -41,7 +41,7 @@ export default function AthleteFeedback({ sessions }) {
               </span>
             )}
             {s.pain_flag && (
-              <span className="px-1.5 py-0.5 rounded text-[11px] font-bold border bg-[#FF968A]/15 border-[#FF968A]/40 text-[#FF968A] inline-flex items-center gap-1">
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-bold border bg-rose-400/15 border-rose-400/40 text-rose-400 inline-flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" strokeWidth={2} />
                 Dor reportada
               </span>

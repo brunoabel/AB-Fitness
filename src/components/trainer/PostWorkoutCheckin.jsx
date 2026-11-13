@@ -39,7 +39,7 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
 
           <section>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-heading text-section font-semibold text-white">Esforço percebido (RPE)</h2>
+              <h2 className="font-heading text-section font-semibold text-white">Esforço percebido</h2>
               <span className="font-display font-bold text-[28px] leading-none tabular-nums text-white">{rpe}</span>
             </div>
             <input
@@ -50,7 +50,7 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
               value={rpe}
               onChange={(e) => setRpe(Number(e.target.value))}
               className="w-full accent-white cursor-pointer"
-              aria-label="RPE de 1 a 10"
+              aria-label="Esforço percebido, de 1 a 10"
             />
             <div className="flex justify-between text-[11px] text-zinc-500 mt-1">
               <span>1 · Muito leve</span>
@@ -71,7 +71,7 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
               <button
                 type="button"
                 onClick={() => setPain(true)}
-                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${pain ? 'bg-[#FF968A]/20 border-[#FF968A]/60 text-[#FF968A]' : 'bg-surface-2 border-white/[0.08] text-zinc-300'}`}
+                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${pain ? 'bg-rose-400/20 border-rose-400/60 text-rose-400' : 'bg-surface-2 border-white/[0.08] text-zinc-300'}`}
               >
                 Sim
               </button>

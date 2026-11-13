@@ -16,23 +16,23 @@ export const isAlert = (ath) => Boolean(alertReason(ath));
 export default function RedFlagList({ athletes, onSelect }) {
   if (!athletes.length) return null;
   return (
-    <div className="rounded-xl bg-[#FF968A]/10 border border-[#FF968A]/40 overflow-hidden">
+    <div className="rounded-xl bg-rose-400/10 border border-rose-400/40 overflow-hidden">
       <div className="px-3.5 pt-3 pb-2 flex items-center gap-2">
-        <AlertTriangle className="w-4 h-4 text-[#FF968A]" strokeWidth={1.75} />
-        <span className="text-micro uppercase tracking-wider text-[#FF968A]">
+        <AlertTriangle className="w-4 h-4 text-rose-400" strokeWidth={1.75} />
+        <span className="text-micro uppercase tracking-wider text-rose-400">
           {athletes.length} {athletes.length === 1 ? 'alerta' : 'alertas'}
         </span>
       </div>
-      <div className="divide-y divide-[#FF968A]/15">
+      <div className="divide-y divide-rose-400/15">
         {athletes.slice(0, 5).map((ath) => (
           <button
             key={ath.roster_id}
             type="button"
             onClick={() => onSelect(ath.athlete_id)}
-            className="w-full px-3.5 py-2.5 flex items-center justify-between gap-2 text-left cursor-pointer hover:bg-[#FF968A]/10 transition-colors"
+            className="w-full px-3.5 py-2.5 flex items-center justify-between gap-2 text-left cursor-pointer hover:bg-rose-400/10 transition-colors"
           >
             <span className="text-[13px] font-semibold text-white truncate">{ath.full_name}</span>
-            <span className="shrink-0 px-1.5 py-0.5 rounded bg-[#FF968A]/15 text-[#FF968A] text-[11px] font-bold uppercase tracking-wide">
+            <span className="shrink-0 px-1.5 py-0.5 rounded bg-rose-400/15 text-rose-400 text-[11px] font-bold uppercase tracking-wide">
               {alertReason(ath)}
             </span>
           </button>

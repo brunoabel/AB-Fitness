@@ -125,10 +125,10 @@ export default function AthleteWorkspace({ athleteId, onBack, embedded = false, 
           </div>
 
           {injuries.length > 0 && (
-            <div className="p-3.5 rounded-xl bg-[#FF968A]/10 border border-[#FF968A]/40 flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-[#FF968A] shrink-0 mt-0.5" strokeWidth={1.75} />
+            <div className="p-3.5 rounded-xl bg-rose-400/10 border border-rose-400/40 flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" strokeWidth={1.75} />
               <p className="text-[13px] text-zinc-200 leading-relaxed">
-                <strong className="text-[#FF968A] font-semibold">Lesões/restrições reportadas:</strong> {injuries.join(', ')}. Evita exercícios que sobrecarreguem estas zonas.
+                <strong className="text-rose-400 font-semibold">Lesões/restrições reportadas:</strong> {injuries.join(', ')}. Evita exercícios que sobrecarreguem estas zonas.
               </p>
             </div>
           )}
