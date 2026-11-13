@@ -7,8 +7,11 @@ const iso = (d) => {
   return d.toISOString().slice(0, 10);
 };
 
-export function computeStreak(completedDays = [], schedule = [], today = new Date()) {
-  const trained = new Set(completedDays.map((c) => c?.date).filter(Boolean));
+export function computeStreak(completedDays = [], schedule = [], runsHistory = [], today = new Date()) {
+  const trained = new Set([
+    ...completedDays.map((c) => c?.date),
+    ...runsHistory.map((r) => (r?.date || '').slice(0, 10))
+  ].filter(Boolean));
   const restDays = new Set(schedule.filter((d) => d?.isRestDay).map((d) => d.dayId));
   let streak = 0;
   const cursor = new Date(today);

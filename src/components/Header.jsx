@@ -5,6 +5,7 @@ import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { computeStreak, weekProgress } from '../utils/streak';
+import { getRunsHistory } from '../utils/storage';
 import { buildGreeting } from '../utils/greetings';
 
 const TAB_TITLES = {
@@ -71,7 +72,8 @@ export default function Header({
   const { user } = useAuth();
   const identity = useProfileIdentity(user);
 
-  const streak = useMemo(() => computeStreak(completedDays, schedule), [completedDays, schedule]);
+  // Sequência consolidada: musculação (completedDays) + corrida — um corredor também mantém o streak
+  const streak = useMemo(() => computeStreak(completedDays, schedule, getRunsHistory()), [completedDays, schedule]);
   const week = useMemo(() => weekProgress(completedDays, schedule), [completedDays, schedule]);
 
   const tabKey = currentView === 'admin' ? 'admin' : activeTab;

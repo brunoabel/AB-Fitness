@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import RunningShareModal from './RunningShareModal';
 import BadgeCelebrationModal from './BadgeCelebrationModal';
+import StreakMilestoneModal from './StreakMilestoneModal';
 import {
   DEFAULT_TRACKING_CONFIG,
   haversineDistanceMeters,
@@ -16,15 +17,19 @@ import {
   computeSplits,
   simplifyRoute
 } from '../utils/runningService';
-import { 
-  getRunsHistory, 
-  saveRunRecord, 
+import {
+  getRunsHistory,
+  saveRunRecord,
   deleteRunRecord,
   getActiveRunDraft,
   saveActiveRunDraft,
   clearActiveRunDraft,
-  getRunDraftFromIDB
+  getRunDraftFromIDB,
+  getCompletedDays
 } from '../utils/storage';
+import { computeStreak } from '../utils/streak';
+import { WEEKLY_SCHEDULE } from '../data/workouts';
+import { getStreakMilestoneInfo, shouldShowStreakCelebration, markStreakCelebrated } from '../utils/streakMilestones';
 import { sound, triggerHaptic } from '../utils/audio';
 import {
   announceSplit,
@@ -70,6 +75,7 @@ export default function RunningHub({ isDark = true }) {
   const [isAutoPaused, setIsAutoPaused] = useState(false);
 
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
+  const [streakInfo, setStreakInfo] = useState(null);
 
   // Meta semanal e objetivo da corrida atual persistidos localmente
   const [weeklyGoalKm, setWeeklyGoalKm] = useState(() => {
@@ -946,8 +952,20 @@ export default function RunningHub({ isDark = true }) {
       isSimulation
     };
 
+    // Sequência consolidada (musculação + corrida): compara antes/depois de guardar a corrida,
+    // para que corredores também desbloqueiem e celebrem o Motion Graphic de Sequência.
+    const completedDaysForStreak = getCompletedDays();
+    const prevStreak = computeStreak(completedDaysForStreak, WEEKLY_SCHEDULE, getRunsHistory());
+
     saveRunRecord(runRecord);
     reloadHistory();
+
+    const nextStreak = computeStreak(completedDaysForStreak, WEEKLY_SCHEDULE, getRunsHistory());
+    const streakInfoResult = getStreakMilestoneInfo(nextStreak, prevStreak);
+    if (streakInfoResult.advanced && shouldShowStreakCelebration(nextStreak)) {
+      setStreakInfo(streakInfoResult);
+      markStreakCelebrated(nextStreak);
+    }
 
     // 1. Sincronização em Nuvem (Supabase PostgreSQL)
     if (user?.id && user.id !== 'guest-local-user') {
@@ -1147,6 +1165,14 @@ export default function RunningHub({ isDark = true }) {
         <BadgeCelebrationModal
           badge={newlyUnlockedBadge}
           onClose={() => setNewlyUnlockedBadge(null)}
+        />
+      )}
+
+      {/* Motion Graphic de Sequência (depois da medalha, se houver) */}
+      {!newlyUnlockedBadge && streakInfo && (
+        <StreakMilestoneModal
+          streakInfo={streakInfo}
+          onClose={() => setStreakInfo(null)}
         />
       )}
 

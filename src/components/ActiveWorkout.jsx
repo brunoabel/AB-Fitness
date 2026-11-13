@@ -16,6 +16,7 @@ import CelebrationModal from './CelebrationModal';
 import SessionCheckin from './coach/SessionCheckin';
 import { registerSessionAndCheckDue } from '../utils/sessionCheckin';
 import BadgeCelebrationModal from './BadgeCelebrationModal';
+import StreakMilestoneModal from './StreakMilestoneModal';
 import PlateCalculatorModal from './PlateCalculatorModal';
 import { getHomeAlternative, hasExerciseVideo as hasVerifiedExerciseVideo } from '../data/exerciseMedia';
 import { AnimatePresence } from 'motion/react';
@@ -28,11 +29,16 @@ import {
   saveActiveDraft,
   getActiveDraft,
   getWorkoutHistory,
-  addWorkoutToHistory
+  addWorkoutToHistory,
+  getCompletedDays,
+  getRunsHistory
 } from '../utils/storage';
 import { recordWorkoutCompletion, newSessionId } from '../services/workoutService';
 import PostWorkoutCheckin from './trainer/PostWorkoutCheckin';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
+import { computeStreak } from '../utils/streak';
+import { WEEKLY_SCHEDULE } from '../data/workouts';
+import { getStreakMilestoneInfo, shouldShowStreakCelebration, markStreakCelebrated } from '../utils/streakMilestones';
 import {
   buildPrevIndex,
   getBestHistorical1RM,
@@ -54,6 +60,7 @@ import { getLocalConnections, getLocalBiometrics, computeReadinessIndex } from '
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
+  const [streakInfo, setStreakInfo] = useState(null);
 
   // Mantém ecrã ativo durante toda a sessão de treino
   useWakeLock(true);
@@ -363,7 +370,17 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     setIsTimerRunning(false);
     triggerHaptic([30, 80, 30]);
 
+    // Sequência consolidada (musculação + corrida): compara antes/depois de marcar o dia,
+    // para animar a transição no motion graphic.
+    const runsForStreak = getRunsHistory();
+    const prevStreak = computeStreak(getCompletedDays(), WEEKLY_SCHEDULE, runsForStreak);
     markDayCompleted(currentWorkoutDayId);
+    const nextStreak = computeStreak(getCompletedDays(), WEEKLY_SCHEDULE, runsForStreak);
+    const info = getStreakMilestoneInfo(nextStreak, prevStreak);
+    if (info.advanced && shouldShowStreakCelebration(nextStreak)) {
+      setStreakInfo(info);
+      markStreakCelebrated(nextStreak);
+    }
     saveActiveDraft(null);
 
     // 1. Deteção de Novos Recordes Pessoais (PR)
@@ -763,8 +780,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           coachNarrative={coachNarrative}
           onClose={() => {
             setShowCelebration(false);
-            // Se houver medalha nova, a celebração dela continua a sequência (ver abaixo)
-            if (newlyUnlockedBadge) return;
+            // Se houver medalha ou marco de sequência novos, a sequência de celebrações continua (ver abaixo)
+            if (newlyUnlockedBadge || streakInfo) return;
             if (checkin === 'due') setCheckin('open');
             else if (checkin === 'assigned') setCheckin('open-assigned');
             else onBackToDashboard();
@@ -801,6 +818,24 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
             badge={newlyUnlockedBadge}
             onClose={() => {
               setNewlyUnlockedBadge(null);
+              // Se houver marco de sequência novo, a celebração dele continua a sequência
+              if (streakInfo) return;
+              if (checkin === 'due') setCheckin('open');
+              else if (checkin === 'assigned') setCheckin('open-assigned');
+              else onBackToDashboard();
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Motion Graphic de Sequência (último passo da sequência de celebrações) */}
+      <AnimatePresence>
+        {!showCelebration && !newlyUnlockedBadge && streakInfo && (
+          <StreakMilestoneModal
+            key="streak-milestone"
+            streakInfo={streakInfo}
+            onClose={() => {
+              setStreakInfo(null);
               if (checkin === 'due') setCheckin('open');
               else if (checkin === 'assigned') setCheckin('open-assigned');
               else onBackToDashboard();
