@@ -9,17 +9,17 @@ const H = 1920;
 const PASS_PALETTES = {
   midnight: { top: '#111827', mid: '#07090f', bottom: '#030407', glow: 'rgba(148, 163, 184, 0.22)', border: 'rgba(255,255,255,0.14)', accent: '#ffffff' },
   carbon: { top: '#18181b', mid: '#09090b', bottom: '#030304', glow: 'rgba(212, 212, 216, 0.16)', border: 'rgba(255,255,255,0.14)', accent: '#f4f4f5' },
-  abyss: { top: '#0c192c', mid: '#060c18', bottom: '#02050a', glow: 'rgba(56, 189, 248, 0.24)', border: 'rgba(56, 189, 248, 0.25)', accent: '#7dd3fc' },
+  abyss: { top: '#0a1424', mid: '#060b16', bottom: '#02050a', glow: 'rgba(43, 74, 122, 0.24)', border: 'rgba(43, 74, 122, 0.3)', accent: '#6b86b8' },
   gold: { top: '#2d1c06', mid: '#140d04', bottom: '#060402', glow: 'rgba(245, 158, 11, 0.30)', border: 'rgba(245, 158, 11, 0.42)', accent: '#fbbf24' },
   titanium: { top: '#262626', mid: '#141414', bottom: '#050505', glow: 'rgba(229, 229, 229, 0.22)', border: 'rgba(255,255,255,0.22)', accent: '#e5e5e5' },
-  cyberpunk: { top: '#082026', mid: '#051017', bottom: '#020509', glow: 'rgba(34, 211, 238, 0.26)', border: 'rgba(34, 211, 238, 0.35)', accent: '#67e8f9' },
+  cyberpunk: { top: '#0d1b33', mid: '#071020', bottom: '#02060f', glow: 'rgba(43, 74, 122, 0.42)', border: 'rgba(43, 74, 122, 0.5)', accent: '#aebfe0' },
   aurora: { top: '#06261d', mid: '#041210', bottom: '#020605', glow: 'rgba(16, 185, 129, 0.28)', border: 'rgba(16, 185, 129, 0.35)', accent: '#6ee7b7' },
   crimson: { top: '#2b0910', mid: '#140508', bottom: '#060203', glow: 'rgba(244, 63, 94, 0.26)', border: 'rgba(244, 63, 94, 0.35)', accent: '#fda4af' },
   emerald: { top: '#052619', mid: '#03120d', bottom: '#010604', glow: 'rgba(52, 211, 153, 0.28)', border: 'rgba(52, 211, 153, 0.35)', accent: '#6ee7b7' },
   amethyst: { top: '#1d1035', mid: '#0e071a', bottom: '#05020a', glow: 'rgba(168, 85, 247, 0.28)', border: 'rgba(168, 85, 247, 0.35)', accent: '#d8b4fe' },
-  sunset: { top: '#2b1208', mid: '#160807', bottom: '#070303', glow: 'rgba(251, 146, 60, 0.28)', border: 'rgba(251, 146, 60, 0.35)', accent: '#fdba74' },
-  electric_blue: { top: '#0b1938', mid: '#060d20', bottom: '#02050c', glow: 'rgba(96, 165, 250, 0.28)', border: 'rgba(96, 165, 250, 0.35)', accent: '#93c5fd' },
-  magma: { top: '#2b0d06', mid: '#140604', bottom: '#060202', glow: 'rgba(249, 115, 22, 0.28)', border: 'rgba(249, 115, 22, 0.35)', accent: '#fdba74' },
+  sunset: { top: '#2b1f08', mid: '#160f05', bottom: '#070602', glow: 'rgba(217, 158, 42, 0.28)', border: 'rgba(217, 158, 42, 0.35)', accent: '#fbbf24' },
+  electric_blue: { top: '#0b1938', mid: '#060d20', bottom: '#02050c', glow: 'rgba(43, 74, 122, 0.30)', border: 'rgba(43, 74, 122, 0.38)', accent: '#8ea6d6' },
+  magma: { top: '#2b0910', mid: '#140508', bottom: '#060203', glow: 'rgba(225, 29, 72, 0.28)', border: 'rgba(225, 29, 72, 0.35)', accent: '#fb7185' },
   monochrome_luxury: { top: '#18181b', mid: '#09090b', bottom: '#000000', glow: 'rgba(255, 255, 255, 0.18)', border: 'rgba(255,255,255,0.2)', accent: '#e4e4e7' }
 };
 

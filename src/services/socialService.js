@@ -14,17 +14,17 @@ export const ATHLETE_TAGS = ['Hipertrofia', 'Força', 'Híbrido', 'Powerlifting'
 export const COVER_STYLES = [
   { id: 'midnight', label: 'Midnight', className: 'bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900' },
   { id: 'carbon', label: 'Carbono', className: 'bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:8px_8px] bg-zinc-950' },
-  { id: 'abyss', label: 'Abismo', className: 'bg-gradient-to-r from-slate-950 via-sky-950/80 to-slate-950' },
+  { id: 'abyss', label: 'Abismo', className: 'bg-gradient-to-r from-slate-950 via-accent-strong/60 to-slate-950' },
   { id: 'gold', label: 'Ouro 24K', className: 'bg-gradient-to-r from-amber-950 via-yellow-700/50 to-amber-900 border-amber-500/30', badge: 'PRO' },
   { id: 'titanium', label: 'Titânio', className: 'bg-gradient-to-r from-neutral-800 via-stone-700 to-neutral-900 border-white/20', badge: 'PRO' },
-  { id: 'cyberpunk', label: 'Neon Ciano', className: 'bg-gradient-to-r from-slate-950 via-cyan-950/80 to-teal-950 border-cyan-500/30', badge: 'PRO' },
-  { id: 'aurora', label: 'Aurora', className: 'bg-gradient-to-r from-emerald-950 via-teal-900/70 to-slate-950 border-emerald-500/30', badge: 'PRO' },
+  { id: 'cyberpunk', label: 'Pulso Elétrico', className: 'bg-gradient-to-r from-slate-950 via-accent/90 to-accent-strong border-accent-hover/40', badge: 'PRO' },
+  { id: 'aurora', label: 'Aurora', className: 'bg-gradient-to-r from-emerald-950 via-emerald-900/70 to-slate-950 border-emerald-500/30', badge: 'PRO' },
   { id: 'crimson', label: 'Crimson', className: 'bg-gradient-to-r from-rose-950 via-red-950/80 to-zinc-950 border-rose-500/25', badge: 'PRO' },
-  { id: 'emerald', label: 'Esmeralda Real', className: 'bg-gradient-to-r from-emerald-950 via-emerald-800/60 to-teal-950 border-emerald-400/30', badge: 'PRO' },
+  { id: 'emerald', label: 'Esmeralda Real', className: 'bg-gradient-to-r from-emerald-950 via-emerald-800/60 to-emerald-950 border-emerald-400/30', badge: 'PRO' },
   { id: 'amethyst', label: 'Ametista Real', className: 'bg-gradient-to-r from-indigo-950 via-purple-900/70 to-fuchsia-950 border-purple-500/30', badge: 'PRO' },
-  { id: 'sunset', label: 'Solar Flare', className: 'bg-gradient-to-r from-amber-950 via-orange-700/60 to-rose-950 border-orange-500/30', badge: 'PRO' },
-  { id: 'electric_blue', label: 'Azul Elétrico', className: 'bg-gradient-to-r from-blue-950 via-indigo-900/80 to-sky-950 border-sky-400/30', badge: 'PRO' },
-  { id: 'magma', label: 'Magma Vulcânico', className: 'bg-gradient-to-r from-red-950 via-orange-950/90 to-zinc-950 border-orange-500/30', badge: 'PRO' },
+  { id: 'sunset', label: 'Solar Flare', className: 'bg-gradient-to-r from-amber-950 via-amber-600/60 to-amber-900 border-amber-400/30', badge: 'PRO' },
+  { id: 'electric_blue', label: 'Azul Elétrico', className: 'bg-gradient-to-r from-blue-950 via-accent-hover/70 to-slate-950 border-accent-hover/30', badge: 'PRO' },
+  { id: 'magma', label: 'Magma Vulcânico', className: 'bg-gradient-to-r from-red-950 via-rose-700/60 to-red-900 border-rose-500/30', badge: 'PRO' },
   { id: 'monochrome_luxury', label: 'Platina Stealth', className: 'bg-gradient-to-r from-zinc-950 via-zinc-700/40 to-black border-zinc-500/30', badge: 'PRO' }
 ];
 export const FEATURED_STATS = [
