@@ -211,7 +211,7 @@ export default function RunningShareModal({
 
   // Texto formatado de partilha
   const getShareText = () => {
-    return `🏃 ${sessionTitle.toUpperCase()} • AB FITNESS RUNNING CLUB\n📍 Distância: ${distanceKm} km\n⚡ Ritmo Médio: ${paceStr}\n⏱️ Tempo: ${durationStr}\n🔥 Calorias: ${calories} kcal\n\nTreinado com a plataforma @ABFitness #ABFitness #RunningClub #Strava`;
+    return `${sessionTitle.toUpperCase()} • AB FITNESS RUNNING CLUB\nDistância: ${distanceKm} km\nRitmo médio: ${paceStr}\nTempo: ${durationStr}\nCalorias: ${calories} kcal\n\nTreinado com a plataforma @ABFitness #ABFitness #RunningClub`;
   };
 
   // Copiar legenda para o Instagram / WhatsApp
@@ -345,7 +345,7 @@ export default function RunningShareModal({
 
     ctx.fillStyle = currentTheme.accent;
     ctx.font = '800 18px system-ui, sans-serif';
-    ctx.fillText('RUNNING CLUB • STRAVA ENGINE', logoX + logoSize + 24, logoY + 76);
+    ctx.fillText('RUNNING CLUB', logoX + logoSize + 24, logoY + 76);
 
     ctx.textAlign = 'right';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
@@ -540,7 +540,7 @@ export default function RunningShareModal({
               new ClipboardItem({ 'image/png': blob })
             ]);
             setImageCopied(true);
-            showToast('✓ Imagem copiada! Podes colar no WhatsApp / Instagram');
+            showToast('Imagem copiada! Podes colar no WhatsApp / Instagram');
             setTimeout(() => setImageCopied(false), 2500);
           } else {
             handleDownload();
@@ -576,7 +576,7 @@ export default function RunningShareModal({
             await navigator.share({
               files: [file],
               title: `${sessionTitle}: ${distanceKm} km`,
-              text: `🏃 ${sessionTitle}: Fechei ${distanceKm} km com pace de ${paceStr} no @ABFitness Running Club!`
+              text: `${sessionTitle}: Fechei ${distanceKm} km com pace de ${paceStr} no @ABFitness Running Club!`
             });
             showToast('Partilhado com sucesso!');
           } catch (shareErr) {
@@ -589,7 +589,7 @@ export default function RunningShareModal({
           // Fallback para dispositivos sem suporte direto a envio de arquivos via Share API
           handleDownload();
           handleCopyCaption();
-          showToast('✓ Imagem baixada e legenda copiada para partilhar!');
+          showToast('Imagem baixada e legenda copiada para partilhar!');
         }
         setIsExporting(false);
       }, 'image/png', 1.0);

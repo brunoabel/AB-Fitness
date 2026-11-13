@@ -96,7 +96,7 @@ class RestMediaSessionService {
     if (!this.supported) return;
     try {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: '🔔 Descanso Concluído! Inicia a próxima série',
+        title: 'Descanso concluído! Inicia a próxima série',
         artist: exerciseName || 'AB Fitness',
         album: 'AB Fitness · Atleta Híbrido',
         artwork: [

@@ -4,7 +4,7 @@ import { Flame, Menu } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { computeStreak, isoWeek, weekProgress } from '../utils/streak';
+import { computeStreak, weekProgress } from '../utils/streak';
 import { buildGreeting } from '../utils/greetings';
 
 const TAB_TITLES = {
@@ -91,6 +91,8 @@ export default function Header({
   }, [identity.firstName, streak, week, schedule, completedDays]);
   const largeTitle = isHome ? greetingText : TAB_TITLES[tabKey] || 'AB Fitness';
   const compactTitle = isHome ? 'Treino' : TAB_TITLES[tabKey] || 'AB Fitness';
+  // A Corrida já tem o seu próprio cabeçalho editorial (RunHeader.jsx) — evita duplicar "Corrida"
+  const hasOwnHeader = tabKey === 'running';
 
   // Só transform/opacity: o fundo e o título compacto aparecem com o scroll
   const { scrollY } = useScroll();
@@ -137,15 +139,22 @@ export default function Header({
         </div>
       </header>
 
-      {/* Título grande: rola com a página e dá lugar ao título compacto */}
-      <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-1 pb-3">
-        <h1 className="font-heading text-[30px] leading-[1.1] font-bold tracking-tight text-white">{largeTitle}</h1>
-        {isHome && (
-          <p className="mt-1 text-body text-zinc-400 tabular-nums">
-            Semana {isoWeek()} · {week.done} de {week.target} treinos
-          </p>
-        )}
-      </div>
+      {/* Título grande: rola com a página e dá lugar ao título compacto — omitido quando a
+          própria view já tem cabeçalho editorial dedicado (ex. Corrida), para nunca duplicar */}
+      {!hasOwnHeader && (
+        <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-1 pb-3">
+          <h1 className="font-heading text-[30px] leading-[1.1] font-bold tracking-tight text-white">{largeTitle}</h1>
+          {isHome && (
+            <p className="mt-1 text-body text-zinc-400 tabular-nums">
+              {week.done === 0
+                ? `Esta semana · Meta de ${week.target} treinos`
+                : week.done >= week.target
+                  ? `Meta semanal cumprida · ${week.done} de ${week.target} treinos`
+                  : `Esta semana · ${week.done} de ${week.target} treinos`}
+            </p>
+          )}
+        </div>
+      )}
 
     </>
   );

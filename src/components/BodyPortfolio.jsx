@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Scale, Camera, Plus, Trash2, Share2, Lock, ChevronDown, Loader2, ImageOff } from 'lucide-react';
+import { Scale, Camera, Plus, Trash2, Share2, Lock, ChevronDown, Loader2, ImageOff, MoveHorizontal } from 'lucide-react';
 import {
   BODY_METRICS,
   PHOTO_POSES,
@@ -102,7 +102,9 @@ function CompareSlider({ beforeUrl, afterUrl, beforeDate, afterDate }) {
         draggable="false"
       />
       <div className="absolute inset-y-0 w-0.5 bg-accent pointer-events-none" style={{ left: `${pos}%` }}>
-        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent text-white text-xs font-black flex items-center justify-center shadow-lg">⇆</span>
+        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent text-white flex items-center justify-center shadow-lg">
+          <MoveHorizontal className="w-4 h-4" strokeWidth={2.25} />
+        </span>
       </div>
       <span className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/60 text-white text-[11px] font-bold tabular-nums">Antes · {formatDatePt(beforeDate)}</span>
       <span className="absolute top-3 right-3 px-2 py-1 rounded-md bg-primary text-app text-[11px] font-bold tabular-nums">Depois · {formatDatePt(afterDate)}</span>

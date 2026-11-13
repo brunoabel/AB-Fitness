@@ -257,7 +257,7 @@ export async function buildAthletePassStoryBlob({ profile = {}, stats = {} } = {
   }
   if (content.homeGym) {
     const gymText = content.homeGym.length > 36 ? `${content.homeGym.slice(0, 34)}…` : content.homeGym;
-    textLine(ctx, `📍 ${gymText}`, cardX + 70, cardY + 440, {
+    textLine(ctx, gymText, cardX + 70, cardY + 440, {
       size: 26,
       weight: 600,
       color: 'rgba(255,255,255,0.62)'

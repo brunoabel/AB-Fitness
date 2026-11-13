@@ -64,7 +64,7 @@ export async function generateAndShareWorkoutCard(treino) {
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
   ctx.font = '600 26px sans-serif';
-  ctx.fillText(`⏱️ ${treino.duracao_min || 45} MINUTOS  •  ⚡ ${treino.exercicios?.length || 0} EXERCÍCIOS`, 540, 480);
+  ctx.fillText(`${treino.duracao_min || 45} MINUTOS  •  ${treino.exercicios?.length || 0} EXERCÍCIOS`, 540, 480);
 
   // 6. Lista de Exercícios
   let startY = 590;
@@ -136,7 +136,7 @@ export async function generateAndShareWorkoutCard(treino) {
         await navigator.share({
           files: [file],
           title: `Treino AB Coach: ${treino.nome}`,
-          text: `Confira meu treino prescrito pelo AB Coach IA no AB Fitness! ⚡`
+          text: `Confira meu treino prescrito pelo AB Coach IA no AB Fitness!`
         });
         return;
       } catch (err) {

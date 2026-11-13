@@ -4,8 +4,6 @@ import {
   Dumbbell,
   TrendingUp,
   Award,
-  Download,
-  FileSpreadsheet,
   Scale
 } from 'lucide-react';
 import BodyPortfolio from './BodyPortfolio';
@@ -13,7 +11,6 @@ import { getWorkoutHistory } from '../utils/storage';
 import ProgressionCharts from './ProgressionCharts';
 import BadgesView from './BadgesView';
 import { getUnlockedBadges } from '../utils/badgeService';
-import { exportAppDataAsJSON, exportAppDataAsCSV } from '../services/runningSyncService';
 import { getPendingSyncCount } from '../services/workoutService';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
@@ -178,38 +175,6 @@ export default function HistoryView() {
                 })}
               </ul>
             )}
-          </div>
-
-          {/* Exportação discreta no rodapé (sem cartão extra pesado) */}
-          <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs text-zinc-500">
-              Cópia dos teus dados
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  exportAppDataAsCSV();
-                  triggerHaptic(15);
-                }}
-                className="min-h-[38px] px-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Exportar CSV</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  exportAppDataAsJSON();
-                  triggerHaptic(15);
-                }}
-                className="min-h-[38px] px-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Cópia JSON</span>
-              </button>
-            </div>
           </div>
         </div>
       )}
