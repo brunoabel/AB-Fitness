@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v20'; // v20: tipografia suíça tabular-nums + logos WHOOP & Fitbit + remoção selo Strava
+const CACHE_NAME = 'ab-fitness-v21'; // v21: remove botão redundante Publicar do cabeçalho de Amigos
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

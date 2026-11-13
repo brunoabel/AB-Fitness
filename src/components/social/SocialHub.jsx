@@ -7,7 +7,6 @@ import {
   Check,
   Clock3,
   Users,
-  Camera,
   Flame,
   ChevronDown,
   X
@@ -337,33 +336,17 @@ export default function SocialHub({ onNavigateTab }) {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <motion.button
-              type="button"
-              whileTap={reducedMotion ? undefined : TAP}
-              onClick={share}
-              disabled={!loaded}
-              aria-label="Convidar amigos com o meu link"
-              className="min-h-[44px] px-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-[13px] font-semibold inline-flex items-center gap-1.5 cursor-pointer touch-manipulation disabled:opacity-50 transition-colors"
-            >
-              <Share2 className="w-4 h-4" strokeWidth={1.8} />
-              <span>Convidar</span>
-            </motion.button>
-
-            <motion.button
-              type="button"
-              whileTap={reducedMotion ? undefined : TAP}
-              onClick={() => {
-                triggerHaptic(8);
-                setNewPostOpen(true);
-              }}
-              aria-label="Publicar foto no feed"
-              className="min-h-[44px] px-3.5 rounded-full bg-white hover:bg-zinc-200 text-black text-[13px] font-bold inline-flex items-center gap-1.5 cursor-pointer touch-manipulation transition-colors"
-            >
-              <Camera className="w-4 h-4" strokeWidth={2} />
-              <span>Publicar</span>
-            </motion.button>
-          </div>
+          <motion.button
+            type="button"
+            whileTap={reducedMotion ? undefined : TAP}
+            onClick={share}
+            disabled={!loaded}
+            aria-label="Convidar amigos com o meu link"
+            className="min-h-[44px] px-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-[13px] font-semibold inline-flex items-center gap-1.5 cursor-pointer touch-manipulation disabled:opacity-50 transition-colors shrink-0"
+          >
+            <Share2 className="w-4 h-4" strokeWidth={1.8} />
+            <span>Convidar</span>
+          </motion.button>
         </div>
 
         {/* Barra de pesquisa fluida sem caixa pesada */}
