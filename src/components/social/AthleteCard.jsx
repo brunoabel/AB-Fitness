@@ -1,11 +1,12 @@
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
-import { MapPin, Crown, Maximize2, ShieldCheck } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { motion, animate, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
+import { MapPin, Crown, Maximize2, ShieldCheck, RotateCw, Link2, Check } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
-import { COVER_STYLES, FEATURED_STATS } from '../../services/socialService';
+import { COVER_STYLES, FEATURED_STATS, athleteLink } from '../../services/socialService';
 import { getAthleteRank, sanitizeUsername } from '../../utils/athletePassCard';
+import { triggerHaptic } from '../../utils/audio';
 
 const statValue = (id, stats) => {
   if (!stats) return '–';
@@ -45,6 +46,7 @@ export default function AthleteCard({
   });
   const reduce = useReducedMotion();
   const tiltEnabled = !compact && !showcase && !reduce;
+  const flipEnabled = !compact && !showcase;
   const cardRef = useRef(null);
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
@@ -53,6 +55,10 @@ export default function AthleteCard({
   const glareX = useTransform(px, (v) => `${(1 - v) * 100}%`);
   const glareY = useTransform(py, (v) => `${(1 - v) * 100}%`);
   const glareOpacity = useSpring(0, TILT_SPRING);
+  const flipScale = useMotionValue(1);
+
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
 
   const handlePointerMove = (e) => {
     const rect = cardRef.current?.getBoundingClientRect();
@@ -66,6 +72,27 @@ export default function AthleteCard({
     py.set(0.5);
     glareOpacity.set(0);
   };
+  /** "Flip" sem 3D real (backface-visibility quebra com overflow-hidden + cantos arredondados):
+   * aperta a largura a 0 (o cartão vira-se de lado), troca o conteúdo nesse instante invisível, solta. */
+  const toggleFlip = async () => {
+    triggerHaptic(10);
+    if (reduce) {
+      setIsFlipped((v) => !v);
+      return;
+    }
+    await animate(flipScale, 0, { duration: 0.15, ease: [0.4, 0, 1, 1] });
+    setIsFlipped((v) => !v);
+    animate(flipScale, 1, { duration: 0.22, ease: [0, 0, 0.2, 1] });
+  };
+  const handleCopyLink = async () => {
+    if (!cleanUsername) return;
+    try {
+      await navigator.clipboard.writeText(athleteLink(cleanUsername));
+      triggerHaptic(10);
+      setJustCopied(true);
+      setTimeout(() => setJustCopied(false), 2000);
+    } catch {}
+  };
 
   return (
     <div style={{ perspective: 1000 }}>
@@ -75,7 +102,7 @@ export default function AthleteCard({
         onPointerLeave={tiltEnabled ? resetTilt : undefined}
         onPointerUp={tiltEnabled ? resetTilt : undefined}
         onPointerCancel={tiltEnabled ? resetTilt : undefined}
-        style={{ rotateX: tiltEnabled ? rotateX : 0, rotateY: tiltEnabled ? rotateY : 0 }}
+        style={{ rotateX: tiltEnabled ? rotateX : 0, rotateY: tiltEnabled ? rotateY : 0, scaleX: flipScale }}
         className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-shadow`}
       >
         {/* Brilho especular: segue o oposto do ponteiro, só visível durante a interação */}
@@ -92,6 +119,8 @@ export default function AthleteCard({
           />
         )}
 
+      {!isFlipped ? (
+      <div>
       {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
       <div className="flex items-start justify-between gap-4 relative z-10">
         <div className="relative">
@@ -183,22 +212,75 @@ export default function AthleteCard({
             )}
           </span>
 
-          {onOpenPrintMode && !showcase ? (
+          <div className="flex items-center gap-1.5 shrink-0">
+            {flipEnabled && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); toggleFlip(); }}
+                aria-label="Ver verso do cartão"
+                title="Ver verso do cartão"
+                className="w-7 h-7 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center cursor-pointer"
+              >
+                <RotateCw className="w-3.5 h-3.5" strokeWidth={1.75} />
+              </button>
+            )}
+            {onOpenPrintMode && !showcase ? (
+              <button
+                type="button"
+                onClick={onOpenPrintMode}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-200 hover:text-white font-semibold transition-colors cursor-pointer shrink-0"
+                title="Abrir cartão em ecrã limpo para tirar print"
+              >
+                <Maximize2 className="w-3 h-3 stroke-[2]" />
+                <span>Modo Print</span>
+              </button>
+            ) : (
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 shrink-0">
+                Athlete Pass
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+      </div>
+      ) : (
+      <div className="min-h-[200px] flex flex-col relative z-10">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[12px] font-bold ${RANK_TONES[rank.tone] || RANK_TONES.neutral}`}>
+            <ShieldCheck className="w-3.5 h-3.5" strokeWidth={2} />
+            {rank.label}
+          </span>
+
+          <div className="grid grid-cols-2 gap-6">
+            {FEATURED_STATS.filter((f) => f.id !== featured.id).map((f) => (
+              <div key={f.id}>
+                <span className="block text-[11px] text-zinc-500">{f.label}</span>
+                <span className="block font-display font-semibold text-xl text-white tabular-nums mt-0.5">{statValue(f.id, stats)}</span>
+              </div>
+            ))}
+          </div>
+
+          {cleanUsername && (
             <button
               type="button"
-              onClick={onOpenPrintMode}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-200 hover:text-white font-semibold transition-colors cursor-pointer shrink-0"
-              title="Abrir cartão em ecrã limpo para tirar print"
+              onClick={(e) => { e.stopPropagation(); handleCopyLink(); }}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.08] border border-white/[0.12] text-[12px] font-semibold text-white cursor-pointer"
             >
-              <Maximize2 className="w-3 h-3 stroke-[2]" />
-              <span>Modo Print</span>
+              {justCopied ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : <Link2 className="w-3.5 h-3.5" strokeWidth={1.75} />}
+              {justCopied ? 'Link copiado' : `abfitness.app/?u=${cleanUsername}`}
             </button>
-          ) : (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 shrink-0">
-              Athlete Pass
-            </span>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); toggleFlip(); }}
+          className="self-center pt-2 text-[11px] font-semibold text-zinc-400 hover:text-white inline-flex items-center gap-1 cursor-pointer"
+        >
+          <RotateCw className="w-3 h-3" strokeWidth={2} />
+          Voltar à frente
+        </button>
+      </div>
       )}
       </motion.article>
     </div>
