@@ -652,11 +652,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                         : 'bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:border-white/[0.12]'
                   }`}
                 >
-                  <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-black ${
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center font-display text-[11px] font-semibold tabular-nums ${
                     isAllDone
                       ? 'bg-emerald-500 text-black'
                       : isCurrent
-                        ? 'bg-white text-black font-black'
+                        ? 'bg-white text-black font-semibold'
                         : 'bg-white/[0.06] text-zinc-400'
                   }`}>
                     {isAllDone ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}

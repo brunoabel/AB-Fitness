@@ -62,9 +62,9 @@ export default function RecoverySheet({ muscle, onClose }) {
     <Sheet title={muscle.label} label={`Recuperação: ${muscle.label}`} onClose={onClose}>
       <div className="pt-1">
         <div className="flex items-end justify-between gap-3">
-          <p className="font-display font-bold text-[44px] leading-none tracking-tight text-white tabular-nums">
+          <p className="font-display font-semibold text-[44px] leading-none tracking-[-0.03em] text-white tabular-nums">
             {muscle.fatigue}
-            <span className="text-[22px] text-zinc-400">%</span>
+            <span className="text-[20px] font-medium text-zinc-400 ml-0.5">%</span>
           </p>
           <p className="pb-1 text-right text-[13px] text-zinc-400">
             <span className="block text-body font-semibold text-white">{STATUS_LABEL[muscle.status]}</span>

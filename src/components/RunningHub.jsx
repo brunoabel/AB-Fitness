@@ -1077,7 +1077,7 @@ export default function RunningHub({ isDark = true }) {
           onClick={handleSkipCountdown}
           className="py-20 text-center flex flex-col items-center justify-center animate-scaleUp cursor-pointer select-none"
         >
-          <span className="font-display text-8xl sm:text-9xl font-black text-white tracking-tight tabular-nums animate-pulse">
+          <span className="font-display text-8xl sm:text-9xl font-semibold text-white tracking-[-0.04em] tabular-nums animate-pulse">
             {countdown}
           </span>
           <p className="text-sm font-medium text-zinc-300 mt-4">

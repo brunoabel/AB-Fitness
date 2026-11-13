@@ -360,27 +360,27 @@ export default function RunningShareModal({
 
     ctx.textAlign = 'left';
     ctx.fillStyle = ink;
-    ctx.font = '900 36px system-ui, sans-serif';
+    ctx.font = '700 36px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('AB FITNESS', logoX + logoSize + 24, logoY + 44);
 
     ctx.fillStyle = currentTheme.accent;
-    ctx.font = '800 18px system-ui, sans-serif';
+    ctx.font = '600 18px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('RUNNING CLUB', logoX + logoSize + 24, logoY + 76);
 
     ctx.textAlign = 'right';
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
-    ctx.font = '600 20px system-ui, sans-serif';
+    ctx.font = '500 20px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(`${dateFormatted} • ${timeFormatted}`, w - paddingX, logoY + 44);
     ctx.textAlign = 'left';
 
     // 2. Título da Atividade
     const titleY = logoY + logoSize + (isStoryMode ? 55 : 35);
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.45)';
-    ctx.font = '800 18px system-ui, sans-serif';
+    ctx.font = '600 18px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('ATIVIDADE REGISTRADA', paddingX, titleY);
 
     ctx.fillStyle = ink;
-    ctx.font = '900 44px system-ui, sans-serif';
+    ctx.font = '700 44px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(sessionTitle, paddingX, titleY + 46);
 
     // 3. Mapinha do Percurso — sem caixa opaca em modo sticker (rota flutua sobre o alfa)
@@ -468,15 +468,15 @@ export default function RunningShareModal({
     const statsY = mapBoxY + mapBoxH + (isStoryMode ? 65 : 35);
 
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
-    ctx.font = '800 22px system-ui, sans-serif';
+    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('DISTÂNCIA TOTAL', paddingX, statsY);
 
     ctx.fillStyle = ink;
-    ctx.font = '900 144px system-ui, sans-serif';
+    ctx.font = '700 144px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(distanceKm, paddingX, statsY + 125);
 
     ctx.fillStyle = currentTheme.accent;
-    ctx.font = '900 52px system-ui, sans-serif';
+    ctx.font = '600 52px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     const distWidth = ctx.measureText(distanceKm).width;
     ctx.fillText('KM', paddingX + distWidth + 24, statsY + 125);
 
@@ -494,35 +494,35 @@ export default function RunningShareModal({
 
     // Pace
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '800 22px system-ui, sans-serif';
+    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('RITMO MÉDIO', paddingX, metricsRowY);
 
     ctx.fillStyle = ink;
-    ctx.font = '900 60px system-ui, sans-serif';
+    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(paceStr, paddingX, metricsRowY + 68);
 
     // Tempo
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '800 22px system-ui, sans-serif';
+    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('TEMPO TOTAL', paddingX + colWidth, metricsRowY);
 
     ctx.fillStyle = ink;
-    ctx.font = '900 60px system-ui, sans-serif';
+    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(durationStr, paddingX + colWidth, metricsRowY + 68);
 
     // Calorias
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '800 22px system-ui, sans-serif';
+    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText('CALORIAS', paddingX + colWidth * 2, metricsRowY);
 
     ctx.fillStyle = ink;
-    ctx.font = '900 60px system-ui, sans-serif';
+    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.fillText(`${calories} kcal`, paddingX + colWidth * 2, metricsRowY + 68);
 
     // 5. Rodapé
     const footerY = h - (isStoryMode ? 70 : 40);
     ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.4)';
-    ctx.font = '600 20px system-ui, sans-serif';
+    ctx.font = '500 20px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('abfitness.app • AB Fitness Running Club', w / 2, footerY);
     ctx.textAlign = 'left';
@@ -636,7 +636,7 @@ export default function RunningShareModal({
         
         {/* Toast Notificação de Feedback */}
         {toastMessage && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-black px-4 py-1.5 rounded-full text-xs font-black shadow-xl animate-scaleUp flex items-center gap-1.5 pointer-events-none">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-black px-4 py-1.5 rounded-full text-xs font-semibold shadow-xl animate-scaleUp flex items-center gap-1.5 pointer-events-none">
             <Check className="w-4 h-4" />
             <span>{toastMessage}</span>
           </div>
@@ -649,7 +649,7 @@ export default function RunningShareModal({
               <Sparkles className="w-4 h-4" />
             </span>
             <div>
-              <h2 className="text-sm font-black text-white tracking-tight">Compartilhar Corrida</h2>
+              <h2 className="text-sm font-bold text-white tracking-tight">Compartilhar Corrida</h2>
               <p className="text-[11px] text-zinc-400">Card executivo para Instagram Stories e Feed</p>
             </div>
           </div>
@@ -702,25 +702,25 @@ export default function RunningShareModal({
                 <div className="flex items-center gap-1.5">
                   <ABLogo size={26} showText={true} />
                   <div>
-                    <span className="text-[11px] font-black tracking-tight text-white block leading-none">
+                    <span className="text-[11px] font-bold tracking-tight text-white block leading-none">
                       AB FITNESS
                     </span>
-                    <span className="text-[7px] font-bold tracking-wider" style={{ color: currentTheme.accent }}>
+                    <span className="text-[7px] font-semibold tracking-wider" style={{ color: currentTheme.accent }}>
                       RUNNING CLUB
                     </span>
                   </div>
                 </div>
-                <span className="text-[7px] font-mono text-zinc-400">
+                <span className="text-[7px] font-display tabular-nums text-zinc-400">
                   {dateFormatted}
                 </span>
               </div>
 
               {/* Título: Sessão de Treino de Hoje */}
               <div className="relative z-10 px-2.5 -mt-1">
-                <span className="text-[6.5px] uppercase font-bold text-zinc-400 block tracking-wider">
+                <span className="text-[6.5px] uppercase font-semibold text-zinc-400 block tracking-wider">
                   Atividade Registrada
                 </span>
-                <h3 className="text-[11px] font-black text-white tracking-tight truncate leading-tight">
+                <h3 className="text-[11px] font-bold text-white tracking-tight truncate leading-tight">
                   {sessionTitle}
                 </h3>
               </div>
@@ -729,7 +729,7 @@ export default function RunningShareModal({
               <div className="relative z-10 flex-1 flex items-center justify-center px-2.5 my-1 min-h-[90px] max-h-[145px]">
                 <div className="w-full h-full rounded-xl bg-zinc-950 border border-white/10 relative overflow-hidden shadow-inner">
                   {/* Selo do Mapa */}
-                  <div className="absolute top-1 left-1.5 z-10 text-[6px] font-mono text-zinc-300 bg-black/75 backdrop-blur-sm px-1.5 py-0.2 rounded border border-white/10 uppercase tracking-wider flex items-center gap-1 pointer-events-none">
+                  <div className="absolute top-1 left-1.5 z-10 text-[6px] font-display tabular-nums text-zinc-300 bg-black/75 backdrop-blur-sm px-1.5 py-0.2 rounded border border-white/10 uppercase tracking-wider flex items-center gap-1 pointer-events-none">
                     <span className="w-1 h-1 rounded-full bg-emerald-400" />
                     <span>GPS Percurso</span>
                   </div>
@@ -741,17 +741,17 @@ export default function RunningShareModal({
                 </div>
               </div>
 
-              {/* Métricas Strava */}
+              {/* Métricas do Card */}
               <div className="relative z-10 p-2.5 pt-1 bg-gradient-to-t from-black via-black/85 to-transparent">
                 <div className="mb-0.5">
-                  <span className="text-[7px] uppercase tracking-wider font-extrabold text-zinc-400 block leading-none">
+                  <span className="text-[7px] uppercase tracking-wider font-semibold text-zinc-400 block leading-none">
                     Distância Total
                   </span>
                   <div className="flex items-baseline gap-1 mt-0.5">
-                    <span className="text-xl font-black text-white tracking-tighter">
+                    <span className="font-display text-xl font-bold text-white tracking-[-0.025em] tabular-nums">
                       {distanceKm}
                     </span>
-                    <span className="text-[11px] font-black" style={{ color: currentTheme.accent }}>
+                    <span className="font-display text-[11px] font-semibold" style={{ color: currentTheme.accent }}>
                       KM
                     </span>
                   </div>
@@ -759,26 +759,26 @@ export default function RunningShareModal({
 
                 <div className="grid grid-cols-3 gap-1 pt-1 border-t border-white/10">
                   <div>
-                    <span className="text-[6.5px] uppercase tracking-wider font-bold text-zinc-400 block">
+                    <span className="text-[6.5px] uppercase tracking-wider font-semibold text-zinc-400 block">
                       Pace
                     </span>
-                    <span className="text-[11px] font-black text-white tracking-tight">
+                    <span className="font-display text-[11px] font-semibold text-white tracking-[-0.015em] tabular-nums">
                       {paceStr.replace('/km', '')}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[6.5px] uppercase tracking-wider font-bold text-zinc-400 block">
+                    <span className="text-[6.5px] uppercase tracking-wider font-semibold text-zinc-400 block">
                       Tempo
                     </span>
-                    <span className="text-[11px] font-black text-white tracking-tight">
+                    <span className="font-display text-[11px] font-semibold text-white tracking-[-0.015em] tabular-nums">
                       {durationStr}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[6.5px] uppercase tracking-wider font-bold text-zinc-400 block">
+                    <span className="text-[6.5px] uppercase tracking-wider font-semibold text-zinc-400 block">
                       Kcal
                     </span>
-                    <span className="text-[11px] font-black text-white tracking-tight">
+                    <span className="font-display text-[11px] font-semibold text-white tracking-[-0.015em] tabular-nums">
                       {calories}
                     </span>
                   </div>

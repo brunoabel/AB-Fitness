@@ -370,7 +370,7 @@ export default function AthleteManualModal({ onClose }) {
               )}
             </div>
 
-            <h3 className="text-lg sm:text-xl font-black text-white leading-tight">
+            <h3 className="text-lg sm:text-xl font-bold text-white leading-tight tracking-[-0.02em]">
               {manual.title}
             </h3>
 
@@ -408,11 +408,11 @@ export default function AthleteManualModal({ onClose }) {
 
             <div className="grid grid-cols-2 gap-2 text-center text-xs">
               <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
-                <span className="text-[11px] text-zinc-400 font-bold uppercase block">
+                <span className="text-[11px] text-zinc-400 font-semibold uppercase block">
                   Proteína Recomendada
                 </span>
-                <span className="text-lg font-black text-white block mt-0.5 font-mono tabular-nums">
-                  {getProteinTarget()} <span className="text-xs font-normal text-zinc-400 font-sans">g/dia</span>
+                <span className="font-display text-lg font-semibold text-white block mt-0.5 tabular-nums tracking-[-0.02em]">
+                  {getProteinTarget()} <span className="text-xs font-medium text-zinc-400">g/dia</span>
                 </span>
                 <span className="text-[11px] text-zinc-400 mt-0.5 block">
                   Para reconstrução muscular
@@ -420,11 +420,11 @@ export default function AthleteManualModal({ onClose }) {
               </div>
 
               <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
-                <span className="text-[11px] text-zinc-400 font-bold uppercase block">
+                <span className="text-[11px] text-zinc-400 font-semibold uppercase block">
                   Hidratação Mínima
                 </span>
-                <span className="text-lg font-black text-accent-hover block mt-0.5 font-mono tabular-nums">
-                  {getWaterTarget()} <span className="text-xs font-normal text-zinc-400 font-sans">L/dia</span>
+                <span className="font-display text-lg font-semibold text-accent-hover block mt-0.5 tabular-nums tracking-[-0.02em]">
+                  {getWaterTarget()} <span className="text-xs font-medium text-zinc-400">L/dia</span>
                 </span>
                 <span className="text-[11px] text-zinc-400 mt-0.5 block">
                   Água para células e tendões

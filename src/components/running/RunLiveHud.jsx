@@ -159,10 +159,10 @@ export default function RunLiveHud({
             Distância
           </span>
           <div className="flex items-baseline justify-center gap-2">
-            <span className="font-display font-black text-7xl tracking-tight text-white tabular-nums">
+            <span className="font-display font-bold text-6xl sm:text-7xl tracking-[-0.03em] text-white tabular-nums">
               {distanceKm.toFixed(2)}
             </span>
-            <span className="text-xl font-bold text-zinc-400">km</span>
+            <span className="text-xl font-medium text-zinc-400">km</span>
           </div>
 
           {targetProgress && (
@@ -184,53 +184,53 @@ export default function RunLiveHud({
           )}
         </div>
 
-        {/* 4 Caixas de leitura imediata ao correr (ergonomia de HUD desportivo) */}
+        {/* 4 Métricas de leitura imediata ao correr (ergonomia de HUD desportivo) */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
               <Zap className="w-3.5 h-3.5 text-white" />
               <span>Ritmo</span>
             </div>
-            <span className="text-2xl font-black text-white font-mono tabular-nums block">
+            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
               {sessionStatus === 'paused' || isAutoPaused
                 ? (livePaceSeconds > 0 ? formatPace(livePaceSeconds) : '--:--')
                 : formatPace(currentPaceSeconds || avgPaceSeconds)}
             </span>
-            <span className="text-[11px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
+            <span className="text-[11px] text-zinc-400 block mt-0.5 font-display tabular-nums">
               Médio {formatPace(avgPaceSeconds)}
             </span>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
               <Timer className="w-3.5 h-3.5 text-white" />
               <span>Tempo</span>
             </div>
-            <span className="text-2xl font-black text-white font-mono tabular-nums block">
+            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
               {formatDuration(elapsedSeconds)}
             </span>
-            <span className="text-[11px] text-zinc-400 block mt-0.5 font-mono tabular-nums">
-              {speedKmh} km/h
+            <span className="text-[11px] text-zinc-400 block mt-0.5 font-display tabular-nums">
+              {speedKmh} <span className="text-zinc-500">km/h</span>
             </span>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
               <Flame className="w-3.5 h-3.5 text-orange-400" />
               <span>Calorias</span>
             </div>
-            <span className="text-2xl font-black text-white font-mono tabular-nums">
-              {calories} <span className="text-xs font-normal text-zinc-400 font-sans">kcal</span>
+            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums">
+              {calories} <span className="text-xs font-medium text-zinc-400">kcal</span>
             </span>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
               <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>Subida</span>
             </div>
-            <span className="text-2xl font-black text-white font-mono tabular-nums">
-              +{elevationGainM} <span className="text-xs font-normal text-zinc-400 font-sans">m</span>
+            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums">
+              +{elevationGainM} <span className="text-xs font-medium text-zinc-400">m</span>
             </span>
           </div>
         </div>

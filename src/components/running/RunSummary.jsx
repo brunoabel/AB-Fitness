@@ -45,10 +45,10 @@ export default function RunSummary({
         )}
 
         <div className="flex items-baseline gap-2">
-          <span className="font-display font-black text-5xl sm:text-6xl tracking-tight text-white tabular-nums">
+          <span className="font-display font-bold text-5xl sm:text-6xl tracking-[-0.03em] text-white tabular-nums">
             {Number(lastCompletedRun.distanceKm).toFixed(2)}
           </span>
-          <span className="text-xl font-bold text-zinc-400">km</span>
+          <span className="text-xl font-medium text-zinc-400">km</span>
         </div>
       </div>
 
@@ -56,37 +56,37 @@ export default function RunSummary({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-5 gap-x-6 py-4 border-y border-white/[0.08]">
         <div>
           <span className="text-xs text-zinc-400 block">Ritmo médio</span>
-          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+          <span className="font-display text-xl font-semibold tracking-[-0.02em] text-white tabular-nums mt-0.5 block">
             {lastCompletedRun.avgPace}
           </span>
         </div>
 
         <div>
           <span className="text-xs text-zinc-400 block">Tempo</span>
-          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
+          <span className="font-display text-xl font-semibold tracking-[-0.02em] text-white tabular-nums mt-0.5 block">
             {formatDuration(lastCompletedRun.durationSeconds)}
           </span>
         </div>
 
         <div>
           <span className="text-xs text-zinc-400 block">Calorias</span>
-          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
-            {lastCompletedRun.calories} <span className="text-xs font-normal text-zinc-500 font-sans">kcal</span>
+          <span className="font-display text-xl font-semibold tracking-[-0.02em] text-white tabular-nums mt-0.5 block">
+            {lastCompletedRun.calories} <span className="text-xs font-medium text-zinc-500">kcal</span>
           </span>
         </div>
 
         <div>
           <span className="text-xs text-zinc-400 block">Velocidade</span>
-          <span className="text-xl font-black text-white font-mono tabular-nums mt-0.5 block">
-            {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-normal text-zinc-500 font-sans">km/h</span>
+          <span className="font-display text-xl font-semibold tracking-[-0.02em] text-white tabular-nums mt-0.5 block">
+            {lastCompletedRun.avgSpeedKmh} <span className="text-xs font-medium text-zinc-500">km/h</span>
           </span>
         </div>
 
         {Boolean(lastCompletedRun.vo2Max) && (
           <div className="col-span-2 sm:col-span-4 pt-3 border-t border-white/[0.06] flex items-baseline justify-between">
             <span className="text-xs text-zinc-400">Capacidade aeróbica estimada (VO2 Max)</span>
-            <span className="text-base font-black text-white font-mono tabular-nums">
-              {lastCompletedRun.vo2Max} <span className="text-xs font-normal text-zinc-500 font-sans">ml/kg/min</span>
+            <span className="font-display text-base font-semibold text-white tabular-nums">
+              {lastCompletedRun.vo2Max} <span className="text-xs font-medium text-zinc-500">ml/kg/min</span>
             </span>
           </div>
         )}

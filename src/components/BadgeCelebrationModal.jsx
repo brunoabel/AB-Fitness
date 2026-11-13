@@ -91,7 +91,7 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
           <span className="relative mt-4 text-[11px] font-bold uppercase tracking-widest" style={{ color }}>
             {tierLabel} · Desbloqueada
           </span>
-          <h2 className="relative mt-1 text-2xl font-black text-white tracking-tight leading-tight">
+          <h2 className="relative mt-1 text-2xl font-bold text-white tracking-[-0.02em] leading-tight">
             {badge.title}
           </h2>
           <p className="relative mt-1.5 text-xs text-zinc-400 leading-relaxed max-w-[280px]">

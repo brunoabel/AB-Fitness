@@ -36,7 +36,7 @@ export default function ExerciseListView({
           >
             <div className="p-4 flex items-center justify-between cursor-pointer transition-colors" onClick={() => onToggle(isExpanded ? null : exercise.id)}>
               <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-display font-black text-sm shrink-0 tabular-nums ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-display font-semibold text-sm shrink-0 tabular-nums ${
                   isCompletedAll ? 'bg-emerald-500 text-zinc-950' : 'text-zinc-500'
                 }`}>
                   {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}

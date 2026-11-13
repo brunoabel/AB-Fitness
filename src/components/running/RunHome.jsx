@@ -44,10 +44,10 @@ export default function RunHome({
               Esta semana
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="font-display font-black text-4xl sm:text-5xl text-white tabular-nums tracking-tight">
+              <span className="font-display font-bold text-4xl sm:text-5xl text-white tabular-nums tracking-[-0.03em]">
                 {weekly.weekKm.toFixed(1)}
               </span>
-              <span className="text-base font-bold text-zinc-400">
+              <span className="text-base font-medium text-zinc-400">
                 km
               </span>
             </div>
@@ -170,9 +170,10 @@ export default function RunHome({
                   className="py-3.5 flex items-center justify-between gap-3 hover:bg-white/[0.02] transition-colors cursor-pointer relative"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display font-bold text-lg text-white tabular-nums">
-                        {Number(run.distanceKm).toFixed(2)} km
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-display font-semibold text-lg text-white tabular-nums tracking-[-0.02em]">
+                        {Number(run.distanceKm).toFixed(2)}
+                        <span className="text-xs font-medium text-zinc-400 ml-1">km</span>
                       </span>
                       <span className="text-xs text-zinc-500">
                         · {formatRunRelativeDate(run.date || run.timestamp)}

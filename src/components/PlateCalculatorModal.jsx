@@ -97,14 +97,14 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
               <button
                 type="button"
                 onClick={() => adjustWeight(-5)}
-                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-black text-sm active:scale-90 transition-transform cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-display font-semibold tabular-nums text-sm active:scale-90 transition-transform cursor-pointer"
               >
                 −5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(-2.5)}
-                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-bold text-xs active:scale-90 transition-transform cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-display font-semibold tabular-nums text-xs active:scale-90 transition-transform cursor-pointer"
               >
                 −2,5
               </button>
@@ -118,7 +118,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                   ariaLabel={`Carga alvo: ${targetWeight} kg. Mantém premido para editar.`}
                   className="h-12"
                 />
-                <span className="absolute right-3 top-4 text-xs font-bold text-zinc-500 pointer-events-none">
+                <span className="absolute right-3 top-4 text-xs font-medium text-zinc-500 pointer-events-none">
                   kg
                 </span>
               </div>
@@ -126,14 +126,14 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
               <button
                 type="button"
                 onClick={() => adjustWeight(2.5)}
-                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-bold text-xs active:scale-90 transition-transform cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-display font-semibold tabular-nums text-xs active:scale-90 transition-transform cursor-pointer"
               >
                 +2,5
               </button>
               <button
                 type="button"
                 onClick={() => adjustWeight(5)}
-                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-black text-sm active:scale-90 transition-transform cursor-pointer"
+                className="w-11 h-12 rounded-xl text-zinc-400 hover:text-white font-display font-semibold tabular-nums text-sm active:scale-90 transition-transform cursor-pointer"
               >
                 +5
               </button>

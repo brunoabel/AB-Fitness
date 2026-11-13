@@ -66,15 +66,15 @@ export default function BadgesView() {
               <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 block">
                 CONQUISTAS • AB FITNESS
               </span>
-              <h2 className="text-base sm:text-lg font-black text-white">
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-[-0.015em]">
                 Mural de Medalhas & Conquistas
               </h2>
             </div>
           </div>
 
           <div className="text-right">
-            <span className="text-xl font-black text-amber-400 font-mono tabular-nums">
-              {unlockedCount}<span className="text-xs text-zinc-500 font-normal">/{totalBadges}</span>
+            <span className="font-display text-xl font-semibold text-amber-400 tabular-nums tracking-[-0.02em]">
+              {unlockedCount}<span className="text-xs text-zinc-500 font-normal ml-0.5">/{totalBadges}</span>
             </span>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function BadgesView() {
         <div className="space-y-1.5 mt-4">
           <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
             <span>Progresso de Conquistas</span>
-            <span className="text-amber-400 font-mono tabular-nums">{progressPercent}%</span>
+            <span className="font-display text-amber-400 tabular-nums">{progressPercent}%</span>
           </div>
           <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
             <div 

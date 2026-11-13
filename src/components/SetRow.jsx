@@ -309,7 +309,7 @@ export default function SetRow({
         {/* 1. Tipo / Número de Série — ciclo N/Aquecimento/Drop-set/Falha só no modo avançado */}
         <div className="flex flex-col items-center justify-center">
           {isSimpleMode ? (
-            <span className="w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums border border-white/[0.08] text-zinc-400">
+            <span className="w-9 h-9 rounded-lg flex items-center justify-center font-display font-semibold text-xs tabular-nums border border-white/[0.08] text-zinc-400">
               {displayIndex}
             </span>
           ) : (
@@ -317,7 +317,7 @@ export default function SetRow({
               type="button"
               onClick={cycleType}
               disabled={isDone}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs tabular-nums transition-transform active:scale-90 border cursor-pointer ${
+              className={`w-9 h-9 rounded-lg flex items-center justify-center font-display font-semibold text-xs tabular-nums transition-transform active:scale-90 border cursor-pointer ${
                 currentType === 'N'
                   ? 'bg-transparent text-zinc-400 border-white/[0.08]'
                   : currentType === 'W'
@@ -556,7 +556,7 @@ export default function SetRow({
             aria-label={isDone ? 'Desmarcar série' : 'Concluir série e iniciar descanso'}
             className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all cursor-pointer active:scale-95 border select-none ${
               isDone
-                ? 'bg-accent text-white border-accent shadow-sm font-black'
+                ? 'bg-accent text-white border-accent shadow-sm font-semibold'
                 : 'bg-primary text-app border-primary hover:bg-primary-hover shadow-sm'
             }`}
           >

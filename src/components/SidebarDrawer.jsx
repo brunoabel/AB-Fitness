@@ -204,7 +204,7 @@ export default function SidebarDrawer({
                     <span className="text-[12px] text-zinc-400 truncate">@{username}</span>
                   )}
                   {ceo && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-black uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider">
                       <Crown className="w-2.5 h-2.5 text-amber-400" />
                       CEO
                     </span>

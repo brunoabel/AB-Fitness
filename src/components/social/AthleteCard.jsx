@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import { MapPin, Crown, Maximize2, ShieldCheck } from 'lucide-react';
 import { Avatar, fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
@@ -20,6 +21,8 @@ const RANK_TONES = {
   neutral: 'bg-white/[0.06] text-zinc-300 border-white/[0.1]'
 };
 
+const TILT_SPRING = { stiffness: 320, damping: 28, mass: 0.8 };
+
 export default function AthleteCard({
   profile,
   stats,
@@ -40,9 +43,54 @@ export default function AthleteCard({
     streak: stats?.streak,
     isCeo
   });
+  const reduce = useReducedMotion();
+  const tiltEnabled = !compact && !showcase && !reduce;
+  const cardRef = useRef(null);
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(py, [0, 1], [9, -9]), TILT_SPRING);
+  const rotateY = useSpring(useTransform(px, [0, 1], [-11, 11]), TILT_SPRING);
+  const glareX = useTransform(px, (v) => `${(1 - v) * 100}%`);
+  const glareY = useTransform(py, (v) => `${(1 - v) * 100}%`);
+  const glareOpacity = useSpring(0, TILT_SPRING);
+
+  const handlePointerMove = (e) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    px.set((e.clientX - rect.left) / rect.width);
+    py.set((e.clientY - rect.top) / rect.height);
+    glareOpacity.set(0.3);
+  };
+  const resetTilt = () => {
+    px.set(0.5);
+    py.set(0.5);
+    glareOpacity.set(0);
+  };
 
   return (
-    <article className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-all`}>
+    <div style={{ perspective: 1000 }}>
+      <motion.article
+        ref={cardRef}
+        onPointerMove={tiltEnabled ? handlePointerMove : undefined}
+        onPointerLeave={tiltEnabled ? resetTilt : undefined}
+        onPointerUp={tiltEnabled ? resetTilt : undefined}
+        onPointerCancel={tiltEnabled ? resetTilt : undefined}
+        style={{ rotateX: tiltEnabled ? rotateX : 0, rotateY: tiltEnabled ? rotateY : 0 }}
+        className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-shadow`}
+      >
+        {/* Brilho especular: segue o oposto do ponteiro, só visível durante a interação */}
+        {tiltEnabled && (
+          <motion.div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none mix-blend-overlay"
+            style={{
+              opacity: glareOpacity,
+              '--gx': glareX,
+              '--gy': glareY,
+              background: 'radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,0.55), transparent 55%)'
+            }}
+          />
+        )}
 
       {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
       <div className="flex items-start justify-between gap-4 relative z-10">
@@ -65,7 +113,7 @@ export default function AthleteCard({
           <span className="block text-xs text-zinc-500">
             {featured.label}
           </span>
-          <span className="block font-display font-black text-2xl sm:text-3xl text-white tabular-nums tracking-tight mt-0.5">
+          <span className="block font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] mt-0.5">
             {statValue(featured.id, stats)}
           </span>
         </div>
@@ -74,7 +122,7 @@ export default function AthleteCard({
       {/* Identidade do Atleta */}
       <div className="mt-4 relative z-10 space-y-1">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <h2 className="font-heading font-black text-xl sm:text-2xl text-white tracking-tight truncate">
+          <h2 className="font-heading font-bold text-xl sm:text-2xl text-white tracking-[-0.02em] truncate">
             {name}
           </h2>
           {isVerified && <VerifiedBadge size={compact ? 16 : 20} />}
@@ -152,6 +200,7 @@ export default function AthleteCard({
           )}
         </div>
       )}
-    </article>
+      </motion.article>
+    </div>
   );
 }

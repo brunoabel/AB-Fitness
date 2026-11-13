@@ -139,10 +139,10 @@ function FeedWorkoutEntry({ item, onRespect, onOpenChat, reducedMotion }) {
 
       <dl className="mt-3.5 flex items-center gap-6">
         <div>
-          <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
             Duração
           </dt>
-          <dd className="mt-1 font-display text-[24px] leading-none font-bold text-white tabular-nums">
+          <dd className="mt-1 font-display text-[23px] leading-none font-semibold tracking-[-0.02em] text-white tabular-nums">
             {fmtDuration(item.duration_seconds)}
           </dd>
         </div>
@@ -150,10 +150,10 @@ function FeedWorkoutEntry({ item, onRespect, onOpenChat, reducedMotion }) {
         <div className="w-px h-8 bg-white/[0.08]" aria-hidden="true" />
 
         <div>
-          <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
             Volume
           </dt>
-          <dd className="mt-1 font-display text-[24px] leading-none font-bold text-white tabular-nums">
+          <dd className="mt-1 font-display text-[23px] leading-none font-semibold tracking-[-0.02em] text-white tabular-nums">
             {fmtKg(item.volume_kg)}
           </dd>
         </div>

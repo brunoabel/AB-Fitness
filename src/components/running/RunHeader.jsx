@@ -36,7 +36,7 @@ export default function RunHeader({
 
   return (
     <header className="flex items-center justify-between gap-4">
-      <h1 className="font-heading text-2xl sm:text-3xl font-black text-white tracking-tight">
+      <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white tracking-[-0.025em]">
         Corrida
       </h1>
 

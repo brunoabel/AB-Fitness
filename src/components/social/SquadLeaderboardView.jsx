@@ -94,7 +94,7 @@ export default function SquadLeaderboardView({
                 className="flex-1 min-w-0 min-h-[52px] flex items-center gap-3 text-left cursor-pointer touch-manipulation py-1"
               >
                 <span
-                  className={`w-6 text-center font-display text-[20px] font-bold tabular-nums shrink-0 ${rankColor(index)}`}
+                  className={`w-6 text-center font-display text-[19px] font-semibold tabular-nums shrink-0 ${rankColor(index)}`}
                 >
                   {index + 1}
                 </span>
@@ -112,7 +112,7 @@ export default function SquadLeaderboardView({
                 </div>
 
                 {s.streak != null && s.streak > 0 && (
-                  <span className="inline-flex items-center gap-1 font-display text-[15px] font-bold text-amber-300 tabular-nums shrink-0 pr-1">
+                  <span className="inline-flex items-center gap-1 font-display text-[14px] font-semibold text-amber-300 tabular-nums shrink-0 pr-1">
                     <Flame className="w-3.5 h-3.5 text-amber-400" strokeWidth={2} />
                     {s.streak}d
                   </span>

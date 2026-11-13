@@ -13,7 +13,7 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
             <MapPin className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
-            <h3 className="font-heading text-lg font-black text-white tracking-tight">
+            <h3 className="font-heading text-lg font-bold text-white tracking-[-0.02em]">
               Ativar localização da corrida
             </h3>
             <p className="text-xs text-zinc-400">

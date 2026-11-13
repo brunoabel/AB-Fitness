@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
-  Watch,
   Activity,
   HeartPulse,
   Moon,
@@ -10,8 +9,7 @@ import {
   Link2,
   RefreshCw,
   CheckCircle2,
-  ExternalLink,
-  Sparkles
+  ExternalLink
 } from 'lucide-react';
 import { triggerHaptic } from '../../utils/audio';
 import { useAuth } from '../../context';
@@ -24,21 +22,29 @@ import {
 } from '../../services/wearables/wearableManager';
 import { buildWhoopAuthUrl, getWhoopClientId } from '../../services/wearables/whoopService';
 import { buildFitbitAuthUrl, getFitbitClientId } from '../../services/wearables/fitbitService';
+import { WhoopMark, FitbitMark } from './WearableLogos';
 
 const SPRING = { type: 'spring', stiffness: 400, damping: 36 };
 
+function formatProviderName(providerUsed) {
+  if (providerUsed === 'composite') return 'WHOOP + Fitbit';
+  if (providerUsed === 'whoop') return 'WHOOP';
+  if (providerUsed === 'fitbit') return 'Fitbit';
+  return providerUsed;
+}
+
 function MetricBadge({ icon: Icon, label, value, sub }) {
   return (
-    <div className="rounded-xl bg-surface-3/80 border border-white/[0.06] p-2.5 flex flex-col justify-between">
+    <div className="flex flex-col justify-between min-w-0">
       <div className="flex items-center gap-1.5 text-zinc-400">
-        <Icon className="w-3.5 h-3.5 text-zinc-300" strokeWidth={1.75} />
+        <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0" strokeWidth={1.75} />
         <span className="text-[11px] font-medium truncate">{label}</span>
       </div>
-      <div className="mt-1.5">
-        <span className="font-heading text-[16px] font-bold text-white tracking-tight tabular-nums">
+      <div className="mt-1">
+        <span className="font-display text-[18px] font-semibold text-white tracking-[-0.02em] tabular-nums">
           {value}
         </span>
-        {sub && <span className="ml-1 text-[11px] text-zinc-500">{sub}</span>}
+        {sub && <span className="ml-1 text-[11px] font-normal text-zinc-500">{sub}</span>}
       </div>
     </div>
   );
@@ -150,15 +156,16 @@ export default function WearablesModal({ isOpen, onClose }) {
             {/* Cabeçalho */}
             <div className="flex items-start justify-between gap-3 pb-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
-                <span className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white shrink-0">
-                  <Watch className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <WhoopMark size={26} className="rounded-lg" />
+                  <FitbitMark size={26} className="rounded-lg" />
+                </div>
                 <div>
-                  <h2 className="font-heading text-section font-bold text-white tracking-tight">
+                  <h2 className="font-heading text-section font-semibold text-white tracking-tight">
                     Dispositivos &amp; Wearables
                   </h2>
                   <p className="text-[12px] text-zinc-400">
-                    Sincronização biométrica com Whoop &amp; Fitbit
+                    Sincronização biométrica via APIs oficiais
                   </p>
                 </div>
               </div>
@@ -170,7 +177,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                   onClose();
                 }}
                 aria-label="Fechar modal"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer hover:bg-white/[0.06] transition-colors"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer hover:bg-white/[0.06] transition-colors"
               >
                 <X className="w-5 h-5" strokeWidth={1.75} />
               </button>
@@ -178,15 +185,15 @@ export default function WearablesModal({ isOpen, onClose }) {
 
             {/* Painel de Prontidão (visível se pelo menos 1 wearable estiver ligado) */}
             {readiness && (
-              <div className="mt-4 p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.1] relative overflow-hidden">
+              <div className="mt-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.09] relative overflow-hidden">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-12 h-12 rounded-full border-2 flex items-center justify-center font-heading text-lg font-black tabular-nums shadow-lg"
+                      className="w-12 h-12 rounded-full border-2 flex items-center justify-center font-display text-[17px] font-semibold tabular-nums tracking-[-0.02em] shrink-0"
                       style={{
                         borderColor: readiness.color,
                         color: readiness.color,
-                        boxShadow: `0 0 16px ${readiness.color}33`
+                        boxShadow: `0 0 16px ${readiness.color}26`
                       }}
                     >
                       {readiness.score}%
@@ -197,21 +204,25 @@ export default function WearablesModal({ isOpen, onClose }) {
                           className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: readiness.color }}
                         />
-                        <span className="text-[13px] font-bold text-white uppercase tracking-wider">
+                        <span className="text-[13px] font-semibold text-white uppercase tracking-wider">
                           {readiness.label}
                         </span>
                       </div>
                       <p className="text-[11px] text-zinc-400 mt-0.5">
-                        Índice Biomecânico do Dia ({readiness.providerUsed === 'composite' ? 'Whoop + Fitbit' : readiness.providerUsed})
+                        Índice Biomecânico do Dia ({formatProviderName(readiness.providerUsed)})
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-start gap-2.5">
-                  <Sparkles className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1.75} />
+                <div className="mt-3.5 pt-3 border-t border-white/[0.06] flex items-start gap-2.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                    style={{ backgroundColor: readiness.color }}
+                    aria-hidden="true"
+                  />
                   <p className="text-[12px] text-zinc-300 leading-relaxed">
-                    <strong className="text-white">Parecer AB Coach:</strong> {readiness.advice}
+                    <span className="font-semibold text-white">Parecer AB Coach:</span> {readiness.advice}
                   </p>
                 </div>
               </div>
@@ -220,17 +231,15 @@ export default function WearablesModal({ isOpen, onClose }) {
             {/* Lista de Dispositivos */}
             <div className="mt-5 space-y-4">
               {/* Card WHOOP */}
-              <div className="rounded-2xl bg-surface-2 border border-white/[0.08] p-4 transition-all">
+              <div className="rounded-2xl bg-white/[0.025] border border-white/[0.08] p-4 transition-all">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-xl bg-black flex items-center justify-center font-heading font-black text-sm tracking-wider text-white border border-white/10 shrink-0">
-                      W:
-                    </span>
+                    <WhoopMark size={40} />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-heading text-[15px] font-semibold text-white">WHOOP 4.0</h3>
+                        <h3 className="font-heading text-[15px] font-semibold text-white tracking-tight">WHOOP 4.0</h3>
                         {whoopConn ? (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider inline-flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
                             {whoopConn.status === 'simulated' ? 'Simulado' : 'Conectado'}
                           </span>
@@ -249,7 +258,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                       type="button"
                       onClick={() => handleSync('whoop')}
                       disabled={syncingProvider === 'whoop'}
-                      className="w-8 h-8 rounded-lg bg-surface-3 flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
+                      className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
                       title="Sincronizar agora"
                     >
                       <RefreshCw
@@ -261,7 +270,7 @@ export default function WearablesModal({ isOpen, onClose }) {
 
                 {/* Métricas Whoop */}
                 {whoopConn && whoopBio && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3.5 pt-3 border-t border-white/[0.06]">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
                     <MetricBadge
                       icon={Activity}
                       label="Recuperação"
@@ -287,43 +296,44 @@ export default function WearablesModal({ isOpen, onClose }) {
                 )}
 
                 {/* Ações Whoop */}
-                <div className="mt-3.5 flex items-center gap-2">
+                <div className="mt-4 flex items-center gap-2">
                   {!whoopConn ? (
                     <button
                       type="button"
                       onClick={() => handleConnectOfficial('whoop')}
                       disabled={!getWhoopClientId()}
-                      className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
-                      title={getWhoopClientId() ? undefined : 'Requer Client ID Whoop'}
+                      className="flex-1 min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                      title={getWhoopClientId() ? undefined : 'Requer Client ID WHOOP'}
                     >
                       <Link2 className="w-4 h-4" />
-                      Conectar Whoop
+                      Conectar com WHOOP
                       <ExternalLink className="w-3.5 h-3.5" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={() => handleDisconnect('whoop')}
-                      className="w-full min-h-[38px] rounded-xl bg-surface-3 hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
+                      className="w-full min-h-[40px] rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
                     >
-                      Desconectar Whoop
+                      Desconectar WHOOP
                     </button>
                   )}
                 </div>
               </div>
 
               {/* Card FITBIT */}
-              <div className="rounded-2xl bg-surface-2 border border-white/[0.08] p-4 transition-all">
+              <div className="rounded-2xl bg-white/[0.025] border border-white/[0.08] p-4 transition-all">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-xl bg-[#00B0B9]/15 border border-[#00B0B9]/30 flex items-center justify-center font-heading font-black text-sm text-[#00B0B9] shrink-0">
-                      FB
-                    </span>
+                    <FitbitMark size={40} />
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-heading text-[15px] font-semibold text-white">Fitbit by Google</h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-heading text-[15px] font-semibold text-white tracking-tight">
+                          Fitbit
+                          <span className="text-[12px] font-normal text-zinc-400 ml-1">by Google</span>
+                        </h3>
                         {fitbitConn ? (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider inline-flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
                             {fitbitConn.status === 'simulated' ? 'Simulado' : 'Conectado'}
                           </span>
@@ -342,7 +352,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                       type="button"
                       onClick={() => handleSync('fitbit')}
                       disabled={syncingProvider === 'fitbit'}
-                      className="w-8 h-8 rounded-lg bg-surface-3 flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
+                      className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
                       title="Sincronizar agora"
                     >
                       <RefreshCw
@@ -354,7 +364,7 @@ export default function WearablesModal({ isOpen, onClose }) {
 
                 {/* Métricas Fitbit */}
                 {fitbitConn && fitbitBio && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3.5 pt-3 border-t border-white/[0.06]">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
                     <MetricBadge
                       icon={HeartPulse}
                       label="FC Repouso"
@@ -381,24 +391,24 @@ export default function WearablesModal({ isOpen, onClose }) {
                 )}
 
                 {/* Ações Fitbit */}
-                <div className="mt-3.5 flex items-center gap-2">
+                <div className="mt-4 flex items-center gap-2">
                   {!fitbitConn ? (
                     <button
                       type="button"
                       onClick={() => handleConnectOfficial('fitbit')}
                       disabled={!getFitbitClientId()}
-                      className="flex-1 min-h-[42px] px-3 rounded-xl bg-primary text-app text-[13px] font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                      className="flex-1 min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
                       title={getFitbitClientId() ? undefined : 'Requer Client ID Fitbit'}
                     >
                       <Link2 className="w-4 h-4" />
-                      Conectar Fitbit
+                      Conectar com Fitbit
                       <ExternalLink className="w-3.5 h-3.5" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={() => handleDisconnect('fitbit')}
-                      className="w-full min-h-[38px] rounded-xl bg-surface-3 hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
+                      className="w-full min-h-[40px] rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
                     >
                       Desconectar Fitbit
                     </button>
@@ -407,10 +417,15 @@ export default function WearablesModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Nota de Privacidade & Bateria */}
-            <p className="mt-5 text-[11px] text-zinc-500 text-center leading-relaxed">
-              O AB Fitness lê apenas dados fisiológicos necessários para calibrar a recuperação muscular. Nenhuma informação médica pessoal é partilhada com terceiros.
-            </p>
+            {/* Nota de Privacidade & Atribuição de Marcas */}
+            <div className="mt-5 space-y-1.5 text-center">
+              <p className="text-[11px] text-zinc-500 leading-relaxed">
+                O AB Fitness lê apenas dados fisiológicos necessários para calibrar a recuperação muscular. Nenhuma informação médica pessoal é partilhada com terceiros.
+              </p>
+              <p className="text-[10px] text-zinc-600 leading-relaxed">
+                Conexão direta via APIs oficiais OAuth 2.0. WHOOP® e Fitbit® são marcas registadas dos respetivos proprietários.
+              </p>
+            </div>
           </motion.div>
         </div>
       )}

@@ -52,7 +52,7 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
         <div className="px-5 pb-5 pt-2 sm:pt-5 border-b border-white/[0.06] flex items-start justify-between bg-surface/90 backdrop-blur-md">
           <div className="space-y-1">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Aparelho Ocupado?</p>
-            <h2 className="text-lg font-black text-white">Substitutos biomecânicos</h2>
+            <h2 className="text-lg font-bold text-white tracking-[-0.02em]">Substitutos biomecânicos</h2>
             <p className="text-xs text-zinc-400">
               Para <strong className="text-zinc-200">{exercise.name}</strong>
             </p>

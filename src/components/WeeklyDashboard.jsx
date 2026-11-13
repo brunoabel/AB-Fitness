@@ -139,7 +139,7 @@ export default function WeeklyDashboard({
           </div>
 
           {/* Título Editorial de Autoridade */}
-          <h1 className="relative font-heading font-black text-3xl sm:text-4xl text-white tracking-tight leading-[1.08]">
+          <h1 className="relative font-heading font-bold text-3xl sm:text-4xl text-white tracking-[-0.025em] leading-[1.08]">
             {selectedWorkout.title}
           </h1>
 
@@ -153,9 +153,15 @@ export default function WeeklyDashboard({
 
               {/* Métricas de Volume sem caixilhos */}
               <div className="flex items-center gap-5 text-sm text-zinc-400">
-                <span><strong className="font-display font-black text-white text-lg tabular-nums mr-1">{totalExercisesCount}</strong>exercícios</span>
+                <span className="inline-flex items-baseline gap-1.5">
+                  <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">{totalExercisesCount}</strong>
+                  <span className="text-[13px] font-medium text-zinc-400">exercícios</span>
+                </span>
                 <span className="w-px h-4 bg-white/[0.12]" aria-hidden />
-                <span><strong className="font-display font-black text-white text-lg tabular-nums mr-1">{totalSetsCount}</strong>séries</span>
+                <span className="inline-flex items-baseline gap-1.5">
+                  <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">{totalSetsCount}</strong>
+                  <span className="text-[13px] font-medium text-zinc-400">séries</span>
+                </span>
               </div>
 
               {/* Botão Primário Hero: Tátil, Alto Contraste, Padrão Apple */}
@@ -248,7 +254,7 @@ export default function WeeklyDashboard({
                   className="transition-all duration-500 ease-out"
                 />
               </svg>
-              <span className="absolute text-xs font-display font-black text-white tabular-nums">
+              <span className="absolute text-xs font-display font-semibold text-white tabular-nums tracking-[-0.01em]">
                 {completedCount}/{weeklyTarget}
               </span>
             </div>
@@ -332,7 +338,7 @@ export default function WeeklyDashboard({
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 pl-3">
-                    <span className="font-display font-bold text-sm text-zinc-300 tabular-nums">
+                    <span className="font-display font-semibold text-sm text-zinc-300 tabular-nums tracking-[-0.01em]">
                       {ex.defaultSets} × {ex.suggestedReps}
                     </span>
                     <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 transition-colors" />

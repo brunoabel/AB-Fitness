@@ -173,7 +173,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                   </span>
                 </div>
 
-                <h3 className="text-lg font-black text-white tracking-tight">
+                <h3 className="text-lg font-bold text-white tracking-[-0.02em]">
                   {bio?.alvo || official100?.grupo || exercise.target}
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">

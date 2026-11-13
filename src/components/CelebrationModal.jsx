@@ -164,7 +164,7 @@ export default function CelebrationModal({
             <span>Sessão finalizada</span>
           </span>
 
-          <h2 className="text-xl font-black text-white tracking-tight">
+          <h2 className="text-xl font-bold text-white tracking-[-0.02em]">
             Treino Concluído
           </h2>
 
@@ -229,8 +229,8 @@ export default function CelebrationModal({
           <div className="flex items-center justify-center gap-6 text-center">
             <div className="flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-zinc-500" />
-              <span className="text-base font-black text-white font-mono tabular-nums">
-                {durationMinutes}<span className="text-xs font-normal text-zinc-400 font-sans"> min</span>
+              <span className="font-display text-base font-semibold text-white tabular-nums tracking-[-0.015em]">
+                {durationMinutes}<span className="text-xs font-medium text-zinc-400"> min</span>
               </span>
             </div>
 
@@ -238,8 +238,8 @@ export default function CelebrationModal({
 
             <div className="flex items-center gap-1.5">
               <CheckCircle className="w-4 h-4 text-emerald-500" />
-              <span className="text-base font-black text-white font-mono tabular-nums">
-                {totalSetsCompleted}<span className="text-xs font-normal text-zinc-400 font-sans"> séries</span>
+              <span className="font-display text-base font-semibold text-white tabular-nums tracking-[-0.015em]">
+                {totalSetsCompleted}<span className="text-xs font-medium text-zinc-400"> séries</span>
               </span>
             </div>
 
@@ -247,8 +247,8 @@ export default function CelebrationModal({
 
             <div className="flex items-center gap-1.5">
               <Dumbbell className="w-4 h-4 text-zinc-500" />
-              <span className="text-base font-black text-white font-mono tabular-nums">
-                {totalVolumeKg}<span className="text-xs font-normal text-zinc-400 font-sans"> kg</span>
+              <span className="font-display text-base font-semibold text-white tabular-nums tracking-[-0.015em]">
+                {totalVolumeKg}<span className="text-xs font-medium text-zinc-400"> kg</span>
               </span>
             </div>
           </div>

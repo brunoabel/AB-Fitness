@@ -121,7 +121,7 @@ export default function Sidebar({
           <ABLogo size={38} showText={false} />
         </div>
         <div className="relative flex flex-col min-w-0">
-          <span className="font-heading font-black text-white text-[17px] leading-none tracking-tight">
+          <span className="font-heading font-bold text-white text-[17px] leading-none tracking-[-0.02em]">
             AB Fitness
           </span>
           <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400 leading-none mt-1.5 truncate">

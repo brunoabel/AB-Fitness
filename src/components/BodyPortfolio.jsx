@@ -255,20 +255,30 @@ export default function BodyPortfolio() {
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Peso atual</span>
-            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">
-              {weightSeries.length ? `${fmt(weightSeries[weightSeries.length - 1].value)} kg` : '—'}
+            <span className="text-[11px] font-medium text-zinc-400 block">Peso atual</span>
+            <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">
+              {weightSeries.length ? (
+                <>
+                  {fmt(weightSeries[weightSeries.length - 1].value)}
+                  <span className="text-xs font-medium text-zinc-400 ml-1">kg</span>
+                </>
+              ) : '—'}
             </span>
           </div>
           <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Variação</span>
-            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">
-              {weightDelta === null ? '—' : `${weightDelta > 0 ? '+' : ''}${fmt(weightDelta)} kg`}
+            <span className="text-[11px] font-medium text-zinc-400 block">Variação</span>
+            <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">
+              {weightDelta === null ? '—' : (
+                <>
+                  {weightDelta > 0 ? '+' : ''}{fmt(weightDelta)}
+                  <span className="text-xs font-medium text-zinc-400 ml-1">kg</span>
+                </>
+              )}
             </span>
           </div>
           <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider block">Fotos</span>
-            <span className="text-base sm:text-lg font-black text-zinc-50 tabular-nums whitespace-nowrap">{photos.length}</span>
+            <span className="text-[11px] font-medium text-zinc-400 block">Fotos</span>
+            <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">{photos.length}</span>
           </div>
         </div>
         <button

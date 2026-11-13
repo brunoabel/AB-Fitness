@@ -420,10 +420,10 @@ export default function RestTimer({
                     )}
                   </div>
                   <div className="flex items-baseline gap-1.5 leading-none">
-                    <span className="font-mono text-xl font-black text-white tabular-nums">
+                    <span className="font-display text-xl font-semibold tracking-[-0.02em] text-white tabular-nums">
                       {formatTime(timeLeft > 0 ? timeLeft : totalSeconds)}
                     </span>
-                    <span className="text-[11px] text-zinc-500 tabular-nums font-mono">
+                    <span className="text-[11px] text-zinc-500 tabular-nums font-display">
                       / {totalSeconds}s
                     </span>
                   </div>

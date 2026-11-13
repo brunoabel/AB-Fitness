@@ -126,9 +126,9 @@ export default function MuscleRecoveryMap() {
           </p>
         </div>
         <p className="text-right shrink-0">
-          <span className="font-display font-bold text-[36px] leading-none tracking-tight text-white tabular-nums">
+          <span className="font-display font-semibold text-[36px] leading-none tracking-[-0.03em] text-white tabular-nums">
             {state.readiness}
-            <span className="text-[18px] text-zinc-400">%</span>
+            <span className="text-[16px] font-medium text-zinc-400 ml-0.5">%</span>
           </span>
           <span className="block text-[12px] text-zinc-400">prontidão</span>
         </p>

@@ -42,9 +42,10 @@ export default function HistoryView() {
     0
   );
 
-  const formattedVolume = totalVolume >= 1000
-    ? `${(totalVolume / 1000).toFixed(1).replace(/\.0$/, '')} t`
-    : `${totalVolume} kg`;
+  const volumeNumber = totalVolume >= 1000
+    ? (totalVolume / 1000).toFixed(1).replace(/\.0$/, '')
+    : String(totalVolume);
+  const volumeUnit = totalVolume >= 1000 ? 't' : 'kg';
 
   return (
     <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-10 space-y-6 animate-fadeIn">
@@ -90,7 +91,7 @@ export default function HistoryView() {
           {/* Resumo acumulado editorial diretamente sobre o preto */}
           <div className="flex items-center justify-between gap-4 py-2">
             <div>
-              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
+              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
                 {totalWorkouts}
               </span>
               <span className="text-xs text-zinc-400">Treinos</span>
@@ -99,8 +100,9 @@ export default function HistoryView() {
             <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
 
             <div>
-              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
-                {formattedVolume}
+              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
+                {volumeNumber}
+                <span className="text-sm font-medium text-zinc-400 ml-1">{volumeUnit}</span>
               </span>
               <span className="text-xs text-zinc-400">Volume total</span>
             </div>
@@ -108,8 +110,9 @@ export default function HistoryView() {
             <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
 
             <div>
-              <span className="font-display font-black text-2xl sm:text-3xl text-white tabular-nums block">
-                {totalMinutes} min
+              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
+                {totalMinutes}
+                <span className="text-sm font-medium text-zinc-400 ml-1">min</span>
               </span>
               <span className="text-xs text-zinc-400">Tempo ativo</span>
             </div>

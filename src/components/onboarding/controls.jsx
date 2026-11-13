@@ -128,7 +128,7 @@ export function PrecisionPicker({ value, min, max, step = 1, unit, onChange, lab
           initial={{ opacity: 0.5, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-block font-display font-bold text-[64px] leading-none tracking-tight tabular-nums text-zinc-50"
+          className="inline-block font-display font-semibold text-[60px] leading-none tracking-[-0.03em] tabular-nums text-zinc-50"
         >
           {format ? format(value) : value.toFixed(decimals).replace('.', ',')}
         </motion.span>

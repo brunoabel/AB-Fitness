@@ -138,10 +138,10 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
 
             {/* Texto Central da Recuperação */}
             <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-3xl font-bold font-mono tabular-nums tracking-tight text-white leading-none">
-                {score}%
+              <span className="font-display text-3xl font-semibold tabular-nums tracking-[-0.03em] text-white leading-none">
+                {score}<span className="text-base font-medium text-zinc-400">%</span>
               </span>
-              <span className={`text-[11px] font-bold uppercase mt-1 tracking-wider ${ringBg}`}>
+              <span className={`text-[11px] font-semibold uppercase mt-1 tracking-wider ${ringBg}`}>
                 {isGreen ? 'ÓTIMO' : isYellow ? 'MODERADO' : 'DELOAD'}
               </span>
             </div>
@@ -152,13 +152,13 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             {/* Day Strain */}
             <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Day Strain</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider">Day Strain</span>
                 <Flame className="w-3.5 h-3.5 text-zinc-300" />
               </div>
-              <div className="text-base font-bold font-mono tabular-nums text-white">
+              <div className="font-display text-base font-semibold tabular-nums tracking-[-0.02em] text-white">
                 {biometrics.strain} <span className="text-[11px] font-normal text-zinc-400">/ 21.0</span>
               </div>
-              <span className="text-[11px] text-zinc-500 font-mono tabular-nums mt-0.5">
+              <span className="text-[11px] text-zinc-500 font-display tabular-nums mt-0.5">
                 Alvo: {biometrics.targetStrain || '14.0 - 17.5'}
               </span>
             </div>
@@ -166,13 +166,13 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             {/* HRV */}
             <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider">HRV (SNC)</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider">HRV (SNC)</span>
                 <Activity className="w-3.5 h-3.5 text-zinc-300" />
               </div>
-              <div className="text-base font-bold font-mono tabular-nums text-white">
+              <div className="font-display text-base font-semibold tabular-nums tracking-[-0.02em] text-white">
                 {biometrics.hrv} <span className="text-[11px] font-normal text-zinc-400">ms</span>
               </div>
-              <span className="text-[11px] text-emerald-400 font-semibold font-mono tabular-nums mt-0.5 flex items-center gap-0.5">
+              <span className="text-[11px] text-emerald-400 font-semibold font-display tabular-nums mt-0.5 flex items-center gap-0.5">
                 <TrendingUp className="w-2.5 h-2.5" /> +5 ms vs média
               </span>
             </div>
@@ -180,13 +180,13 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             {/* Sono */}
             <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Sono</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider">Sono</span>
                 <Moon className="w-3.5 h-3.5 text-zinc-300" />
               </div>
-              <div className="text-base font-bold font-mono tabular-nums text-white">
-                {biometrics.sleepHours}h
+              <div className="font-display text-base font-semibold tabular-nums tracking-[-0.02em] text-white">
+                {biometrics.sleepHours}<span className="text-[11px] font-normal text-zinc-400 ml-0.5">h</span>
               </div>
-              <span className="text-[11px] text-zinc-500 font-mono tabular-nums mt-0.5">
+              <span className="text-[11px] text-zinc-500 font-display tabular-nums mt-0.5">
                 Eficiência: {biometrics.sleepPerformance}%
               </span>
             </div>
@@ -194,10 +194,10 @@ export default function WhoopRecoveryHub({ currentWorkoutName = 'Peito e Costas'
             {/* Frequência Cardíaca de Repouso */}
             <div className="p-3 rounded-xl bg-surface border border-white/10 flex flex-col justify-between">
               <div className="flex items-center justify-between text-zinc-500 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider">RHR (Repouso)</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider">RHR (Repouso)</span>
                 <Heart className="w-3.5 h-3.5 text-zinc-300" />
               </div>
-              <div className="text-base font-bold font-mono tabular-nums text-white">
+              <div className="font-display text-base font-semibold tabular-nums tracking-[-0.02em] text-white">
                 {biometrics.restingHeartRate} <span className="text-[11px] font-normal text-zinc-400">bpm</span>
               </div>
               <span className="text-[11px] text-zinc-500 mt-0.5">

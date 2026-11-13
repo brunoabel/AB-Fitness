@@ -115,7 +115,7 @@ export default function BootSequence({ onFinish }) {
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center">
           <span className="flex overflow-hidden pr-3" role="img" aria-label="AB Fitness">
             {['A', 'B'].map((g) => (
-              <span key={g} className="glyph inline-block font-display font-bold italic text-[124px] leading-[0.9] tracking-[-0.03em] text-white" style={{ transform: 'translateY(108%)' }}>
+              <span key={g} className="glyph inline-block font-heading font-bold italic text-[118px] leading-[0.9] tracking-[-0.04em] text-white" style={{ transform: 'translateY(108%)' }}>
                 {g}
               </span>
             ))}

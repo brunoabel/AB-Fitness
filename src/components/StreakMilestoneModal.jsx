@@ -132,16 +132,16 @@ export default function StreakMilestoneModal({ streakInfo, onClose }) {
 
           {/* Ato 3: contador em rolagem */}
           <div className="mt-5 flex items-baseline gap-2">
-            <span ref={counterRef} className="font-display font-black text-white text-[76px] leading-none tabular-nums">
+            <span ref={counterRef} className="font-display font-semibold text-white text-[72px] tracking-[-0.035em] leading-none tabular-nums">
               {previousStreakDays}
             </span>
-            <span className="text-sm font-semibold text-zinc-400">
+            <span className="text-sm font-medium text-zinc-400">
               {streakDays === 1 ? 'dia seguido' : 'dias seguidos'}
             </span>
           </div>
 
           {title && (
-            <h2 className="mt-1 font-heading font-black text-2xl text-white tracking-tight">{title}</h2>
+            <h2 className="mt-1 font-heading font-bold text-2xl text-white tracking-[-0.02em]">{title}</h2>
           )}
 
           <p className="mt-1.5 text-xs text-zinc-400">

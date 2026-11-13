@@ -38,7 +38,7 @@ const NumberField = forwardRef(function NumberField(
   };
   const cancelPress = () => clearTimeout(pressTimerRef.current);
 
-  const boxClass = `w-full h-11 sm:h-12 rounded-lg text-center font-display font-black text-xl tabular-nums border bg-transparent transition-all ${className}`;
+  const boxClass = `w-full h-11 sm:h-12 rounded-lg text-center font-display font-semibold text-[18px] tracking-[-0.02em] tabular-nums border bg-transparent transition-all ${className}`;
 
   if (editing) {
     return (

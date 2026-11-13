@@ -35,12 +35,12 @@ export async function generateAndShareWorkoutCard(treino) {
 
   // 4. Marca Superior AB Fitness
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 36px sans-serif';
+  ctx.font = '700 36px "Plus Jakarta Sans", Inter, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('AB FITNESS  •  COACH IA', 540, 170);
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-  ctx.font = '600 24px sans-serif';
+  ctx.font = '600 24px "Plus Jakarta Sans", Inter, sans-serif';
   ctx.fillText('PRESCRIÇÃO BIOMECÂNICA DE ALTA PERFORMANCE', 540, 215);
 
   // 5. Card Central de Destaque
@@ -54,16 +54,16 @@ export async function generateAndShareWorkoutCard(treino) {
 
   // Título do Treino
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 52px sans-serif';
+  ctx.font = '700 52px "Plus Jakarta Sans", Inter, sans-serif';
   ctx.fillText(treino.nome || 'Treino Personalizado', 540, 375);
 
   // Metadados (Foco & Duração)
   ctx.fillStyle = '#ffffff';
-  ctx.font = '700 28px sans-serif';
+  ctx.font = '600 28px "Plus Jakarta Sans", Inter, sans-serif';
   ctx.fillText(`FOCO: ${(treino.foco || 'Hipertrofia').toUpperCase()}`, 540, 435);
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = '600 26px sans-serif';
+  ctx.font = '500 26px "Plus Jakarta Sans", Inter, sans-serif';
   ctx.fillText(`${treino.duracao_min || 45} MINUTOS  •  ${treino.exercicios?.length || 0} EXERCÍCIOS`, 540, 480);
 
   // 6. Lista de Exercícios
@@ -82,13 +82,13 @@ export async function generateAndShareWorkoutCard(treino) {
 
     // Número
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 32px sans-serif';
+    ctx.font = '600 32px "Plus Jakarta Sans", Inter, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`${idx + 1}.`, 135, startY + 58);
 
     // Nome do Exercício
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 32px sans-serif';
+    ctx.font = '700 32px "Plus Jakarta Sans", Inter, sans-serif';
     const cleanName = ex.nome.length > 28 ? ex.nome.slice(0, 26) + '...' : ex.nome;
     ctx.fillText(cleanName, 185, startY + 58);
 

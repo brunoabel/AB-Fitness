@@ -43,9 +43,9 @@
   --color-zinc-900: #0e0f12;
   --color-zinc-950: #070709;
 
-  /* Tipografia editorial: 4 tamanhos mobile */
+  /* Tipografia editorial: geometria limpa e telemetria tabular */
   --font-heading: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-  --font-display: 'Barlow Condensed', 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
   --text-title-xl: 1.75rem;
   --text-title-xl--line-height: 2rem;
   --text-title-xl--letter-spacing: -0.025em;
@@ -63,7 +63,7 @@
     color-scheme: dark;
 
     /* Tipografia */
-    --font-display: 'Barlow Condensed', sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
     /* Superfícies */
@@ -189,19 +189,21 @@
     touch-action: manipulation;
   }
 
-  /* Números como protagonistas: Barlow Condensed + tabular-nums */
+  /* Telemetria Suíça: Plus Jakarta Sans + tabular-nums + tracking ótico */
   .font-display,
   [data-display="true"] {
     font-family: var(--font-display);
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1, "cv05" 1;
+    letter-spacing: -0.025em;
   }
 
   .tabular-numbers,
   input[type="number"],
   .font-mono,
   [data-metric="true"] {
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
   }
 
   /* Suporte limpo para mapa Leaflet */

@@ -686,7 +686,7 @@ function RunningMapComponent({
 
           {showLayerMenu && (
             <div className="absolute top-full left-0 mt-1.5 w-44 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/80 rounded-2xl p-1.5 shadow-2xl z-50 animate-fadeIn space-y-1">
-              <div className="px-2 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-400 border-b border-zinc-800">
+              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800">
                 Camada do Mapa
               </div>
               {Object.values(MAP_LAYERS).map((layer) => (
@@ -755,18 +755,19 @@ function RunningMapComponent({
         </button>
       </div>
 
-      {/* Selo Strava GPS Engine ou Legenda de Ritmo */}
+      {/* Legenda de Ritmo ou Motor GPS Proprietário */}
       {paceHeatmapMode && effectiveCoordinates.length >= 2 ? (
-        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2 bg-black/85 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 text-[10px] font-mono text-zinc-300 pointer-events-none">
+        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2 bg-black/85 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 text-[10px] font-display tabular-nums text-zinc-300 pointer-events-none">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> &lt;4&apos;40&quot;</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400" /> 5&apos;20&quot;</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400" /> 6&apos;20&quot;</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> &gt;7&apos;00&quot;</span>
         </div>
       ) : (
-        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-1.5 text-[11px] font-mono text-zinc-300 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/10 pointer-events-none">
-          <span className="text-orange-400 font-black">STRAVA</span>
-          <span>• AB GPS Engine (Kalman 2D)</span>
+        <div className="absolute bottom-2 left-3 z-10 flex items-center gap-1.5 text-[11px] font-medium text-zinc-300 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 pointer-events-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+          <span className="font-semibold text-white">AB GPS Engine</span>
+          <span className="text-zinc-500">• Kalman 2D</span>
         </div>
       )}
     </div>
