@@ -150,6 +150,7 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" strokeWidth={2} />}
           </button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickAvatar} />
+          <p className="mt-2 text-center text-[12px] text-zinc-500">Arrasta o dedo no cartão para o inclinar · toca no ↻ para ver o verso</p>
         </div>
 
         <div>
