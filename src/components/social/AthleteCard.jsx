@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, animate, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import { MapPin, Crown, Maximize2, ShieldCheck, RotateCw, Link2, Check } from 'lucide-react';
-import { Avatar, fmtInt, fmtKg } from './ui';
+import { fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { COVER_STYLES, FEATURED_STATS, athleteLink } from '../../services/socialService';
@@ -35,6 +35,7 @@ export default function AthleteCard({
   const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
   const name = profile?.full_name || 'Atleta AB';
+  const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   const cleanUsername = sanitizeUsername(profile?.username);
   const isCeo = Boolean(profile?.is_ceo) || isAthleteCeo(profile);
   const isPro = isCeo || Boolean(profile?.is_premium || profile?.is_pro) || isAthletePro(profile);
@@ -124,12 +125,31 @@ export default function AthleteCard({
       {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
       <div className="flex items-start justify-between gap-4 relative z-10">
         <div className="relative">
-          <Avatar 
-            url={avatarPreview || profile?.avatar_url} 
-            name={name} 
-            size={compact ? 60 : 72} 
-            className={`ring-2 ${isCeo ? 'ring-amber-500/50' : 'ring-white/20'} shadow-xl`} 
-          />
+          {avatarPreview || profile?.avatar_url ? (
+            <div
+              className={`relative overflow-hidden rounded-2xl ring-1 ${isCeo ? 'ring-amber-500/40' : 'ring-white/15'}`}
+              style={{ width: compact ? 60 : 72, height: compact ? 60 : 72 }}
+            >
+              <img
+                src={avatarPreview || profile.avatar_url}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  WebkitMaskImage: 'linear-gradient(to bottom, black 62%, transparent 100%)',
+                  maskImage: 'linear-gradient(to bottom, black 62%, transparent 100%)'
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              className="relative flex items-center justify-center font-heading font-semibold text-white"
+              style={{ width: compact ? 60 : 72, height: compact ? 60 : 72, fontSize: (compact ? 60 : 72) * 0.36 }}
+            >
+              {initials}
+            </div>
+          )}
           {isCeo && (
             <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center shadow-lg border-2 border-black" title="Fundador / CEO">
               <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
