@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useReducedMotion } from 'motion/react';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
 import { Trophy, Clock, CheckCircle, Check, Dumbbell, Sparkles, Share2, ArrowRight, Copy } from 'lucide-react';
@@ -22,6 +23,7 @@ export default function CelebrationModal({
   coachNarrative = null,
   onClose 
 }) {
+  const reduce = useReducedMotion();
   const [copied, setCopied] = useState(false);
   const [cardVariant, setCardVariant] = useState('card');
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -63,7 +65,8 @@ export default function CelebrationModal({
     sound.playCelebration();
     triggerHaptic([50, 100, 50, 150, 50, 200]);
 
-    // Disparar confetes elegantes nas cores do tema (Preto, branco, prata, ciano sutil)
+    // Disparar confetes elegantes nas cores do tema (preto, branco, prata) — respeita reduced motion
+    if (reduce) return;
     const end = Date.now() + 2.5 * 1000;
     const colors = ['#ffffff', '#000000', '#ffffff', '#71717a', '#f4f4f5'];
 
@@ -87,6 +90,7 @@ export default function CelebrationModal({
         requestAnimationFrame(frame);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleShare = async () => {

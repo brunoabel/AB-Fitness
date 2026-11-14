@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useReducedMotion } from 'motion/react';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import confetti from 'canvas-confetti';
 import { Trophy, Share2, ArrowRight, Check } from 'lucide-react';
@@ -20,6 +21,7 @@ const CATEGORY_NARRATIVE = {
  * uma conquista não seja um simples toast enquanto um PR ganha um ecrã inteiro.
  */
 export default function BadgeCelebrationModal({ badge, onClose }) {
+  const reduce = useReducedMotion();
   const [isSharing, setIsSharing] = useState(false);
   const [copied, setCopied] = useState(false);
   const IconComponent = ICON_MAP[badge?.icon] || Trophy;
@@ -31,6 +33,7 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
     sound.playVictory();
     triggerHaptic([50, 100, 50, 150, 50, 200]);
 
+    if (reduce) return;
     const end = Date.now() + 2.5 * 1000;
     const colors = [color, '#ffffff', '#000000', '#f4f4f5'];
 

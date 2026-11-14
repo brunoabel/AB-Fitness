@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-
+import { useReducedMotion } from 'motion/react';
 import confetti from 'canvas-confetti';
 import RunningShareModal from './RunningShareModal';
 import BadgeCelebrationModal from './BadgeCelebrationModal';
@@ -60,6 +60,7 @@ import RunHome from './running/RunHome';
 
 export default function RunningHub({ isDark = true }) {
   const { user } = useAuth();
+  const reduceMotion = useReducedMotion();
 
   // Preferência de áudio / locução por voz nos fones
   const [voiceEnabled, setVoiceEnabled] = useState(() => getVoiceCuesPreference());
@@ -912,13 +913,15 @@ export default function RunningHub({ isDark = true }) {
       watchIdRef.current = null;
     }
 
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } catch {}
+    if (!reduceMotion) {
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch {}
+    }
 
     const finalDistance = Number(distanceKmRef.current.toFixed(2));
     const finalSeconds = elapsedSecondsRef.current;
