@@ -239,7 +239,7 @@ export default function AthleteCard({
                 onClick={(e) => { e.stopPropagation(); toggleFlip(); }}
                 aria-label="Ver verso do cartão"
                 title="Ver verso do cartão"
-                className="w-7 h-7 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center cursor-pointer"
+                className="tap-44 w-7 h-7 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" strokeWidth={1.75} />
               </button>

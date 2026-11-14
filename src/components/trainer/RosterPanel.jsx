@@ -126,7 +126,7 @@ export default function RosterPanel({
                       type="button"
                       onClick={(e) => { e.stopPropagation(); triggerHaptic(10); onQuickAssign(ath.athlete_id); }}
                       title="Atribuir treino"
-                      className="w-7 h-7 rounded-lg bg-surface-3 border border-white/[0.08] text-zinc-300 hover:text-white cursor-pointer flex items-center justify-center"
+                      className="tap-44 w-7 h-7 rounded-lg bg-surface-3 border border-white/[0.08] text-zinc-300 hover:text-white cursor-pointer flex items-center justify-center"
                     >
                       <ClipboardPlus className="w-3.5 h-3.5" strokeWidth={1.75} />
                     </button>
@@ -134,7 +134,7 @@ export default function RosterPanel({
                       type="button"
                       onClick={(e) => { e.stopPropagation(); triggerHaptic(10); onQuickArchive(ath.athlete_id); }}
                       title="Arquivar vínculo"
-                      className="w-7 h-7 rounded-lg bg-surface-3 border border-white/[0.08] text-zinc-400 hover:text-rose-400 cursor-pointer flex items-center justify-center"
+                      className="tap-44 w-7 h-7 rounded-lg bg-surface-3 border border-white/[0.08] text-zinc-400 hover:text-rose-400 cursor-pointer flex items-center justify-center"
                     >
                       <Archive className="w-3.5 h-3.5" strokeWidth={1.75} />
                     </button>

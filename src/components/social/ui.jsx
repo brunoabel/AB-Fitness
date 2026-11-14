@@ -107,7 +107,7 @@ export function Sheet({ onClose, title, children, footer, label }) {
             <X className="w-5 h-5" strokeWidth={1.75} />
           </button>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pb-6">{children}</div>
+        <div className={`flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 ${footer ? 'pb-6' : 'pb-[calc(env(safe-area-inset-bottom,0px)+24px)]'}`}>{children}</div>
         {footer && <div className="shrink-0 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+14px)] border-t border-white/[0.06]">{footer}</div>}
       </motion.div>
     </div>

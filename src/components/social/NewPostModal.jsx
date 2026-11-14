@@ -382,7 +382,7 @@ export default function NewPostModal({ isOpen, onClose, userId, profile, onPostC
                   </button>
                 ))}
               </div>
-              <span className="text-[11px] font-mono tabular-nums text-zinc-600 shrink-0">
+              <span className="text-[11px] font-mono tabular-nums text-zinc-500 shrink-0">
                 {MAX_CAPTION_LENGTH - caption.length}
               </span>
             </div>

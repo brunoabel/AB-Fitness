@@ -316,7 +316,7 @@ export default function WeeklyDashboard({
                   className="w-full py-3.5 px-2 hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer flex items-center justify-between text-left group select-none"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <span className="font-mono text-xs font-semibold text-zinc-600 group-hover:text-zinc-400 tabular-nums shrink-0 transition-colors">
+                    <span className="font-mono text-xs font-semibold text-zinc-500 group-hover:text-zinc-400 tabular-nums shrink-0 transition-colors">
                       {formattedIndex}
                     </span>
 

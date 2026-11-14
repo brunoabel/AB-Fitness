@@ -82,7 +82,7 @@ const NumberField = forwardRef(function NumberField(
             : 'border-transparent text-zinc-50'
       }`}
     >
-      {hasValue ? value : <span className="text-zinc-600">{placeholder}</span>}
+      {hasValue ? value : <span className="text-zinc-500">{placeholder}</span>}
     </button>
   );
 });

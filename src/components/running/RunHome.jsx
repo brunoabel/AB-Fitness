@@ -261,7 +261,7 @@ export default function RunHome({
       </div>
 
       {/* 4. Opção discreta de Passadeira / Simulação (fora do foco principal) */}
-      <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600">
+      <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500">
         <button
           type="button"
           onClick={() => {

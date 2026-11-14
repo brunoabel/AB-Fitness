@@ -128,7 +128,7 @@ export default function BootSequence({ onFinish }) {
         {ready ? 'Pronto para treinar' : kgText}
       </motion.p>
 
-      <p className="skip absolute bottom-[calc(env(safe-area-inset-bottom,0px)+28px)] text-[13px] text-zinc-600">Toque para saltar</p>
+      <p className="skip absolute bottom-[calc(env(safe-area-inset-bottom,0px)+28px)] text-[13px] text-zinc-500">Toque para saltar</p>
     </div>
   );
 }

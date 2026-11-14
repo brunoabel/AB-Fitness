@@ -151,7 +151,7 @@ export default function ProgramBuilderSheet({ trainerId, athleteId, lastProgram,
                 <div key={row.rowId} className="p-3 rounded-xl bg-surface-2 border border-white/[0.08] space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[14px] font-semibold text-white truncate">{row.name}</span>
-                    <button onClick={() => removeRow(row.rowId)} className="w-7 h-7 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer flex items-center justify-center shrink-0">
+                    <button onClick={() => removeRow(row.rowId)} className="tap-44 w-7 h-7 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer flex items-center justify-center shrink-0">
                       <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} />
                     </button>
                   </div>
