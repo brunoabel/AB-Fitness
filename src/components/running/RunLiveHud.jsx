@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { AlertTriangle, Flame, Map as MapIcon, Navigation2, Pause, Play, Square, Timer, Volume2, VolumeX, Zap } from 'lucide-react';
 import { formatDuration, formatPace } from '../../utils/runningService';
 import { computeTargetProgress } from '../../utils/runGoals';
@@ -8,7 +8,7 @@ import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
 
 /** HUD ao vivo: contraste solar para leitura em movimento e botões seguros ao toque. */
-export default function RunLiveHud({
+function RunLiveHudComponent({
   autoPauseEnabled,
   avgPaceSeconds,
   calories,
@@ -349,3 +349,6 @@ export default function RunLiveHud({
     </div>
   );
 }
+
+const RunLiveHud = memo(RunLiveHudComponent);
+export default RunLiveHud;

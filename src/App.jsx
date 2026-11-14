@@ -31,7 +31,6 @@ import { sound } from './utils/audio';
 import ABLogo from './components/ABLogo';
 import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
-import SidebarDrawer from './components/SidebarDrawer';
 import { connectWearable } from './services/wearables/wearableManager';
 import { exchangeWhoopCodeForToken, fetchLiveWhoopBiometrics } from './services/wearables/whoopService';
 
@@ -50,7 +49,8 @@ const lazyImports = {
   social: () => import('./components/social/SocialHub'),
   profile: () => import('./components/profile/ProfileView'),
   workout: () => import('./components/ActiveWorkout'),
-  exerciseModal: () => import('./components/ExerciseModal')
+  exerciseModal: () => import('./components/ExerciseModal'),
+  sidebarDrawer: () => import('./components/SidebarDrawer')
 };
 const RunningHub = lazy(lazyImports.running);
 const CustomWorkoutsHub = lazy(lazyImports.custom);
@@ -64,6 +64,7 @@ const SocialHub = lazy(lazyImports.social);
 const ProfileView = lazy(lazyImports.profile);
 const ActiveWorkout = lazy(lazyImports.workout);
 const ExerciseModal = lazy(lazyImports.exerciseModal);
+const SidebarDrawer = lazy(lazyImports.sidebarDrawer);
 
 function TabFallback() {
   return (
@@ -573,27 +574,30 @@ function AppContent() {
           </Suspense>
         )}
 
-        {/* Gaveta lateral: gestão do atleta, acessível a partir do Header em qualquer ecrã */}
-        <SidebarDrawer
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          onNavigateTab={handleTabChange}
-          onOpenCustomize={() => setShowOnboardingModal(true)}
-          onOpenGuide={() => setShowGuideModal(true)}
-          onOpenAICoach={() => setShowAICoachModal(true)}
-          onOpenAdmin={() => {
-            setCurrentView('admin');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onOpenTrainerHub={() => {
-            setCurrentView('trainer-hub');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          soundEnabled={soundEnabled}
-          onToggleSound={handleToggleSound}
-          completedDays={completedDays}
-          schedule={schedule}
-        />
+        {/* Gaveta lateral: gestão do atleta, acessível a partir do Header em qualquer ecrã.
+            Em Suspense (fallback null) para sair do bundle principal sem mudar quando monta. */}
+        <Suspense fallback={null}>
+          <SidebarDrawer
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            onNavigateTab={handleTabChange}
+            onOpenCustomize={() => setShowOnboardingModal(true)}
+            onOpenGuide={() => setShowGuideModal(true)}
+            onOpenAICoach={() => setShowAICoachModal(true)}
+            onOpenAdmin={() => {
+              setCurrentView('admin');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenTrainerHub={() => {
+              setCurrentView('trainer-hub');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            soundEnabled={soundEnabled}
+            onToggleSound={handleToggleSound}
+            completedDays={completedDays}
+            schedule={schedule}
+          />
+        </Suspense>
       </div>
     </div>
   );
