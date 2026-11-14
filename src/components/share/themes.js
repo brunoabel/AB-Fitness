@@ -4,9 +4,9 @@ export const THEMES = {
   'strava-orange': {
     id: 'strava-orange',
     name: 'Ignição',
-    accent: '#fc5200',
-    glow: 'rgba(252, 82, 0, 0.85)',
-    bgGrad: ['#1c0f08', '#0a0502'],
+    accent: '#f59e0b',
+    glow: 'rgba(245, 158, 11, 0.85)',
+    bgGrad: ['#1c1408', '#0a0702'],
     badge: 'Energia'
   },
   // id mantido por compatibilidade com preferências gravadas

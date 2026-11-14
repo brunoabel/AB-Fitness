@@ -28,7 +28,7 @@ const MAP_LAYERS = {
   },
   'strava-dark': {
     id: 'strava-dark',
-    name: 'Strava Dark',
+    name: 'Mapa Escuro',
     badge: 'Noturno',
     icon: Moon,
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
@@ -58,7 +58,7 @@ const MAP_LAYERS = {
   }
 };
 
-/** Calcula cor do segmento no Mapa de Ritmo (Pace Heatmap estilo Strava) */
+/** Calcula cor do segmento no Mapa de Ritmo (Pace Heatmap editorial) */
 function getSegmentPaceColor(p1, p2) {
   if (!p1 || !p2) return '#f59e0b';
   const distM = haversineDistanceMeters(p1.lat, p1.lng, p2.lat, p2.lng);
@@ -68,7 +68,7 @@ function getSegmentPaceColor(p1, p2) {
 
   const paceSecKm = 1000 / speedMs;
   if (paceSecKm < 280) return '#10b981'; // < 4'40"/km (Rápido - Esmeralda)
-  if (paceSecKm < 340) return '#06b6d4'; // 4'40" a 5'40"/km (Firme - Ciano)
+  if (paceSecKm < 340) return '#2b4a7a'; // 4'40" a 5'40"/km (Firme - Navy, acento da marca)
   if (paceSecKm < 420) return '#f59e0b'; // 5'40" a 7'00"/km (Moderado - Âmbar)
   return '#f43f5e';                      // > 7'00"/km (Lento/Subida - Coral)
 }
@@ -80,7 +80,7 @@ function RunningMapComponent({
   isLive = true, 
   _isDark = true,
   height = '240px',
-  routeColor = '#fc5200' // Strava Orange por padrão
+  routeColor = '#ffffff' // Branco: cor de ativo/progresso da marca AB Fitness
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -509,7 +509,7 @@ function RunningMapComponent({
         }
       }
 
-      // Renderização do Mapa de Ritmo (Pace Heatmap estilo Strava Summit)
+      // Renderização do Mapa de Ritmo (Pace Heatmap editorial)
       if (paceSegmentsRef.current.length > 0) {
         paceSegmentsRef.current.forEach((layer) => {
           try { map.removeLayer(layer); } catch {}
@@ -663,7 +663,7 @@ function RunningMapComponent({
       {/* Container Leaflet */}
       <div ref={mapContainerRef} className="w-full h-full z-0 bg-zinc-950" />
 
-      {/* Badges Flutuantes do Strava HUD (Topo Esquerdo) */}
+      {/* Badges Flutuantes do HUD (Topo Esquerdo) */}
       <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
         <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15 text-white text-[11px] font-bold shadow-md">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -694,8 +694,8 @@ function RunningMapComponent({
                   key={layer.id}
                   onClick={() => handleSelectLayer(layer.id)}
                   className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    currentLayerId === layer.id 
-                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                    currentLayerId === layer.id
+                      ? 'bg-accent/70 text-white border border-accent-hover'
                       : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
                   }`}
                 >
@@ -703,14 +703,14 @@ function RunningMapComponent({
                     <layer.icon className="w-3.5 h-3.5" strokeWidth={1.75} />
                     <span>{layer.name}</span>
                   </div>
-                  {currentLayerId === layer.id && <Check className="w-3.5 h-3.5 text-orange-400" />}
+                  {currentLayerId === layer.id && <Check className="w-3.5 h-3.5 text-white" />}
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Alternador de Mapa de Ritmo (Pace Heatmap estilo Strava) */}
+        {/* Alternador de Mapa de Ritmo (Pace Heatmap editorial) */}
         {effectiveCoordinates.length >= 2 && (
           <button
             type="button"
@@ -736,8 +736,8 @@ function RunningMapComponent({
         <button
           onClick={handleRecenter}
           className={`h-9 px-2.5 rounded-full flex items-center justify-center gap-1.5 backdrop-blur-md border shadow-lg transition-transform active:scale-90 cursor-pointer ${
-            autoFollow 
-              ? 'w-9 px-0 bg-orange-500 text-white border-orange-400 shadow-orange-500/30' 
+            autoFollow
+              ? 'w-9 px-0 bg-primary text-app border-primary shadow-white/20'
               : 'bg-black/85 text-amber-400 hover:text-white border-amber-500/40 animate-pulse'
           }`}
           title="Recentralizar no Corredor"
@@ -759,7 +759,7 @@ function RunningMapComponent({
       {paceHeatmapMode && effectiveCoordinates.length >= 2 ? (
         <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2 bg-black/85 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 text-[10px] font-display tabular-nums text-zinc-300 pointer-events-none">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> &lt;4&apos;40&quot;</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400" /> 5&apos;20&quot;</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-hover" /> 5&apos;20&quot;</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400" /> 6&apos;20&quot;</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> &gt;7&apos;00&quot;</span>
         </div>

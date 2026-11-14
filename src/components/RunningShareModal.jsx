@@ -90,8 +90,9 @@ function CardRouteMap({ coordinates, themeId }) {
       lineCap: 'round'
     }).addTo(map);
 
-    // Linha neon principal
-    const lineColor = themeId === 'strava-orange' ? '#fc5200' : themeId === 'satellite-map' ? '#34d399' : '#ffffff';
+    // Linha neon principal: segue a cor de acento do tema só quando o fundo do mapa é escuro o
+    // suficiente para ela se ver (temas de sticker transparente usam tinta escura, invisível aqui)
+    const lineColor = themeId === 'strava-orange' || themeId === 'satellite-map' ? THEMES[themeId].accent : '#ffffff';
     const poly = L.polyline(latLngs, {
       color: lineColor,
       weight: 4.5,
@@ -645,7 +646,7 @@ export default function RunningShareModal({
         {/* Cabeçalho Sticky do Modal */}
         <div className="shrink-0 flex items-center justify-between p-3.5 border-b border-white/[0.06] bg-zinc-950/95 backdrop-blur-md">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
+            <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Sparkles className="w-4 h-4" />
             </span>
             <div>

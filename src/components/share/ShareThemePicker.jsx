@@ -61,7 +61,7 @@ export default function ShareThemePicker({ aspectRatio, bgMode, fileInputRef, ha
             onClick={() => fileInputRef.current?.click()}
             className={`shrink-0 px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
               bgMode === 'custom-photo'
-                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
+                ? 'bg-accent/70 text-white border border-accent-hover'
                 : 'text-zinc-400 hover:text-white'
             }`}
             title="Carregar Foto Própria"

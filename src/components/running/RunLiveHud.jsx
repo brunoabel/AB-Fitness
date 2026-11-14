@@ -216,7 +216,7 @@ export default function RunLiveHud({
 
           <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-              <Flame className="w-3.5 h-3.5 text-orange-400" />
+              <Flame className="w-3.5 h-3.5 text-amber-400" />
               <span>Calorias</span>
             </div>
             <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums">

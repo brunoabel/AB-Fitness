@@ -19,12 +19,12 @@ export default function ShareTitleEditor({ isEditingTitle, sessionTitle, setIsEd
               onChange={(e) => setSessionTitle(e.target.value)}
               onBlur={() => setIsEditingTitle(false)}
               autoFocus
-              className="w-full px-2 py-0.5 rounded-lg bg-white/[0.04] border border-orange-500/50 text-white text-xs font-bold outline-none"
+              className="w-full px-2 py-0.5 rounded-lg bg-white/[0.04] border border-accent-hover text-white text-xs font-bold outline-none"
             />
           ) : (
-            <span 
+            <span
               onClick={() => setIsEditingTitle(true)}
-              className="text-xs font-bold text-white hover:text-orange-400 transition-colors cursor-pointer truncate flex items-center gap-1.5"
+              className="text-xs font-bold text-white hover:text-accent-hover transition-colors cursor-pointer truncate flex items-center gap-1.5"
               title="Clique para editar"
             >
               <span className="truncate">{sessionTitle}</span>
@@ -38,7 +38,7 @@ export default function ShareTitleEditor({ isEditingTitle, sessionTitle, setIsEd
             setSessionTitle(sessionTitle === 'Sessão de Treino de Hoje' ? 'Corrida Matinal' : 'Sessão de Treino de Hoje');
             triggerHaptic(8);
           }}
-          className="text-[11px] text-orange-400 hover:underline font-bold shrink-0 cursor-pointer"
+          className="text-[11px] text-accent-hover hover:underline font-bold shrink-0 cursor-pointer"
         >
           Alternar
         </button>
