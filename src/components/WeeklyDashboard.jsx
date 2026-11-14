@@ -20,8 +20,10 @@ import { triggerHaptic } from '../utils/audio';
 import { useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
 import WearableReadinessCard from './wearables/WearableReadinessCard';
 
-// Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial
+// Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
+// DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
 const MuscleRecoveryMap = lazy(() => import('./MuscleRecoveryMap'));
+const DailyBriefing = lazy(() => import('./DailyBriefing'));
 
 export default function WeeklyDashboard({ 
   completedDays = [], 
@@ -218,6 +220,13 @@ export default function WeeklyDashboard({
           )}
         </div>
       </section>
+
+      {/* 2.5 BRIEFING DIÁRIO DO AB COACH — cruza fadiga muscular com prontidão dos wearables */}
+      {isToday && (
+        <Suspense fallback={<div className="rounded-2xl bg-white/[0.02] h-[88px] animate-pulse" />}>
+          <DailyBriefing todayWorkout={selectedWorkout} />
+        </Suspense>
+      )}
 
       {/* 3. PRONTIDÃO & CONSISTÊNCIA SEMANAL — Anel visual + Pips em vez de barra SaaS */}
       <section aria-label="Painel de Prontidão e Consistência" className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">

@@ -38,6 +38,7 @@ import PostWorkoutCheckin from './trainer/PostWorkoutCheckin';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { computeStreak } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
+import { getEaseModeToday } from '../utils/dailyBriefing';
 import { getStreakMilestoneInfo, shouldShowStreakCelebration, markStreakCelebrated } from '../utils/streakMilestones';
 import {
   buildPrevIndex,
@@ -118,6 +119,14 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     const saved = getSavedWeights();
     const initial = {};
     const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
+    // Briefing diário do AB Coach: se o atleta aceitou "ir com margem" hoje, os exercícios
+    // que atacam esse músculo começam com 1 série a menos (só na primeira vez, nunca ao retomar).
+    const easeMuscleId = getEaseModeToday();
+    const targetsEasedMuscle = (ex) => {
+      if (!easeMuscleId) return false;
+      const normalize = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+      return normalize(`${ex.target || ''} ${ex.secondary || ''}`).includes(normalize(easeMuscleId));
+    };
     exercisesList.forEach((ex) => {
       const isTimed = isTimedExercise(ex, ex.id);
       const defaultDuration = isTimed ? getDefaultDurationSeconds(ex, ex.id) : 10;
@@ -133,7 +142,8 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           done: false
         }));
       } else {
-        const setsCount = ex.defaultSets || 3;
+        const baseSetsCount = ex.defaultSets || 3;
+        const setsCount = targetsEasedMuscle(ex) ? Math.max(2, baseSetsCount - 1) : baseSetsCount;
         initial[ex.id] = Array.from({ length: setsCount }, () => ({
           weight: isTimed ? 0 : (ex.suggestedWeight ?? 10),
           reps: isTimed ? defaultDuration : (ex.suggestedReps ?? 10),
