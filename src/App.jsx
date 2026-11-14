@@ -159,9 +159,15 @@ function AppContent() {
     if (path.includes('/auth/callback/wearable')) {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
+      const returnedState = params.get('state');
+      const expectedState = sessionStorage.getItem('whoop_oauth_state');
+      sessionStorage.removeItem('whoop_oauth_state');
       const redirectUri = `${window.location.origin}/auth/callback/wearable`;
 
-      if (code) {
+      if (code && returnedState !== expectedState) {
+        console.warn('Estado OAuth da Whoop não corresponde ao esperado; a ignorar o código recebido.');
+        window.history.replaceState({}, document.title, '/');
+      } else if (code) {
         exchangeWhoopCodeForToken(code, redirectUri)
           .then(async (tokenData) => {
             const expiresAt = tokenData.expires_in

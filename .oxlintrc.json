@@ -19,7 +19,8 @@
         "scripts/**",
         "*.config.js",
         "*.cjs",
-        "**/*.test.js"
+        "**/*.test.js",
+        "api/**"
       ],
       "env": {
         "node": true,

@@ -4,7 +4,6 @@
  */
 
 const WHOOP_AUTH_URL = 'https://api.prod.whoop.com/oauth/oauth2/auth';
-const WHOOP_TOKEN_URL = 'https://api.prod.whoop.com/oauth/oauth2/token';
 const WHOOP_API_BASE = 'https://api.prod.whoop.com/developer/v1';
 
 const SCOPES = [
@@ -23,7 +22,7 @@ export function getWhoopClientId() {
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_WHOOP_CLIENT_ID) {
     return import.meta.env.VITE_WHOOP_CLIENT_ID;
   }
-  return '844f9ca9-cb10-4868-965c-d7746004f7f6';
+  return null;
 }
 
 /**

@@ -20,8 +20,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'O código de autorização é obrigatório' });
   }
 
-  const clientId = process.env.VITE_WHOOP_CLIENT_ID || '844f9ca9-cb10-4868-965c-d7746004f7f6';
-  const clientSecret = process.env.WHOOP_CLIENT_SECRET || '92ac010329d1a5b4b4a1b9d56bcc76e4516d6874dece094b9efca20db815fb49';
+  const clientId = process.env.VITE_WHOOP_CLIENT_ID;
+  const clientSecret = process.env.WHOOP_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    console.error('WHOOP_CLIENT_SECRET ou VITE_WHOOP_CLIENT_ID em falta nas variáveis de ambiente do servidor.');
+    return res.status(500).json({ error: 'Configuração do servidor incompleta' });
+  }
 
   try {
     const tokenUrl = 'https://api.prod.whoop.com/oauth/oauth2/token';
