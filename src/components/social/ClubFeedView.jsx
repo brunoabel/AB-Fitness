@@ -51,7 +51,7 @@ function FeedPhotoEntry({ item, onRespect, onOpenChat, reducedMotion }) {
               <span className="font-semibold truncate">{name}</span>
               {isAthleteVerified(item) && <VerifiedBadge size={14} />}
               {ceo && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[9px] font-black uppercase tracking-wider">
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[9px] font-bold uppercase tracking-wider">
                   <Crown className="w-2.5 h-2.5 text-amber-400" />
                   CEO
                 </span>

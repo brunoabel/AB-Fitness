@@ -43,8 +43,9 @@ export default function DailyBriefing({ todayWorkout }) {
 
   if (fatigue.loading) return null;
 
-  const wearablesLow = wearables?.status === 'recovery';
-  const wearablesModerate = wearables?.status === 'moderate';
+  const wearablesStale = Boolean(wearables?.isStale);
+  const wearablesLow = !wearablesStale && wearables?.status === 'recovery';
+  const wearablesModerate = !wearablesStale && wearables?.status === 'moderate';
   const shouldEase = Boolean(targeted) || wearablesLow;
   const attention = !shouldEase && (wearablesModerate || fatigue.readiness < 70);
 
@@ -62,7 +63,9 @@ export default function DailyBriefing({ todayWorkout }) {
       : 'Fadiga moderada em geral — mantém a técnica antes da carga.';
   } else {
     headline = 'Pronto para ir a fundo';
-    detail = 'Fadiga muscular e prontidão alinhadas. Bom dia para progressão de carga.';
+    detail = wearablesStale
+      ? 'Sem leitura recente do wearable — recomendação baseada na recuperação muscular registada.'
+      : 'Fadiga muscular e prontidão alinhadas. Bom dia para progressão de carga.';
   }
 
   const applyEase = () => {

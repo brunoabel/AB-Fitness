@@ -4,7 +4,6 @@
  */
 
 const FITBIT_AUTH_URL = 'https://www.fitbit.com/oauth2/authorize';
-const FITBIT_TOKEN_URL = 'https://api.fitbit.com/oauth2/token';
 const FITBIT_API_BASE = 'https://api.fitbit.com';
 
 const SCOPES = [
@@ -31,7 +30,9 @@ export function buildFitbitAuthUrl(redirectUri) {
   const clientId = getFitbitClientId();
   if (!clientId) return null;
 
-  const state = Math.random().toString(36).substring(2, 15);
+  const state = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('fitbit_oauth_state', state);
   }
@@ -48,26 +49,18 @@ export function buildFitbitAuthUrl(redirectUri) {
 }
 
 /**
- * Troca o código de autorização pelo token de acesso.
+ * Troca o código de autorização pelo token de acesso via endpoint serverless seguro.
  */
 export async function exchangeFitbitCodeForToken(code, redirectUri) {
-  const clientId = getFitbitClientId();
-  if (!clientId) throw new Error('VITE_FITBIT_CLIENT_ID não configurado');
-
-  const res = await fetch(FITBIT_TOKEN_URL, {
+  const res = await fetch('/api/fitbit-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: clientId,
-      redirect_uri: redirectUri
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, redirectUri })
   });
 
   if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Falha ao obter token da Fitbit: ${errText}`);
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error_description || errData.error || `Falha ao obter token da Fitbit (${res.status})`);
   }
 
   return res.json();
@@ -89,16 +82,28 @@ export async function fetchLiveFitbitBiometrics(accessToken, dateIso = 'today') 
   const heartData = heartRes && heartRes.ok ? await heartRes.json() : null;
   const sleepData = sleepRes && sleepRes.ok ? await sleepRes.json() : null;
 
-  const restingHeartRate = heartData?.['activities-heart']?.[0]?.value?.restingHeartRate || 54;
+  const restingHeartRate = heartData?.['activities-heart']?.[0]?.value?.restingHeartRate ?? null;
   const mainSleep = sleepData?.sleep?.find((s) => s.isMainSleep) || sleepData?.sleep?.[0];
-  const sleepMinutes = mainSleep?.minutesAsleep || 460;
-  const sleepScore = mainSleep?.efficiency || 86;
+  const sleepMinutes = mainSleep?.minutesAsleep ?? null;
+  const sleepScore = mainSleep?.efficiency ?? null;
+
+  if (restingHeartRate == null && sleepScore == null) {
+    return {
+      is_stale: true,
+      resting_hr_bpm: null,
+      sleep_score: null,
+      sleep_duration_seconds: null,
+      calories_burned: null,
+      raw_data: { heart: heartData, sleep: sleepData }
+    };
+  }
 
   return {
+    is_stale: sleepScore == null,
     resting_hr_bpm: restingHeartRate,
     sleep_score: sleepScore,
-    sleep_duration_seconds: sleepMinutes * 60,
-    calories_burned: 2550,
+    sleep_duration_seconds: sleepMinutes != null ? sleepMinutes * 60 : null,
+    calories_burned: null,
     raw_data: { heart: heartData, sleep: sleepData }
   };
 }

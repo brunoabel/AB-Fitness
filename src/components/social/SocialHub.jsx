@@ -8,16 +8,15 @@ import {
   Clock3,
   Users,
   Flame,
-  ChevronDown,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context';
-import AthleteCard from './AthleteCard';
 import HeadToHeadSheet from './HeadToHeadSheet';
 import DirectMessageSheet from './DirectMessageSheet';
 import NewPostModal from './NewPostModal';
 import ClubFeedView from './ClubFeedView';
 import SquadLeaderboardView from './SquadLeaderboardView';
+import { InvitePassBanner, PendingRequestsSection } from './SocialRequestsAndInvite';
 import { Avatar, SPRING, TAP } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified } from '../../utils/userVerification';
@@ -41,8 +40,6 @@ import {
   toggleRespect
 } from '../../services/socialService';
 import { triggerHaptic } from '../../utils/audio';
-
-const EXIT = { opacity: 0, x: 24, transition: { duration: 0.18 } };
 
 function readAddParam() {
   try {
@@ -229,7 +226,6 @@ export default function SocialHub({ onNavigateTab }) {
     [summary, feed, userId]
   );
   const showResults = query.trim().length >= 2;
-  const pendingTotal = incoming.length + outgoing.length;
 
   const flash = (msg) => {
     setNotice(msg);
@@ -417,175 +413,43 @@ export default function SocialHub({ onNavigateTab }) {
       </header>
 
       {/* Convite direto via link ?u=username */}
-      {invitePass && (
-        <div className="space-y-3 py-4 border-y border-white/[0.08]">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black tracking-[0.22em] uppercase text-zinc-400">
-              Athlete Pass · Convite
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setInvitePass(null);
-                setInviteUsername('');
-                setQuery('');
-              }}
-              aria-label="Fechar convite"
-              className="w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <AthleteCard profile={invitePass} stats={invitePass} />
-          {(() => {
-            const existing = friendships.find((f) => f.friend_id === invitePass.id);
-            if (existing?.status === 'accepted') {
-              return (
-                <div className="min-h-[44px] rounded-full bg-emerald-500/15 border border-emerald-400/25 text-emerald-200 text-[13px] font-bold flex items-center justify-center gap-2">
-                  <Check className="w-4 h-4" /> Já são amigos de treino
-                </div>
-              );
-            }
-            if (existing?.status === 'pending' && existing.incoming) {
-              return (
-                <motion.button
-                  type="button"
-                  whileTap={TAP}
-                  transition={SPRING}
-                  onClick={() => respond(existing, true)}
-                  className="w-full min-h-[48px] rounded-full bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
-                >
-                  <Check className="w-4 h-4" /> Aceitar convite de @{invitePass.username}
-                </motion.button>
-              );
-            }
-            if (inviteRequested || (existing?.status === 'pending' && !existing.incoming)) {
-              return (
-                <div className="min-h-[44px] rounded-full bg-white/[0.06] border border-white/[0.12] text-zinc-200 text-[13px] font-semibold flex items-center justify-center gap-2">
-                  <Clock3 className="w-4 h-4 text-zinc-400" /> Pedido enviado a @{invitePass.username}
-                </div>
-              );
-            }
-            return (
-              <motion.button
-                type="button"
-                whileTap={TAP}
-                transition={SPRING}
-                onClick={async () => {
-                  triggerHaptic([10, 30, 10]);
-                  setInviteRequested(true);
-                  const { error } = await sendFriendRequest(userId, invitePass.id);
-                  if (error) {
-                    setInviteRequested(false);
-                    flash(error);
-                  } else {
-                    flash(`Pedido enviado a @${invitePass.username}`);
-                  }
-                  refreshSocial();
-                }}
-                className="w-full min-h-[48px] rounded-full bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
-              >
-                <UserPlus className="w-4 h-4" strokeWidth={2.2} />
-                Seguir &amp; Treinar Junto
-              </motion.button>
-            );
-          })()}
-        </div>
-      )}
+      <InvitePassBanner
+        invitePass={invitePass}
+        friendships={friendships}
+        inviteRequested={inviteRequested}
+        onClose={() => {
+          setInvitePass(null);
+          setInviteUsername('');
+          setQuery('');
+        }}
+        onRespond={respond}
+        onSendInvite={async () => {
+          triggerHaptic([10, 30, 10]);
+          setInviteRequested(true);
+          const { error } = await sendFriendRequest(userId, invitePass.id);
+          if (error) {
+            setInviteRequested(false);
+            flash(error);
+          } else {
+            flash(`Pedido enviado a @${invitePass.username}`);
+          }
+          refreshSocial();
+        }}
+      />
 
       {/* Faixa discreta e recolhível de pedidos pendentes */}
-      {pendingTotal > 0 && (
-        <div className="border-y border-white/[0.07]">
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic(8);
-              setRequestsOpen((v) => !v);
-            }}
-            aria-expanded={requestsOpen}
-            className="w-full min-h-[48px] py-2.5 flex items-center justify-between gap-3 text-left cursor-pointer touch-manipulation"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-              <span className="text-[13px] font-semibold text-white">
-                {incoming.length > 0
-                  ? `${incoming.length} ${incoming.length === 1 ? 'pedido de amizade' : 'pedidos de amizade'}`
-                  : `${outgoing.length} ${outgoing.length === 1 ? 'convite enviado' : 'convites enviados'}`}
-              </span>
-            </div>
-            <ChevronDown
-              className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${requestsOpen ? 'rotate-180' : ''}`}
-            />
-          </button>
-
-          {requestsOpen && (
-            <ul className="divide-y divide-white/[0.05] pb-2">
-              <AnimatePresence initial={false}>
-                {incoming.map((f) => (
-                  <motion.li
-                    key={f.friendship_id}
-                    layout="position"
-                    exit={EXIT}
-                    className="flex items-center gap-3 py-2.5"
-                  >
-                    <Avatar url={f.avatar_url} name={f.full_name || f.username} size={40} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-semibold text-white truncate">
-                        {f.full_name || `@${f.username}`}
-                      </p>
-                      <p className="text-[12px] text-zinc-400 truncate">quer treinar contigo</p>
-                    </div>
-                    <motion.button
-                      type="button"
-                      whileTap={TAP}
-                      transition={SPRING}
-                      onClick={() => respond(f, false)}
-                      className="min-h-[40px] px-3 rounded-full text-[13px] font-medium text-zinc-400 hover:text-white cursor-pointer touch-manipulation"
-                    >
-                      Recusar
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      whileTap={TAP}
-                      transition={SPRING}
-                      onClick={() => respond(f, true)}
-                      className="min-h-[40px] px-4 rounded-full bg-white text-black text-[13px] font-bold cursor-pointer touch-manipulation"
-                    >
-                      Aceitar
-                    </motion.button>
-                  </motion.li>
-                ))}
-                {outgoing.map((f) => (
-                  <motion.li
-                    key={f.friendship_id}
-                    layout="position"
-                    exit={EXIT}
-                    className="flex items-center gap-3 py-2.5"
-                  >
-                    <Avatar url={f.avatar_url} name={f.full_name || f.username} size={34} />
-                    <p className="flex-1 min-w-0 text-[13px] text-zinc-300 truncate">
-                      Pedido enviado a {f.full_name || `@${f.username}`}
-                    </p>
-                    <motion.button
-                      type="button"
-                      whileTap={TAP}
-                      onClick={() => respond(f, false)}
-                      className="min-h-[40px] px-3 text-[13px] font-medium text-zinc-400 hover:text-white cursor-pointer touch-manipulation"
-                    >
-                      Cancelar
-                    </motion.button>
-                  </motion.li>
-                ))}
-              </AnimatePresence>
-            </ul>
-          )}
-        </div>
-      )}
+      <PendingRequestsSection
+        incoming={incoming}
+        outgoing={outgoing}
+        requestsOpen={requestsOpen}
+        onToggleOpen={() => setRequestsOpen((v) => !v)}
+        onRespond={respond}
+      />
 
       {/* CAMADA B: Faixa "Ativos nas Últimas 24h" */}
       {loaded && activeToday.length > 0 && (
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-400 mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400 mb-3">
             Ativos nas últimas 24h
           </p>
           <div className="flex items-start gap-4 overflow-x-auto pb-1 -mx-4 px-4">

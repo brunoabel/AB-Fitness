@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v21'; // v21: remove botão redundante Publicar do cabeçalho de Amigos
+const CACHE_NAME = 'ab-fitness-v22'; // v22: endurecimento wearables/waitlist/RLS, ErrorBoundary, OG dinâmico e Ghost Pacer
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

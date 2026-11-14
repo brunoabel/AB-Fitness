@@ -87,14 +87,31 @@ export async function fetchLiveWhoopBiometrics(accessToken) {
   const rec = recoveryData?.records?.[0]?.score;
   const cycle = cycleData?.records?.[0]?.score;
 
+  if (!rec && !cycle) {
+    return {
+      is_stale: true,
+      recovery_score: null,
+      hrv_ms: null,
+      resting_hr_bpm: null,
+      sleep_score: null,
+      sleep_duration_seconds: null,
+      day_strain: null,
+      calories_burned: null,
+      raw_data: { recovery: recoveryData, cycle: cycleData }
+    };
+  }
+
+  const recoveryScore = rec?.recovery_score != null ? Math.round(rec.recovery_score) : null;
+
   return {
-    recovery_score: rec?.recovery_score != null ? Math.round(rec.recovery_score) : 80,
-    hrv_ms: rec?.hrv_rmssd_milli != null ? Number(rec.hrv_rmssd_milli.toFixed(1)) : 72.0,
-    resting_hr_bpm: rec?.resting_heart_rate != null ? Math.round(rec.resting_heart_rate) : 52,
-    sleep_score: rec?.sleep_performance_percentage != null ? Math.round(rec.sleep_performance_percentage) : 85,
-    sleep_duration_seconds: rec?.sleep_needed != null ? Math.round(rec.sleep_needed / 1000) : 28800,
-    day_strain: cycle?.strain != null ? Number(cycle.strain.toFixed(1)) : 12.5,
-    calories_burned: cycle?.kilojoules != null ? Math.round(cycle.kilojoules * 0.239) : 2200,
+    is_stale: recoveryScore == null,
+    recovery_score: recoveryScore,
+    hrv_ms: rec?.hrv_rmssd_milli != null ? Number(rec.hrv_rmssd_milli.toFixed(1)) : null,
+    resting_hr_bpm: rec?.resting_heart_rate != null ? Math.round(rec.resting_heart_rate) : null,
+    sleep_score: rec?.sleep_performance_percentage != null ? Math.round(rec.sleep_performance_percentage) : null,
+    sleep_duration_seconds: rec?.sleep_needed != null ? Math.round(rec.sleep_needed / 1000) : null,
+    day_strain: cycle?.strain != null ? Number(cycle.strain.toFixed(1)) : null,
+    calories_burned: cycle?.kilojoules != null ? Math.round(cycle.kilojoules * 0.239) : null,
     raw_data: { recovery: recoveryData, cycle: cycleData }
   };
 }

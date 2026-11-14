@@ -176,11 +176,11 @@ export default function AthleteCard({
           </h2>
           {isVerified && <VerifiedBadge size={compact ? 16 : 20} />}
           {isCeo ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase tracking-wider shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold uppercase tracking-wider">
               CEO & Founder
             </span>
           ) : isPro ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/10 text-white border border-white/20 text-[10px] font-black uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/10 text-white border border-white/20 text-[10px] font-bold uppercase tracking-wider">
               PRO
             </span>
           ) : null}

@@ -17,7 +17,7 @@ Guarda este documento como referência. Ele contém tudo o que foi concluído a 
 - [ ] **Guardar o ROPA em Arquivo (Art. 30.º do RGPD)**
   - Guardar cópia do Registo de Atividades de Tratamento (documento interno da ficha de tratamentos de saúde) na tua pasta de arquivo legal.
 - [ ] *(Opcional / Recomendado)* **Auto-alojamento de Fontes Google Fonts**
-  - Descarregar as fontes (`Barlow Condensed`, `Inter`, `Plus Jakarta Sans`) para a pasta `public/fonts/` e servir localmente, eliminando a dependência do servidor da Google (`fonts.googleapis.com`), reforçando o cumprimento estrito do RGPD.
+  - Descarregar as fontes (`Inter`, `Plus Jakarta Sans`) para a pasta `public/fonts/` e servir localmente, eliminando a dependência do servidor da Google (`fonts.googleapis.com`), reforçando o cumprimento estrito do RGPD.
 
 ### 🟢 Já Implementado e Validado
 - [x] **Identificação Legal e Fiscal (`src/legal/config.js`):** NIF `297261983`, morada fiscal em Gondomar / Porto e dados do prestador preenchidos nos Termos, Política de Privacidade e metadados Schema.org (Art. 10.º DL 7/2004).

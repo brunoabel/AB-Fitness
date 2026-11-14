@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useReducedMotion } from 'motion/react';
 import confetti from 'canvas-confetti';
 import RunningShareModal from './RunningShareModal';
@@ -51,6 +51,7 @@ import {
   RUN_TARGET_PREF_KEY
 } from './running/runPrefs';
 import { getRunTargetById, computeTargetProgress } from '../utils/runGoals';
+import { selectGhostReference, evaluateGhostPacer } from '../utils/ghostPacer';
 import RunHeader from './running/RunHeader';
 import RunPermissionModal from './running/RunPermissionModal';
 import RunLiveHud from './running/RunLiveHud';
@@ -406,6 +407,16 @@ export default function RunningHub({ isDark = true }) {
   // 1b. Pace médio derivado (sem estado duplicado): com distância suficiente calcula ao vivo,
   // senão usa o último valor conhecido (ex.: hidratado do rascunho)
   const livePaceSeconds = distanceKm > 0.03 && elapsedSeconds > 0 ? Math.round(elapsedSeconds / distanceKm) : avgPaceSeconds;
+
+  const ghostReference = useMemo(
+    () => selectGhostReference(runsHistory, selectedTarget),
+    [runsHistory, selectedTarget]
+  );
+
+  const ghostStatus = useMemo(() => {
+    if (sessionStatus !== 'running' && sessionStatus !== 'paused') return null;
+    return evaluateGhostPacer({ distanceKm, elapsedSeconds, ghostRun: ghostReference });
+  }, [sessionStatus, distanceKm, elapsedSeconds, ghostReference]);
 
   // 1c. Persistência com Throttling no IndexedDB (grava imediatamente em mudanças de rota/estado ou a cada 5s)
   useEffect(() => {
@@ -1104,6 +1115,7 @@ export default function RunningHub({ isDark = true }) {
           distanceKm,
           elapsedSeconds,
           elevationGainM,
+          ghostStatus,
           gpsError,
           gpsErrorCode,
           handleFinishRun,

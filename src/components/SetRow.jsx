@@ -31,7 +31,6 @@ import { isBeginnerProfile } from './onboarding/profileSchema';
 export default function SetRow({
   exerciseId,
   exercise,
-  index,
   displayIndex,
   set,
   prev,
@@ -39,8 +38,7 @@ export default function SetRow({
   bestHistoricalDuration,
   onChange,
   onRemove,
-  canRemove = false,
-  showRpe = false
+  canRemove = false
 }) {
   const isDone = Boolean(set.done || set.completed);
   const currentType = set.type || 'N';

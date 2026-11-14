@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -18,7 +18,7 @@ import {
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
-import { joinWaitlist } from '../services/waitlistService';
+import { flushWaitlistSyncQueue, joinWaitlist } from '../services/waitlistService';
 
 const GOALS = [
   { id: 'hipertrofia', label: 'Hipertrofia Muscular', icon: Dumbbell },
@@ -38,6 +38,7 @@ export default function PrivateLaunchScreen() {
   const [selectedGoal, setSelectedGoal] = useState('hipertrofia');
   const [submitting, setSubmitting] = useState(false);
   const [waitlistSuccess, setWaitlistSuccess] = useState(false);
+  const [waitlistCloudSaved, setWaitlistCloudSaved] = useState(true);
   const [waitlistError, setWaitlistError] = useState('');
   
   // Estado do formulário de Login do Fundador / Admin
@@ -47,6 +48,19 @@ export default function PrivateLaunchScreen() {
   const [adminError, setAdminError] = useState('');
 
   const isUserLoggedInNonAdmin = Boolean(user && !isAdmin && !isCeo);
+
+  useEffect(() => {
+    const retryWaitlist = () => {
+      flushWaitlistSyncQueue()
+        .then((sent) => {
+          if (sent > 0) setWaitlistCloudSaved(true);
+        })
+        .catch(() => {});
+    };
+    retryWaitlist();
+    window.addEventListener('online', retryWaitlist);
+    return () => window.removeEventListener('online', retryWaitlist);
+  }, []);
 
   const handleWaitlistSubmit = async (e) => {
     e.preventDefault();
@@ -69,6 +83,7 @@ export default function PrivateLaunchScreen() {
         setWaitlistError(res.error);
       } else {
         triggerHaptic([12, 40, 12]);
+        setWaitlistCloudSaved(Boolean(res.cloudSaved));
         setWaitlistSuccess(true);
       }
     } catch {
@@ -192,20 +207,35 @@ export default function PrivateLaunchScreen() {
               
               {waitlistSuccess ? (
                 <div className="text-center py-6 space-y-4 animate-fadeIn">
-                  <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
+                  <div className={`w-14 h-14 rounded-full border flex items-center justify-center mx-auto ${
+                    waitlistCloudSaved
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                      : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                  }`}>
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-lg font-bold text-white">Vaga Reservada com Sucesso</h3>
+                    <h3 className="text-lg font-bold text-white">
+                      {waitlistCloudSaved ? 'Vaga Reservada com Sucesso' : 'Pedido Registado — A Confirmar Ligação'}
+                    </h3>
                     <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
-                      Adicionámos o teu e-mail à lista prioritária de membros fundadores. Serás notificado assim que o próximo lote de convites for libertado.
+                      {waitlistCloudSaved
+                        ? 'Adicionámos o teu e-mail à lista prioritária de membros fundadores. Serás notificado assim que o próximo lote de convites for libertado.'
+                        : 'Guardámos os teus dados neste dispositivo. Mantém a página aberta ou volta quando tiveres ligação estável para confirmar o envio automático para a equipa.'}
                     </p>
                   </div>
                   <div className="pt-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-zinc-300">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      Prioridade Fundador Garantida
-                    </span>
+                    {waitlistCloudSaved ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-zinc-300">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        Prioridade Fundador Garantida
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-[11px] font-medium text-amber-300">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        Guardado no dispositivo · será sincronizado automaticamente assim que houver rede
+                      </span>
+                    )}
                   </div>
                 </div>
               ) : (

@@ -67,7 +67,7 @@ export default function SquadLeaderboardView({
   return (
     <div className="pt-4">
       <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.06]">
-        <span className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-400">
+        <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400">
           Ranking da Semana
         </span>
         <span className="text-[11px] font-medium text-zinc-500 tabular-nums">

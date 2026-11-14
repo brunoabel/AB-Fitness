@@ -17,6 +17,7 @@ import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
 import { flushWearableSyncQueue } from './services/wearables/wearableManager';
+import { flushWaitlistSyncQueue } from './services/waitlistService';
 import { savePendingInviteUsername, readPendingInviteUsername } from './services/socialService';
 import { 
   getCompletedDays, 
@@ -29,10 +30,12 @@ import {
 import { WEEKLY_SCHEDULE } from './data/workouts';
 import { sound } from './utils/audio';
 import ABLogo from './components/ABLogo';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
 import { connectWearable } from './services/wearables/wearableManager';
 import { exchangeWhoopCodeForToken, fetchLiveWhoopBiometrics } from './services/wearables/whoopService';
+import { exchangeFitbitCodeForToken, fetchLiveFitbitBiometrics } from './services/wearables/fitbitService';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -142,9 +145,15 @@ function AppContent() {
   const [coachMounted, setCoachMounted] = useState(false);
   if (showAICoachModal && !coachMounted) setCoachMounted(true);
 
-  // Pré-carrega os ecrãs secundários quando o browser estiver ocioso
+  // Pré-carrega apenas as vistas principais quando o browser estiver ocioso
   useEffect(() => {
-    const prefetch = () => Object.values(lazyImports).forEach((load) => load().catch(() => {}));
+    const primaryViews = [
+      lazyImports.workout,
+      lazyImports.running,
+      lazyImports.social,
+      lazyImports.profile,
+    ];
+    const prefetch = () => primaryViews.forEach((load) => load().catch(() => {}));
     if ('requestIdleCallback' in window) {
       const id = window.requestIdleCallback(prefetch, { timeout: 4000 });
       return () => window.cancelIdleCallback(id);
@@ -161,14 +170,21 @@ function AppContent() {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
       const returnedState = params.get('state');
-      const expectedState = sessionStorage.getItem('whoop_oauth_state');
+      const expectedWhoopState = sessionStorage.getItem('whoop_oauth_state');
+      const expectedFitbitState = sessionStorage.getItem('fitbit_oauth_state');
       sessionStorage.removeItem('whoop_oauth_state');
+      sessionStorage.removeItem('fitbit_oauth_state');
       const redirectUri = `${window.location.origin}/auth/callback/wearable`;
 
-      if (code && returnedState !== expectedState) {
-        console.warn('Estado OAuth da Whoop não corresponde ao esperado; a ignorar o código recebido.');
+      const isWhoopCallback = Boolean(code && expectedWhoopState && returnedState === expectedWhoopState);
+      const isFitbitCallback = Boolean(code && expectedFitbitState && returnedState === expectedFitbitState);
+
+      if (!isWhoopCallback && !isFitbitCallback) {
+        if (code) {
+          console.warn('Estado OAuth do wearable não corresponde ao esperado; a ignorar o código recebido.');
+        }
         window.history.replaceState({}, document.title, '/');
-      } else if (code) {
+      } else if (isWhoopCallback) {
         exchangeWhoopCodeForToken(code, redirectUri)
           .then(async (tokenData) => {
             const expiresAt = tokenData.expires_in
@@ -187,18 +203,43 @@ function AppContent() {
             } catch (e) {
               console.warn('Erro ao carregar biometria live Whoop inicial:', e);
             }
+            sound.playLevelUp?.();
           })
           .catch((err) => {
             console.warn('Erro no exchange de token Whoop:', err);
-            return connectWearable(user?.id, 'whoop', 'simulated', { code });
           })
           .finally(() => {
             window.history.replaceState({}, document.title, '/');
-            sound.playLevelUp?.();
             window.dispatchEvent(new Event('storage'));
           });
-      } else {
-        window.history.replaceState({}, document.title, '/');
+      } else if (isFitbitCallback) {
+        exchangeFitbitCodeForToken(code, redirectUri)
+          .then(async (tokenData) => {
+            const expiresAt = tokenData.expires_in
+              ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+              : null;
+            await connectWearable(user?.id, 'fitbit', 'connected', {
+              accessToken: tokenData.access_token,
+              refreshToken: tokenData.refresh_token,
+              expiresAt
+            });
+            try {
+              const bio = await fetchLiveFitbitBiometrics(tokenData.access_token);
+              const currentBio = JSON.parse(localStorage.getItem('ab_wearable_biometrics_v1') || '{}');
+              currentBio.fitbit = { ...bio, provider: 'fitbit', date: new Date().toISOString().slice(0, 10), last_synced_at: new Date().toISOString() };
+              localStorage.setItem('ab_wearable_biometrics_v1', JSON.stringify(currentBio));
+            } catch (e) {
+              console.warn('Erro ao carregar biometria live Fitbit inicial:', e);
+            }
+            sound.playLevelUp?.();
+          })
+          .catch((err) => {
+            console.warn('Erro no exchange de token Fitbit:', err);
+          })
+          .finally(() => {
+            window.history.replaceState({}, document.title, '/');
+            window.dispatchEvent(new Event('storage'));
+          });
       }
     }
   }, [user?.id]);
@@ -211,17 +252,29 @@ function AppContent() {
     sound.toggleSound(soundEnabled);
   }, [soundEnabled]);
 
-  // Reenvia treinos e biometria de wearables que ficaram por sincronizar (sem rede
-  // no ginásio) no arranque e quando a ligação volta
+  // Reenvia treinos, biometria de wearables e leads da waitlist que ficaram por sincronizar
+  // no arranque e quando a ligação volta
   useEffect(() => {
-    if (!user?.id || user.id === 'guest-local-user') return undefined;
-    const flush = () => {
+    const flushWaitlist = () => {
+      flushWaitlistSyncQueue().catch(() => {});
+    };
+    flushWaitlist();
+    window.addEventListener('online', flushWaitlist);
+
+    if (!user?.id || user.id === 'guest-local-user') {
+      return () => window.removeEventListener('online', flushWaitlist);
+    }
+
+    const flushUserQueues = () => {
       flushWorkoutSyncQueue(user.id).catch(() => {});
       flushWearableSyncQueue(user.id).catch(() => {});
     };
-    flush();
-    window.addEventListener('online', flush);
-    return () => window.removeEventListener('online', flush);
+    flushUserQueues();
+    window.addEventListener('online', flushUserQueues);
+    return () => {
+      window.removeEventListener('online', flushWaitlist);
+      window.removeEventListener('online', flushUserQueues);
+    };
   }, [user?.id]);
 
   // Carregar plano do usuário no Supabase ao autenticar
@@ -404,30 +457,36 @@ function AppContent() {
 
         {/* Visualização de Treino Ativo */}
         {currentView === 'active-workout' && activeWorkout ? (
-          <Suspense fallback={<TabFallback />}>
-            <ActiveWorkout
-              workout={activeWorkout}
-              onBackToDashboard={handleBackToDashboard}
-            />
-          </Suspense>
+          <ErrorBoundary scope="active-workout" onReset={handleBackToDashboard}>
+            <Suspense fallback={<TabFallback />}>
+              <ActiveWorkout
+                workout={activeWorkout}
+                onBackToDashboard={handleBackToDashboard}
+              />
+            </Suspense>
+          </ErrorBoundary>
         ) : currentView === 'admin' ? (
-          <Suspense fallback={<TabFallback />}>
-            <AdminDashboard
-              onBackToWorkout={() => {
-                setCurrentView('dashboard');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          </Suspense>
+          <ErrorBoundary scope="admin" onReset={() => setCurrentView('dashboard')}>
+            <Suspense fallback={<TabFallback />}>
+              <AdminDashboard
+                onBackToWorkout={() => {
+                  setCurrentView('dashboard');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </Suspense>
+          </ErrorBoundary>
         ) : currentView === 'trainer-hub' ? (
-          <Suspense fallback={<TabFallback />}>
-            <TrainerHubView
-              onBack={() => {
-                setCurrentView('dashboard');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          </Suspense>
+          <ErrorBoundary scope="trainer-hub" onReset={() => setCurrentView('dashboard')}>
+            <Suspense fallback={<TabFallback />}>
+              <TrainerHubView
+                onBack={() => {
+                  setCurrentView('dashboard');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </Suspense>
+          </ErrorBoundary>
         ) : (
           /* Visualização do Painel Principal */
           <>
@@ -459,23 +518,25 @@ function AppContent() {
                 />
               )}
 
-              <Suspense fallback={<TabFallback />}>
-                {activeTab === 'dashboard' && trainMode === 'custom' && (
-                  <CustomWorkoutsHub
-                    onStartWorkout={handleStartWorkout}
-                    onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
-                    onOpenAICoach={() => setShowAICoachModal(true)}
-                  />
-                )}
+              <ErrorBoundary scope={`tab-${activeTab}`} compact>
+                <Suspense fallback={<TabFallback />}>
+                  {activeTab === 'dashboard' && trainMode === 'custom' && (
+                    <CustomWorkoutsHub
+                      onStartWorkout={handleStartWorkout}
+                      onViewExercise={(ex) => setSelectedExerciseForModal(ex)}
+                      onOpenAICoach={() => setShowAICoachModal(true)}
+                    />
+                  )}
 
-                {activeTab === 'running' && (
-                  <RunningHub isDark={isDark} />
-                )}
+                  {activeTab === 'running' && (
+                    <RunningHub isDark={isDark} />
+                  )}
 
-                {activeTab === 'profile' && <ProfileView />}
+                  {activeTab === 'profile' && <ProfileView />}
 
-                {activeTab === 'social' && <SocialHub onNavigateTab={handleTabChange} />}
-              </Suspense>
+                  {activeTab === 'social' && <SocialHub onNavigateTab={handleTabChange} />}
+                </Suspense>
+              </ErrorBoundary>
 
               {/* Rodapé Institucional */}
               <Footer onOpenGuide={() => setShowGuideModal(true)} />
@@ -605,8 +666,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ErrorBoundary scope="root">
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

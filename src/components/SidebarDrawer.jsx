@@ -34,7 +34,7 @@ const SPRING = { type: 'spring', stiffness: 400, damping: 38 };
 
 function SectionLabel({ children }) {
   return (
-    <p className="px-5 pt-6 pb-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+    <p className="px-5 pt-6 pb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-400">
       {children}
     </p>
   );

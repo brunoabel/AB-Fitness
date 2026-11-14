@@ -72,7 +72,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     const draft = getActiveDraft();
     return draft && draft.workoutDayId === currentWorkoutDayId ? draft : null;
   });
-  const isResumed = Boolean(activeDraft);
 
   // Histórico de treinos anteriores para cálculo de PRs e valores fantasma
   const [pastHistory] = useState(() => getWorkoutHistory());
@@ -625,7 +624,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
                 onClick={toggleExpressMode}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                   isExpressMode
-                    ? 'bg-amber-500/20 border-amber-400/40 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
+                    ? 'bg-amber-500/15 border-amber-400/35 text-amber-300'
                     : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                 }`}
                 title="Modo Express: intervalos rápidos de 45s para finalizar em 30 min"

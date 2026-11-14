@@ -104,12 +104,12 @@ export default function WearableReadinessCard({ onOpenWearables }) {
                 color: readiness.color
               }}
             >
-              {readiness.score}%
+              {readiness.isStale || readiness.score == null ? '--' : `${readiness.score}%`}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
-                  className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
+                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${readiness.isStale ? '' : 'animate-pulse'}`}
                   style={{ backgroundColor: readiness.color }}
                 />
                 <span className="text-[12px] font-semibold text-white uppercase tracking-wider">

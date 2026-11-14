@@ -1,6 +1,8 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { enqueueJob, flushQueue, getQueuedJobs } from '../utils/syncQueue.js';
 
 const WAITLIST_STORAGE_KEY = 'ab_marketing_waitlist_v1';
+export const WAITLIST_SYNC_QUEUE_KEY = 'ab_waitlist_sync_queue_v1';
 
 export function getLocalWaitlist() {
   if (typeof window === 'undefined') return [];
@@ -20,10 +22,43 @@ export function saveLocalWaitlist(list) {
 }
 
 /**
- * Inscreve um lead na Lista VIP de Acesso Antecipado.
- * Grava imediatamente no Supabase (nuvem) e em localStorage.
+ * Grava um lead individual na tabela `waitlist` do Supabase.
+ * Considera duplicado (`23505`) como sucesso idempotente.
  */
-export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) {
+export async function pushWaitlistLeadToCloud(entry, client = supabase) {
+  if (!client) {
+    return { ok: false, error: 'Cliente Supabase indisponível' };
+  }
+  try {
+    const { error } = await client
+      .from('waitlist')
+      .insert({
+        name: entry.name,
+        email: entry.email,
+        goal: entry.goal,
+        phone: entry.phone || null,
+        source: entry.source
+      });
+
+    if (!error || error.code === '23505') {
+      return { ok: true, error: null };
+    }
+    console.warn('Erro ao sincronizar lead com o Supabase:', error.message);
+    return { ok: false, error: error.message || 'Falha ao gravar na nuvem' };
+  } catch (err) {
+    console.warn('Exceção ao gravar no Supabase:', err);
+    return { ok: false, error: err?.message || 'Exceção ao gravar na nuvem' };
+  }
+}
+
+/**
+ * Inscreve um lead na Lista VIP de Acesso Antecipado.
+ * Tenta gravar imediatamente no Supabase e, se falhar, enfileira localmente para retry automático.
+ */
+export async function joinWaitlist(
+  { name, email, goal = 'geral', phone = '' },
+  { supabaseClient = supabase, configured = isSupabaseConfigured() } = {}
+) {
   const cleanEmail = (email || '').trim().toLowerCase();
   const cleanName = (name || '').trim();
   const cleanGoal = (goal || '').trim();
@@ -50,37 +85,51 @@ export async function joinWaitlist({ name, email, goal = 'geral', phone = '' }) 
     saveLocalWaitlist([entry, ...existing]);
   }
 
-  // Sincroniza com o Supabase (para ficar visível para o Admin em todos os dispositivos)
-  let cloudError = null;
-  if (isSupabaseConfigured() && supabase) {
-    try {
-      const { error } = await supabase
-        .from('waitlist')
-        .insert({
-          name: entry.name,
-          email: entry.email,
-          goal: entry.goal,
-          phone: entry.phone || null,
-          source: entry.source
-        });
+  let syncRes = { ok: false, error: 'Sem ligação ao servidor' };
+  if (configured && supabaseClient) {
+    syncRes = await pushWaitlistLeadToCloud(entry, supabaseClient);
+  }
 
-      // Se for duplicado (código 23505), o lead já está no banco com sucesso
-      if (error && error.code !== '23505') {
-        cloudError = error;
-        console.warn('Erro ao sincronizar lead com o Supabase:', error.message);
-      }
-    } catch (err) {
-      cloudError = err;
-      console.warn('Exceção ao gravar no Supabase:', err);
-    }
+  if (!syncRes.ok) {
+    enqueueJob(WAITLIST_SYNC_QUEUE_KEY, {
+      key: `waitlist:${cleanEmail}`,
+      ...entry
+    });
+    return {
+      data: entry,
+      alreadyJoined,
+      cloudSaved: false,
+      queuedForRetry: true,
+      syncError: syncRes.error || 'Sem ligação ao servidor',
+      error: null
+    };
   }
 
   return {
     data: entry,
     alreadyJoined,
-    cloudSaved: !cloudError,
+    cloudSaved: true,
+    queuedForRetry: false,
+    syncError: null,
     error: null
   };
+}
+
+/**
+ * Reenvia leads pendentes na fila local para o Supabase assim que houver ligação.
+ */
+export function flushWaitlistSyncQueue({
+  supabaseClient = supabase,
+  configured = isSupabaseConfigured()
+} = {}) {
+  if (!configured || !supabaseClient) return Promise.resolve(0);
+  return flushQueue(WAITLIST_SYNC_QUEUE_KEY, {
+    sendFn: async (job) => (await pushWaitlistLeadToCloud(job, supabaseClient)).ok
+  });
+}
+
+export function getPendingWaitlistJobs() {
+  return getQueuedJobs(WAITLIST_SYNC_QUEUE_KEY);
 }
 
 /**

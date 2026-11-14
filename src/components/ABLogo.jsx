@@ -12,7 +12,6 @@ import React from 'react';
  */
 export default function ABLogo({ 
   size = 44, 
-  showText = true,
   className = '' 
 }) {
   const borderRadius = Math.max(8, Math.round(size * 0.22));

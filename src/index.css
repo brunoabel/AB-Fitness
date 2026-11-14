@@ -255,8 +255,12 @@
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+/* Nota: Tailwind CSS v4 já aplica @media (hover: hover) nativamente às classes hover:/group-hover:.
+   Mantemos também a regra manual de scrollbar protegida contra hover preso em ecrãs táteis. */
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
 }
 
 /* Micro-transições sóbrias e funcionais (sem bounces gratuitos) */

@@ -143,7 +143,7 @@ function FrequencyControl({ profile, set }) {
                 aria-label={`${w.name}: ${on ? 'Dia de treino' : 'Descanso'}`}
                 className={`h-14 rounded-xl flex flex-col items-center justify-center gap-1 border transition-all cursor-pointer select-none ${
                   on
-                    ? 'bg-accent/80 text-white border-accent shadow-[0_0_12px_rgba(235,94,40,0.25)]'
+                    ? 'bg-accent/80 text-white border-accent-hover'
                     : 'bg-surface-2 text-zinc-400 border-white/[0.07] hover:border-white/[0.15] hover:text-zinc-200'
                 }`}
               >

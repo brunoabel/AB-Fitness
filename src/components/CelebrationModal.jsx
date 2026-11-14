@@ -17,7 +17,6 @@ export default function CelebrationModal({
   durationMinutes = 0, 
   totalSetsCompleted = 0, 
   totalVolumeKg = 0, 
-  unlockedBadge = null,
   newPRs = [],
   insights = null,
   coachNarrative = null,
@@ -184,7 +183,7 @@ export default function CelebrationModal({
           {/* Destaque de Novos Recordes Pessoais (PR) */}
           {newPRs && newPRs.length > 0 && (
             <div className="p-3 rounded-xl bg-accent/70 border border-accent-hover text-left flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center font-black shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center font-bold shrink-0">
                 <Trophy className="w-4 h-4 stroke-[2.5]" />
               </div>
               <div className="min-w-0 flex-1">
@@ -201,7 +200,7 @@ export default function CelebrationModal({
           {/* Destaque de Análise do Treinador Inteligente (AB Coach) */}
           {coachNarrative && (
             <div className="p-3.5 rounded-xl bg-accent text-white border border-accent-hover text-left flex items-start gap-3 shadow-md">
-              <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center font-black shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center font-bold shrink-0 mt-0.5">
                 <Sparkles className="w-4 h-4 stroke-[2.5]" />
               </div>
               <div className="min-w-0 flex-1">

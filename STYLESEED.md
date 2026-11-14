@@ -51,7 +51,7 @@ Fadiga muscular (mapa de recuperação): rampa térmica `--color-heat-0..3` (#12
 | `text-body` | 15/22 | Texto corrido |
 | `text-micro uppercase tracking-wider text-zinc-400` | 11/16 | Rótulos, telemetria |
 
-- Títulos: Plus Jakarta Sans (`font-heading`). Métricas grandes: Barlow Condensed (`font-display`). Corpo: Inter.
+- Títulos: Plus Jakarta Sans (`font-heading`). Métricas grandes: Plus Jakarta Sans (`font-display`, tabular-nums). Corpo: Inter.
 - Números (cronómetros, cargas, séries, biometria): sempre `tabular-nums`.
 
 ## Movimento

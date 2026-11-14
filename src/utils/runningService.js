@@ -320,7 +320,6 @@ export function calculateRollingPace({
     for (let i = points.length - 1; i > 0; i--) {
       const curr = points[i];
       const prev = points[i - 1];
-      const currT = curr.t !== undefined ? curr.t : (curr.timestamp || latestTime);
       const prevT = prev.t !== undefined ? prev.t : (prev.timestamp || latestTime);
 
       accDistMeters += haversine(prev, curr);

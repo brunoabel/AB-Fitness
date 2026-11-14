@@ -18,6 +18,7 @@ function RunLiveHudComponent({
   distanceKm,
   elapsedSeconds,
   elevationGainM,
+  ghostStatus,
   gpsError,
   gpsErrorCode,
   handleFinishRun,
@@ -182,6 +183,25 @@ function RunLiveHudComponent({
               </p>
             </div>
           )}
+
+          {ghostStatus && (
+            <div className="pt-1 flex justify-center">
+              <div
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs border tabular-nums ${
+                  ghostStatus.status === 'ahead'
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                    : ghostStatus.status === 'behind'
+                      ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+                      : 'bg-white/[0.06] border-white/[0.12] text-zinc-200'
+                }`}
+              >
+                <span className="font-semibold tracking-tight">{ghostStatus.label}</span>
+                <span className="text-white/30" aria-hidden>·</span>
+                <span className="font-bold">{ghostStatus.statusText}</span>
+                <span className="text-[11px] opacity-75">({ghostStatus.ghostPaceFormatted})</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 4 Métricas de leitura imediata ao correr (ergonomia de HUD desportivo) */}
@@ -287,7 +307,7 @@ function RunLiveHudComponent({
                   setConfirmFinish(false);
                   handlePause();
                 }}
-                className="flex-1 min-h-[56px] px-5 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                className="flex-1 min-h-[56px] px-5 rounded-full bg-white/[0.1] hover:bg-white/[0.16] text-white border border-white/[0.16] font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
               >
                 <Pause className="w-5 h-5 fill-current" />
                 <span>Pausar</span>

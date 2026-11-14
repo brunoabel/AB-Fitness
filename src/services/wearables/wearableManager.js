@@ -271,19 +271,37 @@ export function computeReadinessIndex(biometrics = {}) {
     return null;
   }
 
+  const whoopValid = Boolean(whoop && !whoop.is_stale && typeof whoop.recovery_score === 'number');
+  const fitbitValid = Boolean(fitbit && !fitbit.is_stale && typeof fitbit.sleep_score === 'number');
+
+  if (!whoopValid && !fitbitValid) {
+    return {
+      score: null,
+      isStale: true,
+      status: 'stale',
+      label: 'Sem dados recentes',
+      color: '#8E929F',
+      advice: 'Sem leitura recente dos sensores. Abre os dispositivos e toca em sincronizar para atualizar.',
+      providerUsed: whoop && fitbit ? 'composite' : (whoop ? 'whoop' : 'fitbit'),
+      hrv: null,
+      restingHr: null,
+      strain: null,
+      sleepScore: null
+    };
+  }
+
   let score = 80;
   let providerUsed = 'whoop';
 
-  if (whoop && fitbit) {
+  if (whoopValid && fitbitValid) {
     // Whoop tem peso 60%, Fitbit 40%
-    const fitbitScore = fitbit.sleep_score || 80;
-    score = Math.round((whoop.recovery_score * 0.6) + (fitbitScore * 0.4));
+    score = Math.round((whoop.recovery_score * 0.6) + (fitbit.sleep_score * 0.4));
     providerUsed = 'composite';
-  } else if (whoop) {
-    score = whoop.recovery_score || 80;
+  } else if (whoopValid) {
+    score = whoop.recovery_score;
     providerUsed = 'whoop';
-  } else if (fitbit) {
-    score = fitbit.sleep_score || 80;
+  } else if (fitbitValid) {
+    score = fitbit.sleep_score;
     providerUsed = 'fitbit';
   }
 
@@ -313,14 +331,15 @@ export function computeReadinessIndex(biometrics = {}) {
 
   return {
     score,
+    isStale: false,
     status,
     label,
     color,
     advice,
     providerUsed,
-    hrv: whoop?.hrv_ms || null,
-    restingHr: whoop?.resting_hr_bpm || fitbit?.resting_hr_bpm || null,
-    strain: whoop?.day_strain || null,
-    sleepScore: whoop?.sleep_score || fitbit?.sleep_score || null
+    hrv: whoopValid ? (whoop?.hrv_ms ?? null) : null,
+    restingHr: (whoopValid ? whoop?.resting_hr_bpm : null) ?? (fitbitValid ? fitbit?.resting_hr_bpm : null) ?? null,
+    strain: whoopValid ? (whoop?.day_strain ?? null) : null,
+    sleepScore: (whoopValid ? whoop?.sleep_score : null) ?? (fitbitValid ? fitbit?.sleep_score : null) ?? null
   };
 }

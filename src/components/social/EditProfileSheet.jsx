@@ -235,7 +235,7 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[12px] font-bold text-white tracking-tight drop-shadow-sm">{c.label}</span>
                     {c.badge && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-white/25 text-white backdrop-blur-sm border border-white/20">
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/25 text-white backdrop-blur-sm border border-white/20">
                         {c.badge}
                       </span>
                     )}

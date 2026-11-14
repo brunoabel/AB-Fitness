@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { THEMES } from './share/themes';
 import ShareTitleEditor from './share/ShareTitleEditor';
 import ShareThemePicker from './share/ShareThemePicker';
+import CardRouteMap from './share/CardRouteMap';
+import { generateRunShareCanvas } from './share/runShareCanvas';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
 import { createPortal } from 'react-dom';
-import L from 'leaflet';
 import {
   X,
   Share2,
@@ -17,141 +18,12 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { 
-  getNormalizedRoutePath, 
   getCoordinatesWithFallback, 
   formatDuration, 
   formatPace 
 } from '../utils/runningService';
 import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
-
-// Temas visuais desportivos de alto impacto
-
-// Componente de Minimapa Real (100% livre de marcas d'água de API KEY)
-function CardRouteMap({ coordinates, themeId }) {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-
-  useEffect(() => {
-    const container = mapRef.current;
-    if (!container) return;
-
-    // Prevenir conflito de mapa já inicializado
-    if (mapInstanceRef.current) {
-      try {
-        mapInstanceRef.current.remove();
-      } catch {}
-      mapInstanceRef.current = null;
-    }
-    if (container._leaflet_id) {
-      container._leaflet_id = null;
-    }
-
-    const coords = getCoordinatesWithFallback(coordinates);
-    const center = coords[Math.floor(coords.length / 2)] || { lat: 38.7285, lng: -9.1530 };
-
-    // Camada limpa sem restrições ou marcas d'água
-    const tileUrl = themeId === 'satellite-map'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-
-    let map = null;
-    try {
-      map = L.map(container, {
-        center: [center.lat, center.lng],
-        zoom: 14,
-        zoomControl: false,
-        dragging: false,
-        touchZoom: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        attributionControl: false
-      });
-      mapInstanceRef.current = map;
-    } catch (e) {
-      console.warn('Erro ao criar mapa no card:', e);
-      return;
-    }
-
-    L.tileLayer(tileUrl, {
-      maxZoom: 19,
-      crossOrigin: true
-    }).addTo(map);
-
-    const latLngs = coords.map(c => [c.lat, c.lng]);
-
-    // Contorno escuro para contraste garantido
-    L.polyline(latLngs, {
-      color: '#000000',
-      weight: 7,
-      opacity: 0.85,
-      lineJoin: 'round',
-      lineCap: 'round'
-    }).addTo(map);
-
-    // Linha neon principal: segue a cor de acento do tema só quando o fundo do mapa é escuro o
-    // suficiente para ela se ver (temas de sticker transparente usam tinta escura, invisível aqui)
-    const lineColor = themeId === 'strava-orange' || themeId === 'satellite-map' ? THEMES[themeId].accent : '#ffffff';
-    const poly = L.polyline(latLngs, {
-      color: lineColor,
-      weight: 4.5,
-      opacity: 1,
-      lineJoin: 'round',
-      lineCap: 'round'
-    }).addTo(map);
-
-    // Marcadores de início e fim
-    if (coords.length > 0) {
-      const startPos = [coords[0].lat, coords[0].lng];
-      const endPos = [coords[coords.length - 1].lat, coords[coords.length - 1].lng];
-
-      L.marker(startPos, {
-        icon: L.divIcon({
-          className: 'card-start-pin',
-          html: '<div style="width:14px;height:14px;background:#10b981;border:2.5px solid #ffffff;border-radius:50%;box-shadow:0 0 10px #10b981;"></div>',
-          iconSize: [14, 14],
-          iconAnchor: [7, 7]
-        })
-      }).addTo(map);
-
-      L.marker(endPos, {
-        icon: L.divIcon({
-          className: 'card-end-pin',
-          html: `<div style="width:14px;height:14px;background:${lineColor};border:2.5px solid #ffffff;border-radius:50%;box-shadow:0 0 10px ${lineColor};"></div>`,
-          iconSize: [14, 14],
-          iconAnchor: [7, 7]
-        })
-      }).addTo(map);
-    }
-
-    try {
-      const bounds = poly.getBounds();
-      if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [16, 16], maxZoom: 16 });
-      }
-    } catch {}
-
-    const timer = setTimeout(() => {
-      if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
-    }, 150);
-
-    return () => {
-      clearTimeout(timer);
-      if (mapInstanceRef.current) {
-        try {
-          mapInstanceRef.current.remove();
-        } catch {}
-        mapInstanceRef.current = null;
-      }
-      if (container) {
-        container._leaflet_id = null;
-      }
-    };
-  }, [coordinates, themeId]);
-
-  return <div ref={mapRef} className="w-full h-full rounded-2xl overflow-hidden bg-zinc-950" />;
-}
 
 export default function RunningShareModal({ 
   runData, 
@@ -233,307 +105,22 @@ export default function RunningShareModal({
     window.open(url, '_blank');
   };
 
-  // Carregar imagem de logo como Promise
-  const loadLogoImage = () => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
-      img.src = '/ab-logo.png';
-    });
-  };
-
   // Gerar e renderizar imagem em altíssima resolução (1080x1920 ou 1080x1080)
-  const generateHiResCanvas = async () => {
-    const isStory = aspectRatio === 'story';
-    const canvasWidth = 1080;
-    const canvasHeight = isStory ? 1920 : 1080;
-    const logoImg = await loadLogoImage();
-
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      const ctx = canvas.getContext('2d');
-
-      // Stickers transparentes: sem fundo nenhum (foto ou gradiente) — para colar por cima
-      // de qualquer foto no editor de Stories/Reels. Canal alfa preservado no PNG exportado.
-      if (currentTheme.transparent) {
-        drawGraphicOverlays(ctx, canvasWidth, canvasHeight, logoImg);
-        resolve(canvas);
-        return;
-      }
-
-      // Fundo Base
-      if (bgMode === 'custom-photo' && customPhotoUrl) {
-        const photoImg = new Image();
-        photoImg.crossOrigin = 'anonymous';
-        photoImg.onload = () => {
-          const scale = Math.max(canvasWidth / photoImg.width, canvasHeight / photoImg.height);
-          const x = (canvasWidth - photoImg.width * scale) / 2;
-          const y = (canvasHeight - photoImg.height * scale) / 2;
-          ctx.drawImage(photoImg, x, y, photoImg.width * scale, photoImg.height * scale);
-
-          const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-          grad.addColorStop(0, 'rgba(0, 0, 0, 0.88)');
-          grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.45)');
-          grad.addColorStop(0.65, 'rgba(0, 0, 0, 0.55)');
-          grad.addColorStop(1, 'rgba(0, 0, 0, 0.96)');
-          ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-          drawGraphicOverlays(ctx, canvasWidth, canvasHeight, logoImg);
-          resolve(canvas);
-        };
-        photoImg.onerror = () => {
-          drawDefaultBackground(ctx, canvasWidth, canvasHeight);
-          drawGraphicOverlays(ctx, canvasWidth, canvasHeight, logoImg);
-          resolve(canvas);
-        };
-        photoImg.src = customPhotoUrl;
-      } else {
-        drawDefaultBackground(ctx, canvasWidth, canvasHeight);
-        drawGraphicOverlays(ctx, canvasWidth, canvasHeight, logoImg);
-        resolve(canvas);
-      }
+  const generateHiResCanvas = () =>
+    generateRunShareCanvas({
+      aspectRatio,
+      currentTheme,
+      bgMode,
+      customPhotoUrl,
+      sessionTitle,
+      effectiveCoordinates,
+      dateFormatted,
+      timeFormatted,
+      distanceKm,
+      paceStr,
+      durationStr,
+      calories
     });
-  };
-
-  const drawDefaultBackground = (ctx, w, h) => {
-    const bgGrad = ctx.createRadialGradient(w / 2, h / 2, 100, w / 2, h / 2, w * 0.9);
-    bgGrad.addColorStop(0, currentTheme.bgGrad[0]);
-    bgGrad.addColorStop(1, currentTheme.bgGrad[1]);
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, w, h);
-
-    // Grid atlético sutil
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.lineWidth = 1.5;
-    const gridSize = 70;
-    for (let x = 0; x < w; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    for (let y = 0; y < h; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-  };
-
-  const drawGraphicOverlays = (ctx, w, h, logoImg) => {
-    const isStoryMode = aspectRatio === 'story';
-    const paddingX = 80;
-    const isSticker = Boolean(currentTheme.transparent);
-    // Em sticker, a tinta principal e secundária vêm do tema (claro ou escuro); fora disso,
-    // mantém-se sempre branco, tal como antes. A sombra garante legibilidade sem caixa opaca.
-    const ink = isSticker ? currentTheme.ink : '#FFFFFF';
-    const sub = isSticker
-      ? (currentTheme.ink === '#ffffff' ? 'rgba(255,255,255,0.6)' : 'rgba(10,10,12,0.6)')
-      : null;
-    if (isSticker) {
-      ctx.shadowColor = currentTheme.shadow;
-      ctx.shadowBlur = 16;
-      ctx.shadowOffsetY = 3;
-    }
-
-    // 1. Cabeçalho com Logo Oficial
-    const logoSize = 100;
-    const logoX = paddingX;
-    const logoY = isStoryMode ? 110 : 70;
-
-    ctx.save();
-    ctx.fillStyle = '#000000';
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.roundRect(logoX, logoY, logoSize, logoSize, 24);
-    ctx.fill();
-    ctx.stroke();
-
-    if (logoImg) {
-      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-    }
-    ctx.restore();
-
-    ctx.textAlign = 'left';
-    ctx.fillStyle = ink;
-    ctx.font = '700 36px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('AB FITNESS', logoX + logoSize + 24, logoY + 44);
-
-    ctx.fillStyle = currentTheme.accent;
-    ctx.font = '600 18px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('RUNNING CLUB', logoX + logoSize + 24, logoY + 76);
-
-    ctx.textAlign = 'right';
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
-    ctx.font = '500 20px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(`${dateFormatted} • ${timeFormatted}`, w - paddingX, logoY + 44);
-    ctx.textAlign = 'left';
-
-    // 2. Título da Atividade
-    const titleY = logoY + logoSize + (isStoryMode ? 55 : 35);
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.45)';
-    ctx.font = '600 18px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('ATIVIDADE REGISTRADA', paddingX, titleY);
-
-    ctx.fillStyle = ink;
-    ctx.font = '700 44px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(sessionTitle, paddingX, titleY + 46);
-
-    // 3. Mapinha do Percurso — sem caixa opaca em modo sticker (rota flutua sobre o alfa)
-    const mapBoxY = titleY + 75;
-    const mapBoxW = w - paddingX * 2;
-    const mapBoxH = isStoryMode ? 520 : 360;
-
-    ctx.save();
-    if (!isSticker) {
-      ctx.fillStyle = 'rgba(10, 10, 15, 0.88)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.roundRect(paddingX, mapBoxY, mapBoxW, mapBoxH, 32);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      ctx.font = '700 16px system-ui, sans-serif';
-      ctx.fillText('MAPA DO PERCURSO • GPS AO VIVO', paddingX + 24, mapBoxY + 36);
-    }
-
-    if (effectiveCoordinates && effectiveCoordinates.length > 1) {
-      const innerW = mapBoxW - 80;
-      const innerH = mapBoxH - 90;
-      const innerNorm = getNormalizedRoutePath(effectiveCoordinates, innerW, innerH, 30);
-
-      if (innerNorm && innerNorm.points) {
-        ctx.translate(paddingX + 40, mapBoxY + 50);
-
-        // Brilho Neon
-        ctx.shadowColor = currentTheme.glow;
-        ctx.shadowBlur = 28;
-        ctx.strokeStyle = currentTheme.accent;
-        ctx.lineWidth = 10;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-
-        ctx.beginPath();
-        innerNorm.points.forEach((pt, idx) => {
-          if (idx === 0) ctx.moveTo(pt.x, pt.y);
-          else ctx.lineTo(pt.x, pt.y);
-        });
-        ctx.stroke();
-
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Ponto de Início
-        if (innerNorm.startPoint) {
-          ctx.fillStyle = '#10b981';
-          ctx.shadowColor = '#10b981';
-          ctx.shadowBlur = 18;
-          ctx.beginPath();
-          ctx.arc(innerNorm.startPoint.x, innerNorm.startPoint.y, 11, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(innerNorm.startPoint.x, innerNorm.startPoint.y, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Ponto de Fim
-        if (innerNorm.endPoint) {
-          ctx.fillStyle = currentTheme.accent;
-          ctx.shadowColor = currentTheme.accent;
-          ctx.shadowBlur = 20;
-          ctx.beginPath();
-          ctx.arc(innerNorm.endPoint.x, innerNorm.endPoint.y, 12, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(innerNorm.endPoint.x, innerNorm.endPoint.y, 5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
-    ctx.restore();
-
-    // 4. Métricas
-    const statsY = mapBoxY + mapBoxH + (isStoryMode ? 65 : 35);
-
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.55)';
-    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('DISTÂNCIA TOTAL', paddingX, statsY);
-
-    ctx.fillStyle = ink;
-    ctx.font = '700 144px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(distanceKm, paddingX, statsY + 125);
-
-    ctx.fillStyle = currentTheme.accent;
-    ctx.font = '600 52px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    const distWidth = ctx.measureText(distanceKm).width;
-    ctx.fillText('KM', paddingX + distWidth + 24, statsY + 125);
-
-    if (!isSticker) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(paddingX, statsY + 175);
-      ctx.lineTo(w - paddingX, statsY + 175);
-      ctx.stroke();
-    }
-
-    const metricsRowY = statsY + 230;
-    const colWidth = (w - paddingX * 2) / 3;
-
-    // Pace
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('RITMO MÉDIO', paddingX, metricsRowY);
-
-    ctx.fillStyle = ink;
-    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(paceStr, paddingX, metricsRowY + 68);
-
-    // Tempo
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('TEMPO TOTAL', paddingX + colWidth, metricsRowY);
-
-    ctx.fillStyle = ink;
-    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(durationStr, paddingX + colWidth, metricsRowY + 68);
-
-    // Calorias
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '600 22px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText('CALORIAS', paddingX + colWidth * 2, metricsRowY);
-
-    ctx.fillStyle = ink;
-    ctx.font = '600 60px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.fillText(`${calories} kcal`, paddingX + colWidth * 2, metricsRowY + 68);
-
-    // 5. Rodapé
-    const footerY = h - (isStoryMode ? 70 : 40);
-    ctx.fillStyle = isSticker ? sub : 'rgba(255, 255, 255, 0.4)';
-    ctx.font = '500 20px "Plus Jakarta Sans", Inter, system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('abfitness.app • AB Fitness Running Club', w / 2, footerY);
-    ctx.textAlign = 'left';
-
-    if (isSticker) {
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetY = 0;
-    }
-  };
 
   const handleDownload = async () => {
     setIsExporting(true);

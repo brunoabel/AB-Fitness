@@ -56,16 +56,13 @@ export default function WearablesModal({ isOpen, onClose }) {
 
   const [connections, setConnections] = useState({});
   const [biometrics, setBiometrics] = useState({});
-  const [loading, setLoading] = useState(false);
   const [syncingProvider, setSyncingProvider] = useState(null);
 
   const loadData = async () => {
-    setLoading(true);
     const conns = await getConnectedWearables(userId);
     const bios = getLocalBiometrics();
     setConnections(conns);
     setBiometrics(bios);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -196,7 +193,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                         boxShadow: `0 0 16px ${readiness.color}26`
                       }}
                     >
-                      {readiness.score}%
+                      {readiness.isStale || readiness.score == null ? '--' : `${readiness.score}%`}
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -209,7 +206,9 @@ export default function WearablesModal({ isOpen, onClose }) {
                         </span>
                       </div>
                       <p className="text-[11px] text-zinc-400 mt-0.5">
-                        Índice Biomecânico do Dia ({formatProviderName(readiness.providerUsed)})
+                        {readiness.isStale
+                          ? `Leitura indisponível (${formatProviderName(readiness.providerUsed)})`
+                          : `Índice Biomecânico do Dia (${formatProviderName(readiness.providerUsed)})`}
                       </p>
                     </div>
                   </div>
@@ -270,45 +269,62 @@ export default function WearablesModal({ isOpen, onClose }) {
 
                 {/* Métricas Whoop */}
                 {whoopConn && whoopBio && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
-                    <MetricBadge
-                      icon={Activity}
-                      label="Recuperação"
-                      value={`${whoopBio.recovery_score}%`}
-                    />
-                    <MetricBadge
-                      icon={HeartPulse}
-                      label="HRV"
-                      value={whoopBio.hrv_ms}
-                      sub="ms"
-                    />
-                    <MetricBadge
-                      icon={Flame}
-                      label="Day Strain"
-                      value={whoopBio.day_strain}
-                    />
-                    <MetricBadge
-                      icon={Moon}
-                      label="Sono"
-                      value={`${Math.floor(whoopBio.sleep_duration_seconds / 3600)}h ${Math.floor((whoopBio.sleep_duration_seconds % 3600) / 60)}m`}
-                    />
-                  </div>
+                  whoopBio.is_stale || whoopBio.recovery_score == null ? (
+                    <p className="mt-4 pt-3.5 border-t border-white/[0.06] text-[12px] text-zinc-400">
+                      Sem dados recentes da WHOOP — toca em sincronizar para tentar novamente.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
+                      <MetricBadge
+                        icon={Activity}
+                        label="Recuperação"
+                        value={`${whoopBio.recovery_score}%`}
+                      />
+                      <MetricBadge
+                        icon={HeartPulse}
+                        label="HRV"
+                        value={whoopBio.hrv_ms ?? '--'}
+                        sub={whoopBio.hrv_ms != null ? 'ms' : undefined}
+                      />
+                      <MetricBadge
+                        icon={Flame}
+                        label="Day Strain"
+                        value={whoopBio.day_strain ?? '--'}
+                      />
+                      <MetricBadge
+                        icon={Moon}
+                        label="Sono"
+                        value={
+                          whoopBio.sleep_duration_seconds != null
+                            ? `${Math.floor(whoopBio.sleep_duration_seconds / 3600)}h ${Math.floor((whoopBio.sleep_duration_seconds % 3600) / 60)}m`
+                            : '--'
+                        }
+                      />
+                    </div>
+                  )
                 )}
 
                 {/* Ações Whoop */}
-                <div className="mt-4 flex items-center gap-2">
+                <div className="mt-4 space-y-2">
                   {!whoopConn ? (
-                    <button
-                      type="button"
-                      onClick={() => handleConnectOfficial('whoop')}
-                      disabled={!getWhoopClientId()}
-                      className="flex-1 min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
-                      title={getWhoopClientId() ? undefined : 'Requer Client ID WHOOP'}
-                    >
-                      <Link2 className="w-4 h-4" />
-                      Conectar com WHOOP
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleConnectOfficial('whoop')}
+                        disabled={!getWhoopClientId()}
+                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        title={getWhoopClientId() ? undefined : 'Requer Client ID WHOOP'}
+                      >
+                        <Link2 className="w-4 h-4" />
+                        Conectar com WHOOP
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      {!getWhoopClientId() && (
+                        <p className="text-[11px] text-zinc-500">
+                          Credenciais OAuth deste fornecedor ainda não configuradas neste ambiente.
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <button
                       type="button"
@@ -364,46 +380,59 @@ export default function WearablesModal({ isOpen, onClose }) {
 
                 {/* Métricas Fitbit */}
                 {fitbitConn && fitbitBio && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
-                    <MetricBadge
-                      icon={HeartPulse}
-                      label="FC Repouso"
-                      value={fitbitBio.resting_hr_bpm}
-                      sub="bpm"
-                    />
-                    <MetricBadge
-                      icon={Moon}
-                      label="Score Sono"
-                      value={`${fitbitBio.sleep_score}/100`}
-                    />
-                    <MetricBadge
-                      icon={Flame}
-                      label="Calorias"
-                      value={fitbitBio.calories_burned}
-                      sub="kcal"
-                    />
-                    <MetricBadge
-                      icon={Activity}
-                      label="Passos"
-                      value={fitbitBio.steps ? fitbitBio.steps.toLocaleString('pt-PT') : '10.420'}
-                    />
-                  </div>
+                  fitbitBio.is_stale || (fitbitBio.resting_hr_bpm == null && fitbitBio.sleep_score == null) ? (
+                    <p className="mt-4 pt-3.5 border-t border-white/[0.06] text-[12px] text-zinc-400">
+                      Sem dados recentes da Fitbit — toca em sincronizar para tentar novamente.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
+                      <MetricBadge
+                        icon={HeartPulse}
+                        label="FC Repouso"
+                        value={fitbitBio.resting_hr_bpm ?? '--'}
+                        sub={fitbitBio.resting_hr_bpm != null ? 'bpm' : undefined}
+                      />
+                      <MetricBadge
+                        icon={Moon}
+                        label="Score Sono"
+                        value={fitbitBio.sleep_score != null ? `${fitbitBio.sleep_score}/100` : '--'}
+                      />
+                      <MetricBadge
+                        icon={Flame}
+                        label="Calorias"
+                        value={fitbitBio.calories_burned ?? '--'}
+                        sub={fitbitBio.calories_burned != null ? 'kcal' : undefined}
+                      />
+                      <MetricBadge
+                        icon={Activity}
+                        label="Passos"
+                        value={fitbitBio.steps != null ? fitbitBio.steps.toLocaleString('pt-PT') : '--'}
+                      />
+                    </div>
+                  )
                 )}
 
                 {/* Ações Fitbit */}
-                <div className="mt-4 flex items-center gap-2">
+                <div className="mt-4 space-y-2">
                   {!fitbitConn ? (
-                    <button
-                      type="button"
-                      onClick={() => handleConnectOfficial('fitbit')}
-                      disabled={!getFitbitClientId()}
-                      className="flex-1 min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
-                      title={getFitbitClientId() ? undefined : 'Requer Client ID Fitbit'}
-                    >
-                      <Link2 className="w-4 h-4" />
-                      Conectar com Fitbit
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleConnectOfficial('fitbit')}
+                        disabled={!getFitbitClientId()}
+                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        title={getFitbitClientId() ? undefined : 'Requer Client ID Fitbit'}
+                      >
+                        <Link2 className="w-4 h-4" />
+                        Conectar com Fitbit
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      {!getFitbitClientId() && (
+                        <p className="text-[11px] text-zinc-500">
+                          Credenciais OAuth deste fornecedor ainda não configuradas neste ambiente.
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <button
                       type="button"

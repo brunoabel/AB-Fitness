@@ -3,6 +3,15 @@
  * Mantém o Client Secret protegido no lado do servidor.
  */
 
+const ALLOWED_REDIRECT_URI_PATTERNS = [
+  /^https:\/\/(www\.)?abfitness\.app\/auth\/callback\/wearable$/,
+  /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/auth\/callback\/wearable$/
+];
+
+function isAllowedRedirectUri(uri) {
+  return typeof uri === 'string' && ALLOWED_REDIRECT_URI_PATTERNS.some((re) => re.test(uri));
+}
+
 export default async function handler(req, res) {
   // CORS preflight
   if (req.method === 'OPTIONS') {
@@ -13,11 +22,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+  let body = {};
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+  } catch {
+    return res.status(400).json({ error: 'Corpo JSON inválido' });
+  }
   const { code, redirectUri } = body;
 
   if (!code) {
     return res.status(400).json({ error: 'O código de autorização é obrigatório' });
+  }
+
+  if (redirectUri !== undefined && redirectUri !== null && !isAllowedRedirectUri(redirectUri)) {
+    return res.status(400).json({ error: 'redirect_uri inválido' });
   }
 
   const clientId = process.env.VITE_WHOOP_CLIENT_ID;

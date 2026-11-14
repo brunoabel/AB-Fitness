@@ -80,5 +80,30 @@ describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica
     assert.ok(data.steps > 1000);
     assert.ok(data.calories_burned > 1500);
   });
+
+  it('sinaliza isStale e score null quando a leitura do wearable está em falta ou marcada como stale', () => {
+    const staleWhoop = { is_stale: true, recovery_score: null, hrv_ms: null };
+    const resWhoop = computeReadinessIndex({ whoop: staleWhoop });
+    assert.equal(resWhoop.isStale, true);
+    assert.equal(resWhoop.score, null);
+    assert.equal(resWhoop.status, 'stale');
+    assert.equal(resWhoop.label, 'Sem dados recentes');
+
+    const incompleteFitbit = { sleep_score: null, resting_hr_bpm: 55 };
+    const resFitbit = computeReadinessIndex({ fitbit: incompleteFitbit });
+    assert.equal(resFitbit.isStale, true);
+    assert.equal(resFitbit.score, null);
+    assert.equal(resFitbit.providerUsed, 'fitbit');
+  });
+
+  it('usa apenas o wearable com dados válidos quando um deles está stale', () => {
+    const staleWhoop = { is_stale: true, recovery_score: null };
+    const freshFitbit = { is_stale: false, sleep_score: 76, resting_hr_bpm: 53 };
+    const res = computeReadinessIndex({ whoop: staleWhoop, fitbit: freshFitbit });
+    assert.equal(res.isStale, false);
+    assert.equal(res.score, 76);
+    assert.equal(res.providerUsed, 'fitbit');
+    assert.equal(res.status, 'moderate');
+  });
 });
 

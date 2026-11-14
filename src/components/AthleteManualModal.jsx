@@ -213,7 +213,7 @@ export default function AthleteManualModal({ onClose }) {
             </button>
 
             <div className="flex items-center gap-2 pl-1">
-              <span className="px-2 py-0.5 rounded-md bg-accent/70 text-white text-[11px] font-black uppercase tracking-wider border border-accent-hover">
+              <span className="px-2 py-0.5 rounded-md bg-accent/70 text-white text-[11px] font-bold uppercase tracking-wider border border-accent-hover">
                 {currentIndex + 1} de {tabOptions.length}
               </span>
               <span className="font-bold text-xs text-zinc-200 hidden sm:inline truncate max-w-[200px]">
@@ -278,7 +278,7 @@ export default function AthleteManualModal({ onClose }) {
                   onClick={() => switchManual(tab.key)}
                   className={`min-h-[44px] py-1.5 px-3 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 active:scale-95 cursor-pointer border ${
                     isSelected
-                      ? 'bg-accent text-white border-accent shadow-sm font-black'
+                      ? 'bg-accent text-white border-accent shadow-sm'
                       : 'bg-surface/80 hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 border-white/[0.06]'
                   }`}
                 >
@@ -359,7 +359,7 @@ export default function AthleteManualModal({ onClose }) {
           {/* Banner do Manual Atual */}
           <div id="sec-philosophy" className="p-4 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-white/[0.06] space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-white/[0.04] text-zinc-200 border border-white/[0.08]">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/[0.04] text-zinc-200 border border-white/[0.08]">
                 {manual.tag}
               </span>
               {isCurrentGoal && (
@@ -540,7 +540,7 @@ export default function AthleteManualModal({ onClose }) {
             className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer border ${
               isCurrentGoal || justSavedGoal
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-xs' 
-                : 'bg-accent text-white hover:bg-accent-hover border-accent shadow-sm font-black'
+                : 'bg-accent text-white hover:bg-accent-hover border-accent shadow-sm font-bold'
             }`}
           >
             {isCurrentGoal || justSavedGoal ? (

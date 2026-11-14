@@ -16,8 +16,7 @@ import {
   ShieldMinus,
   Crown,
   Download,
-  Sparkles,
-  Lock
+  Sparkles
 } from 'lucide-react';
 import { fetchAdminAthletesData, fetchAthleteDetails, promoteToCoach, demoteToAthlete } from '../services/workoutService';
 import { triggerHaptic } from '../utils/audio';
@@ -205,7 +204,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                       {isCeo ? 'Painel Executivo CEO' : 'Painel do Treinador'}
                     </h1>
                     {isCeo ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider leading-none shadow-[0_0_10px_rgba(245,158,11,0.25)]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider leading-none">
                         <Crown className="w-3 h-3 text-amber-400" />
                         CEO & FUNDADOR
                       </span>
@@ -395,7 +394,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                                 {ath.full_name || ath.email.split('@')[0]}
                               </h4>
                               {isAthCeo ? (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500/25 via-yellow-500/25 to-amber-600/25 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider shadow-[0_0_8px_rgba(245,158,11,0.25)]">
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider">
                                   <Crown className="w-2.5 h-2.5 text-amber-400" />
                                   CEO
                                 </span>

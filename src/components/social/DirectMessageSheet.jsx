@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Send, MessageCircle, Crown, Flame } from 'lucide-react';
+import { motion } from 'motion/react';
+import { X, Send, MessageCircle, Crown } from 'lucide-react';
 import { Avatar, SPRING, TAP } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { isAthleteVerified, isAthleteCeo } from '../../utils/userVerification';
@@ -120,7 +120,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
                 <h3 className="font-heading text-body font-bold text-white truncate">{friendName}</h3>
                 {isVerified && <VerifiedBadge size={14} />}
                 {isCeo && (
-                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-black uppercase">
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-bold uppercase">
                     <Crown className="w-2.5 h-2.5 text-amber-400" />
                     CEO
                   </span>
