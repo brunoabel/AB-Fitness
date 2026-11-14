@@ -9,6 +9,17 @@ import { triggerHaptic } from '../../utils/audio';
 
 const QUICK_REACTIONS = ['🔥', '💪', '👏', '⚡', '👊', '🏆'];
 
+function createOptimisticDm(currentUserId, friendId, content) {
+  const now = Date.now();
+  return {
+    id: `temp_${now}`,
+    sender_id: currentUserId,
+    receiver_id: friendId,
+    content,
+    created_at: new Date(now).toISOString()
+  };
+}
+
 export default function DirectMessageSheet({ friend, currentUserId, currentUserProfile, onClose }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -27,7 +38,9 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
   useEffect(() => {
     if (!friendId || !currentUserId) return;
     let alive = true;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (alive) setLoading(true);
+    });
     listDirectMessages(currentUserId, friendId).then(({ data }) => {
       if (alive) {
         setMessages(data || []);
@@ -38,10 +51,14 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
 
     const interval = setInterval(() => {
       listDirectMessages(currentUserId, friendId).then(({ data }) => {
-        if (alive && data && data.length > messages.length) {
-          setMessages(data);
-          scrollToBottom(true);
-        }
+        if (!alive || !data) return;
+        setMessages((prev) => {
+          if (data.length > prev.length) {
+            setTimeout(() => scrollToBottom(true), 30);
+            return data;
+          }
+          return prev;
+        });
       });
     }, 4000);
 
@@ -58,13 +75,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
     triggerHaptic(10);
     setInputText('');
 
-    const optimisticMsg = {
-      id: `temp_${Date.now()}`,
-      sender_id: currentUserId,
-      receiver_id: friendId,
-      content: text,
-      created_at: new Date().toISOString()
-    };
+    const optimisticMsg = createOptimisticDm(currentUserId, friendId, text);
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setTimeout(() => scrollToBottom(true), 30);

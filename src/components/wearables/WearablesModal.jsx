@@ -66,9 +66,19 @@ export default function WearablesModal({ isOpen, onClose }) {
   };
 
   useEffect(() => {
-    if (isOpen) {
-      loadData();
-    }
+    if (!isOpen) return undefined;
+    let alive = true;
+    (async () => {
+      const conns = await getConnectedWearables(userId);
+      const bios = getLocalBiometrics();
+      if (alive) {
+        setConnections(conns);
+        setBiometrics(bios);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, [isOpen, userId]);
 
   useEffect(() => {

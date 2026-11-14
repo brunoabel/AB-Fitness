@@ -35,7 +35,16 @@ export default function TrainerHubView({ onBack }) {
   };
 
   useEffect(() => {
-    load();
+    let alive = true;
+    getRosterOverview().then(({ data }) => {
+      if (!alive) return;
+      setRoster(data || []);
+      setLoading(false);
+      setRefreshing(false);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const activeToday = roster.filter((a) => isSameDay(a.last_session_at)).length;

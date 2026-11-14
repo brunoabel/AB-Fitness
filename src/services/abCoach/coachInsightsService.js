@@ -105,7 +105,7 @@ export async function fetchCoachNarrative(facts, workoutTitle = 'Treino') {
     }
 
     return getFallbackNarrative(facts);
-  } catch (err) {
+  } catch {
     return getFallbackNarrative(facts);
   }
 }

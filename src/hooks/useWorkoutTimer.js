@@ -11,7 +11,7 @@ export default function useWorkoutTimer(draft) {
   if (timerRef.current === null) {
     timerRef.current = {
       base: draft ? (draft.timerBaseSeconds ?? draft.elapsedSeconds ?? 0) : 0,
-      since: draft?.timerRunningSince ?? Date.now()
+      since: draft?.timerRunningSince ?? null
     };
   }
 

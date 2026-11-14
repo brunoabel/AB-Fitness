@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useReducedMotion } from 'motion/react';
 import confetti from 'canvas-confetti';
-import RunningShareModal from './RunningShareModal';
-import BadgeCelebrationModal from './BadgeCelebrationModal';
-import StreakMilestoneModal from './StreakMilestoneModal';
+
+const RunningShareModal = lazy(() => import('./RunningShareModal'));
+const BadgeCelebrationModal = lazy(() => import('./BadgeCelebrationModal'));
+const StreakMilestoneModal = lazy(() => import('./StreakMilestoneModal'));
 import {
   DEFAULT_TRACKING_CONFIG,
   haversineDistanceMeters,
@@ -165,7 +166,7 @@ export default function RunningHub({ isDark = true }) {
   const lastAltitudeAnchorRef = useRef(null);
   const kalmanFilterRef = useRef(new GpsKalmanFilter2D(3.0));
   const consecutiveRejectionsRef = useRef(0);
-  const lastValidMoveTimestampRef = useRef(Date.now());
+  const lastValidMoveTimestampRef = useRef(0);
   const isAutoPausedRef = useRef(false);
 
   // Controlo de tempo real por relógio monotónico (Date.now())
@@ -272,7 +273,7 @@ export default function RunningHub({ isDark = true }) {
   // Hidratação na montagem
   useEffect(() => {
     if (initialDraft && (initialDraft.sessionStatus === 'running' || initialDraft.sessionStatus === 'paused')) {
-      hydrateFromDraft(initialDraft);
+      queueMicrotask(() => hydrateFromDraft(initialDraft));
       return;
     }
 
@@ -562,8 +563,10 @@ export default function RunningHub({ isDark = true }) {
 
     if (shouldWatchGps) {
       if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
-        setGpsError('Geolocalização não suportada neste navegador/dispositivo.');
-        setGpsErrorCode('UNAVAILABLE');
+        queueMicrotask(() => {
+          setGpsError('Geolocalização não suportada neste navegador/dispositivo.');
+          setGpsErrorCode('UNAVAILABLE');
+        });
         return;
       }
 
@@ -1166,29 +1169,35 @@ export default function RunningHub({ isDark = true }) {
       />
       {/* 5. MODAL DE COMPARTILHAMENTO ESTILO STRAVA */}
       {selectedRunForShare && (
-        <RunningShareModal
-          runData={selectedRunForShare}
-          isOpen={!!selectedRunForShare}
-          onClose={() => {
-            setSelectedRunForShare(null);
-          }}
-        />
+        <Suspense fallback={null}>
+          <RunningShareModal
+            runData={selectedRunForShare}
+            isOpen={!!selectedRunForShare}
+            onClose={() => {
+              setSelectedRunForShare(null);
+            }}
+          />
+        </Suspense>
       )}
 
       {/* Celebração Cinematográfica de Conquista / Medalha Desbloqueada */}
       {newlyUnlockedBadge && (
-        <BadgeCelebrationModal
-          badge={newlyUnlockedBadge}
-          onClose={() => setNewlyUnlockedBadge(null)}
-        />
+        <Suspense fallback={null}>
+          <BadgeCelebrationModal
+            badge={newlyUnlockedBadge}
+            onClose={() => setNewlyUnlockedBadge(null)}
+          />
+        </Suspense>
       )}
 
       {/* Motion Graphic de Sequência (depois da medalha, se houver) */}
       {!newlyUnlockedBadge && streakInfo && (
-        <StreakMilestoneModal
-          streakInfo={streakInfo}
-          onClose={() => setStreakInfo(null)}
-        />
+        <Suspense fallback={null}>
+          <StreakMilestoneModal
+            streakInfo={streakInfo}
+            onClose={() => setStreakInfo(null)}
+          />
+        </Suspense>
       )}
 
     </div>

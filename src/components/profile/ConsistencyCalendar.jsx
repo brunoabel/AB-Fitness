@@ -17,7 +17,7 @@ export default function ConsistencyCalendar() {
   const [monthOffset, setMonthOffset] = useState(0);
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const today = useMemo(() => new Date(), []);
+  const [today] = useState(() => new Date());
   const viewDate = useMemo(() => new Date(today.getFullYear(), today.getMonth() + monthOffset, 1), [today, monthOffset]);
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();

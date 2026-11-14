@@ -256,3 +256,22 @@ export const labelOf = (list, id) => list.find((o) => o.id === id)?.label || '�
  * para quem nunca treinou do que mostrar jargão logo de início.
  */
 export const isBeginnerProfile = (profile) => !profile || profile.experienceLevel === 'beginner';
+
+const LEGACY_GOAL_MAP = { hypertrophy: 'hypertrophy', fat_loss: 'fat_loss', strength: 'strength', conditioning: 'fat_loss' };
+const LEGACY_FOCUS_BY_PRIORITY = {
+  upper_chest: 'arms_chest', arms: 'arms_chest', shoulders: 'arms_chest',
+  back_vtaper: 'back_posture', glutes_hams: 'legs_glutes', quads: 'legs_glutes'
+};
+
+/** Formato antigo do perfil (ab_fitness_user_profile_v1), lido pelo AB Coach e pelo dashboard. */
+export function toLegacyProfile(profile) {
+  return {
+    goal: LEGACY_GOAL_MAP[profile.primaryGoal] || 'hypertrophy',
+    experience: profile.experienceLevel,
+    frequencyDays: profile.daysPerWeek,
+    trainingDays: profile.trainingDays,
+    focusMuscle: LEGACY_FOCUS_BY_PRIORITY[profile.priorityMuscles?.[0]] || 'balanced',
+    createdAt: new Date().toISOString(),
+    fitnessProfile: profile
+  };
+}

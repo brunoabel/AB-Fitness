@@ -147,5 +147,5 @@ export async function clearRunDraftFromIDB() {
         resolve(false);
       }
     });
-  } catch (err) {}
+  } catch {}
 }

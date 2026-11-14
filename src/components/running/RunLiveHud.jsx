@@ -1,11 +1,12 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, lazy, Suspense } from 'react';
 import { AlertTriangle, Flame, Map as MapIcon, Navigation2, Pause, Play, Square, Timer, Volume2, VolumeX, Zap } from 'lucide-react';
 import { formatDuration, formatPace } from '../../utils/runningService';
 import { computeTargetProgress } from '../../utils/runGoals';
 import { AUTO_PAUSE_PREF_KEY } from './runPrefs';
 import { getVoiceCuesPreference, saveVoiceCuesPreference } from '../../utils/speech';
-import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
+
+const RunningMap = lazy(() => import('../RunningMap'));
 
 /** HUD ao vivo: contraste solar para leitura em movimento e botões seguros ao toque. */
 function RunLiveHudComponent({
@@ -50,14 +51,16 @@ function RunLiveHudComponent({
       {/* Mapa em tempo real (sempre visível em desktop; alternável em mobile para proteger o polegar) */}
       <div className={`md:col-span-6 ${showMobileMap ? 'block' : 'hidden md:block'}`}>
         <div className="rounded-3xl overflow-hidden border border-white/[0.1] shadow-lg">
-          <RunningMap
-            coordinates={coordinates}
-            splits={splits}
-            currentPosition={currentFix}
-            isLive={sessionStatus === 'running' || sessionStatus === 'paused'}
-            isDark={isDark}
-            height="320px"
-          />
+          <Suspense fallback={<div className="h-[320px] w-full bg-surface-2 animate-pulse" />}>
+            <RunningMap
+              coordinates={coordinates}
+              splits={splits}
+              currentPosition={currentFix}
+              isLive={sessionStatus === 'running' || sessionStatus === 'paused'}
+              isDark={isDark}
+              height="320px"
+            />
+          </Suspense>
         </div>
       </div>
 

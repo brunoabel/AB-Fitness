@@ -83,7 +83,7 @@ export default function SetRow({
     if (isDone && isHoldingTimer) {
       if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
       holdIntervalRef.current = null;
-      setIsHoldingTimer(false);
+      queueMicrotask(() => setIsHoldingTimer(false));
     }
   }, [isDone, isHoldingTimer]);
 

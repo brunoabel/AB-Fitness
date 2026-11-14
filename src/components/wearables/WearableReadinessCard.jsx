@@ -17,33 +17,36 @@ function formatProviderName(providerUsed) {
   return providerUsed;
 }
 
+function readLocalWearableSnapshot() {
+  const conns = getLocalConnections();
+  const hasAny = Object.keys(conns || {}).length > 0;
+  if (!hasAny) {
+    return { hasAny: false, readiness: null };
+  }
+  const bios = getLocalBiometrics();
+  return {
+    hasAny: true,
+    readiness: computeReadinessIndex({
+      whoop: conns.whoop ? bios.whoop : null,
+      fitbit: conns.fitbit ? bios.fitbit : null
+    })
+  };
+}
+
 export default function WearableReadinessCard({ onOpenWearables }) {
-  const [readiness, setReadiness] = useState(null);
-  const [hasConnection, setHasConnection] = useState(false);
+  const [readiness, setReadiness] = useState(() => readLocalWearableSnapshot().readiness);
+  const [hasConnection, setHasConnection] = useState(() => readLocalWearableSnapshot().hasAny);
   const [modalOpen, setModalOpen] = useState(false);
 
   const refresh = () => {
-    const conns = getLocalConnections();
-    const hasAny = Object.keys(conns || {}).length > 0;
-    setHasConnection(hasAny);
-
-    if (hasAny) {
-      const bios = getLocalBiometrics();
-      const read = computeReadinessIndex({
-        whoop: conns.whoop ? bios.whoop : null,
-        fitbit: conns.fitbit ? bios.fitbit : null
-      });
-      setReadiness(read);
-    } else {
-      setReadiness(null);
-    }
+    const snap = readLocalWearableSnapshot();
+    setHasConnection(snap.hasAny);
+    setReadiness(snap.readiness);
   };
 
   useEffect(() => {
-    refresh();
-    const onStorage = () => refresh();
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('storage', refresh);
+    return () => window.removeEventListener('storage', refresh);
   }, []);
 
   const handleClick = () => {

@@ -347,15 +347,4 @@ export function buildPlanFromProfile(profile) {
   return { plan: adapted, notes, appliedSplit };
 }
 
-/** Formato antigo do perfil (ab_fitness_user_profile_v1), lido pelo AB Coach e pelo dashboard. */
-export function toLegacyProfile(profile) {
-  return {
-    goal: GOAL_MAP[profile.primaryGoal] || 'hypertrophy',
-    experience: profile.experienceLevel,
-    frequencyDays: profile.daysPerWeek,
-    trainingDays: profile.trainingDays,
-    focusMuscle: FOCUS_BY_PRIORITY[profile.priorityMuscles?.[0]] || 'balanced',
-    createdAt: new Date().toISOString(),
-    fitnessProfile: profile
-  };
-}
+export { toLegacyProfile } from '../components/onboarding/profileSchema.js';

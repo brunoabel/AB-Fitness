@@ -339,7 +339,7 @@ export async function uploadPostPhoto(userId, blob) {
     if (error) throw error;
     const { data } = supabase.storage.from('avatars').getPublicUrl(path);
     return { data: data.publicUrl, error: null };
-  } catch (_err) {
+  } catch {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve({ data: reader.result, error: null });
@@ -398,7 +398,7 @@ export async function createAthletePost(userId, { imageUrl, caption = '', profil
         const updated = getLocalPosts().map((p) => (p.image_url === imageUrl ? { ...p, id: data.id } : p));
         saveLocalPosts(updated);
       }
-    } catch (_e) {}
+    } catch {}
   }
 
   return { data: newPost, error: null };
@@ -414,7 +414,7 @@ export async function listAthletePosts(targetUserId) {
         .eq('user_id', targetUserId)
         .order('created_at', { ascending: false });
       if (!error && data) posts = data;
-    } catch (_e) {}
+    } catch {}
   }
 
   const local = getLocalPosts().filter((p) => p.user_id === targetUserId);
@@ -445,7 +445,7 @@ export async function listFeedPosts() {
         is_ceo: sp.profiles?.role === 'ceo'
       }));
     }
-  } catch (_e) {}
+  } catch {}
 
   const mergedMap = new Map();
   [...serverPosts, ...local].forEach((p) => {
@@ -472,7 +472,7 @@ export async function togglePostRespect(postId, currentUserId) {
   if (canUseSocial(currentUserId)) {
     try {
       await supabase.rpc('toggle_post_respect', { target_post: postId });
-    } catch (_e) {}
+    } catch {}
   }
   return { data: updatedRespects, error: null };
 }
@@ -507,7 +507,7 @@ export async function listDirectMessages(currentUserId, friendId) {
         localStorage.setItem(key, JSON.stringify(combined));
         return { data: combined, error: null };
       }
-    } catch (_e) {}
+    } catch {}
   }
 
   return { data: localMsgs, error: null };
@@ -542,7 +542,7 @@ export async function sendDirectMessage(currentUserId, friendId, content, sender
       if (!error && data) {
         newMsg.id = data.id;
       }
-    } catch (_e) {}
+    } catch {}
   }
 
   return { data: newMsg, error: null };

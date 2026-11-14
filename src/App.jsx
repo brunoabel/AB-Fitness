@@ -119,7 +119,7 @@ function AppContent() {
   // Ao concluir autenticação após visitar link ?u=username, encaminha para Amigos
   useEffect(() => {
     if (user && !isGuest && readPendingInviteUsername()) {
-      setActiveTab('social');
+      queueMicrotask(() => setActiveTab('social'));
     }
   }, [user, isGuest]);
   // Link de convite do PT (?trainer=CODE) abre a folha de vínculo já com o código preenchido
@@ -414,11 +414,7 @@ function AppContent() {
   // 3. Modo Fechado para Marketing / Lançamento Privado
   // Apenas a conta de administrador/CEO tem acesso total à app.
   // Todos os restantes visitantes vêem a landing page VIP de Lançamento Privado.
-  const isAuthorizedAdmin = Boolean(
-    isAdmin || 
-    isCeo || 
-    user?.email === 'brunoaaraujo2005@gmail.com'
-  );
+  const isAuthorizedAdmin = Boolean(isAdmin || isCeo);
 
   if (PRIVATE_LAUNCH_MODE && !isAuthorizedAdmin) {
     return <PrivateLaunchScreen />;

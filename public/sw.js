@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v22'; // v22: endurecimento wearables/waitlist/RLS, ErrorBoundary, OG dinâmico e Ghost Pacer
+const CACHE_NAME = 'ab-fitness-v23'; // v23: fontes auto-alojadas RGPD, code-splitting de dados e lint limpo
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;

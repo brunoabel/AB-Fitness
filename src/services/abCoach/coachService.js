@@ -31,7 +31,7 @@ export async function getAthleteContextSummary(perfil = null) {
 
     // Top 10 exercícios recentes com cargas registradas
     const recentWeights = Object.entries(weightsRaw)
-      .filter(([_, sets]) => Array.isArray(sets) && sets.some((s) => Number(s.weight) > 0))
+      .filter(([, sets]) => Array.isArray(sets) && sets.some((s) => Number(s.weight) > 0))
       .slice(0, 10)
       .map(([exId, sets]) => {
         const bestSet = sets.reduce((max, s) => (Number(s.weight) > Number(max?.weight || 0) ? s : max), sets[0]);
@@ -139,7 +139,7 @@ export async function sendMessageToCoach(messages, perfil = null) {
         } else if (payload?.error) {
           friendlyMessage = payload.error;
         }
-      } catch (_) {
+      } catch {
         // Ignora se o corpo já tiver sido consumido ou não for JSON
       }
     }

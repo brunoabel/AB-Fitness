@@ -4,8 +4,7 @@
  */
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { saveUserProfileLocal } from '../utils/storage';
-import { toRow } from '../components/onboarding/profileSchema';
-import { toLegacyProfile } from '../data/planFromProfile';
+import { toRow, toLegacyProfile } from '../components/onboarding/profileSchema';
 
 const LOCAL_KEY = 'ab_fitness_fitness_profile_v1';
 const GUEST_ID = 'guest-local-user';

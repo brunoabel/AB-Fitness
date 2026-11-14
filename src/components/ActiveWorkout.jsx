@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import {
   Check,
   Zap
 } from 'lucide-react';
-import ExerciseModal from './ExerciseModal';
 import RestTimer from './RestTimer';
 import WorkoutHeader from './workout/WorkoutHeader';
 import WorkoutDock from './workout/WorkoutDock';
 import ExerciseListView, { workingSetLabels } from './workout/ExerciseListView';
 import FocusExerciseCard from './workout/FocusExerciseCard';
-import SwapExerciseModal from './workout/SwapExerciseModal';
 import useWorkoutTimer from '../hooks/useWorkoutTimer';
 import useWorkoutDraft from '../hooks/useWorkoutDraft';
-import CelebrationModal from './CelebrationModal';
 import SessionCheckin from './coach/SessionCheckin';
 import { registerSessionAndCheckDue } from '../utils/sessionCheckin';
-import BadgeCelebrationModal from './BadgeCelebrationModal';
-import StreakMilestoneModal from './StreakMilestoneModal';
-import PlateCalculatorModal from './PlateCalculatorModal';
+
+const ExerciseModal = lazy(() => import('./ExerciseModal'));
+const SwapExerciseModal = lazy(() => import('./workout/SwapExerciseModal'));
+const CelebrationModal = lazy(() => import('./CelebrationModal'));
+const BadgeCelebrationModal = lazy(() => import('./BadgeCelebrationModal'));
+const StreakMilestoneModal = lazy(() => import('./StreakMilestoneModal'));
+const PlateCalculatorModal = lazy(() => import('./PlateCalculatorModal'));
 import { getHomeAlternative, hasExerciseVideo as hasVerifiedExerciseVideo } from '../data/exerciseMedia';
 import { AnimatePresence } from 'motion/react';
 import { useWakeLock } from '../hooks/useWakeLock';
@@ -750,52 +751,57 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       {/* Modal de Demonstração Biomecânica */}
       <AnimatePresence>
         {selectedExerciseForModal && (
-          <ExerciseModal
-            key="exercise-modal"
-            exercise={selectedExerciseForModal}
-            onClose={() => setSelectedExerciseForModal(null)}
-          />
+          <Suspense key="exercise-modal" fallback={null}>
+            <ExerciseModal
+              exercise={selectedExerciseForModal}
+              onClose={() => setSelectedExerciseForModal(null)}
+            />
+          </Suspense>
         )}
         {swappingExercise && (
-          <SwapExerciseModal
-            key="swap-exercise-modal"
-            exercise={swappingExercise}
-            onSelectSubstitute={handleSwapExercise}
-            onClose={() => setSwappingExercise(null)}
-          />
+          <Suspense key="swap-exercise-modal" fallback={null}>
+            <SwapExerciseModal
+              exercise={swappingExercise}
+              onSelectSubstitute={handleSwapExercise}
+              onClose={() => setSwappingExercise(null)}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
 
       {/* Modal da Calculadora de Anilhas */}
       {plateCalcWeight !== null && (
-        <PlateCalculatorModal
-          initialWeight={plateCalcWeight}
-          onClose={() => setPlateCalcWeight(null)}
-        />
+        <Suspense fallback={null}>
+          <PlateCalculatorModal
+            initialWeight={plateCalcWeight}
+            onClose={() => setPlateCalcWeight(null)}
+          />
+        </Suspense>
       )}
 
       {/* Modal de Celebração e Conclusão de Treino com AB Coach */}
       <AnimatePresence>
       {showCelebration && (
-        <CelebrationModal
-          key="celebration-modal"
-          workout={workout}
-          durationMinutes={finalDurationMinutes}
-          totalSetsCompleted={completedWorkingSetsCount}
-          totalVolumeKg={totalVolumeKg}
-          unlockedBadge={newlyUnlockedBadge}
-          newPRs={sessionNewPRs}
-          insights={sessionFacts}
-          coachNarrative={coachNarrative}
-          onClose={() => {
-            setShowCelebration(false);
-            // Se houver medalha ou marco de sequência novos, a sequência de celebrações continua (ver abaixo)
-            if (newlyUnlockedBadge || streakInfo) return;
-            if (checkin === 'due') setCheckin('open');
-            else if (checkin === 'assigned') setCheckin('open-assigned');
-            else onBackToDashboard();
-          }}
-        />
+        <Suspense key="celebration-modal" fallback={null}>
+          <CelebrationModal
+            workout={workout}
+            durationMinutes={finalDurationMinutes}
+            totalSetsCompleted={completedWorkingSetsCount}
+            totalVolumeKg={totalVolumeKg}
+            unlockedBadge={newlyUnlockedBadge}
+            newPRs={sessionNewPRs}
+            insights={sessionFacts}
+            coachNarrative={coachNarrative}
+            onClose={() => {
+              setShowCelebration(false);
+              // Se houver medalha ou marco de sequência novos, a sequência de celebrações continua (ver abaixo)
+              if (newlyUnlockedBadge || streakInfo) return;
+              if (checkin === 'due') setCheckin('open');
+              else if (checkin === 'assigned') setCheckin('open-assigned');
+              else onBackToDashboard();
+            }}
+          />
+        </Suspense>
       )}
       {checkin === 'open' && (
         <SessionCheckin
@@ -822,34 +828,36 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       {/* Celebração Cinematográfica de Conquista Desbloqueada (depois do resumo do treino) */}
       <AnimatePresence>
         {!showCelebration && newlyUnlockedBadge && (
-          <BadgeCelebrationModal
-            key="badge-celebration"
-            badge={newlyUnlockedBadge}
-            onClose={() => {
-              setNewlyUnlockedBadge(null);
-              // Se houver marco de sequência novo, a celebração dele continua a sequência
-              if (streakInfo) return;
-              if (checkin === 'due') setCheckin('open');
-              else if (checkin === 'assigned') setCheckin('open-assigned');
-              else onBackToDashboard();
-            }}
-          />
+          <Suspense key="badge-celebration" fallback={null}>
+            <BadgeCelebrationModal
+              badge={newlyUnlockedBadge}
+              onClose={() => {
+                setNewlyUnlockedBadge(null);
+                // Se houver marco de sequência novo, a celebração dele continua a sequência
+                if (streakInfo) return;
+                if (checkin === 'due') setCheckin('open');
+                else if (checkin === 'assigned') setCheckin('open-assigned');
+                else onBackToDashboard();
+              }}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
 
       {/* Motion Graphic de Sequência (último passo da sequência de celebrações) */}
       <AnimatePresence>
         {!showCelebration && !newlyUnlockedBadge && streakInfo && (
-          <StreakMilestoneModal
-            key="streak-milestone"
-            streakInfo={streakInfo}
-            onClose={() => {
-              setStreakInfo(null);
-              if (checkin === 'due') setCheckin('open');
-              else if (checkin === 'assigned') setCheckin('open-assigned');
-              else onBackToDashboard();
-            }}
-          />
+          <Suspense key="streak-milestone" fallback={null}>
+            <StreakMilestoneModal
+              streakInfo={streakInfo}
+              onClose={() => {
+                setStreakInfo(null);
+                if (checkin === 'due') setCheckin('open');
+                else if (checkin === 'assigned') setCheckin('open-assigned');
+                else onBackToDashboard();
+              }}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
     </div>
