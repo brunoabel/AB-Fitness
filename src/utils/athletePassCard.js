@@ -3,6 +3,10 @@
  * Lógica pura de patente/conteúdo + geração em Canvas HD (1080×1920) para Instagram Stories.
  */
 
+import { getAthleteRank } from './userVerification.js';
+
+export { getAthleteRank };
+
 const W = 1080;
 const H = 1920;
 
@@ -23,26 +27,6 @@ export const PASS_PALETTES = {
   magma: { top: '#2b0910', mid: '#140508', bottom: '#060203', glow: 'rgba(225, 29, 72, 0.28)', border: 'rgba(225, 29, 72, 0.35)', accent: '#fb7185' },
   monochrome_luxury: { top: '#18181b', mid: '#09090b', bottom: '#000000', glow: 'rgba(255, 255, 255, 0.18)', border: 'rgba(255,255,255,0.2)', accent: '#e4e4e7' }
 };
-
-/** Calcula a patente atlética com base na consistência e volume histórico de sessões. */
-export function getAthleteRank({ totalWorkouts = 0, streak = 0, isCeo = false } = {}) {
-  const count = Math.max(0, Number(totalWorkouts) || 0);
-  const days = Math.max(0, Number(streak) || 0);
-
-  if (isCeo) {
-    return { id: 'founder', label: 'Founder', tone: 'gold' };
-  }
-  if (count >= 50 || days >= 14) {
-    return { id: 'elite', label: 'Elite AB', tone: 'gold' };
-  }
-  if (count >= 20 || days >= 7) {
-    return { id: 'veteran', label: 'Veterano', tone: 'platinum' };
-  }
-  if (count >= 5 || days >= 3) {
-    return { id: 'consistent', label: 'Consistente', tone: 'emerald' };
-  }
-  return { id: 'starter', label: 'Starter', tone: 'neutral' };
-}
 
 /** Normaliza @username removendo arrobas extras, espaços e caracteres inválidos. */
 export function sanitizeUsername(raw) {

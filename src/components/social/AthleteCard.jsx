@@ -3,9 +3,9 @@ import { motion, animate, useMotionValue, useSpring, useTransform, useReducedMot
 import { MapPin, Crown, Maximize2, ShieldCheck, RotateCw, Link2, Check } from 'lucide-react';
 import { fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
-import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
+import { getAthleteRank, isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { COVER_STYLES, FEATURED_STATS, athleteLink } from '../../services/socialService';
-import { getAthleteRank, sanitizeUsername } from '../../utils/athletePassCard';
+import { sanitizeUsername } from '../../utils/athletePassCard';
 import { triggerHaptic } from '../../utils/audio';
 
 const statValue = (id, stats) => {

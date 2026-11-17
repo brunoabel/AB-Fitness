@@ -14,10 +14,10 @@ import {
 } from 'lucide-react';
 import { weekProgress } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
-import { ATHLETE_MANUALS } from '../data/athleteManuals';
+import { ATHLETE_MANUAL_HEADERS } from '../data/athleteManualHeaders';
 import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
-import { useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
+import { loadExerciseMedia, useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
 import WearableReadinessCard from './wearables/WearableReadinessCard';
 
 // Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
@@ -309,7 +309,10 @@ export default function WeeklyDashboard({
             </span>
           </div>
 
-          <div className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]">
+          <div
+            className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]"
+            onPointerEnter={() => loadExerciseMedia()}
+          >
             {selectedWorkout.exercises.map((ex, index) => {
               const formattedIndex = String(index + 1).padStart(2, '0');
               const hasVideo = hasVerifiedExerciseVideo(ex);
@@ -363,7 +366,7 @@ export default function WeeklyDashboard({
       {(() => {
         const userProfile = getSavedUserProfile();
         const userGoal = userProfile?.goal || 'athlete';
-        const currentManual = ATHLETE_MANUALS[userGoal] || ATHLETE_MANUALS.athlete;
+        const currentManual = ATHLETE_MANUAL_HEADERS[userGoal] || ATHLETE_MANUAL_HEADERS.athlete;
 
         return (
           <button

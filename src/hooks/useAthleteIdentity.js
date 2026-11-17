@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context';
 import { canUseSocial, getMyProfile } from '../services/socialService';
-import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../utils/userVerification';
-import { getAthleteRank } from '../utils/athletePassCard';
+import { getAthleteRank, isAthleteVerified, isAthleteCeo, isAthletePro } from '../utils/userVerification';
 import { computeStreak } from '../utils/streak';
 import { getCompletedDays, getRunsHistory, getWorkoutHistory } from '../utils/storage';
 import { getLocalConnections } from '../services/wearables/wearableManager';

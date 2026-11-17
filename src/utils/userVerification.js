@@ -39,3 +39,23 @@ export function isAthleteVerified(profileOrUser, contextUser, isAdmin = false) {
 
   return false;
 }
+
+/** Calcula a patente atlética com base na consistência e volume histórico de sessões. */
+export function getAthleteRank({ totalWorkouts = 0, streak = 0, isCeo = false } = {}) {
+  const count = Math.max(0, Number(totalWorkouts) || 0);
+  const days = Math.max(0, Number(streak) || 0);
+
+  if (isCeo) {
+    return { id: 'founder', label: 'Founder', tone: 'gold' };
+  }
+  if (count >= 50 || days >= 14) {
+    return { id: 'elite', label: 'Elite AB', tone: 'gold' };
+  }
+  if (count >= 20 || days >= 7) {
+    return { id: 'veteran', label: 'Veterano', tone: 'platinum' };
+  }
+  if (count >= 5 || days >= 3) {
+    return { id: 'consistent', label: 'Consistente', tone: 'emerald' };
+  }
+  return { id: 'starter', label: 'Starter', tone: 'neutral' };
+}

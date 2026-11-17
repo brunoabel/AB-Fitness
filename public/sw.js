@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v23'; // v23: fontes auto-alojadas RGPD, code-splitting de dados e lint limpo
+const CACHE_NAME = 'ab-fitness-v24'; // v24: cache estrito para mesma origem + MEDIA_HOST (sem mapas nem APIs externas)
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const NETWORK_TIMEOUT_MS = 3000;
@@ -28,6 +28,13 @@ self.addEventListener('activate', (event) => {
 
 function putInCache(cacheName, request, response) {
   if (!response || (response.status !== 200 && response.type !== 'opaque')) return;
+  try {
+    const reqUrl = new URL(request.url);
+    const allowedOrigin = reqUrl.origin === self.location.origin || reqUrl.hostname === MEDIA_HOST;
+    if (!allowedOrigin) return;
+  } catch {
+    return;
+  }
   const copy = response.clone();
   caches.open(cacheName).then((cache) => cache.put(request, copy)).catch(() => {});
 }
@@ -120,9 +127,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // App (mesma origem): rede com limite de 3s e fallback para cache.
-  // Outros pedidos externos (fontes etc.): rede primeiro sem limite.
+  // App (mesma origem) + bucket de média autorizado: rede com limite de 3s e fallback para cache.
+  // Pedidos externos (tiles de mapa, APIs OAuth/Analytics) passam direto para a rede sem poluir CACHE_NAME.
   const sameOrigin = url.origin === self.location.origin;
+  const isAllowedOrigin = sameOrigin || url.hostname === MEDIA_HOST;
+  if (!isAllowedOrigin) return;
+
   event.respondWith(
     networkFirstWithTimeout(request, {
       fallbackToShell: request.mode === 'navigate',

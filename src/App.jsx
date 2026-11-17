@@ -6,8 +6,6 @@ import WeeklyDashboard from './components/WeeklyDashboard';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
-import AuthScreen from './components/AuthScreen';
-import PrivateLaunchScreen from './components/PrivateLaunchScreen';
 import { PRIVATE_LAUNCH_MODE } from './config/launchMode';
 import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
 import BootSequence, { BOOT_SEEN_KEY } from './components/boot/BootSequence';
@@ -53,8 +51,12 @@ const lazyImports = {
   profile: () => import('./components/profile/ProfileView'),
   workout: () => import('./components/ActiveWorkout'),
   exerciseModal: () => import('./components/ExerciseModal'),
-  sidebarDrawer: () => import('./components/SidebarDrawer')
+  sidebarDrawer: () => import('./components/SidebarDrawer'),
+  authScreen: () => import('./components/AuthScreen'),
+  privateLaunch: () => import('./components/PrivateLaunchScreen')
 };
+const AuthScreen = lazy(lazyImports.authScreen);
+const PrivateLaunchScreen = lazy(lazyImports.privateLaunch);
 const RunningHub = lazy(lazyImports.running);
 const CustomWorkoutsHub = lazy(lazyImports.custom);
 const AICoachModal = lazy(lazyImports.coach);
@@ -401,12 +403,20 @@ function AppContent() {
   const isAuthorizedAdmin = Boolean(isAdmin || isCeo);
 
   if (PRIVATE_LAUNCH_MODE && !isAuthorizedAdmin) {
-    return <PrivateLaunchScreen />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-app flex items-center justify-center"><ABLogo size={76} showText={true} /></div>}>
+        <PrivateLaunchScreen />
+      </Suspense>
+    );
   }
 
   // 4. Proteção de Rota normal (quando o lançamento privado for desativado)
   if (!user && !isGuest) {
-    return <AuthScreen />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-app flex items-center justify-center"><ABLogo size={76} showText={true} /></div>}>
+        <AuthScreen />
+      </Suspense>
+    );
   }
 
   // 3. Aplicação com Sessão Ativa (Dashboard & Treinos)

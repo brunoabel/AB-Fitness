@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   DEFAULT_TRACKING_CONFIG,
   validateAndFilterGpsPoint,
-  generateSimulatedStep
+  generateSimulatedStep,
+  haversineDistanceMeters
 } from '../utils/runningService';
 import { triggerHaptic } from '../utils/audio';
 
@@ -31,6 +32,7 @@ export default function useRunGpsWatch({
   const simIntervalRef = useRef(null);
   const simStepRef = useRef(0);
   const consecutiveRejectionsRef = useRef(0);
+  const lastEmittedFixRef = useRef(null);
 
   const stopSensors = useCallback(() => {
     if (simIntervalRef.current) {
@@ -46,6 +48,7 @@ export default function useRunGpsWatch({
   const resetCounters = useCallback((step = 0) => {
     consecutiveRejectionsRef.current = 0;
     simStepRef.current = step;
+    lastEmittedFixRef.current = null;
   }, []);
 
   // Consultar estado da permissão via Permissions API
@@ -121,7 +124,15 @@ export default function useRunGpsWatch({
           speed: speed ?? null
         };
 
-        setCurrentFix(incomingPoint);
+        // Throttling de currentFix quando parado para evitar re-renders por ruído GNSS no RunLiveHud/Mapa
+        const prevFix = lastEmittedFixRef.current;
+        const movedMeters = prevFix
+          ? haversineDistanceMeters(prevFix.lat, prevFix.lng, incomingPoint.lat, incomingPoint.lng)
+          : Infinity;
+        if (!prevFix || movedMeters >= 3 || (incomingPoint.timestamp - prevFix.timestamp >= 4000 && movedMeters >= 1)) {
+          lastEmittedFixRef.current = incomingPoint;
+          setCurrentFix(incomingPoint);
+        }
 
         if (accuracy >= DEFAULT_TRACKING_CONFIG.coarseLocationThresholdMeters) {
           setIsGpsWarmedUp(false);

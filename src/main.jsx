@@ -1,16 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { LEGAL_DOCS } from './legal'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
 
-// Páginas legais públicas (/termos, /privacidade, /aviso-medico): fora da app, sem login e sem carregar o bundle da app
-const legalPath = window.location.pathname.replace(/\/+$/, '') || '/'
-const legalDoc = LEGAL_DOCS[legalPath]
+const LEGAL_PATHS = new Set(['/termos', '/privacidade', '/aviso-medico']);
 
-const page = legalDoc
-  ? import('./components/legal/LegalPageLayout.jsx').then(({ default: Layout }) => <Layout doc={legalDoc} path={legalPath} />)
-  : import('./App.jsx').then(({ default: App }) => <App />)
+// Páginas legais públicas (/termos, /privacidade, /aviso-medico): fora da app, sem login e sem puxar os textos legais para o bundle principal
+const legalPath = window.location.pathname.replace(/\/+$/, '') || '/';
+
+const page = LEGAL_PATHS.has(legalPath)
+  ? Promise.all([
+      import('./legal/index.js'),
+      import('./components/legal/LegalPageLayout.jsx')
+    ]).then(([{ LEGAL_DOCS }, { default: Layout }]) => <Layout doc={LEGAL_DOCS[legalPath]} path={legalPath} />)
+  : import('./App.jsx').then(({ default: App }) => <App />);
 
 page.then((element) => {
-  createRoot(document.getElementById('root')).render(<StrictMode>{element}</StrictMode>)
-})
+  createRoot(document.getElementById('root')).render(<StrictMode>{element}</StrictMode>);
+});

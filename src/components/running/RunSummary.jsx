@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Award, Download, RotateCcw, Share2 } from 'lucide-react';
 import { downloadGPX, formatDuration } from '../../utils/runningService';
 import { evaluateRunAchievements, formatRunRelativeDate, getRunTargetById } from '../../utils/runGoals';
-import RunningMap from '../RunningMap';
 import { triggerHaptic } from '../../utils/audio';
+
+const RunningMap = lazy(() => import('../RunningMap'));
 
 /** Resumo pós-corrida estilo Nike Run Club / Strava: mapa-herói, zero caixas redundantes, partilha em 1 toque. */
 export default function RunSummary({
@@ -23,13 +24,15 @@ export default function RunSummary({
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Mapa do Percurso em Hero */}
       <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl">
-        <RunningMap
-          coordinates={lastCompletedRun.coordinates}
-          splits={lastCompletedRun.splits}
-          isLive={false}
-          isDark={isDark}
-          height="280px"
-        />
+        <Suspense fallback={<div className="h-[280px] w-full bg-surface-2 animate-pulse" />}>
+          <RunningMap
+            coordinates={lastCompletedRun.coordinates}
+            splits={lastCompletedRun.splits}
+            isLive={false}
+            isDark={isDark}
+            height="280px"
+          />
+        </Suspense>
         <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/[0.1] text-xs font-semibold text-white">
           Corrida concluída · {formatRunRelativeDate(lastCompletedRun.date || lastCompletedRun.timestamp)}
         </div>
@@ -102,7 +105,7 @@ export default function RunSummary({
             {lastCompletedRun.splits.map((s) => (
               <div
                 key={s.km}
-                className="flex items-center justify-between text-xs py-2.5 font-mono tabular-nums"
+                className="flex items-center justify-between text-xs py-2.5 font-display tabular-nums"
               >
                 <span className="font-bold text-white">KM {s.km}</span>
                 <span className="text-zinc-200">{s.pace || s.paceStr}</span>
