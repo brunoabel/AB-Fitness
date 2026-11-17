@@ -3,10 +3,11 @@
  * A maioria das mutações passa por RPC (supabase/migrations/20261113_trainer_hub.sql e
  * 20261114_trainer_hub_rpcs.sql), que já validam o vínculo ativo no servidor via RLS.
  */
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
 const GUEST_ID = 'guest-local-user';
-export const canUseTrainerHub = (userId) => Boolean(isSupabaseConfigured() && supabase && userId && userId !== GUEST_ID);
+export const canUseTrainerHub = (userId, env = { configured: isSupabaseConfigured(), client: supabase }) =>
+  Boolean(env.configured && env.client && (userId === undefined || (Boolean(userId) && userId !== GUEST_ID)));
 
 const fail = (error) => ({ data: null, error: error?.message || String(error) });
 
@@ -54,6 +55,18 @@ export async function setRosterNote(athleteId, note) {
 export async function archiveRosterLink(trainerId, athleteId) {
   if (!canUseTrainerHub(trainerId)) return fail('Sem sessão');
   const { error } = await supabase.from('trainer_rosters').update({ status: 'archived' }).eq('trainer_id', trainerId).eq('athlete_id', athleteId);
+  if (error) return fail(error);
+  return { data: true, error: null };
+}
+
+/** Arquiva o vínculo ativo do próprio atleta com o seu PT (soft-unlink pelo atleta). */
+export async function unlinkMyTrainer(athleteId) {
+  if (!canUseTrainerHub(athleteId)) return fail('Sem sessão');
+  const { error } = await supabase
+    .from('trainer_rosters')
+    .update({ status: 'archived' })
+    .eq('athlete_id', athleteId)
+    .eq('status', 'active');
   if (error) return fail(error);
   return { data: true, error: null };
 }
@@ -109,14 +122,23 @@ export async function deleteTemplate(templateId) {
   return { data: true, error: null };
 }
 
-/** Dados de contexto do atleta (lesões + ficha) visíveis ao trainer via RLS (is_active_trainer_of). */
+/** Dados de contexto do atleta (lesões + ficha + nota privada) visíveis ao trainer via RLS (is_active_trainer_of). */
 export async function getAthleteContext(athleteId) {
   if (!canUseTrainerHub()) return { data: null, error: null };
-  const [{ data: profile }, { data: fitness }] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, avatar_url, created_at').eq('id', athleteId).maybeSingle(),
+  const [{ data: profile }, { data: fitness }, rosterRes] = await Promise.all([
+    supabase.from('profiles').select('id, full_name, avatar_url, created_at, is_verified, is_pro, role').eq('id', athleteId).maybeSingle(),
     supabase.from('user_fitness_profiles').select('injuries, priority_muscles, experience_level, primary_goal').eq('user_id', athleteId).maybeSingle(),
+    supabase.from('trainer_rosters').select('private_notes, tags').eq('athlete_id', athleteId).eq('status', 'active').maybeSingle(),
   ]);
-  return { data: { profile: profile || null, fitness: fitness || null }, error: null };
+  return {
+    data: {
+      profile: profile || null,
+      fitness: fitness || null,
+      privateNote: rosterRes?.data?.private_notes ?? null,
+      tags: rosterRes?.data?.tags ?? null,
+    },
+    error: null,
+  };
 }
 
 /** Programas que o trainer já atribuiu a um atleta (histórico + ativo). */
@@ -172,20 +194,27 @@ export async function listMyAssignedPrograms(athleteId) {
 }
 
 /** Converte um assigned_program em objeto de treino compatível com ActiveWorkout. */
-export function assignedProgramToWorkout(program, trainerName) {
-  const exercises = (program.structure_json || []).map((ex, idx) => ({
-    id: ex.exerciseCode || ex.code || `assigned_${program.id}_${idx}`,
-    name: ex.name,
-    target: ex.targetMuscle || '',
-    secondary: '',
-    equipment: ex.equipment || '',
-    suggestedWeight: ex.targetWeight ?? 10,
-    suggestedReps: ex.repsRange || ex.reps || '10-12',
-    defaultSets: ex.sets || 3,
-    restTime: ex.restSeconds || program.rest_timer_seconds || 60,
-    badge: ex.targetRpe ? `RPE ${ex.targetRpe}` : undefined,
-    notes: ex.coachNote || '',
-  }));
+export function assignedProgramToWorkout(program, trainerName, options = {}) {
+  const isBeginner = Boolean(options?.isBeginner);
+  const exercises = (program.structure_json || []).map((ex, idx) => {
+    const rpeVal = ex.targetRpe ?? program.target_rpe ?? null;
+    const parsedWeight = ex.targetWeight !== undefined && ex.targetWeight !== '' && ex.targetWeight !== null
+      ? Number(ex.targetWeight)
+      : 10;
+    return {
+      id: ex.exerciseCode || ex.code || `assigned_${program.id}_${idx}`,
+      name: ex.name,
+      target: ex.targetMuscle || '',
+      secondary: '',
+      equipment: ex.equipment || '',
+      suggestedWeight: Number.isFinite(parsedWeight) && parsedWeight >= 0 ? parsedWeight : 10,
+      suggestedReps: ex.repsRange || ex.reps || '10-12',
+      defaultSets: Number(ex.sets) || 3,
+      restTime: Number(ex.restSeconds || program.rest_timer_seconds) || 60,
+      badge: rpeVal ? (isBeginner ? `Esforço ${rpeVal}/10` : `RPE ${rpeVal}`) : undefined,
+      notes: ex.coachNote || '',
+    };
+  });
   return {
     dayId: `assigned-${program.id}`,
     title: program.title,

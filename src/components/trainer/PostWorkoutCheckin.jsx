@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { submitPostWorkoutCheckin } from '../../services/trainerService';
+import { getLocalFitnessProfile } from '../../services/fitnessProfileService';
+import { isBeginnerProfile } from '../onboarding/profileSchema';
 import { triggerHaptic } from '../../utils/audio';
 
 const EASE = [0.22, 1, 0.36, 1];
 
-/** Check-in rápido (10s) de uma sessão prescrita pelo PT: RPE percebido, dor e nota opcional. */
+const describeEffort = (rpe) => {
+  if (rpe <= 3.5) return 'Muito leve';
+  if (rpe <= 5.5) return 'Leve a moderado';
+  if (rpe <= 7.5) return 'No ponto';
+  if (rpe <= 8.5) return 'Exigente';
+  return 'No limite';
+};
+
+/** Check-in rápido (10s) de uma sessão prescrita pelo PT: esforço percebido, dor e nota opcional. */
 export default function PostWorkoutCheckin({ sessionId, onDone }) {
+  const reducedMotion = useReducedMotion();
+  const isSimple = isBeginnerProfile(getLocalFitnessProfile());
   const [rpe, setRpe] = useState(7);
   const [pain, setPain] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -15,8 +27,18 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
   const submit = async () => {
     setSending(true);
     triggerHaptic([12, 40, 12]);
-    await submitPostWorkoutCheckin(sessionId, { actualRpe: rpe, painFlag: pain, athleteFeedback: feedback.trim() || null });
-    onDone();
+    try {
+      await submitPostWorkoutCheckin(sessionId, {
+        actualRpe: rpe,
+        painFlag: pain,
+        athleteFeedback: feedback.trim() || null
+      });
+    } catch {
+      // Não bloqueia o atleta se houver falha temporária de rede
+    } finally {
+      setSending(false);
+      onDone();
+    }
   };
 
   return (
@@ -28,19 +50,29 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 24 }}
-      transition={{ duration: 0.32, ease: EASE }}
+      transition={reducedMotion ? { duration: 0 } : { duration: 0.32, ease: EASE }}
     >
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div className="max-w-md mx-auto w-full px-5 pt-[calc(env(safe-area-inset-top,0px)+28px)] pb-6 space-y-7">
           <div>
             <h1 className="font-heading text-title-xl font-bold tracking-tight text-white">Como foi a sessão?</h1>
-            <p className="mt-2 text-body text-zinc-400">O teu PT vê isto no painel dele para ajustar o próximo treino.</p>
+            <p className="mt-2 text-body text-zinc-400">
+              O teu PT vê isto no painel dele para ajustar o próximo treino.
+            </p>
           </div>
 
           <section>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-heading text-section font-semibold text-white">Esforço percebido</h2>
-              <span className="font-display font-bold text-[28px] leading-none tabular-nums text-white">{rpe}</span>
+            <div className="flex items-baseline justify-between mb-2">
+              <div>
+                <h2 className="font-heading text-section font-semibold text-white">Esforço percebido</h2>
+                <p className="text-[12px] text-zinc-400 mt-0.5">
+                  {describeEffort(rpe)}
+                  {!isSimple ? ` · RPE ${rpe}` : ''}
+                </p>
+              </div>
+              <span className="font-display font-bold text-[28px] leading-none tabular-nums text-white">
+                {rpe}
+              </span>
             </div>
             <input
               type="range"
@@ -52,7 +84,7 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
               className="w-full accent-white cursor-pointer"
               aria-label="Esforço percebido, de 1 a 10"
             />
-            <div className="flex justify-between text-[11px] text-zinc-500 mt-1">
+            <div className="flex justify-between text-[11px] text-zinc-500 mt-1 tabular-nums">
               <span>1 · Muito leve</span>
               <span>10 · Máximo</span>
             </div>
@@ -64,14 +96,18 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
               <button
                 type="button"
                 onClick={() => setPain(false)}
-                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${!pain ? 'bg-accent/70 border-accent-hover text-white' : 'bg-surface-2 border-white/[0.08] text-zinc-300'}`}
+                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${
+                  !pain ? 'bg-accent/70 border-accent-hover text-white' : 'bg-surface-2 border-white/[0.08] text-zinc-300'
+                }`}
               >
                 Não
               </button>
               <button
                 type="button"
                 onClick={() => setPain(true)}
-                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${pain ? 'bg-rose-400/20 border-rose-400/60 text-rose-400' : 'bg-surface-2 border-white/[0.08] text-zinc-300'}`}
+                className={`flex-1 min-h-[48px] rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors ${
+                  pain ? 'bg-rose-400/20 border-rose-400/60 text-rose-400' : 'bg-surface-2 border-white/[0.08] text-zinc-300'
+                }`}
               >
                 Sim
               </button>
@@ -95,12 +131,16 @@ export default function PostWorkoutCheckin({ sessionId, onDone }) {
       </div>
 
       <div className="shrink-0 max-w-md mx-auto w-full px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+14px)] border-t border-white/[0.06] flex gap-2">
-        <button type="button" onClick={onDone} className="min-h-[54px] px-4 rounded-2xl text-[14px] font-semibold text-zinc-400 hover:text-white cursor-pointer">
+        <button
+          type="button"
+          onClick={onDone}
+          className="min-h-[54px] px-4 rounded-2xl text-[14px] font-semibold text-zinc-400 hover:text-white cursor-pointer"
+        >
           Agora não
         </button>
         <motion.button
           type="button"
-          whileTap={{ scale: 0.98 }}
+          whileTap={reducedMotion ? undefined : { scale: 0.98 }}
           onClick={submit}
           disabled={sending}
           className="flex-1 min-h-[54px] rounded-2xl bg-primary text-app font-bold text-body cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-colors"

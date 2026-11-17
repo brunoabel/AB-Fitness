@@ -613,10 +613,19 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           </div>
         )}
 
+        {workout?.coachNotes && (
+          <div className="border-l-2 border-accent-hover pl-3.5 py-1.5 text-xs text-zinc-200 leading-relaxed">
+            <strong className="text-white font-semibold">
+              Instruções de {workout.trainerName || 'o teu PT'}:
+            </strong>{' '}
+            {workout.coachNotes}
+          </div>
+        )}
+
         {/* NAVEGAÇÃO RÁPIDA ENTRE EXERCÍCIOS (Carrossel Horizontal de Pílulas) */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest tabular-nums">
               Exercícios ({currentExercisesList.length})
             </span>
             <div className="flex items-center gap-2">

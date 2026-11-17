@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Users, CalendarCheck, TrendingUp, RefreshCw, Ticket } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Ticket, Layers } from 'lucide-react';
 import { useAuth } from '../../context';
 import { getRosterOverview, archiveRosterLink, listAssignedProgramsForAthlete } from '../../services/trainerService';
 import { triggerHaptic } from '../../utils/audio';
@@ -12,9 +12,8 @@ import ProgramBuilderSheet from './ProgramBuilderSheet';
 const isSameDay = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
 
 /**
- * Command Center do Trainer Hub — "operations-console": scan rápido de muitos atletas, não
- * feed de cards. Master-detail em telas largas (roster fixo à esquerda, ficha do atleta ao
- * lado); no mobile a seleção empurra para uma tela cheia (mesmos componentes, layout responsivo).
+ * Command Center do Trainer Hub: Consola de Treinador OLED sem blocos.
+ * Ledger tipográfico de alta densidade, triagem clínica e master-detail responsivo.
  */
 export default function TrainerHubView({ onBack }) {
   const { user } = useAuth();
@@ -24,8 +23,9 @@ export default function TrainerHubView({ onBack }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [invitingOpen, setInvitingOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const [selectedAthleteId, setSelectedAthleteId] = useState(null);
-  const [quickAssign, setQuickAssign] = useState(null); // { athleteId, lastProgram }
+  const [quickAssign, setQuickAssign] = useState(null); // { athleteId, athleteName, lastProgram }
 
   const load = async () => {
     const { data } = await getRosterOverview();
@@ -52,54 +52,87 @@ export default function TrainerHubView({ onBack }) {
     ? Math.round((roster.reduce((acc, a) => acc + Math.min(1, (a.workouts_7d || 0) / 4), 0) / roster.length) * 100)
     : 0;
   const alerts = roster.filter(isAlert);
+  const selectedAthlete = roster.find((a) => a.athlete_id === selectedAthleteId) || null;
 
-  const handleQuickArchive = async (athleteId) => {
+  const handleArchiveAthlete = async (athleteId) => {
     await archiveRosterLink(user?.id, athleteId);
     if (selectedAthleteId === athleteId) setSelectedAthleteId(null);
     load();
   };
 
   const handleQuickAssign = async (athleteId) => {
+    const ath = roster.find((a) => a.athlete_id === athleteId);
     const { data } = await listAssignedProgramsForAthlete(athleteId);
-    setQuickAssign({ athleteId, lastProgram: data?.[0] || null });
+    setQuickAssign({
+      athleteId,
+      athleteName: ath?.full_name || '',
+      lastProgram: data?.[0] || null
+    });
   };
 
   return (
     <div className="h-full lg:h-screen bg-app text-zinc-100 flex flex-col overflow-hidden">
-      <header className="shrink-0 w-full bg-surface/95 backdrop-blur-md border-b border-white/[0.08] pt-[max(env(safe-area-inset-top,0px),12px)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-2.5 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="shrink-0 w-full bg-app border-b border-white/[0.08] pt-[max(env(safe-area-inset-top,0px),12px)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-2.5 pb-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
             <button
-              onClick={() => { if (selectedAthleteId) { triggerHaptic(8); setSelectedAthleteId(null); } else { onBack(); } }}
-              className="w-11 h-11 rounded-xl bg-surface-2 border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center md:hidden"
+              type="button"
+              onClick={() => {
+                if (selectedAthleteId) {
+                  triggerHaptic(8);
+                  setSelectedAthleteId(null);
+                } else {
+                  onBack();
+                }
+              }}
+              className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center md:hidden shrink-0"
               aria-label={selectedAthleteId ? 'Voltar à lista' : 'Voltar'}
             >
               <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
             </button>
             <button
+              type="button"
               onClick={onBack}
-              className="hidden md:flex w-11 h-11 rounded-xl bg-surface-2 border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 items-center justify-center"
+              className="hidden md:flex w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 items-center justify-center shrink-0"
               aria-label="Voltar"
             >
               <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
             </button>
-            <div className={selectedAthleteId ? 'hidden md:block' : 'block'}>
-              <h1 className="font-heading text-section font-semibold text-white leading-none">Trainer Hub</h1>
-              <p className="text-[12px] text-zinc-400 mt-0.5">{roster.length} atletas vinculados</p>
+            <div className="min-w-0">
+              <h1 className="font-heading text-section font-semibold text-white leading-none truncate">
+                {selectedAthleteId && selectedAthlete ? (
+                  <span className="md:hidden">{selectedAthlete.full_name}</span>
+                ) : null}
+                <span className={selectedAthleteId ? 'hidden md:inline' : 'inline'}>Trainer Hub</span>
+              </h1>
+              <p className="text-[12px] text-zinc-400 tabular-nums mt-0.5 truncate">
+                {roster.length} {roster.length === 1 ? 'atleta vinculado' : 'atletas vinculados'}
+              </p>
             </div>
           </div>
-          <div className={`${selectedAthleteId ? 'hidden md:flex' : 'flex'} items-center gap-2`}>
+
+          <div className={`${selectedAthleteId ? 'hidden md:flex' : 'flex'} items-center gap-2 shrink-0`}>
             <button
+              type="button"
+              onClick={() => { triggerHaptic(10); setTemplatesOpen(true); }}
+              className="min-h-[44px] px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white font-semibold text-[13px] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <Layers className="w-4 h-4 text-zinc-300" strokeWidth={1.75} />
+              <span>Modelos</span>
+            </button>
+            <button
+              type="button"
               onClick={() => { triggerHaptic(10); setInvitingOpen(true); }}
               className="min-h-[44px] px-3.5 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer"
             >
               <Ticket className="w-4 h-4" strokeWidth={2} />
-              Convidar
+              <span>Convidar</span>
             </button>
             <button
+              type="button"
               onClick={() => { setRefreshing(true); triggerHaptic(10); load(); }}
               disabled={refreshing}
-              className="w-11 h-11 rounded-xl bg-surface-2 border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center disabled:opacity-50"
+              className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center disabled:opacity-50"
               aria-label="Atualizar"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} strokeWidth={1.75} />
@@ -107,27 +140,27 @@ export default function TrainerHubView({ onBack }) {
           </div>
         </div>
 
-        <div className={`${selectedAthleteId ? 'hidden md:grid' : 'grid'} max-w-6xl mx-auto px-4 sm:px-6 pb-3 grid-cols-3 gap-2.5`}>
-          <div className="p-2.5 rounded-lg bg-surface-2 border border-white/[0.08]">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
-              <Users className="w-3 h-3" strokeWidth={1.75} />
-              <span>Atletas</span>
-            </div>
-            <div className="text-[17px] font-bold font-mono tabular-nums text-white">{roster.length}</div>
+        {/* Ledger Editorial de Comando (sem caixas KPI) */}
+        <div
+          className={`${selectedAthleteId ? 'hidden md:grid' : 'grid'} max-w-6xl mx-auto px-4 sm:px-6 py-3 grid-cols-3 divide-x divide-white/[0.08] border-t border-white/[0.06]`}
+        >
+          <div className="pr-3">
+            <span className="block text-[11px] text-zinc-400">Atletas ativos</span>
+            <span className="font-display text-[22px] font-bold tabular-nums text-white leading-tight mt-0.5 block">
+              {roster.length}
+            </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-surface-2 border border-white/[0.08]">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
-              <CalendarCheck className="w-3 h-3" strokeWidth={1.75} />
-              <span>Hoje</span>
-            </div>
-            <div className="text-[17px] font-bold font-mono tabular-nums text-white">{activeToday}/{roster.length}</div>
+          <div className="px-3">
+            <span className="block text-[11px] text-zinc-400">Treinaram hoje</span>
+            <span className="font-display text-[22px] font-bold tabular-nums text-white leading-tight mt-0.5 block">
+              {activeToday}<span className="text-zinc-500 font-normal">/{roster.length}</span>
+            </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-surface-2 border border-white/[0.08]">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
-              <TrendingUp className="w-3 h-3" strokeWidth={1.75} />
-              <span>Aderência</span>
-            </div>
-            <div className="text-[17px] font-bold font-mono tabular-nums text-white">{avgAdherence}%</div>
+          <div className="pl-3">
+            <span className="block text-[11px] text-zinc-400">Aderência 7d</span>
+            <span className="font-display text-[22px] font-bold tabular-nums text-white leading-tight mt-0.5 block">
+              {avgAdherence}%
+            </span>
           </div>
         </div>
 
@@ -138,7 +171,6 @@ export default function TrainerHubView({ onBack }) {
         )}
       </header>
 
-      {/* Mobile (< md): roster OU ficha do atleta, tela cheia. Desktop (≥ md): master-detail lado a lado. */}
       <div className="flex-1 min-h-0 max-w-6xl mx-auto w-full md:grid md:grid-cols-[360px_1fr] md:divide-x md:divide-white/[0.08]">
         <div className={`${selectedAthleteId ? 'hidden md:block' : 'block'} h-full min-h-0`}>
           <RosterPanel
@@ -147,7 +179,7 @@ export default function TrainerHubView({ onBack }) {
             selectedAthleteId={selectedAthleteId}
             onSelect={setSelectedAthleteId}
             onQuickAssign={handleQuickAssign}
-            onQuickArchive={handleQuickArchive}
+            onOpenInvite={() => setInvitingOpen(true)}
             search={search}
             onSearchChange={setSearch}
             filter={filter}
@@ -160,14 +192,21 @@ export default function TrainerHubView({ onBack }) {
             <AthleteWorkspace
               key={selectedAthleteId}
               athleteId={selectedAthleteId}
+              athleteSummary={selectedAthlete}
               embedded
-              tags={roster.find((a) => a.athlete_id === selectedAthleteId)?.tags || []}
+              tags={selectedAthlete?.tags || []}
               onTagsChanged={load}
+              onArchiveAthlete={handleArchiveAthlete}
               onBack={() => setSelectedAthleteId(null)}
             />
           ) : (
-            <div className="h-full flex items-center justify-center p-8 text-center">
-              <p className="text-[13px] text-zinc-500">Seleciona um atleta à esquerda para ver a ficha.</p>
+            <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-1.5">
+              <p className="text-[14px] font-medium text-zinc-300">
+                Seleciona um atleta à esquerda
+              </p>
+              <p className="text-[12px] text-zinc-500 max-w-xs">
+                Consulta volume semanal, restrições articulares, feedback pós-treino e prescreve novas rotinas.
+              </p>
             </div>
           )}
         </div>
@@ -177,13 +216,26 @@ export default function TrainerHubView({ onBack }) {
         <InviteCodeSheet trainerId={user?.id} onClose={() => setInvitingOpen(false)} />
       )}
 
+      {templatesOpen && (
+        <ProgramBuilderSheet
+          trainerId={user?.id}
+          templateOnly
+          onClose={() => setTemplatesOpen(false)}
+          onSaved={() => setTemplatesOpen(false)}
+        />
+      )}
+
       {quickAssign && (
         <ProgramBuilderSheet
           trainerId={user?.id}
           athleteId={quickAssign.athleteId}
+          athleteName={quickAssign.athleteName}
           lastProgram={quickAssign.lastProgram}
           onClose={() => setQuickAssign(null)}
-          onSaved={() => setQuickAssign(null)}
+          onSaved={() => {
+            setQuickAssign(null);
+            load();
+          }}
         />
       )}
     </div>
