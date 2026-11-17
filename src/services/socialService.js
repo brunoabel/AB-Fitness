@@ -329,22 +329,28 @@ export async function uploadPostPhoto(userId, blob) {
     });
   }
   const ext = blob.type === 'image/webp' ? 'webp' : 'jpg';
-  const path = `${userId}/posts/post-${Date.now()}.${ext}`;
+  const postPath = `${userId}/post-${Date.now()}.${ext}`;
   try {
-    const { error } = await supabase.storage.from('avatars').upload(path, blob, {
+    const { error: postsErr } = await supabase.storage.from('posts').upload(postPath, blob, {
       contentType: blob.type,
       cacheControl: '31536000',
       upsert: false
     });
-    if (error) throw error;
-    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-    return { data: data.publicUrl, error: null };
-  } catch {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve({ data: reader.result, error: null });
-      reader.readAsDataURL(blob);
+    if (!postsErr) {
+      const { data } = supabase.storage.from('posts').getPublicUrl(postPath);
+      return { data: data.publicUrl, error: null };
+    }
+    const legacyPath = `${userId}/posts/post-${Date.now()}.${ext}`;
+    const { error: avatarsErr } = await supabase.storage.from('avatars').upload(legacyPath, blob, {
+      contentType: blob.type,
+      cacheControl: '31536000',
+      upsert: false
     });
+    if (avatarsErr) throw avatarsErr;
+    const { data } = supabase.storage.from('avatars').getPublicUrl(legacyPath);
+    return { data: data.publicUrl, error: null };
+  } catch (err) {
+    return { data: null, error: err?.message || 'Não foi possível enviar a fotografia.' };
   }
 }
 
@@ -385,7 +391,7 @@ export async function createAthletePost(userId, { imageUrl, caption = '', profil
   const local = getLocalPosts();
   saveLocalPosts([newPost, ...local]);
 
-  if (canUseSocial(userId)) {
+  if (canUseSocial(userId) && typeof imageUrl === 'string' && /^https:\/\//i.test(imageUrl)) {
     try {
       const { data, error } = await supabase.from('athlete_posts').insert({
         user_id: userId,
@@ -484,6 +490,8 @@ function getDmKey(userA, userB) {
   return `${DM_STORAGE_PREFIX}${pair}`;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function listDirectMessages(currentUserId, friendId) {
   if (!currentUserId || !friendId) return { data: [], error: null };
   const key = getDmKey(currentUserId, friendId);
@@ -493,13 +501,14 @@ export async function listDirectMessages(currentUserId, friendId) {
     if (raw) localMsgs = JSON.parse(raw);
   } catch {}
 
-  if (canUseSocial(currentUserId)) {
+  if (canUseSocial(currentUserId) && UUID_RE.test(currentUserId) && UUID_RE.test(friendId)) {
     try {
       const { data, error } = await supabase
         .from('friend_messages')
         .select('*')
         .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUserId})`)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .limit(100);
       if (!error && data && data.length > 0) {
         const map = new Map();
         [...localMsgs, ...data].forEach((m) => map.set(m.id, m));

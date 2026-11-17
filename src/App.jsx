@@ -34,8 +34,8 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 import AssignedProgramsCard from './components/trainer/AssignedProgramsCard';
 import Sidebar from './components/Sidebar';
 import { connectWearable } from './services/wearables/wearableManager';
-import { exchangeWhoopCodeForToken, fetchLiveWhoopBiometrics } from './services/wearables/whoopService';
-import { exchangeFitbitCodeForToken, fetchLiveFitbitBiometrics } from './services/wearables/fitbitService';
+import { exchangeWhoopCodeForToken } from './services/wearables/whoopService';
+import { exchangeFitbitCodeForToken } from './services/wearables/fitbitService';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -195,14 +195,6 @@ function AppContent() {
               refreshToken: tokenData.refresh_token,
               expiresAt
             });
-            try {
-              const bio = await fetchLiveWhoopBiometrics(tokenData.access_token);
-              const currentBio = JSON.parse(localStorage.getItem('ab_wearable_biometrics_v1') || '{}');
-              currentBio.whoop = { ...bio, provider: 'whoop', date: new Date().toISOString().slice(0, 10), last_synced_at: new Date().toISOString() };
-              localStorage.setItem('ab_wearable_biometrics_v1', JSON.stringify(currentBio));
-            } catch (e) {
-              console.warn('Erro ao carregar biometria live Whoop inicial:', e);
-            }
             sound.playLevelUp?.();
           })
           .catch((err) => {
@@ -223,14 +215,6 @@ function AppContent() {
               refreshToken: tokenData.refresh_token,
               expiresAt
             });
-            try {
-              const bio = await fetchLiveFitbitBiometrics(tokenData.access_token);
-              const currentBio = JSON.parse(localStorage.getItem('ab_wearable_biometrics_v1') || '{}');
-              currentBio.fitbit = { ...bio, provider: 'fitbit', date: new Date().toISOString().slice(0, 10), last_synced_at: new Date().toISOString() };
-              localStorage.setItem('ab_wearable_biometrics_v1', JSON.stringify(currentBio));
-            } catch (e) {
-              console.warn('Erro ao carregar biometria live Fitbit inicial:', e);
-            }
             sound.playLevelUp?.();
           })
           .catch((err) => {

@@ -28,10 +28,14 @@ export default async function handler(req, res) {
   } catch {
     return res.status(400).json({ error: 'Corpo JSON inválido' });
   }
-  const { code, redirectUri } = body;
+  const { code, refreshToken, redirectUri } = body;
 
-  if (!code) {
-    return res.status(400).json({ error: 'O código de autorização é obrigatório' });
+  const isRefresh = typeof refreshToken === 'string' && refreshToken.trim().length > 0;
+  const hasValidCode = typeof code === 'string' && code.trim().length > 0 && code.length <= 1024;
+  const hasValidRefresh = isRefresh && refreshToken.length <= 1024;
+
+  if (!hasValidCode && !hasValidRefresh) {
+    return res.status(400).json({ error: 'Código de autorização ou refresh token inválido' });
   }
 
   if (redirectUri !== undefined && redirectUri !== null && !isAllowedRedirectUri(redirectUri)) {
@@ -48,13 +52,23 @@ export default async function handler(req, res) {
 
   try {
     const tokenUrl = 'https://api.prod.whoop.com/oauth/oauth2/token';
-    const params = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: redirectUri || 'https://www.abfitness.app/auth/callback/wearable'
-    });
+    const params = new URLSearchParams(
+      hasValidRefresh
+        ? {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken.trim(),
+            client_id: clientId,
+            client_secret: clientSecret,
+            scope: 'offline read:recovery read:cycles read:workout read:sleep read:profile'
+          }
+        : {
+            grant_type: 'authorization_code',
+            code: code.trim(),
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: redirectUri || 'https://www.abfitness.app/auth/callback/wearable'
+          }
+    );
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -64,17 +78,17 @@ export default async function handler(req, res) {
       body: params.toString()
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      console.error('Erro na API Whoop Token:', data);
-      return res.status(response.status).json(data);
+      console.error('Erro na API Whoop Token:', response.status);
+      return res.status(response.status).json({ error: 'Falha ao validar credenciais na WHOOP' });
     }
 
     return res.status(200).json(data);
   } catch (err) {
     console.error('Exceção ao trocar token Whoop:', err);
-    return res.status(500).json({ error: err.message || 'Erro interno no servidor' });
+    return res.status(500).json({ error: 'Erro interno ao processar autenticação com a WHOOP' });
   }
 }
 

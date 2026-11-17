@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeReadinessIndex } from './wearableManager.js';
+import { computeReadinessIndex, syncWearableData } from './wearableManager.js';
 import { generateSimulatedWhoopData } from './whoopService.js';
 import { generateSimulatedFitbitData } from './fitbitService.js';
 
@@ -104,6 +104,36 @@ describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica
     assert.equal(res.score, 76);
     assert.equal(res.providerUsed, 'fitbit');
     assert.equal(res.status, 'moderate');
+  });
+
+  it('syncWearableData usa o fetcher live (e renova token expirado) em vez de sobrescrever conexão real com simulação', async () => {
+    let refreshedWith = null;
+    let fetchedWithToken = null;
+    const expiredIso = new Date(Date.now() - 120000).toISOString();
+
+    const bio = await syncWearableData('guest-local-user', 'whoop', {
+      connectionOverride: {
+        provider: 'whoop',
+        status: 'connected',
+        access_token: 'old_token',
+        refresh_token: 'ref_123',
+        expires_at: expiredIso
+      },
+      refreshFn: async (rt) => {
+        refreshedWith = rt;
+        return { access_token: 'new_live_token', expires_in: 3600 };
+      },
+      liveFetcher: async (tok) => {
+        fetchedWithToken = tok;
+        return { is_stale: false, recovery_score: 77, hrv_ms: 68.5, resting_hr_bpm: 51 };
+      }
+    });
+
+    assert.equal(refreshedWith, 'ref_123');
+    assert.equal(fetchedWithToken, 'new_live_token');
+    assert.equal(bio.is_simulated, false);
+    assert.equal(bio.recovery_score, 77);
+    assert.equal(bio.hrv_ms, 68.5);
   });
 });
 

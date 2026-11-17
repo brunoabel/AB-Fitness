@@ -314,19 +314,39 @@ REGRAS RÍGIDAS DE ID:
 // ==========================================
 // 4. DENO HTTP SERVER HANDLER COM CORS & JWT
 // ==========================================
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS"
-};
+const ALLOWED_ORIGINS = new Set([
+  "https://www.abfitness.app",
+  "https://abfitness.app",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173"
+]);
 
-// Rate limiter em memória por usuário (20 requisições por hora)
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  const allowedOrigin = ALLOWED_ORIGINS.has(origin) ? origin : "https://www.abfitness.app";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin"
+  };
+}
+
+// Rate limiter em memória por utilizador (20 requisições por hora)
 const userRequestTimestamps = new Map<string, number[]>();
 const RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hora
 
 function isRateLimited(userId: string): boolean {
   const now = Date.now();
+  // Limpar chaves expiradas para evitar crescimento infinito de memória
+  if (userRequestTimestamps.size > 500) {
+    for (const [k, list] of userRequestTimestamps.entries()) {
+      const valid = list.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (valid.length === 0) userRequestTimestamps.delete(k);
+      else userRequestTimestamps.set(k, valid);
+    }
+  }
   const timestamps = (userRequestTimestamps.get(userId) || []).filter(
     (t) => now - t < RATE_LIMIT_WINDOW_MS
   );
@@ -341,6 +361,8 @@ function isRateLimited(userId: string): boolean {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // CORS Preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -349,6 +371,14 @@ Deno.serve(async (req: Request) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Método não permitido." }), {
       status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
+  const contentLength = Number(req.headers.get("content-length") || "0");
+  if (contentLength > 32768) {
+    return new Response(JSON.stringify({ error: "Pedido demasiado grande." }), {
+      status: 413,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
   }
@@ -402,13 +432,22 @@ Deno.serve(async (req: Request) => {
     }
 
     const rawMessages = body.messages.slice(-10);
-    const perfil = body.perfil || null;
+    const rawPerfil = body.perfil && typeof body.perfil === "object" ? body.perfil : null;
+    const perfil = rawPerfil
+      ? {
+          nivel: typeof rawPerfil.nivel === "string" ? rawPerfil.nivel.slice(0, 60) : undefined,
+          objetivo: typeof rawPerfil.objetivo === "string" ? rawPerfil.objetivo.slice(0, 120) : undefined,
+          diasDisponiveis: typeof rawPerfil.diasDisponiveis === "number" ? Math.min(7, Math.max(1, rawPerfil.diasDisponiveis)) : undefined,
+          equipamento: typeof rawPerfil.equipamento === "string" ? rawPerfil.equipamento.slice(0, 120) : undefined,
+          lesoes: typeof rawPerfil.lesoes === "string" ? rawPerfil.lesoes.slice(0, 300) : undefined
+        }
+      : null;
 
     const geminiContents = rawMessages
       .filter((m: any) => m && typeof m.content === "string" && m.content.trim() !== "")
       .map((m: any) => ({
         role: m.role === "assistant" || m.role === "model" ? "model" : "user",
-        parts: [{ text: m.content.trim() }]
+        parts: [{ text: m.content.trim().slice(0, 1200) }]
       }));
 
     if (geminiContents.length === 0) {

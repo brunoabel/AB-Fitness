@@ -322,3 +322,20 @@ GRANT EXECUTE ON FUNCTION public.get_roster_overview() TO authenticated;
 
 COMMIT;
 ```
+
+---
+
+## 6. Aplicar a Migration Global de Segurança, RLS, Storage e Índices (`20261127_security_rls_and_indexes_hardening.sql`)
+
+Ficheiro completo no repositório: `supabase/migrations/20261127_security_rls_and_indexes_hardening.sql`
+
+Abre o ficheiro [20261127_security_rls_and_indexes_hardening.sql](../../supabase/migrations/20261127_security_rls_and_indexes_hardening.sql), copia o conteúdo integral e clica em **Run** no SQL Editor (`https://supabase.com/dashboard/project/tegdtjmglvrvgerrtivx/sql/new`).
+
+Esta migration aplica:
+- Bloqueio de auto-promoção a `is_verified`, `is_pro` e `is_premium` no trigger `prevent_profile_role_change()`.
+- Permissão `EXECUTE` segura em `public.are_friends(uuid, uuid)` para `authenticated` (desbloqueando as policies de `athlete_posts` e `friend_messages`).
+- `FORCE ROW LEVEL SECURITY` e `REVOKE ALL FROM PUBLIC, anon` nas 6 tabelas pós-`20261112`.
+- Restrição de `UPDATE` em `friend_messages` apenas à coluna `read_at` com `WITH CHECK` e limite de `2000` caracteres.
+- Política `biometrics_delete_own` em `athlete_biometrics` e `WITH CHECK` explícito em `wearable_connections` / `athlete_biometrics`.
+- Validação de amizade/sessão em `toggle_post_respect()`, filtro `s.is_shared = true` em `get_friend_feed()` e respeito por `show_history` em `get_public_athlete_pass()`.
+- Restrição de listagem no bucket `'posts'` à pasta do próprio utilizador e criação dos 3 índices compostos (`friend_messages_receiver_sender_idx`, `exercise_logs_user_created_completed_idx`, `assigned_programs_athlete_idx`).

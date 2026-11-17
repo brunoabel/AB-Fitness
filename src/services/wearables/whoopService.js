@@ -69,6 +69,24 @@ export async function exchangeWhoopCodeForToken(code, redirectUri) {
 }
 
 /**
+ * Renova o access_token da WHOOP usando o refresh_token.
+ */
+export async function refreshWhoopToken(refreshToken) {
+  const res = await fetch('/api/whoop-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `Falha ao renovar token da WHOOP (${res.status})`);
+  }
+
+  return res.json();
+}
+
+/**
  * Consulta a biometria mais recente da Whoop (Recuperação e Ciclos).
  */
 export async function fetchLiveWhoopBiometrics(accessToken) {

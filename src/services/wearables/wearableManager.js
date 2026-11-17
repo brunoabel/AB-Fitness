@@ -5,8 +5,16 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js';
-import { generateSimulatedWhoopData } from './whoopService.js';
-import { generateSimulatedFitbitData } from './fitbitService.js';
+import {
+  generateSimulatedWhoopData,
+  fetchLiveWhoopBiometrics,
+  refreshWhoopToken
+} from './whoopService.js';
+import {
+  generateSimulatedFitbitData,
+  fetchLiveFitbitBiometrics,
+  refreshFitbitToken
+} from './fitbitService.js';
 import { enqueueJob, flushQueue } from '../../utils/syncQueue.js';
 
 const STORAGE_KEY_CONNECTIONS = 'ab_wearable_connections_v1';
@@ -169,11 +177,18 @@ export async function disconnectWearable(userId, provider) {
 
   if (canSyncUser(userId)) {
     try {
-      await supabase
-        .from('wearable_connections')
-        .delete()
-        .eq('user_id', userId)
-        .eq('provider', provider);
+      await Promise.all([
+        supabase
+          .from('wearable_connections')
+          .delete()
+          .eq('user_id', userId)
+          .eq('provider', provider),
+        supabase
+          .from('athlete_biometrics')
+          .delete()
+          .eq('user_id', userId)
+          .eq('provider', provider)
+      ]);
     } catch (e) {
       console.warn('Falha ao apagar wearable da nuvem:', e);
     }
@@ -208,13 +223,73 @@ async function pushBiometricsToCloud(job) {
 }
 
 /**
- * Sincroniza dados biométricos do wearable (real ou simulado).
+ * Sincroniza dados biométricos do wearable:
+ * - Se a ligação estiver em modo 'connected' com access_token real, consulta a API oficial
+ *   (renovando o token via refresh_token se tiver expirado) e nunca inventa valores simulados.
+ * - Só usa gerador simulado quando a conexão está em modo 'simulated'.
  */
-export async function syncWearableData(userId, provider) {
+export async function syncWearableData(userId, provider, options = {}) {
   const today = new Date().toISOString().slice(0, 10);
+  const currentConns = getLocalConnections();
+  const conn = options.connectionOverride || currentConns[provider] || null;
   let bioData = null;
 
-  if (provider === 'whoop') {
+  if (conn && conn.status === 'connected' && conn.access_token) {
+    let activeToken = conn.access_token;
+    const isExpired = conn.expires_at
+      ? new Date(conn.expires_at).getTime() <= Date.now() + 60000
+      : false;
+
+    if (isExpired && conn.refresh_token) {
+      try {
+        const refreshFn = options.refreshFn
+          || (provider === 'whoop' ? refreshWhoopToken : refreshFitbitToken);
+        const refreshed = await refreshFn(conn.refresh_token);
+        if (refreshed?.access_token) {
+          activeToken = refreshed.access_token;
+          conn.access_token = refreshed.access_token;
+          if (refreshed.refresh_token) conn.refresh_token = refreshed.refresh_token;
+          if (refreshed.expires_in) {
+            conn.expires_at = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
+          }
+          if (currentConns[provider]) {
+            currentConns[provider] = { ...currentConns[provider], ...conn };
+            saveLocalConnections(currentConns);
+          }
+        }
+      } catch {
+        // Se o refresh falhar, tenta ainda a leitura ou devolverá is_stale
+      }
+    }
+
+    try {
+      const liveFetcher = options.liveFetcher
+        || (provider === 'whoop' ? fetchLiveWhoopBiometrics : fetchLiveFitbitBiometrics);
+      const live = await liveFetcher(activeToken, today);
+      bioData = {
+        ...live,
+        provider,
+        date: today,
+        is_simulated: false,
+        last_synced_at: new Date().toISOString()
+      };
+    } catch {
+      bioData = {
+        is_stale: true,
+        provider,
+        date: today,
+        recovery_score: null,
+        hrv_ms: null,
+        resting_hr_bpm: null,
+        sleep_score: null,
+        sleep_duration_seconds: null,
+        day_strain: null,
+        calories_burned: null,
+        is_simulated: false,
+        last_synced_at: new Date().toISOString()
+      };
+    }
+  } else if (provider === 'whoop') {
     bioData = generateSimulatedWhoopData(today);
   } else if (provider === 'fitbit') {
     bioData = generateSimulatedFitbitData(today);
@@ -228,7 +303,6 @@ export async function syncWearableData(userId, provider) {
   saveLocalBiometrics(currentBio);
 
   // Atualizar last_synced_at na conexão
-  const currentConns = getLocalConnections();
   if (currentConns[provider]) {
     currentConns[provider].last_synced_at = new Date().toISOString();
     saveLocalConnections(currentConns);

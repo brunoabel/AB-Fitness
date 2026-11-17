@@ -27,8 +27,21 @@ export async function wipeLocalData() {
 export async function deleteMyAccount(userId) {
   if (!canUseSocial(userId)) return { ok: false, error: 'Sem sessão iniciada.' };
   try {
-    const { data: files } = await supabase.storage.from('avatars').list(userId, { limit: 100 });
-    if (files?.length) await supabase.storage.from('avatars').remove(files.map((f) => `${userId}/${f.name}`));
+    const [{ data: avatarFiles }, { data: legacyPostFiles }, { data: postFiles }] = await Promise.all([
+      supabase.storage.from('avatars').list(userId, { limit: 100 }),
+      supabase.storage.from('avatars').list(`${userId}/posts`, { limit: 100 }),
+      supabase.storage.from('posts').list(userId, { limit: 100 })
+    ]);
+    if (avatarFiles?.length) {
+      const topFiles = avatarFiles.filter((f) => f.name && f.name !== 'posts').map((f) => `${userId}/${f.name}`);
+      if (topFiles.length) await supabase.storage.from('avatars').remove(topFiles);
+    }
+    if (legacyPostFiles?.length) {
+      await supabase.storage.from('avatars').remove(legacyPostFiles.map((f) => `${userId}/posts/${f.name}`));
+    }
+    if (postFiles?.length) {
+      await supabase.storage.from('posts').remove(postFiles.map((f) => `${userId}/${f.name}`));
+    }
 
     const { error } = await supabase.rpc('delete_user_account_and_data', { p_confirm: 'ELIMINAR' });
     if (error) return { ok: false, error: error.message };
@@ -36,6 +49,6 @@ export async function deleteMyAccount(userId) {
     await wipeLocalData();
     return { ok: true };
   } catch (err) {
-    return { ok: false, error: err?.message || 'Falha de ligação. Tente novamente.' };
+    return { ok: false, error: err?.message || 'Falha de ligação. Tenta novamente.' };
   }
 }

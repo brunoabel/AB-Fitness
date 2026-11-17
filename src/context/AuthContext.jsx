@@ -174,6 +174,8 @@ export function AuthProvider({ children }) {
     setSession(null);
     setIsGuest(false);
     localStorage.removeItem(GUEST_STORAGE_KEY);
+    localStorage.removeItem('ab_wearable_connections_v1');
+    localStorage.removeItem('ab_wearable_biometrics_v1');
   };
 
   // Acesso Convidado / Modo Offline (bloqueado durante o lançamento privado)
@@ -200,7 +202,7 @@ export function AuthProvider({ children }) {
   );
   const isAdmin = isCeo || Boolean(profileRole === 'admin');
   const isTrainer = isCeo || Boolean(profileRole === 'coach');
-  const isPro = isCeo || Boolean(roleState.isPremium || user?.user_metadata?.is_premium);
+  const isPro = isCeo || Boolean(roleState.isPremium);
 
   const value = {
     user,

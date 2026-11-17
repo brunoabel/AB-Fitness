@@ -67,6 +67,24 @@ export async function exchangeFitbitCodeForToken(code, redirectUri) {
 }
 
 /**
+ * Renova o access_token da Fitbit usando o refresh_token.
+ */
+export async function refreshFitbitToken(refreshToken) {
+  const res = await fetch('/api/fitbit-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `Falha ao renovar token da Fitbit (${res.status})`);
+  }
+
+  return res.json();
+}
+
+/**
  * Consulta a biometria mais recente da Fitbit (Frequência Cardíaca e Sono).
  */
 export async function fetchLiveFitbitBiometrics(accessToken, dateIso = 'today') {
