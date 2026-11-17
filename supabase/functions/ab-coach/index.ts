@@ -270,6 +270,43 @@ PERSONALIZAÇÃO E SEGURANÇA
 FORMATO DE SAÍDA
 Responda SEMPRE no JSON do schema fornecido. \`mensagem\` contém a explicação amigável (pode usar poucos emojis). \`treino\` é preenchido somente quando houver um treino a entregar; caso contrário, null.`;
 
+// Saneamento do perfil enviado pelo cliente: mantém só as chaves que buildCoachSystemInstruction lê
+// (incluindo o histórico de cargas, treinos e fadiga), com tipos validados e tamanhos limitados.
+const str = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : undefined);
+const strOrList = (v: unknown, max: number) =>
+  Array.isArray(v) ? str(v.filter((x) => typeof x === "string").join(", "), max) : str(v, max);
+
+export function sanitizePerfil(raw: any) {
+  if (!raw || typeof raw !== "object") return null;
+  const dias = Number(raw.dias_semana ?? raw.diasDisponiveis);
+  return {
+    nivel: str(raw.nivel, 60),
+    objetivo: str(raw.objetivo, 120),
+    dias_semana: Number.isFinite(dias) && dias > 0 ? Math.min(7, Math.round(dias)) : undefined,
+    equipamentos: strOrList(raw.equipamentos ?? raw.equipamento, 200),
+    lesoes: strOrList(raw.lesoes, 300),
+    recentWeights: Array.isArray(raw.recentWeights)
+      ? raw.recentWeights.filter((w: unknown) => typeof w === "string").slice(0, 10).map((w: string) => w.slice(0, 120))
+      : undefined,
+    recentWorkouts: Array.isArray(raw.recentWorkouts)
+      ? raw.recentWorkouts
+          .filter((w: any) => w && typeof w === "object")
+          .slice(0, 5)
+          .map((w: any) => ({ treino: str(w.treino, 80) || "Treino", data: str(w.data, 20) || "recente" }))
+      : undefined,
+    fadigaMuscular: Array.isArray(raw.fadigaMuscular)
+      ? raw.fadigaMuscular
+          .filter((m: any) => m && typeof m.muscle_id === "string" && Number.isFinite(Number(m.fatigue)))
+          .slice(0, 30)
+          .map((m: any) => ({
+            muscle_id: m.muscle_id.slice(0, 40),
+            fatigue: Number(m.fatigue),
+            hours_to_recovered: Number(m.hours_to_recovered) || 0
+          }))
+      : undefined
+  };
+}
+
 export function buildCoachSystemInstruction(perfil?: any): string {
   const catalogText = formatCatalogForPrompt();
   let perfilContext = '';
@@ -433,15 +470,7 @@ Deno.serve(async (req: Request) => {
 
     const rawMessages = body.messages.slice(-10);
     const rawPerfil = body.perfil && typeof body.perfil === "object" ? body.perfil : null;
-    const perfil = rawPerfil
-      ? {
-          nivel: typeof rawPerfil.nivel === "string" ? rawPerfil.nivel.slice(0, 60) : undefined,
-          objetivo: typeof rawPerfil.objetivo === "string" ? rawPerfil.objetivo.slice(0, 120) : undefined,
-          diasDisponiveis: typeof rawPerfil.diasDisponiveis === "number" ? Math.min(7, Math.max(1, rawPerfil.diasDisponiveis)) : undefined,
-          equipamento: typeof rawPerfil.equipamento === "string" ? rawPerfil.equipamento.slice(0, 120) : undefined,
-          lesoes: typeof rawPerfil.lesoes === "string" ? rawPerfil.lesoes.slice(0, 300) : undefined
-        }
-      : null;
+    const perfil = sanitizePerfil(rawPerfil);
 
     const geminiContents = rawMessages
       .filter((m: any) => m && typeof m.content === "string" && m.content.trim() !== "")

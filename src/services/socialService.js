@@ -507,7 +507,8 @@ export async function listDirectMessages(currentUserId, friendId) {
         .from('friend_messages')
         .select('*')
         .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUserId})`)
-        .order('created_at', { ascending: true })
+        // As 100 mais recentes (desc + limit); a ordem cronológica é reposta no sort abaixo.
+        .order('created_at', { ascending: false })
         .limit(100);
       if (!error && data && data.length > 0) {
         const map = new Map();

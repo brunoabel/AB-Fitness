@@ -339,3 +339,15 @@ Esta migration aplica:
 - Política `biometrics_delete_own` em `athlete_biometrics` e `WITH CHECK` explícito em `wearable_connections` / `athlete_biometrics`.
 - Validação de amizade/sessão em `toggle_post_respect()`, filtro `s.is_shared = true` em `get_friend_feed()` e respeito por `show_history` em `get_public_athlete_pass()`.
 - Restrição de listagem no bucket `'posts'` à pasta do próprio utilizador e criação dos 3 índices compostos (`friend_messages_receiver_sender_idx`, `exercise_logs_user_created_completed_idx`, `assigned_programs_athlete_idx`).
+
+---
+
+## 7. Repor o feed de amigos (`20261128_restore_friend_feed.sql`), logo a seguir à secção 6
+
+O filtro `s.is_shared = true` que a `20261127` pôs em `get_friend_feed()` deixa o feed vazio para todos, porque a app nunca marca treinos como partilhados (`is_shared` fica sempre `false`). Esta migration repõe o feed, que continua protegido pela amizade aceite e pela opção `show_history` do atleta.
+
+Abre o ficheiro [20261128_restore_friend_feed.sql](../../supabase/migrations/20261128_restore_friend_feed.sql), copia o conteúdo integral e clica em **Run** no SQL Editor (`https://supabase.com/dashboard/project/tegdtjmglvrvgerrtivx/sql/new`). Se já correste a `20261127`, corre esta agora; se ainda não, corre as duas seguidas.
+
+## 8. Voltar a publicar a Edge Function `ab-coach`
+
+A versão anterior da função descartava o histórico de cargas, os últimos treinos e o mapa de fadiga enviados pela app, e o AB Coach deixava de os considerar. Depois de atualizar o repositório, publica de novo a função `ab-coach` (pelo mesmo processo que usas habitualmente para a publicar).
