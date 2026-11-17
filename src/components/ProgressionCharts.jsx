@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  TrendingUp, 
   Dumbbell, 
   ArrowUpRight 
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { isBeginnerProfile } from './onboarding/profileSchema';
 
 // Base de dados de progressão realista para os exercícios clássicos do Arnold Split
 const EXERCISE_PROGRESSION_DATA = {
@@ -108,6 +109,7 @@ const EXERCISE_PROGRESSION_DATA = {
 
 // Dados de volume semanal por bloco do Arnold Split
 export default function ProgressionCharts() {
+  const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
   const [selectedExKey, setSelectedExKey] = useState('bench-press');
   const [hoveredPoint, setHoveredPoint] = useState(null);
 
@@ -149,30 +151,15 @@ export default function ProgressionCharts() {
 
   return (
     <div className="space-y-4 animate-fadeIn">
-      {/* Abas Superiores dos Gráficos — Apenas Sobrecarga Ativa, Whoop e Arnold ocultos */}
-      <div className="flex items-center justify-between px-1 text-xs font-bold text-white">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-accent-hover" />
-          <span>Evolução de Sobrecarga Progressiva (PRs)</span>
-        </div>
-
-        {/* OCULTO: Módulos Arnold Volume e Whoop x Cargas desativados a pedido do utilizador
-        <div className="flex gap-1">
-          <button onClick={() => setActiveTab('split-volume')}>Arnold Volume</button>
-          <button onClick={() => setActiveTab('whoop-cross')}>Whoop x Cargas</button>
-        </div>
-        */}
-      </div>
-
       {/* 1. VISUALIZAÇÃO DE SOBRECARGA PROGRESSIVA POR EXERCÍCIO */}
       <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/10 shadow-sm space-y-4 transition-colors">
         
-        {/* Seletor de Exercício do Arnold Split */}
+        {/* Seletor de Exercício */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
-            <div className="flex items-center gap-1.5 text-zinc-400 text-[11px] font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-zinc-400 text-xs font-medium">
               <Dumbbell className="w-3.5 h-3.5 text-zinc-300" />
-              <span>Evolução de Força • {currentEx.splitGroup}</span>
+              <span>{currentEx.splitGroup}</span>
             </div>
             <h3 className="text-base font-bold text-white mt-0.5">
               {currentEx.name}
@@ -197,21 +184,21 @@ export default function ProgressionCharts() {
           </select>
         </div>
 
-        {/* Cards de Métricas do Exercício */}
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
-            <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Inicial</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.initialWeight} kg</span>
+        {/* Ledger Editorial de Métricas do Exercício (sem caixas aninhadas) */}
+        <div className="grid grid-cols-3 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3">
+          <div className="pr-3">
+            <span className="text-[11px] text-zinc-400 block">Carga Inicial</span>
+            <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">{currentEx.initialWeight} kg</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
-            <span className="text-[11px] text-zinc-400 uppercase font-semibold block">Carga Atual</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-white">{currentEx.currentWeight} kg</span>
+          <div className="px-3">
+            <span className="text-[11px] text-zinc-400 block">Carga Atual</span>
+            <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">{currentEx.currentWeight} kg</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-800/50">
-            <span className="text-[11px] text-emerald-400 uppercase font-semibold block">Ganho Total</span>
-            <span className="text-sm font-bold font-mono tabular-nums text-emerald-400 flex items-center justify-center gap-0.5">
+          <div className="pl-3">
+            <span className="text-[11px] text-emerald-400 block">Ganho Total</span>
+            <span className="text-sm font-bold font-display tabular-nums text-emerald-400 flex items-center gap-0.5 mt-0.5">
               <ArrowUpRight className="w-3.5 h-3.5" />
               {currentEx.gainPercent}
             </span>
@@ -269,7 +256,7 @@ export default function ProgressionCharts() {
                     x={pt.x}
                     y={chartHeight - 12}
                     textAnchor="middle"
-                    className="text-[11px] font-mono tabular-nums fill-zinc-400 font-medium"
+                    className="text-[11px] tabular-nums fill-zinc-400 font-medium"
                   >
                     {pt.date}
                   </text>
@@ -283,12 +270,12 @@ export default function ProgressionCharts() {
             <div 
               className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-100 text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-300 animate-fadeIn"
             >
-              <span className="font-mono tabular-nums">{points[hoveredPoint].date}:</span>
-              <span className="font-bold font-mono tabular-nums">
+              <span className="tabular-nums">{points[hoveredPoint].date}:</span>
+              <span className="font-bold font-display tabular-nums">
                 {points[hoveredPoint].weight} kg
               </span>
-              <span className="text-[11px] opacity-80 font-mono tabular-nums">
-                ({points[hoveredPoint].reps} reps • 1RM ~{points[hoveredPoint].estimated1RM} kg)
+              <span className="text-[11px] opacity-80 tabular-nums">
+                ({points[hoveredPoint].reps} reps{!isSimpleMode ? ` · 1RM ~${points[hoveredPoint].estimated1RM} kg` : ''})
               </span>
             </div>
           )}
@@ -296,7 +283,21 @@ export default function ProgressionCharts() {
 
         <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/10">
           <span className="flex items-center gap-1 font-medium">
-            1RM Máximo Estimado: <strong className="font-mono tabular-nums text-white font-bold">{Math.max(...sessions.map(s => s.estimated1RM))} kg</strong>
+            {isSimpleMode ? (
+              <>
+                Maior Carga Registada:{' '}
+                <strong className="font-display tabular-nums text-white font-bold">
+                  {Math.max(...sessions.map((s) => s.weight))} kg
+                </strong>
+              </>
+            ) : (
+              <>
+                1RM Máximo Estimado:{' '}
+                <strong className="font-display tabular-nums text-white font-bold">
+                  {Math.max(...sessions.map((s) => s.estimated1RM))} kg
+                </strong>
+              </>
+            )}
           </span>
           <span className="text-[11px]">Toque nos pontos para detalhes</span>
         </div>

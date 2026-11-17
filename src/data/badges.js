@@ -35,11 +35,11 @@ export const BADGES_CATALOG = [
   {
     id: 'pace_sub5',
     title: 'Pace Sub-5',
-    desc: 'Correu com ritmo médio abaixo de 5\'00" por quilômetro.',
+    desc: 'Correu com ritmo médio abaixo de 5\'00" por quilómetro.',
     icon: 'Zap',
     category: 'running',
     tier: 'gold',
-    color: '#f97316' // Orange
+    color: '#f59e0b'
   },
   {
     id: 'speed_demon',
@@ -104,7 +104,7 @@ export const BADGES_CATALOG = [
     icon: 'Activity',
     category: 'gym',
     tier: 'gold',
-    color: '#f97316'
+    color: '#f59e0b'
   },
   {
     id: 'tonnage_titan',
@@ -133,7 +133,7 @@ export const BADGES_CATALOG = [
     icon: 'Flame',
     category: 'consistency',
     tier: 'bronze',
-    color: '#f97316'
+    color: '#f59e0b'
   },
   {
     id: 'early_bird',
@@ -151,6 +151,6 @@ export const BADGES_CATALOG = [
     icon: 'Moon',
     category: 'consistency',
     tier: 'bronze',
-    color: '#6366f1'
+    color: '#e4e4e7'
   }
 ];

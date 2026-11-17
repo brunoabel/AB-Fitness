@@ -134,6 +134,8 @@ export default function BodyPortfolio() {
   const [afterId, setAfterId] = useState(null);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [confirmDeleteEntryId, setConfirmDeleteEntryId] = useState(null);
+  const [confirmDeletePhotoId, setConfirmDeletePhotoId] = useState(null);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -190,7 +192,13 @@ export default function BodyPortfolio() {
   };
 
   const handleDeleteEntry = (entry) => {
-    if (!window.confirm(`Apagar o registo de ${formatDatePt(entry.date)}?`)) return;
+    if (confirmDeleteEntryId !== entry.id) {
+      triggerHaptic(8);
+      setConfirmDeleteEntryId(entry.id);
+      return;
+    }
+    triggerHaptic(12);
+    setConfirmDeleteEntryId(null);
     setEntries(deleteBodyEntry(entry.id));
   };
 
@@ -213,7 +221,13 @@ export default function BodyPortfolio() {
   };
 
   const handleDeletePhoto = async (photo) => {
-    if (!window.confirm(`Apagar esta foto (${formatDatePt(photo.date)})? Não é possível recuperá-la.`)) return;
+    if (confirmDeletePhotoId !== photo.id) {
+      triggerHaptic(8);
+      setConfirmDeletePhotoId(photo.id);
+      return;
+    }
+    triggerHaptic(12);
+    setConfirmDeletePhotoId(null);
     await deleteProgressPhoto(photo.id);
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     if (beforeId === photo.id) setBeforeId(null);
@@ -247,14 +261,14 @@ export default function BodyPortfolio() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Resumo */}
+      {/* Resumo em Ledger Editorial (sem caixas aninhadas) */}
       <div className={card}>
         <div className={eyebrow}>
           <Scale className="w-4 h-4 stroke-[1.8]" />
           <span>Portfólio Corporal</span>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+        <div className="grid grid-cols-3 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3">
+          <div className="pr-3">
             <span className="text-[11px] font-medium text-zinc-400 block">Peso atual</span>
             <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">
               {weightSeries.length ? (
@@ -265,7 +279,7 @@ export default function BodyPortfolio() {
               ) : '—'}
             </span>
           </div>
-          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+          <div className="px-3">
             <span className="text-[11px] font-medium text-zinc-400 block">Variação</span>
             <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">
               {weightDelta === null ? '—' : (
@@ -276,7 +290,7 @@ export default function BodyPortfolio() {
               )}
             </span>
           </div>
-          <div className="p-3.5 rounded-lg bg-surface-2/80 border border-white/10">
+          <div className="pl-3">
             <span className="text-[11px] font-medium text-zinc-400 block">Fotos</span>
             <span className="font-display text-lg font-semibold text-zinc-50 tabular-nums tracking-[-0.02em] whitespace-nowrap mt-0.5 block">{photos.length}</span>
           </div>
@@ -285,7 +299,7 @@ export default function BodyPortfolio() {
           type="button"
           onClick={handleShare}
           disabled={!canShare || busy === 'card'}
-          className="w-full min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-app font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {busy === 'card' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4 stroke-[2.2]" />}
           <span>Partilhar card de evolução</span>
@@ -356,7 +370,7 @@ export default function BodyPortfolio() {
             </p>
             <button
               type="submit"
-              className="w-full min-h-[48px] rounded-xl bg-zinc-100 text-zinc-950 font-bold text-sm active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app font-bold text-sm active:scale-[0.98] transition-all cursor-pointer"
             >
               Guardar medidas
             </button>
@@ -394,9 +408,13 @@ export default function BodyPortfolio() {
                   type="button"
                   onClick={() => handleDeleteEntry(entry)}
                   aria-label={`Apagar registo de ${formatDatePt(entry.date)}`}
-                  className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-500/10 cursor-pointer"
+                  className={`shrink-0 min-h-[36px] px-2.5 rounded-lg flex items-center justify-center text-xs font-semibold cursor-pointer transition-colors ${
+                    confirmDeleteEntryId === entry.id
+                      ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
+                      : 'text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10'
+                  }`}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  {confirmDeleteEntryId === entry.id ? 'Confirmar' : <Trash2 className="w-4 h-4" />}
                 </button>
               </li>
             ))}
@@ -443,12 +461,16 @@ export default function BodyPortfolio() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy === 'photo'}
-          className="w-full flex items-center justify-center gap-1.5 min-h-[44px] rounded-lg bg-zinc-100 text-zinc-950 text-sm font-bold active:scale-[0.98] cursor-pointer disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-1.5 min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app text-sm font-bold active:scale-[0.98] cursor-pointer disabled:opacity-50"
         >
           {busy === 'photo' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
           <span>Adicionar foto de {PHOTO_POSES.find((p) => p.id === pose).label.toLowerCase()}</span>
         </button>
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoPicked} className="hidden" />
+
+        {!photosLoaded && (
+          <div className="h-32 rounded-2xl bg-white/[0.03] animate-pulse" aria-hidden />
+        )}
 
         {photosLoaded && photos.length === 0 && (
           <div className="flex flex-col items-center gap-2 py-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center px-6">
@@ -499,9 +521,13 @@ export default function BodyPortfolio() {
                     type="button"
                     onClick={() => handleDeletePhoto(p)}
                     aria-label={`Apagar foto de ${formatDatePt(p.date)}`}
-                    className="tap-44 absolute top-1 right-1 w-8 h-8 rounded-md bg-black/60 text-white flex items-center justify-center cursor-pointer"
+                    className={`tap-44 absolute top-1 right-1 px-2 h-8 rounded-md flex items-center justify-center text-[11px] font-bold cursor-pointer ${
+                      confirmDeletePhotoId === p.id
+                        ? 'bg-rose-500 text-white'
+                        : 'bg-black/60 text-white'
+                    }`}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    {confirmDeletePhotoId === p.id ? 'Confirmar' : <Trash2 className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               ))}

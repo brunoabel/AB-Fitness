@@ -111,7 +111,7 @@ export default function WorkoutDetailsForm({ description, duration, focus, level
                   setDuration(dur);
                   triggerHaptic(10);
                 }}
-                className={`min-h-[44px] text-xs font-mono tabular-nums font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer border ${
+                className={`min-h-[44px] text-xs tabular-nums font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer border ${
                   duration === dur
                     ? 'bg-accent/70 text-white border-white'
                     : 'bg-surface text-zinc-300 border-white/10 hover:border-zinc-400'

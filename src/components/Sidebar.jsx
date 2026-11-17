@@ -110,7 +110,7 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-[272px] lg:shrink-0 lg:sticky lg:top-0 lg:h-screen bg-[#000000] border-r border-white/[0.06] px-3.5 py-6 select-none">
+    <aside className="hidden lg:flex lg:flex-col lg:w-[272px] lg:shrink-0 lg:sticky lg:top-0 lg:h-screen bg-app border-r border-white/[0.06] px-3.5 py-6 select-none">
       {/* Cabeçalho de Marca & Ritmo */}
       <div className="relative flex items-center gap-3 px-2.5 pb-6 mb-2 border-b border-white/[0.06]">
         <div

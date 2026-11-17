@@ -26,7 +26,7 @@ function WorkoutElapsedClock({ computeElapsed, isRunning }) {
   }, [computeElapsed, isRunning]);
 
   return (
-    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-xs font-bold tabular-nums text-white">
+    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] font-display text-xs font-bold tabular-nums text-white">
       <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`} />
       <span>{formatElapsed(seconds)}</span>
     </div>
@@ -68,7 +68,7 @@ export default function WorkoutHeader({
           <div className="flex items-center gap-2 mt-0.5">
             <WorkoutElapsedClock computeElapsed={computeElapsed} isRunning={isTimerRunning} />
             {totalWorkingSetsCount > 0 && (
-              <span className="text-[11px] font-mono text-zinc-400 tabular-nums">
+              <span className="text-[11px] text-zinc-400 tabular-nums">
                 {completedWorkingSetsCount}/{totalWorkingSetsCount} séries
               </span>
             )}

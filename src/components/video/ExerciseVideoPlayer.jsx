@@ -94,7 +94,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
               <div className="flex gap-1.5">
                 <button type="button" onClick={() => setGender((g) => (g === 'male' ? 'female' : 'male'))} aria-label="Alternar atleta" className={`${pill} bg-black/50 text-zinc-100 border-white/15`}>
                   <Users className="w-3.5 h-3.5" />
-                  {gender === 'male' ? '♂' : '♀'}
+                  {gender === 'male' ? 'M' : 'F'}
                 </button>
                 <button type="button" onClick={() => setRate(!slow)} aria-pressed={slow} className={`${pill} ${slow ? 'bg-accent/70 text-white border-accent-hover' : 'bg-black/50 text-zinc-100 border-white/15'}`}>
                   <Gauge className="w-3.5 h-3.5" />

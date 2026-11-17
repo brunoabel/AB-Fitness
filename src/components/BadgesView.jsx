@@ -63,9 +63,6 @@ export default function BadgesView() {
               <Trophy className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 block">
-                CONQUISTAS • AB FITNESS
-              </span>
               <h2 className="text-base sm:text-lg font-bold text-white tracking-[-0.015em]">
                 Mural de Medalhas & Conquistas
               </h2>
@@ -95,7 +92,7 @@ export default function BadgesView() {
       </div>
 
       {/* 2. Filtros de Categoria */}
-      <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] text-xs font-bold shadow-xs">
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs font-bold">
         {[
           { id: 'all', label: 'Todas' },
           { id: 'running', label: 'Corrida' },
@@ -104,14 +101,15 @@ export default function BadgesView() {
         ].map((f) => (
           <button
             key={f.id}
+            type="button"
             onClick={() => {
               setFilter(f.id);
               triggerHaptic(10);
             }}
-            className={`flex-1 min-h-[44px] py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
+            className={`min-h-[38px] px-4 rounded-full transition-all cursor-pointer shrink-0 ${
               filter === f.id
-                ? 'bg-white/10 text-white shadow-xs'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-primary text-app shadow-xs'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200'
             }`}
           >
             {f.label}
@@ -169,7 +167,7 @@ export default function BadgesView() {
                 </p>
 
                 {isUnlocked && unlockedInfo?.unlockedAt && (
-                  <span className="text-[11px] text-zinc-500 font-mono tabular-nums mt-1.5 block">
+                  <span className="text-[11px] text-zinc-500 tabular-nums mt-1.5 block">
                     Conquistada em {new Date(unlockedInfo.unlockedAt).toLocaleDateString('pt-PT')}
                   </span>
                 )}

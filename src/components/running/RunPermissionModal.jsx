@@ -7,7 +7,7 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-md rounded-3xl bg-[#090b10] border border-white/[0.1] p-6 text-white shadow-2xl space-y-5">
+      <div className="w-full max-w-md rounded-3xl bg-surface border border-white/[0.1] p-6 text-white shadow-2xl space-y-5">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-2xl bg-white text-black flex items-center justify-center shrink-0">
             <MapPin className="w-5 h-5 stroke-[2.2]" />

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { X, Check, AlertCircle } from 'lucide-react';
 import { getBiomechanicalSubstitutes } from '../../services/abCoach/catalog';
 import { findExerciseIn100 } from '../../data/exercises100';
@@ -12,6 +12,7 @@ const SPRING = { type: 'spring', stiffness: 420, damping: 36 };
  * Apresenta alternativas biomecânicas com a mesma porção anatómica e vetor de força.
  */
 export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClose }) {
+  const reducedMotion = useReducedMotion();
   const substitutes = useMemo(() => {
     if (!exercise) return [];
     const list = getBiomechanicalSubstitutes(exercise.id || exercise.nome);
@@ -40,7 +41,7 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
         initial={{ y: '100%', opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
-        transition={SPRING}
+        transition={reducedMotion ? { duration: 0 } : SPRING}
         className="w-full max-w-lg bg-surface border border-white/[0.08] rounded-t-3xl sm:rounded-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
       >
         {/* Pega da folha nativa */}
@@ -117,7 +118,7 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
 
         {/* Rodapé com Dica Biomecânica */}
         <div className="p-4 border-t border-white/[0.06] bg-app/70 text-center text-[11px] text-zinc-500">
-          O AB Coach mantém o mesmo volume de séries e ativação neuromuscular do teu treino.
+          O AB Coach mantém as tuas séries e trabalha exatamente o mesmo músculo.
         </div>
       </motion.div>
     </div>

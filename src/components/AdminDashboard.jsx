@@ -40,8 +40,10 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const [athleteDetails, setAthleteDetails] = useState(null);
   const [roleActionLoading, setRoleActionLoading] = useState(false);
   const [roleActionError, setRoleActionError] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   const loadData = async () => {
+    setLoadError('');
     try {
       const data = await fetchAdminAthletesData();
       const leads = await fetchWaitlistLeads();
@@ -54,6 +56,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
       if (Array.isArray(leads)) setWaitlistLeads(leads);
     } catch (err) {
       console.error('Erro ao carregar dados admin:', err);
+      setLoadError('Não foi possível sincronizar os dados do painel. Verifica a ligação e tenta novamente.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -238,39 +241,45 @@ export default function AdminDashboard({ onBackToWorkout }) {
         {/* Conteúdo Principal do Painel */}
         <main className="p-4 sm:p-6 space-y-5 flex-1 pb-16">
           
-          {/* Cartões com Métricas Globais */}
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Users className="w-3.5 h-3.5 text-zinc-300" />
+          {loadError && (
+            <div className="py-2.5 px-3 border-l-2 border-rose-500 bg-rose-500/[0.06] text-xs font-semibold text-rose-300">
+              {loadError}
+            </div>
+          )}
+
+          {/* Ledger Editorial de Métricas Globais */}
+          <div className="grid grid-cols-3 divide-x divide-white/[0.06] border-y border-white/[0.06] py-3.5">
+            <div className="pr-3 sm:pr-4">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 mb-1">
+                <Users className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Atletas</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="text-xl sm:text-2xl font-bold font-display tabular-nums text-white">
                 {athletes.length}
               </div>
-              <div className="text-[11px] text-zinc-400 mt-0.5">registados</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5">registados</div>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Dumbbell className="w-3.5 h-3.5 text-zinc-300" />
+            <div className="px-3 sm:px-4">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 mb-1">
+                <Dumbbell className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Treinos</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="text-xl sm:text-2xl font-bold font-display tabular-nums text-white">
                 {sessions.length}
               </div>
-              <div className="text-[11px] text-zinc-400 mt-0.5">concluídos</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5">concluídos</div>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900 border border-white/10">
-              <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                <Trophy className="w-3.5 h-3.5 text-zinc-300" />
+            <div className="pl-3 sm:pl-4">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 mb-1">
+                <Trophy className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Volume</span>
               </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="text-xl sm:text-2xl font-bold font-display tabular-nums text-white">
                 {stats.totalVolume > 999 ? `${(stats.totalVolume / 1000).toFixed(1)}t` : `${stats.totalVolume} kg`}
               </div>
-              <div className="text-[11px] text-zinc-400 mt-0.5">levantados</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5">levantados</div>
             </div>
           </div>
 
@@ -291,14 +300,14 @@ export default function AdminDashboard({ onBackToWorkout }) {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] uppercase font-bold tracking-wider">
+              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] uppercase font-bold tracking-wider">
                 {PRIVATE_LAUNCH_MODE ? 'Privado' : 'Aberto'}
               </span>
             </div>
           </div>
 
           {/* Abas: Atletas / Histórico Geral / Waitlist VIP Marketing */}
-          <div className="grid grid-cols-3 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold">
+          <div className="grid grid-cols-3 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold tabular-nums">
             <button
               onClick={() => {
                 setActiveTab('athletes');
@@ -411,9 +420,9 @@ export default function AdminDashboard({ onBackToWorkout }) {
                             <p className="text-[11px] text-zinc-400 font-medium truncate max-w-[180px]">
                               {ath.email}
                             </p>
-                            <div className="flex items-center gap-2 mt-1 text-[11px] text-zinc-400 font-mono tabular-nums">
+                            <div className="flex items-center gap-2 mt-1 text-[11px] text-zinc-400 tabular-nums">
                               <span>Desde: {formatDate(ath.created_at)}</span>
-                              <span>•</span>
+                              <span>·</span>
                               <span className="font-semibold text-zinc-300">
                                 {athSessionsCount} {athSessionsCount === 1 ? 'treino concluído' : 'treinos concluídos'}
                               </span>
@@ -459,7 +468,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                           <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-[11px] font-bold text-zinc-200">
                             {sess.workout_day_name}
                           </span>
-                          <span className="text-[11px] text-zinc-500 font-mono tabular-nums font-medium">
+                          <span className="text-[11px] text-zinc-500 tabular-nums font-medium">
                             {formatTimeAgo(sess.completed_at)}
                           </span>
                         </div>
@@ -468,7 +477,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                           <h4 className="text-xs font-bold text-white">
                             {sess.workout_title}
                           </h4>
-                          <div className="flex items-center gap-1 text-[11px] text-zinc-500 font-semibold font-mono tabular-nums">
+                          <div className="flex items-center gap-1 text-[11px] text-zinc-500 font-semibold tabular-nums">
                             <Clock className="w-3.5 h-3.5 text-zinc-400" />
                             <span>{durationMin} min</span>
                           </div>
@@ -497,7 +506,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     <Sparkles className="w-4 h-4 text-amber-400" />
                     Leads Capturados no Lançamento Privado
                   </h3>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-zinc-400 mt-0.5 tabular-nums">
                     Total de <strong>{waitlistLeads.length}</strong> atletas em lista de espera aguardando convite de membro fundador.
                   </p>
                 </div>
@@ -559,7 +568,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                           <p className="text-[11px] text-zinc-400">{lead.email}</p>
                         </div>
                       </div>
-                      <div className="text-[11px] text-zinc-500 font-mono">
+                      <div className="text-[11px] text-zinc-500 tabular-nums">
                         {lead.created_at ? new Date(lead.created_at).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Recente'}
                       </div>
                     </div>
@@ -610,20 +619,20 @@ export default function AdminDashboard({ onBackToWorkout }) {
                   <SkeletonList rows={3} label="A carregar histórico do atleta" />
                 ) : (
                   <>
-                    <div className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 space-y-2">
+                    <div className="py-3 border-y border-white/10 space-y-2">
                       <div className="flex justify-between text-zinc-400">
                         <span>Perfil Desportivo:</span>
                         <strong className="text-zinc-200 uppercase">
                           {selectedAthlete.athlete_type || 'Futebol & Musculação'}
                         </strong>
                       </div>
-                      <div className="flex justify-between text-zinc-400 font-mono tabular-nums">
+                      <div className="flex justify-between text-zinc-400 tabular-nums">
                         <span>Data de Início:</span>
                         <strong className="text-zinc-200">
                           {formatDate(selectedAthlete.created_at)}
                         </strong>
                       </div>
-                      <div className="flex justify-between text-zinc-400 font-mono tabular-nums">
+                      <div className="flex justify-between text-zinc-400 tabular-nums">
                         <span>Total de Sessões:</span>
                         <strong className="text-zinc-200 font-bold">
                           {athleteDetails?.sessions?.length || 0} treinos
@@ -636,28 +645,30 @@ export default function AdminDashboard({ onBackToWorkout }) {
                     </h4>
 
                     {athleteDetails?.sessions?.length === 0 ? (
-                      <div className="p-6 rounded-xl border border-dashed border-white/10 text-center text-zinc-400 text-xs">
+                      <div className="py-6 border-y border-white/10 text-center text-zinc-400 text-xs">
                         Este atleta ainda não registou sessões na base de dados.
                       </div>
                     ) : (
-                      (athleteDetails?.sessions || []).map((s) => (
-                        <div
-                          key={s.id}
-                          className="p-3 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-between"
-                        >
-                          <div>
-                            <div className="font-bold text-white">
-                              {s.workout_title}
+                      <div className="divide-y divide-white/[0.06] border-y border-white/10">
+                        {(athleteDetails?.sessions || []).map((s) => (
+                          <div
+                            key={s.id}
+                            className="py-2.5 flex items-center justify-between"
+                          >
+                            <div>
+                              <div className="font-bold text-white">
+                                {s.workout_title}
+                              </div>
+                              <div className="text-[11px] text-zinc-500 tabular-nums">
+                                {s.workout_day_name} · {Math.round((s.duration_seconds || 0) / 60)} min
+                              </div>
                             </div>
-                            <div className="text-[11px] text-zinc-500 font-mono tabular-nums">
-                              {s.workout_day_name} • {Math.round((s.duration_seconds || 0) / 60)} min
-                            </div>
+                            <span className="text-[11px] text-zinc-500 tabular-nums font-semibold">
+                              {formatTimeAgo(s.completed_at)}
+                            </span>
                           </div>
-                          <span className="text-[11px] text-zinc-500 font-mono tabular-nums font-semibold">
-                            {formatTimeAgo(s.completed_at)}
-                          </span>
-                        </div>
-                      ))
+                        ))}
+                      </div>
                     )}
                   </>
                 )}

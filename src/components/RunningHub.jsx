@@ -1041,12 +1041,10 @@ export default function RunningHub({ isDark = true }) {
   };
 
   const handleDeleteRun = (e, runId) => {
-    e.stopPropagation();
-    if (window.confirm('Deseja eliminar este registo de corrida?')) {
-      deleteRunRecord(runId);
-      reloadHistory();
-      triggerHaptic(15);
-    }
+    e?.stopPropagation?.();
+    deleteRunRecord(runId);
+    reloadHistory();
+    triggerHaptic(15);
   };
 
   // Classificação simples e humana da qualidade do sinal GPS (sem jargões técnicos)

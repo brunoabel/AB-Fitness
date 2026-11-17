@@ -41,6 +41,7 @@ function RunLiveHudComponent({
   const [voiceEnabled, setVoiceEnabled] = useState(getVoiceCuesPreference);
   const [showMobileMap, setShowMobileMap] = useState(false);
   const [confirmFinish, setConfirmFinish] = useState(false);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   if (sessionStatus !== 'running' && sessionStatus !== 'paused') return null;
 
@@ -179,7 +180,7 @@ function RunLiveHudComponent({
                   style={{ width: `${Math.max(4, targetProgress.pct)}%` }}
                 />
               </div>
-              <p className={`text-xs font-mono tabular-nums ${targetProgress.reached ? 'text-emerald-300 font-bold' : 'text-zinc-400'}`}>
+              <p className={`text-xs tabular-nums ${targetProgress.reached ? 'text-emerald-300 font-bold' : 'text-zinc-400'}`}>
                 {targetProgress.reached
                   ? `Objetivo ${targetProgress.targetLabel} cumprido`
                   : `${targetProgress.currentLabel} / ${targetProgress.targetLabel}`}
@@ -274,7 +275,7 @@ function RunLiveHudComponent({
                   return (
                     <div
                       key={s.km}
-                      className="relative overflow-hidden py-1.5 px-3 rounded-xl bg-white/[0.03] text-xs font-mono tabular-nums"
+                      className="relative overflow-hidden py-1.5 px-3 rounded-xl bg-white/[0.03] text-xs tabular-nums"
                     >
                       <div
                         className={`absolute left-0 top-0 bottom-0 pointer-events-none ${isFastest ? 'bg-emerald-400/20' : 'bg-white/[0.06]'}`}
@@ -342,7 +343,7 @@ function RunLiveHudComponent({
                   }}
                   className={`min-h-[56px] px-6 rounded-full font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer ${
                     confirmFinish
-                      ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-[0_8px_24px_rgba(244,63,94,0.35)]'
+                      ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-lg'
                       : 'bg-white/[0.08] hover:bg-rose-600 text-white'
                   }`}
                 >
@@ -357,14 +358,20 @@ function RunLiveHudComponent({
             <button
               type="button"
               onClick={() => {
-                if (window.confirm('Descartar esta corrida?')) {
-                  setConfirmFinish(false);
-                  handleResetSession();
+                if (!confirmDiscard) {
+                  triggerHaptic(10);
+                  setConfirmDiscard(true);
+                  return;
                 }
+                setConfirmDiscard(false);
+                setConfirmFinish(false);
+                handleResetSession();
               }}
-              className="w-full py-2 text-center text-xs font-medium text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+              className={`w-full py-2 text-center text-xs font-medium transition-colors cursor-pointer ${
+                confirmDiscard ? 'text-rose-400 font-bold' : 'text-zinc-500 hover:text-rose-400'
+              }`}
             >
-              Descartar treino
+              {confirmDiscard ? 'Toca novamente para descartar a corrida' : 'Descartar treino'}
             </button>
           )}
         </div>

@@ -3,11 +3,12 @@ import { motion } from 'motion/react';
 import { X, Send, MessageCircle, Crown } from 'lucide-react';
 import { Avatar, SPRING, TAP } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
+import { SkeletonList } from '../ui/Skeleton';
 import { isAthleteVerified, isAthleteCeo } from '../../utils/userVerification';
 import { listDirectMessages, sendDirectMessage } from '../../services/socialService';
 import { triggerHaptic } from '../../utils/audio';
 
-const QUICK_REACTIONS = ['🔥', '💪', '👏', '⚡', '👊', '🏆'];
+const QUICK_REACTIONS = ['Bom treino!', 'Bora treinar?', 'Novo PR!', 'Foco total'];
 
 function createOptimisticDm(currentUserId, friendId, content) {
   const now = Date.now();
@@ -155,8 +156,8 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
         {/* Message Thread */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 overscroll-contain">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-zinc-500 text-[13px]">
-              A carregar mensagens...
+            <div className="p-2">
+              <SkeletonList rows={4} label="A carregar mensagens" />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-2 text-zinc-400">
@@ -182,7 +183,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
                   >
                     {m.content}
                   </div>
-                  <span className="text-[10px] text-zinc-500 mt-1 px-1 font-mono tabular-nums">
+                  <span className="text-[10px] text-zinc-500 mt-1 px-1 tabular-nums">
                     {formatMsgTime(m.created_at)}
                   </span>
                 </div>
@@ -192,16 +193,16 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Reactions Bar */}
-        <div className="px-4 py-1.5 flex items-center gap-1.5 border-t border-white/[0.04] bg-surface-2/30 overflow-x-auto">
-          {QUICK_REACTIONS.map((emoji) => (
+        {/* Quick Replies Bar */}
+        <div className="px-4 py-1.5 flex items-center gap-1.5 border-t border-white/[0.04] bg-surface-2/30 overflow-x-auto no-scrollbar">
+          {QUICK_REACTIONS.map((phrase) => (
             <button
-              key={emoji}
+              key={phrase}
               type="button"
-              onClick={() => handleSend(emoji)}
-              className="px-2.5 py-1 rounded-xl bg-surface-2 text-[14px] hover:bg-surface-3 transition-colors cursor-pointer active:scale-95 shrink-0"
+              onClick={() => handleSend(phrase)}
+              className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[12px] font-medium text-zinc-200 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer active:scale-95 shrink-0"
             >
-              {emoji}
+              {phrase}
             </button>
           ))}
         </div>

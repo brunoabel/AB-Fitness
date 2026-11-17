@@ -58,6 +58,7 @@ export default function AICoachModal({
   const [activeSwap, setActiveSwap] = useState(null); // { msgIndex, exIndex, exercise }
   const [isSharing, setIsSharing] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [confirmClearChat, setConfirmClearChat] = useState(false);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -105,12 +106,16 @@ export default function AICoachModal({
   };
 
   const handleClearHistory = () => {
-    triggerHaptic(15);
-    if (window.confirm('Desejas reiniciar a conversa com o AB Coach?')) {
-      setMessages([]);
-      localStorage.removeItem(STORAGE_CHAT_KEY);
-      showToast('Conversa reiniciada.');
+    if (!confirmClearChat) {
+      triggerHaptic(8);
+      setConfirmClearChat(true);
+      return;
     }
+    triggerHaptic(15);
+    setConfirmClearChat(false);
+    setMessages([]);
+    localStorage.removeItem(STORAGE_CHAT_KEY);
+    showToast('Conversa reiniciada.');
   };
 
   const handleSend = async (textToSend, baseMessages = messages) => {
@@ -298,11 +303,16 @@ export default function AICoachModal({
           <div className="flex items-center gap-1.5">
             {messages.length > 0 && (
               <button
+                type="button"
                 onClick={handleClearHistory}
                 title="Limpar conversa"
-                className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className={`p-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                  confirmClearChat
+                    ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
+                    : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]'
+                }`}
               >
-                <RotateCcw className="w-4 h-4 stroke-[1.8]" />
+                {confirmClearChat ? 'Confirmar limpar?' : <RotateCcw className="w-4 h-4 stroke-[1.8]" />}
               </button>
             )}
 
@@ -436,17 +446,15 @@ export default function AICoachModal({
                           </button>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="divide-y divide-white/[0.06] border-y border-white/[0.08]">
                           {(expandedCards[idx] ? msg.treino.exercicios : msg.treino.exercicios.slice(0, 3)).map((ex, exIdx) => {
                             const isThisSwapping = activeSwap?.msgIndex === idx && activeSwap?.exIndex === exIdx;
                             return (
                               <div
                                 key={ex.id || exIdx}
                                 onClick={() => onViewExercise && onViewExercise(ex)}
-                                className={`p-2.5 rounded-lg border transition-all cursor-pointer ${
-                                  isThisSwapping 
-                                    ? 'border-white/30 bg-white/[0.06]' 
-                                    : 'bg-surface-2 border-white/10 hover:border-zinc-300'
+                                className={`py-2.5 px-1 transition-all cursor-pointer ${
+                                  isThisSwapping ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]'
                                 }`}
                               >
                                 <div className="flex items-center justify-between gap-2">
@@ -489,11 +497,11 @@ export default function AICoachModal({
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 mt-1.5 text-[11px] text-zinc-400 pl-7 tabular-nums">
+                                <div className="flex items-center gap-3 mt-1 text-[11px] text-zinc-400 pl-6 tabular-nums">
                                   <span className="font-semibold text-zinc-200">
                                     {ex.series} séries × {ex.reps} reps
                                   </span>
-                                  <span>•</span>
+                                  <span>·</span>
                                   <span>{ex.descanso_seg}s descanso</span>
                                 </div>
 
@@ -501,7 +509,7 @@ export default function AICoachModal({
                                 {isThisSwapping && (
                                   <div 
                                     onClick={(e) => e.stopPropagation()} 
-                                    className="mt-2.5 p-2.5 bg-surface border border-white/[0.08] rounded-xl space-y-2 animate-fadeIn"
+                                    className="mt-2.5 pl-6 pr-1 py-2 border-l-2 border-accent-hover space-y-2 animate-fadeIn"
                                   >
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
@@ -530,25 +538,25 @@ export default function AICoachModal({
                                       }
 
                                       return (
-                                        <div className="space-y-1">
+                                        <div className="divide-y divide-white/[0.06]">
                                           {substitutes.map((sub) => (
                                             <div
                                               key={sub.id}
-                                              className="p-2 rounded bg-surface hover:bg-surface-3 border border-white/10 flex items-center justify-between gap-2"
+                                              className="py-2 flex items-center justify-between gap-2"
                                             >
                                               <div>
                                                 <h5 className="text-xs font-semibold text-zinc-100">
                                                   {sub.nome}
                                                 </h5>
                                                 <p className="text-[11px] text-zinc-400">
-                                                  {sub.porcao || sub.grupo} • {sub.mecanica || 'Isolado'}
+                                                  {sub.porcao || sub.grupo} · {sub.mecanica || 'Isolado'}
                                                 </p>
                                               </div>
 
                                               <button
                                                 type="button"
                                                 onClick={() => handleSwapExercise(idx, exIdx, sub)}
-                                                className="px-2 py-1 rounded bg-primary text-app text-[11px] font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                                                className="px-2.5 py-1 rounded-lg bg-primary text-app text-[11px] font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
                                               >
                                                 Substituir
                                               </button>

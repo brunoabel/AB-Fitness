@@ -5,6 +5,8 @@ import confetti from 'canvas-confetti';
 import { Trophy, Clock, CheckCircle, Check, Dumbbell, Sparkles, Share2, ArrowRight, Copy } from 'lucide-react';
 import { sound, triggerHaptic } from '../utils/audio';
 import { buildWorkoutResultCard, shareWorkoutResultCard, copyWorkoutResultCardToClipboard } from '../utils/workoutResultCard';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { isBeginnerProfile } from './onboarding/profileSchema';
 
 const CARD_VARIANTS = [
   { id: 'card', label: 'Cartão' },
@@ -23,6 +25,7 @@ export default function CelebrationModal({
   onClose 
 }) {
   const reduce = useReducedMotion();
+  const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
   const [copied, setCopied] = useState(false);
   const [cardVariant, setCardVariant] = useState('card');
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -156,7 +159,9 @@ export default function CelebrationModal({
           {newPRs?.length > 0 && (
             <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-app text-[12px] font-bold">
               <Trophy className="w-3.5 h-3.5" strokeWidth={2.25} />
-              {newPRs.length === 1 ? 'Novo PR' : `${newPRs.length} novos PRs`}
+              {newPRs.length === 1
+                ? (isSimpleMode ? 'Novo recorde' : 'Novo PR')
+                : `${newPRs.length} ${isSimpleMode ? 'novos recordes' : 'novos PRs'}`}
             </span>
           )}
         </div>
@@ -188,10 +193,20 @@ export default function CelebrationModal({
               </div>
               <div className="min-w-0 flex-1">
                 <span className="text-[11px] font-bold text-white uppercase tracking-wider block">
-                  {newPRs.length === 1 ? 'Novo Recorde Pessoal (PR)!' : `${newPRs.length} Novos Recordes Pessoais!`}
+                  {newPRs.length === 1
+                    ? (isSimpleMode ? 'Novo Recorde Pessoal!' : 'Novo Recorde Pessoal (PR)!')
+                    : `${newPRs.length} Novos Recordes Pessoais!`}
                 </span>
-                <p className="text-xs font-bold text-zinc-100 truncate">
-                  {newPRs.map(p => p.isTimed ? `${p.exerciseName} (${p.duration}s)` : `${p.exerciseName} (${p.e1RM}kg 1RM)`).join(' • ')}
+                <p className="text-xs font-bold text-zinc-100 truncate tabular-nums">
+                  {newPRs
+                    .map((p) =>
+                      p.isTimed
+                        ? `${p.exerciseName} (${p.duration}s)`
+                        : isSimpleMode
+                          ? `${p.exerciseName} (${p.weight}kg × ${p.reps})`
+                          : `${p.exerciseName} (${p.e1RM}kg 1RM)`
+                    )
+                    .join(' · ')}
                 </p>
               </div>
             </div>

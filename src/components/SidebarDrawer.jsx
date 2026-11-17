@@ -165,7 +165,7 @@ export default function SidebarDrawer({
           />
 
           <motion.aside
-            className="relative h-full w-[88%] max-w-[368px] overflow-y-auto overscroll-contain bg-[#06070a]/95 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] shadow-[16px_0_48px_rgba(0,0,0,0.85)] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),20px)] will-change-transform select-none"
+            className="relative h-full w-[88%] max-w-[368px] overflow-y-auto overscroll-contain bg-surface/95 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] shadow-[16px_0_48px_rgba(0,0,0,0.85)] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),20px)] will-change-transform select-none"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}

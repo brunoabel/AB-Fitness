@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   X,
   Activity,
@@ -52,6 +52,7 @@ function MetricBadge({ icon: Icon, label, value, sub }) {
 
 export default function WearablesModal({ isOpen, onClose }) {
   const { user } = useAuth();
+  const reducedMotion = useReducedMotion();
   const userId = user?.id;
 
   const [connections, setConnections] = useState({});
@@ -151,11 +152,11 @@ export default function WearablesModal({ isOpen, onClose }) {
 
           {/* Modal Container */}
           <motion.div
-            className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto overscroll-contain bg-[#070709] border border-white/[0.12] rounded-t-[32px] sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-5 sm:p-6 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] will-change-transform text-white"
+            className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto overscroll-contain bg-surface border border-white/[0.12] rounded-t-[32px] sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-5 sm:p-6 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] will-change-transform text-white"
             initial={{ y: '100%', opacity: 0.5 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
-            transition={SPRING}
+            transition={reducedMotion ? { duration: 0 } : SPRING}
           >
             {/* Grab handle mobile */}
             <span className="sm:hidden block mx-auto -mt-1 mb-3 w-10 h-1 rounded-full bg-white/20" aria-hidden />
@@ -199,8 +200,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                       className="w-12 h-12 rounded-full border-2 flex items-center justify-center font-display text-[17px] font-semibold tabular-nums tracking-[-0.02em] shrink-0"
                       style={{
                         borderColor: readiness.color,
-                        color: readiness.color,
-                        boxShadow: `0 0 16px ${readiness.color}26`
+                        color: readiness.color
                       }}
                     >
                       {readiness.isStale || readiness.score == null ? '--' : `${readiness.score}%`}

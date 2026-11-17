@@ -29,6 +29,7 @@ export default function RunHome({
   weeklyGoalKm
 }) {
   const [openMenuRunId, setOpenMenuRunId] = useState(null);
+  const [confirmDeleteRunId, setConfirmDeleteRunId] = useState(null);
 
   if (sessionStatus !== 'idle') return null;
 
@@ -184,7 +185,7 @@ export default function RunHome({
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400 mt-0.5 font-mono tabular-nums">
+                    <div className="flex items-center gap-2 text-xs text-zinc-400 mt-0.5 tabular-nums">
                       <span>{run.avgPace}</span>
                       <span>·</span>
                       <span>{formatDuration(run.durationSeconds)}</span>
@@ -224,7 +225,7 @@ export default function RunHome({
                   {menuOpen && (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-12 z-20 min-w-[170px] rounded-2xl bg-[#101218] border border-white/[0.12] shadow-2xl p-1.5 space-y-0.5"
+                      className="absolute right-0 top-12 z-20 min-w-[170px] rounded-2xl bg-surface-2 border border-white/[0.12] shadow-2xl p-1.5 space-y-0.5"
                     >
                       {run.coordinates && run.coordinates.length > 0 && (
                         <button
@@ -243,13 +244,19 @@ export default function RunHome({
                       <button
                         type="button"
                         onClick={(e) => {
+                          if (confirmDeleteRunId !== run.id) {
+                            triggerHaptic(8);
+                            setConfirmDeleteRunId(run.id);
+                            return;
+                          }
+                          setConfirmDeleteRunId(null);
                           setOpenMenuRunId(null);
                           handleDeleteRun(e, run.id);
                         }}
                         className="w-full min-h-[40px] px-3 rounded-xl text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span>Eliminar registo</span>
+                        <span>{confirmDeleteRunId === run.id ? 'Confirmar eliminação' : 'Eliminar registo'}</span>
                       </button>
                     </div>
                   )}

@@ -296,7 +296,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                     {/* Topo do Exercício com Nome e Ações de Ordenação */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-lg bg-white/[0.04] text-zinc-300 text-xs font-mono tabular-nums font-bold flex items-center justify-center border border-white/[0.08] shrink-0">
+                        <span className="w-6 h-6 rounded-lg bg-white/[0.04] text-zinc-300 text-xs font-display tabular-nums font-bold flex items-center justify-center border border-white/[0.08] shrink-0">
                           {index + 1}
                         </span>
                         <div>
@@ -304,7 +304,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                             {ex.name}
                           </h4>
                           <span className="text-[11px] text-zinc-400 font-medium">
-                            {ex.target} • {ex.equipment}
+                            {ex.target} · {ex.equipment}
                           </span>
                         </div>
                       </div>
@@ -342,11 +342,11 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       </div>
                     </div>
 
-                    {/* Controles de Séries, Reps, Carga e Descanso */}
-                    <div className="grid grid-cols-4 gap-2 pt-1 text-center">
+                    {/* Matriz Inline: Séries, Reps, Carga e Descanso */}
+                    <div className="grid grid-cols-4 divide-x divide-white/[0.06] border-y border-white/[0.06] py-2 text-center">
                       {/* Séries */}
-                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
-                        <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Séries</span>
+                      <div className="px-1.5">
+                        <span className="text-[11px] font-medium text-zinc-500 block mb-1">Séries</span>
                         <div className="flex items-center justify-center gap-1">
                           <button
                             type="button"
@@ -355,7 +355,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                           >
                             -
                           </button>
-                          <span className="text-xs font-mono tabular-nums font-bold text-white w-4">
+                          <span className="text-xs font-display tabular-nums font-bold text-white w-4">
                             {ex.defaultSets || 3}
                           </span>
                           <button
@@ -369,34 +369,34 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       </div>
 
                       {/* Repetições */}
-                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
-                        <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Reps</span>
+                      <div className="px-1.5">
+                        <span className="text-[11px] font-medium text-zinc-500 block mb-1">Reps</span>
                         <input
                           type="text"
                           value={ex.suggestedReps || '10'}
                           onChange={(e) => handleUpdateExercise(index, 'suggestedReps', e.target.value)}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none"
+                          className="w-full text-center text-xs font-display tabular-nums font-bold text-white bg-transparent focus:outline-none border-b border-transparent focus:border-white/30 py-0.5"
                         />
                       </div>
 
                       {/* Carga Inicial */}
-                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
-                        <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Carga (kg)</span>
+                      <div className="px-1.5">
+                        <span className="text-[11px] font-medium text-zinc-500 block mb-1">Carga (kg)</span>
                         <input
                           type="number"
                           value={ex.suggestedWeight ?? 0}
                           onChange={(e) => handleUpdateExercise(index, 'suggestedWeight', Math.max(0, parseFloat(e.target.value) || 0))}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none"
+                          className="w-full text-center text-xs font-display tabular-nums font-bold text-white bg-transparent focus:outline-none border-b border-transparent focus:border-white/30 py-0.5"
                         />
                       </div>
 
                       {/* Descanso */}
-                      <div className="p-2 rounded-xl bg-zinc-950 border border-white/10">
-                        <span className="text-[11px] uppercase font-bold text-zinc-400 block mb-1">Descanso</span>
+                      <div className="px-1.5">
+                        <span className="text-[11px] font-medium text-zinc-500 block mb-1">Descanso</span>
                         <select
                           value={ex.restTime || 60}
                           onChange={(e) => handleUpdateExercise(index, 'restTime', Number(e.target.value))}
-                          className="w-full text-center text-xs font-mono tabular-nums font-bold text-white bg-transparent focus:outline-none cursor-pointer"
+                          className="w-full text-center text-xs font-display tabular-nums font-bold text-white bg-transparent focus:outline-none cursor-pointer py-0.5"
                         >
                           {REST_OPTIONS.map((sec) => (
                             <option key={sec} value={sec} className="bg-surface">
@@ -413,7 +413,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={ex.notes || ''}
                       onChange={(e) => handleUpdateExercise(index, 'notes', e.target.value)}
                       placeholder="Indicação técnica (Ex: Drop-set na última série, pausa 2s)"
-                      className="w-full px-3 py-1.5 rounded-xl bg-zinc-950 border border-white/10 text-[11px] text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                      className="w-full px-1 py-1.5 bg-transparent border-b border-white/[0.08] text-[11px] text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-white/30"
                     />
                   </div>
                 ))}
@@ -654,7 +654,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       min={1}
                       max={10}
                       onChange={(e) => setCustomExSets(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-display tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -665,7 +665,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExReps}
                       onChange={(e) => setCustomExReps(e.target.value)}
                       placeholder="10-12"
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-display tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -675,7 +675,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       type="number"
                       value={customExWeight}
                       onChange={(e) => setCustomExWeight(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-display tabular-nums font-bold text-white"
                     />
                   </div>
 
@@ -686,7 +686,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       value={customExRest}
                       step={15}
                       onChange={(e) => setCustomExRest(e.target.value)}
-                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-mono tabular-nums font-bold text-white"
+                      className="w-full text-center px-2 py-1.5 rounded-xl bg-surface border border-white/10 text-xs font-display tabular-nums font-bold text-white"
                     />
                   </div>
                 </div>

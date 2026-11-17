@@ -121,7 +121,7 @@ export default function PrivateLaunchScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050608] text-zinc-100 flex flex-col justify-between selection:bg-zinc-200 selection:text-black antialiased">
+    <div className="min-h-screen bg-app text-zinc-100 flex flex-col justify-between selection:bg-zinc-200 selection:text-black antialiased">
       {/* Barra superior de status do lançamento com suporte a safe area PWA/standalone */}
       <header className="w-full border-b border-white/[0.06] bg-black/80 backdrop-blur-md sticky top-0 z-40 pt-[max(env(safe-area-inset-top,0px),12px)] pb-3 px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
@@ -203,7 +203,7 @@ export default function PrivateLaunchScreen() {
 
           {/* VISUALIZAÇÃO: Formulário de Lista VIP (Waitlist) */}
           {activeMode === 'waitlist' && !isUserLoggedInNonAdmin && (
-            <div className="bg-[#0B0D12] rounded-3xl p-6 sm:p-7 border border-white/[0.08] shadow-2xl shadow-black/80 space-y-6">
+            <div className="bg-surface rounded-3xl p-6 sm:p-7 border border-white/[0.08] shadow-2xl shadow-black/80 space-y-6">
               
               {waitlistSuccess ? (
                 <div className="text-center py-6 space-y-4 animate-fadeIn">
@@ -363,7 +363,7 @@ export default function PrivateLaunchScreen() {
 
           {/* VISUALIZAÇÃO: Login de Administrador / Fundador */}
           {activeMode === 'admin-login' && !isUserLoggedInNonAdmin && (
-            <div className="bg-[#0B0D12] rounded-3xl p-6 sm:p-7 border border-white/[0.08] shadow-2xl shadow-black/80 space-y-6 animate-fadeIn">
+            <div className="bg-surface rounded-3xl p-6 sm:p-7 border border-white/[0.08] shadow-2xl shadow-black/80 space-y-6 animate-fadeIn">
               <div className="space-y-1 text-center sm:text-left">
                 <div className="flex items-center justify-center sm:justify-start gap-2">
                   <Crown className="w-4 h-4 text-amber-400" />

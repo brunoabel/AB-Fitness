@@ -35,7 +35,7 @@ export function FitbitMark({ size = 40, className = '' }) {
 
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-xl bg-[#00B0B9]/12 border border-[#00B0B9]/28 text-[#00B0B9] shrink-0 ${className}`}
+      className={`inline-flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.14] text-white shrink-0 ${className}`}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >

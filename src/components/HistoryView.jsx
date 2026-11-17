@@ -14,6 +14,8 @@ import { getUnlockedBadges } from '../utils/badgeService';
 import { getPendingSyncCount } from '../services/workoutService';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { isBeginnerProfile } from './onboarding/profileSchema';
 
 function formatHistoryDate(item) {
   const raw = item.completedAt || item.date;
@@ -29,6 +31,7 @@ function formatHistoryDate(item) {
 
 export default function HistoryView() {
   const { user } = useAuth();
+  const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
   const [subTab, setSubTab] = useState('history'); // 'history' | 'charts' | 'badges' | 'body'
   const history = getWorkoutHistory();
   const pendingSyncCount = getPendingSyncCount(user?.id);
@@ -68,7 +71,7 @@ export default function HistoryView() {
                   setSubTab(tab.id);
                   triggerHaptic(10);
                 }}
-                className={`min-h-[40px] px-1.5 sm:px-3 rounded-full transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none text-xs font-bold ${
+                className={`min-h-[40px] px-1.5 sm:px-3 rounded-full transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none text-xs font-bold tabular-nums ${
                   active
                     ? 'bg-white text-black shadow-sm'
                     : 'text-zinc-400 hover:text-white'
@@ -104,7 +107,7 @@ export default function HistoryView() {
                 {volumeNumber}
                 <span className="text-sm font-medium text-zinc-400 ml-1">{volumeUnit}</span>
               </span>
-              <span className="text-xs text-zinc-400">Volume total</span>
+              <span className="text-xs text-zinc-400">{isSimpleMode ? 'Carga total' : 'Volume total'}</span>
             </div>
 
             <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
@@ -165,7 +168,7 @@ export default function HistoryView() {
                             · {displayName}
                           </span>
                         </div>
-                        <p className="text-xs text-zinc-400 mt-0.5 font-mono tabular-nums">
+                        <p className="text-xs text-zinc-400 mt-0.5 tabular-nums">
                           {displayMinutes} min · {displaySets} séries · {displayVolume} kg
                         </p>
                       </div>

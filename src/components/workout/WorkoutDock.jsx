@@ -18,7 +18,7 @@ export default function WorkoutDock({ index, total, exerciseName, onPrev, onNext
         </button>
 
         <div className="flex-1 text-center truncate px-1">
-          <span className="text-[11px] font-bold text-zinc-300 font-mono tabular-nums block">
+          <span className="text-[11px] font-bold text-zinc-300 tabular-nums block">
             Exercício {index + 1} de {total}
           </span>
           <span className="text-[11px] text-zinc-500 font-medium truncate block max-w-[200px] mx-auto">{exerciseName || ''}</span>

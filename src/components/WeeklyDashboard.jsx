@@ -113,7 +113,7 @@ export default function WeeklyDashboard({
 
       {/* 2. THE HERO WORKOUT CARD — O Único Protagonista Elevado do Ecrã */}
       <section aria-label="Treino em Destaque">
-        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#10182E] via-[#070B14] to-[#030508] border border-white/[0.12] p-6 sm:p-8 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)]">
+        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-surface-2 via-surface to-app border border-white/[0.12] p-6 sm:p-8 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)]">
           
           {/* Iluminação Volumétrica Sutil */}
           <div 
@@ -325,7 +325,7 @@ export default function WeeklyDashboard({
                   className="w-full py-3.5 px-2 hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer flex items-center justify-between text-left group select-none"
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <span className="font-mono text-xs font-semibold text-zinc-500 group-hover:text-zinc-400 tabular-nums shrink-0 transition-colors">
+                    <span className="font-display text-xs font-semibold text-zinc-500 group-hover:text-zinc-400 tabular-nums shrink-0 transition-colors">
                       {formattedIndex}
                     </span>
 

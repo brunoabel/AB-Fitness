@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Dumbbell, Eye, CheckCircle2, Plus, MessageSquareText, Shuffle, Play, ChevronUp, ChevronDown } from 'lucide-react';
 import SetRow from '../SetRow';
 import ExerciseVideoPlayer from '../video/ExerciseVideoPlayer';
@@ -28,6 +28,7 @@ export default function FocusExerciseCard({
   onOpenPlates, onOpenGuide, onToggleHome, onOpenSwap, onSetUpdate, onRemoveSet, onAddSet,
   progressionHint, onApplyProgressionHint
 }) {
+  const reducedMotion = useReducedMotion();
   const [showVideo, setShowVideo] = useState(false);
   const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
   const isTimed = isTimedExercise(exercise, exercise.id);
@@ -52,7 +53,7 @@ export default function FocusExerciseCard({
       <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-start justify-between gap-3">
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-medium text-zinc-400">
+            <span className="text-xs font-medium text-zinc-400 tabular-nums">
               Exercício {index + 1} de {total} · {exercise.target}
             </span>
             {exercise.badge && (
@@ -69,12 +70,12 @@ export default function FocusExerciseCard({
           <div className="flex items-center gap-3 pt-0.5 text-xs text-zinc-400">
             {best1RM && (
               <span className="font-medium">
-                Recorde pessoal: <strong className="text-white font-mono">{best1RM} kg</strong>
+                Recorde pessoal: <strong className="text-white font-display tabular-nums">{best1RM} kg</strong>
               </span>
             )}
             {bestDuration && (
               <span className="font-medium">
-                Recorde de tempo: <strong className="text-white font-mono">{formatDurationSeconds(bestDuration)}</strong>
+                Recorde de tempo: <strong className="text-white font-display tabular-nums">{formatDurationSeconds(bestDuration)}</strong>
               </span>
             )}
           </div>
@@ -158,7 +159,7 @@ export default function FocusExerciseCard({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: reducedMotion ? 0 : 0.18 }}
               className="overflow-hidden px-4 sm:px-5 pb-4 pt-1"
             >
               <ExerciseVideoPlayer
@@ -241,7 +242,7 @@ export default function FocusExerciseCard({
             <span>Adicionar Série</span>
           </button>
 
-          <span className="text-[11px] text-zinc-400 font-mono">
+          <span className="text-[11px] text-zinc-400 tabular-nums">
             Descanso sugerido: <strong className="text-white font-bold">{exercise.restTime || 60}s</strong>
           </span>
         </div>

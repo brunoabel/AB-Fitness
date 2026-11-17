@@ -482,7 +482,7 @@ export default function SocialHub({ onNavigateTab }) {
                   onClick={openProfileAction}
                   className="flex flex-col items-center shrink-0 w-[68px] cursor-pointer touch-manipulation group"
                 >
-                  <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-400 via-teal-300 to-white/75">
+                  <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-500 via-emerald-300 to-white/80">
                     <div className="rounded-full bg-black p-[2px]">
                       <Avatar
                         url={athlete.avatar_url}

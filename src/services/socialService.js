@@ -21,9 +21,9 @@ export const COVER_STYLES = [
   { id: 'aurora', label: 'Aurora', className: 'bg-gradient-to-r from-emerald-950 via-emerald-900/70 to-slate-950 border-emerald-500/30', badge: 'PRO' },
   { id: 'crimson', label: 'Crimson', className: 'bg-gradient-to-r from-rose-950 via-red-950/80 to-zinc-950 border-rose-500/25', badge: 'PRO' },
   { id: 'emerald', label: 'Esmeralda Real', className: 'bg-gradient-to-r from-emerald-950 via-emerald-800/60 to-emerald-950 border-emerald-400/30', badge: 'PRO' },
-  { id: 'amethyst', label: 'Ametista Real', className: 'bg-gradient-to-r from-indigo-950 via-purple-900/70 to-fuchsia-950 border-purple-500/30', badge: 'PRO' },
+  { id: 'amethyst', label: 'Ametista Real', className: 'bg-gradient-to-r from-violet-950 via-violet-900/60 to-zinc-950 border-violet-500/30', badge: 'PRO' },
   { id: 'sunset', label: 'Solar Flare', className: 'bg-gradient-to-r from-amber-950 via-amber-600/60 to-amber-900 border-amber-400/30', badge: 'PRO' },
-  { id: 'electric_blue', label: 'Azul Elétrico', className: 'bg-gradient-to-r from-blue-950 via-accent-hover/70 to-slate-950 border-accent-hover/30', badge: 'PRO' },
+  { id: 'electric_blue', label: 'Azul Elétrico', className: 'bg-gradient-to-r from-surface-2 via-accent-hover/70 to-surface-3 border-accent-hover/30', badge: 'PRO' },
   { id: 'magma', label: 'Magma Vulcânico', className: 'bg-gradient-to-r from-red-950 via-rose-700/60 to-red-900 border-rose-500/30', badge: 'PRO' },
   { id: 'monochrome_luxury', label: 'Platina Stealth', className: 'bg-gradient-to-r from-zinc-950 via-zinc-700/40 to-black border-zinc-500/30', badge: 'PRO' }
 ];

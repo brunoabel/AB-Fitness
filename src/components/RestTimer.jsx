@@ -502,7 +502,7 @@ export default function RestTimer({
             >
               <Play className="w-3 h-3 text-white fill-current" />
               <span>Descanso</span>
-              <span className="font-mono text-zinc-400 font-normal">({totalSeconds}s)</span>
+              <span className="font-display tabular-nums text-zinc-400 font-normal">({totalSeconds}s)</span>
             </button>
           </div>
         )}

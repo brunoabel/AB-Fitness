@@ -583,7 +583,7 @@ export default function SetRow({
           {isPR && (
             <span className="flex items-center gap-1 font-bold text-white bg-accent/70 px-1.5 py-0.5 rounded border border-accent-hover uppercase tracking-wider motion-safe:animate-[pulse_1s_ease-in-out_3]">
               <Trophy className="w-3 h-3 stroke-[2.5]" />
-              <span>Novo PR</span>
+              <span>{isSimpleMode ? 'Novo recorde' : 'Novo PR'}</span>
             </span>
           )}
 
@@ -604,7 +604,7 @@ export default function SetRow({
                   {isHoldingTimer ? (
                     <>
                       <Square className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-                      <span className="tabular-nums font-mono">{holdTimerSeconds}s</span>
+                      <span className="tabular-nums font-display">{holdTimerSeconds}s</span>
                     </>
                   ) : (
                     <>
