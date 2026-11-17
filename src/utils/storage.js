@@ -6,9 +6,7 @@ const KEYS = {
   HISTORY: 'ab_fitness_history_v1',
   COMPLETED_DAYS: 'ab_fitness_completed_days_v1',
   ACTIVE_DRAFT: 'ab_fitness_active_draft_v1',
-  TIMER_PREF: 'ab_fitness_timer_pref_v1',
   SOUND_ENABLED: 'ab_fitness_sound_enabled_v1',
-  THEME_MODE: 'ab_fitness_theme_mode_v1',
   RUNS: 'ab_fitness_runs_v1',
   ACTIVE_RUN_DRAFT: 'ab_fitness_active_run_draft_v1',
   USER_PROFILE: 'ab_fitness_user_profile_v1',
@@ -99,21 +97,6 @@ export const saveActiveDraft = (draft) => {
   } catch {}
 };
 
-export const getTimerPreference = () => {
-  try {
-    const raw = getWithLegacyFallback(KEYS.TIMER_PREF, 'la_workout_timer_pref_v1');
-    return raw ? Number(raw) : 60;
-  } catch {
-    return 60;
-  }
-};
-
-export const saveTimerPreference = (sec) => {
-  try {
-    localStorage.setItem(KEYS.TIMER_PREF, String(sec));
-  } catch {}
-};
-
 export const getSoundPreference = () => {
   try {
     const raw = getWithLegacyFallback(KEYS.SOUND_ENABLED, 'la_workout_sound_enabled_v1');
@@ -126,21 +109,6 @@ export const getSoundPreference = () => {
 export const saveSoundPreference = (enabled) => {
   try {
     localStorage.setItem(KEYS.SOUND_ENABLED, JSON.stringify(enabled));
-  } catch {}
-};
-
-export const getThemePreference = () => {
-  try {
-    const raw = getWithLegacyFallback(KEYS.THEME_MODE, 'la_workout_theme_mode_v1');
-    return raw || 'light';
-  } catch {
-    return 'light';
-  }
-};
-
-export const saveThemePreference = (theme) => {
-  try {
-    localStorage.setItem(KEYS.THEME_MODE, theme);
   } catch {}
 };
 

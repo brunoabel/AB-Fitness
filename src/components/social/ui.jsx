@@ -42,18 +42,6 @@ export function Avatar({ url, name, size = 44, className = '' }) {
   );
 }
 
-export function SectionTitle({ icon: Icon, children, aside }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <h2 className="flex items-center gap-2 font-heading text-section font-semibold text-white">
-        {Icon && <Icon className="w-[18px] h-[18px] text-zinc-400 shrink-0" strokeWidth={1.75} />}
-        <span>{children}</span>
-      </h2>
-      {aside}
-    </div>
-  );
-}
-
 /** Switch tátil: o botão desliza com transform; trilho muda de cor (sem layout shift). */
 export function Switch({ checked, onChange, label }) {
   return (

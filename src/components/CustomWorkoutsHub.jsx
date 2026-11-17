@@ -29,6 +29,8 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
   const [expandedCardIds, setExpandedCardIds] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [workoutToEdit, setWorkoutToEdit] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [confirmResetTpl, setConfirmResetTpl] = useState(false);
 
   const reloadWorkouts = () => {
     setWorkouts(getCustomWorkouts());
@@ -54,13 +56,17 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
     setWorkoutToEdit(null);
   };
 
-  const handleDeleteWorkout = (workoutId, workoutTitle, e) => {
+  const handleDeleteWorkout = (workoutId, _workoutTitle, e) => {
     e?.stopPropagation();
-    triggerHaptic([30, 40]);
-    if (window.confirm(`Tens a certeza de que desejas eliminar o treino "${workoutTitle}"?`)) {
-      const updated = deleteCustomWorkout(workoutId);
-      setWorkouts(updated);
+    if (confirmDeleteId !== workoutId) {
+      triggerHaptic(8);
+      setConfirmDeleteId(workoutId);
+      return;
     }
+    triggerHaptic([30, 40]);
+    setConfirmDeleteId(null);
+    const updated = deleteCustomWorkout(workoutId);
+    setWorkouts(updated);
   };
 
   const handleDuplicate = (workoutId, e) => {
@@ -79,13 +85,17 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
   };
 
   const handleResetTemplates = () => {
-    triggerHaptic([20, 40]);
-    if (window.confirm('Desejas recarregar os modelos recomendados para Iniciante, Intermédio e Avançado?')) {
-      DEFAULT_CUSTOM_WORKOUTS.forEach((tpl) => {
-        saveCustomWorkout(tpl);
-      });
-      reloadWorkouts();
+    if (!confirmResetTpl) {
+      triggerHaptic(8);
+      setConfirmResetTpl(true);
+      return;
     }
+    triggerHaptic([20, 40]);
+    setConfirmResetTpl(false);
+    DEFAULT_CUSTOM_WORKOUTS.forEach((tpl) => {
+      saveCustomWorkout(tpl);
+    });
+    reloadWorkouts();
   };
 
   const filteredWorkouts = workouts.filter((w) => {
@@ -216,10 +226,14 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
             <button
               type="button"
               onClick={handleResetTemplates}
-              className="min-h-[42px] px-4 rounded-full bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 text-xs font-semibold active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1.5"
+              className={`min-h-[42px] px-4 rounded-full text-xs font-semibold active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                confirmResetTpl
+                  ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300'
+                  : 'bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300'
+              }`}
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Repor Modelos</span>
+              <span>{confirmResetTpl ? 'Confirmar reposição' : 'Repor Modelos'}</span>
             </button>
           </div>
         </div>
@@ -262,10 +276,14 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                       <button
                         type="button"
                         onClick={(e) => handleDeleteWorkout(workout.id, workout.title, e)}
-                        className="min-h-[38px] min-w-[38px] rounded-full text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center"
+                        className={`min-h-[38px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center ${
+                          confirmDeleteId === workout.id
+                            ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
+                            : 'min-w-[38px] text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10'
+                        }`}
                         title="Eliminar plano"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        {confirmDeleteId === workout.id ? 'Confirmar' : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
                     </div>
                   </div>
@@ -289,7 +307,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
 
                   {/* Lista limpa com divisórias finas (sem caixas aninhadas) */}
                   <div className="pt-2 border-t border-white/[0.06] space-y-1">
-                    <div className="flex items-center justify-between text-xs text-zinc-500 pb-1">
+                    <div className="flex items-center justify-between text-xs text-zinc-500 pb-1 tabular-nums">
                       <span>{workout.exercises?.length || 0} exercícios</span>
                       {workout.exercises?.length > 3 && (
                         <button
@@ -322,7 +340,7 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                             )}
                           </div>
 
-                          <span className="text-xs font-mono font-semibold text-zinc-400 tabular-nums shrink-0">
+                          <span className="text-xs font-display font-semibold text-zinc-400 tabular-nums shrink-0">
                             {ex.defaultSets}×{ex.suggestedReps}
                           </span>
                         </li>

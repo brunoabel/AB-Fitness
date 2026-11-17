@@ -1,18 +1,10 @@
 /**
- * AB Fitness — Serviço de Sincronização em Nuvem de Corridas (Supabase PostgreSQL)
- * e Exportação de Backup Completo de Dados (JSON / CSV).
+ * AB Fitness — Serviço de Sincronização em Nuvem de Corridas (Supabase PostgreSQL).
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { simplifyRoute } from '../utils/runningService';
-import {
-  getRunsHistory,
-  getWorkoutHistory,
-  getSavedWeights,
-  getCompletedDays,
-  getSavedUserProfile
-} from '../utils/storage';
-import { getUnlockedBadges } from '../utils/badgeService';
+import { getRunsHistory } from '../utils/storage';
 
 /**
  * Salva ou sincroniza um registro de corrida na tabela `public.runs` do Supabase
@@ -112,88 +104,4 @@ export async function syncUserRunsFromSupabase(userId) {
   }
 
   return getRunsHistory();
-}
-
-/**
- * Exporta todos os dados do atleta em formato JSON para download
- */
-export function exportAppDataAsJSON() {
-  const exportPayload = {
-    appName: 'AB Fitness',
-    version: '1.0.0',
-    exportedAt: new Date().toISOString(),
-    profile: getSavedUserProfile(),
-    workoutsHistory: getWorkoutHistory(),
-    savedWeights: getSavedWeights(),
-    completedDays: getCompletedDays(),
-    runsHistory: getRunsHistory(),
-    badges: getUnlockedBadges()
-  };
-
-  const jsonStr = JSON.stringify(exportPayload, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `ab-fitness-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-/**
- * Exporta o histórico unificado de treinos e corridas em formato CSV para Excel/Sheets
- */
-export function exportAppDataAsCSV() {
-  const runs = getRunsHistory() || [];
-  const workouts = getWorkoutHistory() || [];
-
-  const headers = ['Tipo', 'Data', 'Identificador/Treino', 'Distancia (KM)', 'Duracao (Min)', 'Ritmo/Pace', 'Calorias', 'Volume Total (KG)'];
-  const rows = [];
-
-  // Linhas de corridas
-  runs.forEach((r) => {
-    rows.push([
-      'Corrida',
-      new Date(r.timestamp || r.date).toLocaleDateString('pt-BR'),
-      r.isSimulation ? 'Corrida (Simulada)' : 'Corrida GPS',
-      Number(r.distanceKm || 0).toFixed(2),
-      Math.round((r.durationSeconds || 0) / 60),
-      r.avgPace || '--',
-      r.calories || 0,
-      'N/A'
-    ]);
-  });
-
-  // Linhas de treinos de musculação
-  workouts.forEach((w) => {
-    rows.push([
-      'Musculação',
-      new Date(w.completedAt).toLocaleDateString('pt-BR'),
-      `"${(w.dayTitle || w.dayName || 'Treino').replace(/"/g, '""')}"`,
-      'N/A',
-      w.durationMinutes || Math.round((w.durationSeconds || 0) / 60),
-      'N/A',
-      'N/A',
-      w.totalVolumeKg || 0
-    ]);
-  });
-
-  const csvContent = '\uFEFF' + [
-    headers.join(';'),
-    ...rows.map((row) => row.join(';'))
-  ].join('\r\n');
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `ab-fitness-historico-${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }

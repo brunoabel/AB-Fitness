@@ -1,26 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
-import {
-  Check,
-  Zap
-} from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import RestTimer from './RestTimer';
 import WorkoutHeader from './workout/WorkoutHeader';
 import WorkoutDock from './workout/WorkoutDock';
 import ExerciseListView, { workingSetLabels } from './workout/ExerciseListView';
+import ExercisePillsBar from './workout/ExercisePillsBar';
 import FocusExerciseCard from './workout/FocusExerciseCard';
+import PostWorkoutModals from './workout/PostWorkoutModals';
 import useWorkoutTimer from '../hooks/useWorkoutTimer';
 import useWorkoutDraft from '../hooks/useWorkoutDraft';
-import SessionCheckin from './coach/SessionCheckin';
 import { registerSessionAndCheckDue } from '../utils/sessionCheckin';
-
-const ExerciseModal = lazy(() => import('./ExerciseModal'));
-const SwapExerciseModal = lazy(() => import('./workout/SwapExerciseModal'));
-const CelebrationModal = lazy(() => import('./CelebrationModal'));
-const BadgeCelebrationModal = lazy(() => import('./BadgeCelebrationModal'));
-const StreakMilestoneModal = lazy(() => import('./StreakMilestoneModal'));
-const PlateCalculatorModal = lazy(() => import('./PlateCalculatorModal'));
 import { getHomeAlternative, hasExerciseVideo as hasVerifiedExerciseVideo } from '../data/exerciseMedia';
-import { AnimatePresence } from 'motion/react';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { sound, triggerHaptic } from '../utils/audio';
 import {
@@ -35,63 +24,44 @@ import {
   getRunsHistory
 } from '../utils/storage';
 import { recordWorkoutCompletion, newSessionId } from '../services/workoutService';
-import PostWorkoutCheckin from './trainer/PostWorkoutCheckin';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { computeStreak } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
-import { getEaseModeToday } from '../utils/dailyBriefing';
 import { getStreakMilestoneInfo, shouldShowStreakCelebration, markStreakCelebrated } from '../utils/streakMilestones';
 import {
   buildPrevIndex,
-  getBestHistorical1RM,
-  getBestHistoricalDuration,
   isTimedExercise,
   getDefaultDurationSeconds,
   formatDurationSeconds,
-  e1RM,
   calculateNextSessionPrescription
 } from '../utils/strengthMetrics';
 import {
-  buildWorkoutInsights,
-  fetchCoachNarrative
-} from '../services/abCoach/coachInsightsService';
+  buildInitialExercisesData,
+  computeWorkoutProgress,
+  detectSessionPRs,
+  getCurrentReadinessScore
+} from '../utils/activeWorkoutHelpers';
+import { buildWorkoutInsights, fetchCoachNarrative } from '../services/abCoach/coachInsightsService';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { getLocalConnections, getLocalBiometrics, computeReadinessIndex } from '../services/wearables/wearableManager';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const { user } = useAuth();
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
   const [streakInfo, setStreakInfo] = useState(null);
 
-  // Mantém ecrã ativo durante toda a sessão de treino
   useWakeLock(true);
 
-  // Recupera rascunho ativo se for do mesmo treino
   const currentWorkoutDayId = workout?.dayId || workout?.id;
   const [activeDraft] = useState(() => {
     const draft = getActiveDraft();
     return draft && draft.workoutDayId === currentWorkoutDayId ? draft : null;
   });
 
-  // Histórico de treinos anteriores para cálculo de PRs e valores fantasma
   const [pastHistory] = useState(() => getWorkoutHistory());
   const prevIndex = useMemo(() => buildPrevIndex(pastHistory), [pastHistory]);
+  const [readinessScore] = useState(() => getCurrentReadinessScore());
 
-  // Prontidão fisiológica (wearables) do dia — trava progressão de carga/reps em dias de fadiga alta
-  const [readinessScore] = useState(() => {
-    const conns = getLocalConnections();
-    if (!conns || Object.keys(conns).length === 0) return null;
-    const bios = getLocalBiometrics();
-    const readiness = computeReadinessIndex({
-      whoop: conns.whoop ? bios.whoop : null,
-      fitbit: conns.fitbit ? bios.fitbit : null
-    });
-    return readiness ? readiness.score : null;
-  });
-
-  // Progressão RIR/dupla progressão: uma sugestão por exercício, calculada da última sessão
-  // e autorregulada pela prontidão wearable (ver calculateNextSessionPrescription).
   const progressionHints = useMemo(() => {
     const hints = {};
     const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
@@ -107,78 +77,22 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return hints;
   }, [prevIndex, workout, readinessScore]);
 
-  // Modo Foco (ativo por defeito para máxima concentração desportiva)
   const [isFocusMode, setIsFocusMode] = useState(true);
-
-  // Estado para armazenar as séries de cada exercício
-  const [exercisesData, setExercisesData] = useState(() => {
-    if (activeDraft && activeDraft.exercisesData) {
-      return activeDraft.exercisesData;
-    }
-
-    const saved = getSavedWeights();
-    const initial = {};
-    const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
-    // Briefing diário do AB Coach: se o atleta aceitou "ir com margem" hoje, os exercícios
-    // que atacam esse músculo começam com 1 série a menos (só na primeira vez, nunca ao retomar).
-    const easeMuscleId = getEaseModeToday();
-    const targetsEasedMuscle = (ex) => {
-      if (!easeMuscleId) return false;
-      const normalize = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-      return normalize(`${ex.target || ''} ${ex.secondary || ''}`).includes(normalize(easeMuscleId));
-    };
-    exercisesList.forEach((ex) => {
-      const isTimed = isTimedExercise(ex, ex.id);
-      const defaultDuration = isTimed ? getDefaultDurationSeconds(ex, ex.id) : 10;
-      const prevSets = saved[ex.id];
-      if (prevSets && prevSets.length > 0) {
-        initial[ex.id] = prevSets.map((s) => ({
-          weight: s.weight ?? (isTimed ? 0 : (ex.suggestedWeight ?? 10)),
-          reps: s.reps ?? (isTimed ? defaultDuration : (ex.suggestedReps ?? 10)),
-          seconds: s.seconds ?? (isTimed ? (Number(s.reps) || defaultDuration) : undefined),
-          type: s.type || 'N',
-          rpe: s.rpe || null,
-          completed: false,
-          done: false
-        }));
-      } else {
-        const baseSetsCount = ex.defaultSets || 3;
-        const setsCount = targetsEasedMuscle(ex) ? Math.max(2, baseSetsCount - 1) : baseSetsCount;
-        initial[ex.id] = Array.from({ length: setsCount }, () => ({
-          weight: isTimed ? 0 : (ex.suggestedWeight ?? 10),
-          reps: isTimed ? defaultDuration : (ex.suggestedReps ?? 10),
-          seconds: isTimed ? defaultDuration : undefined,
-          type: 'N',
-          rpe: null,
-          completed: false,
-          done: false
-        }));
-      }
-    });
-    return initial;
-  });
-
-  // Histórico das cargas anteriores imediatas
+  const [exercisesData, setExercisesData] = useState(() => buildInitialExercisesData(workout, activeDraft));
   const [pastWeights] = useState(() => getSavedWeights());
 
-  // Cronómetro do treino (ver hooks/useWorkoutTimer.js — sem re-renders por segundo neste componente)
   const { isTimerRunning, setIsTimerRunning, computeElapsed, timerRef } = useWorkoutTimer(activeDraft);
   const [finalDurationMinutes, setFinalDurationMinutes] = useState(1);
 
-  // Trigger para auto-iniciar o Rest Timer ao concluir uma série
   const [restTimerTrigger, setRestTimerTrigger] = useState(0);
   const [currentRestDefault, setCurrentRestDefault] = useState(60);
 
-  // Modais
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
   const [plateCalcWeight, setPlateCalcWeight] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
-  // Check-in do AB Coach a cada 3 sessões: null | 'due' | 'open'
-  const [checkin, setCheckin] = useState(null); // null | 'due' | 'assigned' | 'open' | 'open-assigned'
+  const [checkin, setCheckin] = useState(null);
   const [checkinSessionId, setCheckinSessionId] = useState(null);
 
-  // Aviso de fadiga muscular: se um grupo que este treino ataca ainda está >=75% fadigado
-  // (get_muscle_fatigue, meia-vida por grupo), sugere +1 RIR em vez de bloquear o treino.
   const [fatigueWarning, setFatigueWarning] = useState(null);
   const [fatigueDismissed, setFatigueDismissed] = useState(false);
   useEffect(() => {
@@ -188,7 +102,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       if (!active || !Array.isArray(data)) return;
       const fatigued = data.filter((m) => Number(m.fatigue) >= 75);
       if (fatigued.length === 0) return;
-      const normalize = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+      const normalize = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
       const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
       const hit = fatigued.find((m) =>
         exercisesList.some((ex) => normalize(`${ex.target || ''} ${ex.secondary || ''}`).includes(normalize(m.muscle_id)))
@@ -200,32 +114,32 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
   const [sessionNewPRs, setSessionNewPRs] = useState([]);
   const [sessionFacts, setSessionFacts] = useState(null);
   const [coachNarrative, setCoachNarrative] = useState(null);
 
-  // Concluir é idempotente: um duplo toque não pode gravar o treino duas vezes
   const finishingRef = useRef(false);
   const [isFinishing, setIsFinishing] = useState(false);
 
-  // Modo Casa: id original → exercício equivalente de casa (persistido no rascunho)
   const [homeSwaps, setHomeSwaps] = useState(() => activeDraft?.homeSwaps || {});
-  // Adaptação Imediata (Máquina Ocupada)
   const [swappingExercise, setSwappingExercise] = useState(null);
   const [liveSwaps, setLiveSwaps] = useState(() => activeDraft?.liveSwaps || {});
   const [isExpressMode, setIsExpressMode] = useState(false);
 
-  // Exercício atualmente focado
   const baseExercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
   const currentExercisesList = baseExercises.map((ex) => liveSwaps[ex.id] || homeSwaps[ex.id] || ex);
-  const [focusedExerciseId, setFocusedExerciseId] = useState(
-    workout?.exercises?.[0]?.id || null
-  );
+  const [focusedExerciseId, setFocusedExerciseId] = useState(workout?.exercises?.[0]?.id || null);
 
-  // Rascunho do treino ativo (ver hooks/useWorkoutDraft.js)
-  const draftDataRef = useWorkoutDraft({ workoutDayId: currentWorkoutDayId, exercisesData, homeSwaps, computeElapsed, timerRef, finishingRef });
+  const draftDataRef = useWorkoutDraft({
+    workoutDayId: currentWorkoutDayId,
+    exercisesData,
+    homeSwaps,
+    computeElapsed,
+    timerRef,
+    finishingRef
+  });
 
-  // Troca de Aparelho Ocupado (Adaptação ao Vivo com mesma porção e padrão motor)
   const handleSwapExercise = (originalEx, substitute) => {
     if (!originalEx || !substitute) return;
     setExercisesData((prev) => {
@@ -244,6 +158,9 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     try { sound.playSuccess(); } catch {}
   };
 
+  const currentFocusedIndex = currentExercisesList.findIndex((e) => e.id === focusedExerciseId);
+  const activeExercise = currentExercisesList[currentFocusedIndex] || currentExercisesList[0];
+
   const toggleExpressMode = () => {
     const next = !isExpressMode;
     setIsExpressMode(next);
@@ -251,7 +168,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     triggerHaptic(15);
   };
 
-  // Troca 1 toque entre o exercício de ginásio e o equivalente de casa (e volta)
   const toggleHomeMode = (exercise) => {
     const originalId = exercise.homeAlternativeOf;
     if (originalId) {
@@ -270,14 +186,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     setFocusedExerciseId(alt.id);
   };
 
-  // Atualização unificada de série com suporte a SetRow
   const handleSetUpdate = (exId, setIdx, updates) => {
-    // Normaliza os dois campos de conclusão (retrocompatibilidade done/completed)
     const normalized = { ...updates };
     if ('done' in updates && !('completed' in updates)) normalized.completed = updates.done;
     if ('completed' in updates && !('done' in updates)) normalized.done = updates.completed;
 
-    // Estado atual lido fora do updater: o updater tem de ser puro (o StrictMode executa-o duas vezes)
     const currentSets = draftDataRef.current.exercisesData[exId] || [];
     const prevSet = currentSets[setIdx] || {};
     const nextSets = [...currentSets];
@@ -289,7 +202,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       return { ...prev, [exId]: sets };
     });
 
-    // Efeitos colaterais uma única vez por toque
     const wasCompleted = Boolean(prevSet.completed || prevSet.done);
     const isNowCompleted = Boolean(nextSets[setIdx].completed || nextSets[setIdx].done);
     if (!wasCompleted && isNowCompleted) {
@@ -300,8 +212,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     }
   };
 
-  // Adicionar / remover série: updaters funcionais e puros (dois toques rápidos não se perdem).
-  // A gravação das cargas no LocalStorage acontece no efeito de persistência abaixo.
   const handleAddSet = (exId) => {
     const ex = currentExercisesList.find((e) => e.id === exId);
     const isTimed = isTimedExercise(ex, exId);
@@ -332,7 +242,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     triggerHaptic(10);
   };
 
-  // Persistência das cargas por exercício (debounce): substitui as gravações dentro dos updaters
   const savedSetsRef = useRef(exercisesData);
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -344,35 +253,13 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     return () => clearTimeout(timer);
   }, [exercisesData]);
 
-  // Métricas de progresso calculadas:
-  // Volume efetivo e contagem de séries de trabalho EXCLUEM séries de aquecimento (type === 'W')
-  // Exercícios isométricos/temporizados não multiplicam segundos por peso no volume de carga (kg)
-  let totalWorkingSetsCount = 0;
-  let completedWorkingSetsCount = 0;
-  let totalVolumeKg = 0;
+  const {
+    totalWorkingSetsCount,
+    completedWorkingSetsCount,
+    totalVolumeKg,
+    completionPercentage
+  } = computeWorkoutProgress(currentExercisesList, exercisesData);
 
-  currentExercisesList.forEach((ex) => {
-    const sets = exercisesData[ex.id] || [];
-    const isTimed = isTimedExercise(ex, ex.id);
-    sets.forEach((s) => {
-      const isDone = Boolean(s.completed || s.done);
-      if (s.type !== 'W') {
-        totalWorkingSetsCount++;
-        if (isDone) {
-          completedWorkingSetsCount++;
-          if (!isTimed) {
-            totalVolumeKg += (Number(s.weight) || 0) * (Number(s.reps) || 0);
-          }
-        }
-      }
-    });
-  });
-
-  const completionPercentage = totalWorkingSetsCount > 0
-    ? Math.round((completedWorkingSetsCount / totalWorkingSetsCount) * 100)
-    : 0;
-
-  // Finalização do treino
   const handleFinishWorkout = () => {
     if (finishingRef.current) return;
     finishingRef.current = true;
@@ -380,8 +267,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     setIsTimerRunning(false);
     triggerHaptic([30, 80, 30]);
 
-    // Sequência consolidada (musculação + corrida): compara antes/depois de marcar o dia,
-    // para animar a transição no motion graphic.
     const runsForStreak = getRunsHistory();
     const prevStreak = computeStreak(getCompletedDays(), WEEKLY_SCHEDULE, runsForStreak);
     markDayCompleted(currentWorkoutDayId);
@@ -393,81 +278,20 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     }
     saveActiveDraft(null);
 
-    // 1. Deteção de Novos Recordes Pessoais (PR)
-    const detectedPRs = [];
-    currentExercisesList.forEach((ex) => {
-      const sets = exercisesData[ex.id] || [];
-      const isTimed = isTimedExercise(ex, ex.id);
+    setSessionNewPRs(detectSessionPRs(currentExercisesList, exercisesData, pastHistory));
 
-      if (isTimed) {
-        const bestHistoricalDur = getBestHistoricalDuration(ex.id, pastHistory);
-        let sessionBestDur = 0;
-        let sessionBestSet = null;
-
-        sets.forEach((s) => {
-          if ((s.completed || s.done) && s.type !== 'W') {
-            const dur = Number(s.seconds !== undefined ? s.seconds : s.reps) || 0;
-            if (dur > sessionBestDur) {
-              sessionBestDur = dur;
-              sessionBestSet = s;
-            }
-          }
-        });
-
-        if (sessionBestDur > 0 && bestHistoricalDur && sessionBestDur > bestHistoricalDur) {
-          detectedPRs.push({
-            exerciseId: ex.id,
-            exerciseName: ex.name,
-            isTimed: true,
-            duration: sessionBestDur,
-            previousDuration: bestHistoricalDur,
-            weight: sessionBestSet?.weight,
-            reps: sessionBestDur
-          });
-        }
-      } else {
-        const bestHistorical = getBestHistorical1RM(ex.id, pastHistory);
-        let sessionBestE1RM = 0;
-        let sessionBestSet = null;
-
-        sets.forEach((s) => {
-          if ((s.completed || s.done) && s.type !== 'W') {
-            const calc1RM = e1RM(s.weight, s.reps, s.rpe ? 10 - s.rpe : 0);
-            if (calc1RM && calc1RM > sessionBestE1RM) {
-              sessionBestE1RM = calc1RM;
-              sessionBestSet = s;
-            }
-          }
-        });
-
-        if (sessionBestE1RM > 0 && bestHistorical && sessionBestE1RM > bestHistorical) {
-          detectedPRs.push({
-            exerciseId: ex.id,
-            exerciseName: ex.name,
-            e1RM: sessionBestE1RM,
-            previous1RM: bestHistorical,
-            weight: sessionBestSet?.weight,
-            reps: sessionBestSet?.reps
-          });
-        }
-      }
-    });
-    setSessionNewPRs(detectedPRs);
-
-    // 2. Criação do registo local permanente para histórico offline
     const finalSeconds = computeElapsed();
     const computedMinutes = Math.max(1, Math.round(finalSeconds / 60));
     setFinalDurationMinutes(computedMinutes);
     const now = new Date();
     const workoutTitle = workout?.title || workout?.name || 'Treino Concluído';
-    const dayName = workout?.name || workout?.shortName || 'Treino';
     const workoutRecord = {
       id: `workout_${Date.now()}`,
       timestamp: Date.now(),
       completedAt: now.toISOString(),
       date: now.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }),
       workoutDayId: currentWorkoutDayId,
-      dayName,
+      dayName: workout?.name || workout?.shortName || 'Treino',
       dayTitle: workoutTitle,
       title: workoutTitle,
       workoutTitle,
@@ -482,34 +306,24 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     };
     addWorkoutToHistory(workoutRecord);
 
-    // 3. Cálculo Determinístico de Insights Pós-Treino
     const facts = buildWorkoutInsights(workoutRecord, pastHistory);
     setSessionFacts(facts);
-
-    // 4. Chamada rápida à narrativa da IA do AB Coach (2 frases objetivas)
     fetchCoachNarrative(facts, workout?.title || 'Treino').then((narrative) => {
       if (narrative) setCoachNarrative(narrative);
     }).catch(() => {});
 
-    // 5. Avaliação de medalhas
     try {
       const unlocked = evaluateAndUnlockBadges('workout') || [];
-      if (unlocked.length > 0) {
-        setNewlyUnlockedBadge(unlocked[0]);
-      }
+      if (unlocked.length > 0) setNewlyUnlockedBadge(unlocked[0]);
     } catch (badgeErr) {
       console.warn('Erro ao avaliar conquistas no treino:', badgeErr);
     }
 
     setShowCelebration(true);
     const isAssigned = Boolean(workout?.assignedProgramId);
-    if (isAssigned) {
-      setCheckin('assigned');
-    } else if (registerSessionAndCheckDue()) {
-      setCheckin('due');
-    }
+    if (isAssigned) setCheckin('assigned');
+    else if (registerSessionAndCheckDue()) setCheckin('due');
 
-    // Sincronização com o Supabase (o histórico local já foi gravado acima)
     if (user?.id) {
       const pendingSessionId = newSessionId();
       if (isAssigned) setCheckinSessionId(pendingSessionId);
@@ -528,7 +342,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   };
 
   const handlePauseAndExit = () => {
-    // Pausa real: congela o cronómetro (o tempo fora da app não conta) e guarda as trocas do Modo Casa
     const pausedAt = computeElapsed();
     saveActiveDraft({
       workoutDayId: currentWorkoutDayId,
@@ -536,18 +349,12 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       timerBaseSeconds: pausedAt,
       timerRunningSince: null,
       exercisesData,
-      homeSwaps,
+      homeSwaps
     });
     triggerHaptic(15);
     onBackToDashboard();
   };
 
-  // Navegação entre exercícios no Modo Foco
-  const currentFocusedIndex = currentExercisesList.findIndex((e) => e.id === focusedExerciseId);
-  const activeExercise = currentExercisesList[currentFocusedIndex] || currentExercisesList[0];
-
-  // Próxima série pendente do exercício em foco: alimenta o Live Activity do descanso
-  // (ecrã de bloqueio / Dynamic Island) com "Série X · carga" ou "Série X · duração".
   const activeExerciseSets = exercisesData[activeExercise?.id] || [];
   const activeSetLabels = workingSetLabels(activeExerciseSets);
   const isActiveExerciseTimed = activeExercise ? isTimedExercise(activeExercise, activeExercise.id) : false;
@@ -561,20 +368,10 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       }`
     : undefined;
 
-  const handlePrevExercise = () => {
-    if (currentFocusedIndex > 0) {
-      triggerHaptic(10);
-      setFocusedExerciseId(currentExercisesList[currentFocusedIndex - 1].id);
-    }
-  };
-
-  const handleNextExercise = () => {
-    if (currentFocusedIndex < currentExercisesList.length - 1) {
-      triggerHaptic(10);
-      setFocusedExerciseId(currentExercisesList[currentFocusedIndex + 1].id);
-    } else {
-      handleFinishWorkout();
-    }
+  const advancePostCelebration = () => {
+    if (checkin === 'due') setCheckin('open');
+    else if (checkin === 'assigned') setCheckin('open-assigned');
+    else onBackToDashboard();
   };
 
   return (
@@ -593,7 +390,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         isFinishing={isFinishing}
       />
 
-      {/* Conteúdo Principal do Treino */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-48 space-y-3.5">
         {fatigueWarning && !fatigueDismissed && (
           <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3 text-xs animate-fadeIn">
@@ -622,79 +418,16 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           </div>
         )}
 
-        {/* NAVEGAÇÃO RÁPIDA ENTRE EXERCÍCIOS (Carrossel Horizontal de Pílulas) */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest tabular-nums">
-              Exercícios ({currentExercisesList.length})
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleExpressMode}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
-                  isExpressMode
-                    ? 'bg-amber-500/15 border-amber-400/35 text-amber-300'
-                    : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
-                }`}
-                title="Modo Express: intervalos rápidos de 45s para finalizar em 30 min"
-              >
-                <Zap className={`w-3 h-3 ${isExpressMode ? 'text-amber-400 fill-amber-400' : 'text-zinc-400'}`} />
-                <span>{isExpressMode ? 'Express 30m ON' : 'Express 30m'}</span>
-              </button>
-              <span className="text-[11px] text-zinc-500 font-medium hidden sm:inline">
-                {isFocusMode ? 'Modo Foco' : 'Visão Geral'}
-              </span>
-            </div>
-          </div>
+        <ExercisePillsBar
+          exercises={currentExercisesList}
+          exercisesData={exercisesData}
+          focusedExerciseId={focusedExerciseId}
+          isExpressMode={isExpressMode}
+          isFocusMode={isFocusMode}
+          onSelectExercise={setFocusedExerciseId}
+          onToggleExpressMode={toggleExpressMode}
+        />
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
-            {currentExercisesList.map((ex, idx) => {
-              const sets = exercisesData[ex.id] || [];
-              const isAllDone = sets.length > 0 && sets.every((s) => s.completed || s.done);
-              const isCurrent = ex.id === (isFocusMode ? focusedExerciseId : null);
-              const doneCount = sets.filter((s) => s.completed || s.done).length;
-
-              return (
-                <button
-                  key={ex.id}
-                  type="button"
-                  onClick={() => {
-                    setFocusedExerciseId(ex.id);
-                    triggerHaptic(8);
-                  }}
-                  className={`px-3 py-2 rounded-xl border text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer min-h-[44px] ${
-                    isCurrent
-                      ? 'bg-white/10 text-white border-white/20 shadow-xs'
-                      : isAllDone
-                        ? 'bg-white/[0.03] text-emerald-400 border-emerald-500/30'
-                        : 'bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:border-white/[0.12]'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-md flex items-center justify-center font-display text-[11px] font-semibold tabular-nums ${
-                    isAllDone
-                      ? 'bg-emerald-500 text-black'
-                      : isCurrent
-                        ? 'bg-white text-black font-semibold'
-                        : 'bg-white/[0.06] text-zinc-400'
-                  }`}>
-                    {isAllDone ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
-                  </div>
-                  <div className="text-left">
-                    <span className="block truncate max-w-[110px] leading-tight text-[11px]">
-                      {ex.name}
-                    </span>
-                    <span className="text-[10px] text-zinc-500 font-mono block">
-                      {doneCount}/{sets.length} séries
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* MODO FOCO: o exercício atual em evidência */}
         {isFocusMode && activeExercise && (
           <div className="space-y-4 animate-fadeIn">
             <FocusExerciseCard
@@ -722,7 +455,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
           </div>
         )}
 
-        {/* VISÃO GERAL / LISTA COMPLETA: todos os exercícios em acordeão */}
         {!isFocusMode && (
           <ExerciseListView
             exercises={currentExercisesList}
@@ -741,7 +473,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         )}
       </main>
 
-      {/* Temporizador de Descanso Flutuante (Posicionado ACIMA da barra de navegação) */}
       <RestTimer
         initialTime={currentRestDefault}
         autoStartTrigger={restTimerTrigger}
@@ -753,122 +484,59 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         index={currentFocusedIndex}
         total={currentExercisesList.length}
         exerciseName={activeExercise?.name}
-        onPrev={handlePrevExercise}
-        onNext={handleNextExercise}
+        onPrev={() => {
+          if (currentFocusedIndex > 0) {
+            triggerHaptic(10);
+            setFocusedExerciseId(currentExercisesList[currentFocusedIndex - 1].id);
+          }
+        }}
+        onNext={() => {
+          if (currentFocusedIndex < currentExercisesList.length - 1) {
+            triggerHaptic(10);
+            setFocusedExerciseId(currentExercisesList[currentFocusedIndex + 1].id);
+          } else {
+            handleFinishWorkout();
+          }
+        }}
       />
 
-      {/* Modal de Demonstração Biomecânica */}
-      <AnimatePresence>
-        {selectedExerciseForModal && (
-          <Suspense key="exercise-modal" fallback={null}>
-            <ExerciseModal
-              exercise={selectedExerciseForModal}
-              onClose={() => setSelectedExerciseForModal(null)}
-            />
-          </Suspense>
-        )}
-        {swappingExercise && (
-          <Suspense key="swap-exercise-modal" fallback={null}>
-            <SwapExerciseModal
-              exercise={swappingExercise}
-              onSelectSubstitute={handleSwapExercise}
-              onClose={() => setSwappingExercise(null)}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
-
-      {/* Modal da Calculadora de Anilhas */}
-      {plateCalcWeight !== null && (
-        <Suspense fallback={null}>
-          <PlateCalculatorModal
-            initialWeight={plateCalcWeight}
-            onClose={() => setPlateCalcWeight(null)}
-          />
-        </Suspense>
-      )}
-
-      {/* Modal de Celebração e Conclusão de Treino com AB Coach */}
-      <AnimatePresence>
-      {showCelebration && (
-        <Suspense key="celebration-modal" fallback={null}>
-          <CelebrationModal
-            workout={workout}
-            durationMinutes={finalDurationMinutes}
-            totalSetsCompleted={completedWorkingSetsCount}
-            totalVolumeKg={totalVolumeKg}
-            unlockedBadge={newlyUnlockedBadge}
-            newPRs={sessionNewPRs}
-            insights={sessionFacts}
-            coachNarrative={coachNarrative}
-            onClose={() => {
-              setShowCelebration(false);
-              // Se houver medalha ou marco de sequência novos, a sequência de celebrações continua (ver abaixo)
-              if (newlyUnlockedBadge || streakInfo) return;
-              if (checkin === 'due') setCheckin('open');
-              else if (checkin === 'assigned') setCheckin('open-assigned');
-              else onBackToDashboard();
-            }}
-          />
-        </Suspense>
-      )}
-      {checkin === 'open' && (
-        <SessionCheckin
-          key="session-checkin"
-          workout={workout}
-          onDone={() => {
-            setCheckin(null);
-            onBackToDashboard();
-          }}
-        />
-      )}
-      {checkin === 'open-assigned' && (
-        <PostWorkoutCheckin
-          key="post-workout-checkin"
-          sessionId={checkinSessionId}
-          onDone={() => {
-            setCheckin(null);
-            onBackToDashboard();
-          }}
-        />
-      )}
-      </AnimatePresence>
-
-      {/* Celebração Cinematográfica de Conquista Desbloqueada (depois do resumo do treino) */}
-      <AnimatePresence>
-        {!showCelebration && newlyUnlockedBadge && (
-          <Suspense key="badge-celebration" fallback={null}>
-            <BadgeCelebrationModal
-              badge={newlyUnlockedBadge}
-              onClose={() => {
-                setNewlyUnlockedBadge(null);
-                // Se houver marco de sequência novo, a celebração dele continua a sequência
-                if (streakInfo) return;
-                if (checkin === 'due') setCheckin('open');
-                else if (checkin === 'assigned') setCheckin('open-assigned');
-                else onBackToDashboard();
-              }}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
-
-      {/* Motion Graphic de Sequência (último passo da sequência de celebrações) */}
-      <AnimatePresence>
-        {!showCelebration && !newlyUnlockedBadge && streakInfo && (
-          <Suspense key="streak-milestone" fallback={null}>
-            <StreakMilestoneModal
-              streakInfo={streakInfo}
-              onClose={() => {
-                setStreakInfo(null);
-                if (checkin === 'due') setCheckin('open');
-                else if (checkin === 'assigned') setCheckin('open-assigned');
-                else onBackToDashboard();
-              }}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
+      <PostWorkoutModals
+        checkin={checkin}
+        checkinSessionId={checkinSessionId}
+        coachNarrative={coachNarrative}
+        completedWorkingSetsCount={completedWorkingSetsCount}
+        finalDurationMinutes={finalDurationMinutes}
+        newlyUnlockedBadge={newlyUnlockedBadge}
+        onClearBadge={() => {
+          setNewlyUnlockedBadge(null);
+          if (!streakInfo) advancePostCelebration();
+        }}
+        onClearStreak={() => {
+          setStreakInfo(null);
+          advancePostCelebration();
+        }}
+        onCloseCelebration={() => {
+          setShowCelebration(false);
+          if (!newlyUnlockedBadge && !streakInfo) advancePostCelebration();
+        }}
+        onCloseExerciseGuide={() => setSelectedExerciseForModal(null)}
+        onClosePlates={() => setPlateCalcWeight(null)}
+        onCloseSwap={() => setSwappingExercise(null)}
+        onDoneCheckin={() => {
+          setCheckin(null);
+          onBackToDashboard();
+        }}
+        onSelectSubstitute={handleSwapExercise}
+        plateCalcWeight={plateCalcWeight}
+        selectedExerciseForModal={selectedExerciseForModal}
+        sessionFacts={sessionFacts}
+        sessionNewPRs={sessionNewPRs}
+        showCelebration={showCelebration}
+        streakInfo={streakInfo}
+        swappingExercise={swappingExercise}
+        totalVolumeKg={totalVolumeKg}
+        workout={workout}
+      />
     </div>
   );
 }

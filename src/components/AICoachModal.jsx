@@ -1,39 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence } from 'motion/react';
+import { RotateCcw, Send, X } from 'lucide-react';
+import CoachAvatar from './coach/CoachAvatar';
+import CoachChatMessage from './coach/CoachChatMessage';
 import CoachIntro from './coach/CoachIntro';
 import { ModalBackdrop, ModalPanel } from './ui/Modal';
-import { AnimatePresence } from 'motion/react';
-import {
-  X,
-  Send,
-  RotateCcw,
-  Play,
-  Bookmark,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Info,
-  Clock,
-  LogIn,
-  Calendar,
-  RefreshCw,
-  Share2
-} from 'lucide-react';
-import CoachAvatar from './coach/CoachAvatar';
 import { useAuth } from '../context';
 import { sendMessageToCoach } from '../services/abCoach/coachService';
 import { toAppWorkout } from '../services/abCoach/adapter';
-import { getBiomechanicalSubstitutes } from '../services/abCoach/catalog';
 import { generateAndShareWorkoutCard } from '../utils/shareCard';
 import { saveCustomWorkout, getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 
 const STORAGE_CHAT_KEY = 'ab_fitness_coach_chat_v1';
 
-
-export default function AICoachModal({ 
-  isOpen, 
-  onClose, 
-  onStartWorkout, 
+export default function AICoachModal({
+  isOpen,
+  onClose,
+  onStartWorkout,
   onViewExercise,
   onOpenAuth,
   onSaveToSchedule
@@ -50,12 +34,12 @@ export default function AICoachModal({
 
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [savedWorkouts, setSavedWorkouts] = useState({}); // { [workoutName]: boolean }
-  const [scheduledWorkouts, setScheduledWorkouts] = useState({}); // { [msgIndex]: dayLabel }
+  const [savedWorkouts, setSavedWorkouts] = useState({});
+  const [scheduledWorkouts, setScheduledWorkouts] = useState({});
   const [showDayPickerIndex, setShowDayPickerIndex] = useState(null);
-  const [expandedCards, setExpandedCards] = useState({}); // { [msgIndex]: boolean }
+  const [expandedCards, setExpandedCards] = useState({});
   const [toastMessage, setToastMessage] = useState(null);
-  const [activeSwap, setActiveSwap] = useState(null); // { msgIndex, exIndex, exercise }
+  const [activeSwap, setActiveSwap] = useState(null);
   const [isSharing, setIsSharing] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [confirmClearChat, setConfirmClearChat] = useState(false);
@@ -63,7 +47,12 @@ export default function AICoachModal({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Feedback progressivo dinâmico para eliminar a sensação de espera
+  useEffect(() => {
+    if (!confirmClearChat) return undefined;
+    const t = setTimeout(() => setConfirmClearChat(false), 3500);
+    return () => clearTimeout(t);
+  }, [confirmClearChat]);
+
   useEffect(() => {
     if (!isLoading) return undefined;
     const interval = setInterval(() => {
@@ -72,7 +61,6 @@ export default function AICoachModal({
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  // Sincronizar chat no localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_CHAT_KEY, JSON.stringify(messages));
@@ -81,7 +69,6 @@ export default function AICoachModal({
     }
   }, [messages]);
 
-  // Deslocamento suave para a última mensagem
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -90,7 +77,6 @@ export default function AICoachModal({
     }
   }, [messages, isOpen, isLoading]);
 
-  // Foco no input ao abrir
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -98,7 +84,6 @@ export default function AICoachModal({
       }, 200);
     }
   }, [isOpen]);
-
 
   const showToast = (text) => {
     setToastMessage(text);
@@ -146,15 +131,14 @@ export default function AICoachModal({
       triggerHaptic(20);
     } catch (err) {
       console.error('Erro na conversa com AB Coach:', err);
-      let errorText = err.message || 'Falha ao ligar ao assistente AB Coach.';
-      
+      const errorText = err.message || 'Falha ao ligar ao assistente AB Coach.';
       const isAuthError = errorText.includes('conectado') || errorText.includes('login') || errorText.includes('sessão');
 
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: isAuthError 
+          content: isAuthError
             ? 'O AB Coach com Inteligência Artificial requer que tenhas sessão iniciada na tua conta AB Fitness para gerar treinos exclusivos.'
             : errorText,
           isError: true,
@@ -172,7 +156,6 @@ export default function AICoachModal({
     const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
     if (!lastUserMsg || !lastUserMsg.content || isLoading) return;
 
-    // Reenvia a partir do histórico sem o erro e sem a última pergunta (que é acrescentada de novo)
     const base = [...messages];
     if (base.length && base[base.length - 1].isError) base.pop();
     if (base.length && base[base.length - 1] === lastUserMsg) base.pop();
@@ -233,7 +216,7 @@ export default function AICoachModal({
         nome: newEx.nome,
         grupo: newEx.grupo || oldEx.grupo,
         porcao: newEx.porcao || oldEx.porcao,
-        dica: newEx.dica || oldEx.dica,
+        dica: newEx.dica || oldEx.dica
       };
 
       targetMsg.treino = {
@@ -274,478 +257,168 @@ export default function AICoachModal({
 
   return (
     <AnimatePresence>
-    {isOpen && (
-    <ModalBackdrop key="modal" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4">
-      <ModalPanel 
-        className="w-full sm:max-w-2xl bg-surface rounded-t-xl sm:rounded-xl shadow-xl overflow-hidden border border-white/10 flex flex-col h-[94vh] sm:h-[86vh] transition-colors"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Cabeçalho Sóbrio do AB Coach */}
-        <div className="p-4 bg-surface-2 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <CoachAvatar size={40} alt="" />
-
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold tracking-tight text-zinc-50 flex items-center gap-1.5">
-                  AB Coach
-                  <span className="text-[11px] font-semibold px-1.5 py-0.2 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
-                    IA
-                  </span>
-                </h2>
+      {isOpen && (
+        <ModalBackdrop key="modal" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4">
+          <ModalPanel
+            className="w-full sm:max-w-2xl bg-surface rounded-t-xl sm:rounded-xl shadow-xl overflow-hidden border border-white/10 flex flex-col h-[94vh] sm:h-[86vh] transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 bg-surface-2 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CoachAvatar size={40} alt="" />
+                <div>
+                  <h2 className="text-sm font-bold tracking-tight text-zinc-50 flex items-center gap-1.5">
+                    AB Coach
+                    <span className="text-[11px] font-semibold px-1.5 py-0.2 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                      IA
+                    </span>
+                  </h2>
+                  <p className="text-[11px] text-zinc-400 font-normal">
+                    Consultoria Biomecânica & Prescrição
+                  </p>
+                </div>
               </div>
-              <p className="text-[11px] text-zinc-400 font-normal">
-                Consultoria Biomecânica & Prescrição
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-1.5">
-            {messages.length > 0 && (
-              <button
-                type="button"
-                onClick={handleClearHistory}
-                title="Limpar conversa"
-                className={`p-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  confirmClearChat
-                    ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
-                    : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]'
-                }`}
-              >
-                {confirmClearChat ? 'Confirmar limpar?' : <RotateCcw className="w-4 h-4 stroke-[1.8]" />}
-              </button>
-            )}
-
-            <button
-              onClick={() => {
-                triggerHaptic(10);
-                onClose();
-              }}
-              title="Fechar"
-              className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5 stroke-[1.8]" />
-            </button>
-          </div>
-        </div>
-
-        {/* Notificação Toast Interna */}
-        {toastMessage && (
-          <div className="p-2 text-center text-xs font-semibold bg-accent text-white border-b border-white/10 animate-fadeIn">
-            {toastMessage}
-          </div>
-        )}
-
-        {/* Área de Mensagens */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          
-          <CoachIntro {...{ handleSend, messages }} />
-          {/* Lista de Mensagens */}
-          {messages.map((msg, idx) => {
-            const isUser = msg.role === 'user';
-
-            return (
-              <div
-                key={idx}
-                className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
-              >
-                {!isUser && (
-                  <CoachAvatar size={28} alt="" className="mt-0.5" />
-                )}
-
-                <div className={`max-w-[85%] sm:max-w-[78%] space-y-2.5 ${isUser ? 'items-end' : 'items-start'}`}>
-                  
-                  {/* Bolha de Texto */}
-                  <div
-                    className={`p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
-                      isUser
-                        ? 'bg-accent/70 text-white font-medium'
-                        : msg.isError
-                          ? 'bg-rose-950/40 text-rose-300 border border-rose-800/60'
-                          : 'bg-surface-2 text-zinc-100 border border-white/10'
+              <div className="flex items-center gap-1.5">
+                {messages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearHistory}
+                    title="Limpar conversa"
+                    className={`tap-44 p-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      confirmClearChat
+                        ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
+                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]'
                     }`}
                   >
-                    {msg.content}
+                    {confirmClearChat ? 'Confirmar limpar?' : <RotateCcw className="w-4 h-4 stroke-[1.8]" />}
+                  </button>
+                )}
 
-                    {/* Botão de Autenticação */}
-                    {msg.isAuthError && (
-                      <div className="mt-3 pt-2 border-t border-rose-800/40">
-                        <button
-                          onClick={() => {
-                            if (onOpenAuth) onOpenAuth();
-                            onClose();
-                          }}
-                          className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
-                        >
-                          <LogIn className="w-4 h-4 stroke-[2]" />
-                          <span>Iniciar Sessão no AB Fitness</span>
-                        </button>
-                      </div>
-                    )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic(10);
+                    onClose();
+                  }}
+                  title="Fechar"
+                  aria-label="Fechar"
+                  className="tap-44 p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5 stroke-[1.8]" />
+                </button>
+              </div>
+            </div>
 
-                    {/* Botão de Tentar Novamente em falhas de ligação */}
-                    {msg.isError && !msg.isAuthError && (
-                      <div className="mt-3 pt-2 border-t border-rose-800/40">
-                        <button
-                          onClick={handleRetryLastMessage}
-                          disabled={isLoading}
-                          className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 stroke-[2]" />
-                          <span>Tentar Novamente</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
+            {toastMessage && (
+              <div className="p-2 text-center text-xs font-semibold bg-accent text-white border-b border-white/10 animate-fadeIn">
+                {toastMessage}
+              </div>
+            )}
 
-                  {/* Cartão de Treino Prescrito */}
-                  {msg.treino && (
-                    <div className="w-full bg-surface border border-white/[0.08] rounded-2xl p-4 shadow-xs space-y-3">
-                      
-                      {/* Topo do Cartão */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 mb-1">
-                            Prescrição do Treinador
-                          </p>
-                          <h4 className="text-sm font-bold text-zinc-50 leading-tight">
-                            {msg.treino.nome}
-                          </h4>
-                          <p className="text-xs text-zinc-400 font-medium mt-0.5">
-                            Foco: {msg.treino.foco}
-                          </p>
-                        </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <CoachIntro {...{ handleSend, messages }} />
 
-                        <div className="flex items-center gap-1 text-[11px] font-semibold text-zinc-300 shrink-0 tabular-nums">
-                          <Clock className="w-3.5 h-3.5 text-zinc-500" />
-                          <span>{msg.treino.duracao_min} min</span>
-                        </div>
-                      </div>
+              {messages.map((msg, idx) => (
+                <CoachChatMessage
+                  key={idx}
+                  activeSwap={activeSwap}
+                  canSchedule={Boolean(onSaveToSchedule)}
+                  isExpanded={Boolean(expandedCards[idx])}
+                  isLoading={isLoading}
+                  isSaved={Boolean(savedWorkouts[idx])}
+                  isSharing={isSharing}
+                  msg={msg}
+                  msgIndex={idx}
+                  onAssignToDay={handleAssignToDay}
+                  onClose={onClose}
+                  onOpenAuth={onOpenAuth}
+                  onRetry={handleRetryLastMessage}
+                  onSaveToWorkouts={handleSaveToMyWorkouts}
+                  onShareCard={handleShareCard}
+                  onStartWorkout={handleStartGeneratedWorkout}
+                  onSwapExercise={handleSwapExercise}
+                  onToggleDayPicker={setShowDayPickerIndex}
+                  onToggleExpand={toggleCardExpansion}
+                  onToggleSwap={setActiveSwap}
+                  onViewExercise={onViewExercise}
+                  scheduledDayLabel={scheduledWorkouts[idx]}
+                  showDayPicker={showDayPickerIndex === idx}
+                />
+              ))}
 
-                      {/* Observações */}
-                      {msg.treino.observacoes && (
-                        <div className="pt-2.5 border-t border-white/[0.06] text-[11px] text-zinc-300 flex items-start gap-2">
-                          <Info className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5 stroke-[2]" />
-                          <span>{msg.treino.observacoes}</span>
-                        </div>
-                      )}
-
-                      {/* Lista de Exercícios */}
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-400 px-1 uppercase tracking-wider">
-                          <span>{msg.treino.exercicios?.length || 0} Exercícios</span>
-                          <button
-                            onClick={() => toggleCardExpansion(idx)}
-                            className="text-zinc-300 hover:underline flex items-center gap-0.5 text-[11px] cursor-pointer"
-                          >
-                            {expandedCards[idx] ? (
-                              <>Menos <ChevronUp className="w-3 h-3 stroke-[2]" /></>
-                            ) : (
-                              <>Ver Detalhes <ChevronDown className="w-3 h-3 stroke-[2]" /></>
-                            )}
-                          </button>
-                        </div>
-
-                        <div className="divide-y divide-white/[0.06] border-y border-white/[0.08]">
-                          {(expandedCards[idx] ? msg.treino.exercicios : msg.treino.exercicios.slice(0, 3)).map((ex, exIdx) => {
-                            const isThisSwapping = activeSwap?.msgIndex === idx && activeSwap?.exIndex === exIdx;
-                            return (
-                              <div
-                                key={ex.id || exIdx}
-                                onClick={() => onViewExercise && onViewExercise(ex)}
-                                className={`py-2.5 px-1 transition-all cursor-pointer ${
-                                  isThisSwapping ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between gap-2">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span className="w-4 text-[11px] font-semibold text-zinc-500 shrink-0 tabular-nums text-center">
-                                      {exIdx + 1}
-                                    </span>
-                                    <span className="text-xs font-semibold text-zinc-100 truncate">
-                                      {ex.nome}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex items-center gap-1.5 shrink-0">
-                                    {ex.porcao && (
-                                      <span className="text-[11px] text-zinc-400 font-medium">
-                                        {ex.porcao}
-                                      </span>
-                                    )}
-
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        triggerHaptic(10);
-                                        setActiveSwap(
-                                          isThisSwapping
-                                            ? null
-                                            : { msgIndex: idx, exIndex: exIdx, exercise: ex }
-                                        );
-                                      }}
-                                      title="Substituir por exercício biomecanicamente equivalente"
-                                      className={`tap-44 p-1.5 rounded-lg border transition-all cursor-pointer ${
-                                        isThisSwapping
-                                          ? 'bg-accent/70 text-white border-accent-hover'
-                                          : 'bg-white/[0.04] hover:bg-white text-zinc-300 hover:text-black border-white/[0.08]'
-                                      }`}
-                                    >
-                                      <RefreshCw className={`w-3.5 h-3.5 stroke-[1.8] ${isThisSwapping ? 'animate-spin' : ''}`} />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-3 mt-1 text-[11px] text-zinc-400 pl-6 tabular-nums">
-                                  <span className="font-semibold text-zinc-200">
-                                    {ex.series} séries × {ex.reps} reps
-                                  </span>
-                                  <span>·</span>
-                                  <span>{ex.descanso_seg}s descanso</span>
-                                </div>
-
-                                {/* Menu de Substituição Biomecânica */}
-                                {isThisSwapping && (
-                                  <div 
-                                    onClick={(e) => e.stopPropagation()} 
-                                    className="mt-2.5 pl-6 pr-1 py-2 border-l-2 border-accent-hover space-y-2 animate-fadeIn"
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
-                                        <RefreshCw className="w-3 h-3 stroke-[2]" />
-                                        <span>Substitutos Equivalentes:</span>
-                                      </div>
-                                      <button
-                                        type="button"
-                                        onClick={() => setActiveSwap(null)}
-                                        className="text-[11px] text-zinc-400 hover:text-zinc-200 px-1 py-0.5 rounded cursor-pointer"
-                                      >
-                                        Fechar
-                                      </button>
-                                    </div>
-
-                                    {(() => {
-                                      const usedIds = new Set((msg.treino.exercicios || []).map((item) => item.id));
-                                      const substitutes = getBiomechanicalSubstitutes(ex.id || ex.nome, usedIds);
-
-                                      if (substitutes.length === 0) {
-                                        return (
-                                          <p className="text-[11px] text-zinc-400 italic py-1">
-                                            Não existem alternativas biomecânicas no catálogo para este perfil de movimento.
-                                          </p>
-                                        );
-                                      }
-
-                                      return (
-                                        <div className="divide-y divide-white/[0.06]">
-                                          {substitutes.map((sub) => (
-                                            <div
-                                              key={sub.id}
-                                              className="py-2 flex items-center justify-between gap-2"
-                                            >
-                                              <div>
-                                                <h5 className="text-xs font-semibold text-zinc-100">
-                                                  {sub.nome}
-                                                </h5>
-                                                <p className="text-[11px] text-zinc-400">
-                                                  {sub.porcao || sub.grupo} · {sub.mecanica || 'Isolado'}
-                                                </p>
-                                              </div>
-
-                                              <button
-                                                type="button"
-                                                onClick={() => handleSwapExercise(idx, exIdx, sub)}
-                                                className="px-2.5 py-1 rounded-lg bg-primary text-app text-[11px] font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
-                                              >
-                                                Substituir
-                                              </button>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      );
-                                    })()}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Ações do Plano Prescrito */}
-                      <div className="pt-2 space-y-2">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <button
-                            onClick={() => handleStartGeneratedWorkout(msg.treino)}
-                            className="w-full py-2.5 px-3 rounded-lg bg-primary text-app hover:bg-primary-hover font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer min-h-[40px]"
-                          >
-                            <Play className="w-3.5 h-3.5 fill-current" />
-                            <span>Iniciar Treino Agora</span>
-                          </button>
-
-                          <button
-                            onClick={() => handleSaveToMyWorkouts(msg.treino, idx)}
-                            disabled={savedWorkouts[idx]}
-                            className={`w-full py-2.5 px-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer min-h-[40px] ${
-                              savedWorkouts[idx]
-                                ? 'text-zinc-500 cursor-default'
-                                : 'text-zinc-300 hover:text-white'
-                            }`}
-                          >
-                            {savedWorkouts[idx] ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                                <span>Guardado com Sucesso</span>
-                              </>
-                            ) : (
-                              <>
-                                <Bookmark className="w-3.5 h-3.5 stroke-[1.8]" />
-                                <span>Guardar nos Meus Treinos</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-
-                        {/* Partilha de Cartão */}
-                        <button
-                          type="button"
-                          onClick={() => handleShareCard(msg.treino)}
-                          disabled={isSharing}
-                          className="w-full py-2 px-3 rounded-lg text-zinc-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px]"
-                        >
-                          <Share2 className="w-3.5 h-3.5 stroke-[1.8]" />
-                          <span>{isSharing ? 'A gerar Stories...' : 'Partilhar Treino (Stories 9:16)'}</span>
-                        </button>
-
-                        {/* Atribuir a um Dia da Semana */}
-                        {onSaveToSchedule && (
-                          <div>
-                            <button
-                              onClick={() => {
-                                triggerHaptic(10);
-                                setShowDayPickerIndex(showDayPickerIndex === idx ? null : idx);
-                              }}
-                              className="w-full py-2 px-3 rounded-lg text-zinc-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
-                            >
-                              <Calendar className="w-3.5 h-3.5 stroke-[1.8]" />
-                              <span>
-                                {scheduledWorkouts[idx] 
-                                  ? `Associado a ${scheduledWorkouts[idx]} (alterar)`
-                                  : (showDayPickerIndex === idx ? 'Fechar Seletor de Dia' : 'Aplicar no Cronograma Semanal')}
-                              </span>
-                            </button>
-
-                            {showDayPickerIndex === idx && (
-                              <div className="mt-2 p-2.5 rounded-lg bg-surface border border-white/10 space-y-2 animate-fadeIn">
-                                <p className="text-[11px] font-medium text-zinc-500 text-center">
-                                  Aplicar em que dia da semana?
-                                </p>
-                                <div className="grid grid-cols-7 gap-1">
-                                  {[
-                                    { day: 1, label: 'Seg' },
-                                    { day: 2, label: 'Ter' },
-                                    { day: 3, label: 'Qua' },
-                                    { day: 4, label: 'Qui' },
-                                    { day: 5, label: 'Sex' },
-                                    { day: 6, label: 'Sáb' },
-                                    { day: 0, label: 'Dom' }
-                                  ].map((d) => (
-                                    <button
-                                      key={d.day}
-                                      onClick={() => handleAssignToDay(msg.treino, d.day, d.label, idx)}
-                                      className="py-1.5 text-center rounded-lg bg-white/[0.04] hover:bg-white hover:text-black border border-white/[0.08] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer"
-                                    >
-                                      {d.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+              {isLoading && (
+                <div className="flex gap-2.5 items-center text-zinc-500 text-xs py-2 animate-fadeIn">
+                  <img src="/coach/ab-coach-thinking-128.jpg" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover border border-white/[0.08] shrink-0" />
+                  <div className="bg-surface-2 px-3.5 py-2 rounded-xl border border-white/10 shadow-sm flex items-center gap-2">
+                    <div className="flex gap-1 items-center">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
                     </div>
-                  )}
+                    <span className="text-zinc-200 font-medium tracking-tight">
+                      {loadingStep === 0 && 'A analisar vetores biomecânicos...'}
+                      {loadingStep === 1 && 'A prescrever séries e cadências ideais...'}
+                      {loadingStep === 2 && 'A formatar prescrição com precisão...'}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              )}
 
-          {/* Indicador de Carregamento Dinâmico com Feedback de Progresso */}
-          {isLoading && (
-            <div className="flex gap-2.5 items-center text-zinc-500 text-xs py-2 animate-fadeIn">
-              <img src="/coach/ab-coach-thinking-128.jpg" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover border border-white/[0.08] shrink-0" />
-              <div className="bg-surface-2 px-3.5 py-2 rounded-xl border border-white/10 shadow-sm flex items-center gap-2">
-                <div className="flex gap-1 items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                </div>
-                <span className="text-zinc-200 font-medium tracking-tight">
-                  {loadingStep === 0 && 'A analisar vetores biomecânicos...'}
-                  {loadingStep === 1 && 'A prescrever séries e cadências ideais...'}
-                  {loadingStep === 2 && 'A formatar prescrição com precisão...'}
-                </span>
-              </div>
+              <div ref={messagesEndRef} />
             </div>
-          )}
 
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Barra de Entrada / Input Footer */}
-        <div className="p-3 bg-surface-2 border-t border-white/10">
-          {(!user || isGuest) && (
-            <div className="mb-2 p-2 px-3 rounded-lg bg-surface/90 border border-white/[0.08] flex items-center justify-between gap-2 text-xs">
-              <span className="text-zinc-300">
-                Inicia sessão para consultares o AB Coach com IA.
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  if (onOpenAuth) onOpenAuth();
-                  onClose();
+            <div className="p-3 bg-surface-2 border-t border-white/10">
+              {(!user || isGuest) && (
+                <div className="mb-2 p-2 px-3 rounded-lg bg-surface/90 border border-white/[0.08] flex items-center justify-between gap-2 text-xs">
+                  <span className="text-zinc-300">
+                    Inicia sessão para consultares o AB Coach com IA.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onOpenAuth) onOpenAuth();
+                      onClose();
+                    }}
+                    className="px-2.5 py-1 rounded bg-primary text-app font-semibold text-[11px] shrink-0 hover:opacity-90 transition-opacity cursor-pointer"
+                  >
+                    Entrar
+                  </button>
+                </div>
+              )}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
                 }}
-                className="px-2.5 py-1 rounded bg-primary text-app font-semibold text-[11px] shrink-0 hover:opacity-90 transition-opacity cursor-pointer"
+                className="flex items-center gap-2"
               >
-                Entrar
-              </button>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Pede um treino específico (ex.: peitoral inferior, 35 min, dor no ombro)..."
+                  disabled={isLoading}
+                  className="flex-1 bg-surface border border-white/[0.08] focus:border-white/30 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
+                />
+
+                <button
+                  type="submit"
+                  disabled={!inputText.trim() || isLoading}
+                  aria-label="Enviar mensagem"
+                  className={`p-2.5 rounded-lg font-semibold flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
+                    inputText.trim() && !isLoading
+                      ? 'bg-accent/70 text-white hover:opacity-90 active:scale-95 cursor-pointer shadow-xs'
+                      : 'bg-white/[0.04] text-zinc-500 cursor-not-allowed border border-white/[0.06]'
+                  }`}
+                >
+                  <Send className="w-4 h-4 stroke-[2]" />
+                </button>
+              </form>
             </div>
-          )}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex items-center gap-2"
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Pede um treino específico (ex.: peitoral inferior, 35 min, dor no ombro)..."
-              disabled={isLoading}
-              className="flex-1 bg-surface border border-white/[0.08] focus:border-white/30 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
-            />
-
-            <button
-              type="submit"
-              disabled={!inputText.trim() || isLoading}
-              className={`p-2.5 rounded-lg font-semibold flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
-                inputText.trim() && !isLoading
-                  ? 'bg-accent/70 text-white hover:opacity-90 active:scale-95 cursor-pointer shadow-xs'
-                  : 'bg-white/[0.04] text-zinc-500 cursor-not-allowed border border-white/[0.06]'
-              }`}
-            >
-              <Send className="w-4 h-4 stroke-[2]" />
-            </button>
-          </form>
-        </div>
-
-      </ModalPanel>
-    </ModalBackdrop>
-    )}
+          </ModalPanel>
+        </ModalBackdrop>
+      )}
     </AnimatePresence>
   );
 }

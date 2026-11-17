@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { EXERCISE_CATALOG } from '../src/services/abCoach/catalog.js';
-import { describeGuidelinesForPrompt } from '../src/data/trainingGuidelines.js';
+
+// Mantém alinhamento com supabase/functions/_shared/trainingGuidelines.ts
+const describeGuidelinesForPrompt = () =>
+  'Prescrição de referência (ajuste ao nível): 12 a 18 séries semanais por grupo muscular para intermediários, 8 a 12 para iniciantes, 14 a 20 para avançados; 6-15 reps (compostos 6-12, isoladores 10-15); descanso de 90-120s em compostos e 60-75s em isoladores; proximidade da falha de 1-3 RIR; frequência mínima de 2x/semana por grupo muscular grande.';
 
 const rawTuples = EXERCISE_CATALOG.map((e) => [
   e.id,

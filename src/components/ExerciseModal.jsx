@@ -17,7 +17,7 @@ import {
 import { findExerciseIn100 } from '../data/exercises100';
 import { getBiomechanicsForExercise } from '../data/exerciseBiomechanics';
 import { hasExerciseVideo } from '../data/exerciseMedia';
-import ExerciseVideoPlayer from './ExerciseVideoPlayer';
+import ExerciseVideoPlayer from './video/ExerciseVideoPlayer';
 import { getExerciseVisual } from '../data/exerciseVisuals';
 
 export default function ExerciseModal({ exercise, onClose }) {

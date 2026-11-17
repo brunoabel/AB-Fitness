@@ -1,8 +1,5 @@
 /**
- * trainingGuidelines.ts — espelho Deno de src/data/trainingGuidelines.js.
- * Edge Functions não importam o bundle do frontend, por isso os valores são duplicados aqui —
- * ao atualizar um lado, atualizar o outro (os dois são a mesma fonte de verdade em espírito,
- * só não podem ser o mesmo módulo entre runtimes diferentes).
+ * trainingGuidelines.ts — parâmetros científicos de prescrição do AB Coach (Edge Function).
  */
 
 export const VOLUME_TARGETS_SETS_PER_WEEK = {

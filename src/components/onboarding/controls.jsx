@@ -14,7 +14,7 @@ export const MicroLabel = ({ children, className = '' }) => (
 );
 
 /** Barras de carga 1–4 (intensidade do objetivo ou do nível). */
-export function IntensityBars({ level, active }) {
+function IntensityBars({ level, active }) {
   return (
     <span className="flex items-end gap-[3px] h-4" aria-label={`Intensidade ${level} de 4`}>
       {[1, 2, 3, 4].map((i) => (

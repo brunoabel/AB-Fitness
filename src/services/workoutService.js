@@ -1,7 +1,6 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
 import { 
-  getSavedWeights, 
   saveExerciseWeights, 
   addWorkoutToHistory 
 } from '../utils/storage';
@@ -419,40 +418,6 @@ export function flushWorkoutSyncQueue(userId) {
     flushing = null;
   });
   return flushing;
-}
-
-// Busca a última carga usada em um exercício específico
-export async function getExerciseLastWeight(userId, exerciseCode) {
-  // Tentar primeiro LocalStorage
-  const localWeights = getSavedWeights();
-  const localSets = localWeights[exerciseCode];
-  if (localSets && localSets.length > 0) {
-    const validWeights = localSets.map((s) => Number(s.weight)).filter((w) => !isNaN(w) && w > 0);
-    if (validWeights.length > 0) {
-      return Math.max(...validWeights);
-    }
-  }
-
-  // Se logado no Supabase, tentar buscar nos logs da nuvem
-  if (isSupabaseConfigured() && supabase && userId && userId !== 'guest-local-user') {
-    try {
-      const { data, error } = await supabase
-        .from('exercise_logs')
-        .select('weight_kg')
-        .eq('user_id', userId)
-        .eq('exercise_code', exerciseCode)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (!error && data && data.length > 0) {
-        return Number(data[0].weight_kg);
-      }
-    } catch {
-      // Silencioso se offline
-    }
-  }
-
-  return null;
 }
 
 const STORAGE_CUSTOM_PLAN_KEY = 'ab_fitness_custom_plan_v1';

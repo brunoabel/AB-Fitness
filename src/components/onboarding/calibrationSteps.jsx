@@ -12,7 +12,7 @@ import { triggerHaptic } from '../../utils/audio';
 const SPRING = { type: 'spring', stiffness: 300, damping: 28 };
 const LB = 2.20462;
 const IN = 2.54;
-export const ARNOLD_SUMMARY = 'Peito+Costas / Ombros+Braços / Pernas × 2';
+const ARNOLD_SUMMARY = 'Peito+Costas / Ombros+Braços / Pernas × 2';
 
 /** Para quem é iniciante, troca a nomenclatura inglesa (Push/Pull/Legs, Upper/Lower) por português simples. */
 export const splitSummaryOf = (p) => {
