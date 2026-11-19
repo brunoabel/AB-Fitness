@@ -96,4 +96,43 @@ describe('waitlistService — captação resiliente e fila de retry local', () =
       assert.equal(getPendingWaitlistJobs().length, 0);
     });
   });
+
+  it('usa a RPC join_waitlist com atribuição e devolve posição e código de indicação', async () => {
+    await withMockBrowser(async () => {
+      let sent = null;
+      const rpcClient = {
+        rpc: async (name, args) => {
+          sent = { name, args };
+          return { data: [{ out_position: 7, out_referral_code: 'AB12CD34', out_referral_count: 2, out_already_joined: false }], error: null };
+        }
+      };
+      const res = await joinWaitlist(
+        { name: 'Ana', email: 'Ana@Exemplo.com', goal: 'hipertrofia' },
+        { configured: true, supabaseClient: rpcClient, attribution: { utm_source: 'instagram', ref: 'ZX98YW76' } }
+      );
+      assert.equal(sent.name, 'join_waitlist');
+      assert.equal(sent.args.p_email, 'ana@exemplo.com');
+      assert.equal(sent.args.p_referred_by, 'ZX98YW76');
+      assert.equal(sent.args.p_attribution.utm_source, 'instagram');
+      assert.equal(sent.args.p_source, 'utm:instagram');
+      assert.equal(res.cloudSaved, true);
+      assert.equal(res.position, 7);
+      assert.equal(res.referralCode, 'AB12CD34');
+      assert.equal(res.referralCount, 2);
+    });
+  });
+
+  it('cai para o insert direto quando a RPC ainda não existe', async () => {
+    await withMockBrowser(async () => {
+      let inserted = false;
+      const legacyClient = {
+        rpc: async () => ({ data: null, error: { code: 'PGRST202', message: 'Could not find the function public.join_waitlist' } }),
+        from: () => ({ insert: async () => { inserted = true; return { error: null }; } })
+      };
+      const res = await joinWaitlist({ email: 'b@exemplo.com' }, { configured: true, supabaseClient: legacyClient, attribution: null });
+      assert.equal(inserted, true);
+      assert.equal(res.cloudSaved, true);
+      assert.equal(res.position, null);
+    });
+  });
 });

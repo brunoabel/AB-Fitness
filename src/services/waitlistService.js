@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { enqueueJob, flushQueue, getQueuedJobs } from '../utils/syncQueue.js';
+import { getAttribution } from '../utils/attribution.js';
 
 const WAITLIST_STORAGE_KEY = 'ab_marketing_waitlist_v1';
 export const WAITLIST_SYNC_QUEUE_KEY = 'ab_waitlist_sync_queue_v1';
@@ -21,15 +22,44 @@ export function saveLocalWaitlist(list) {
   } catch {}
 }
 
+const isMissingRpc = (error) => ['PGRST202', '42883'].includes(error?.code) || /join_waitlist/i.test(error?.message || '');
+
 /**
- * Grava um lead individual na tabela `waitlist` do Supabase.
- * Considera duplicado (`23505`) como sucesso idempotente.
+ * Grava um lead individual no Supabase.
+ * Caminho preferencial: RPC join_waitlist (migration 20261135), que guarda a atribuição e devolve
+ * posição na fila e código de indicação. Sem a RPC, faz insert direto; duplicado (`23505`) conta como sucesso.
  */
 export async function pushWaitlistLeadToCloud(entry, client = supabase) {
   if (!client) {
     return { ok: false, error: 'Cliente Supabase indisponível' };
   }
   try {
+    if (typeof client.rpc === 'function') {
+      const { data, error } = await client.rpc('join_waitlist', {
+        p_email: entry.email,
+        p_name: entry.name,
+        p_goal: entry.goal,
+        p_phone: entry.phone || null,
+        p_source: entry.source,
+        p_attribution: entry.attribution || {},
+        p_referred_by: entry.referredBy || null
+      });
+      if (!error) {
+        const row = Array.isArray(data) ? data[0] : data;
+        return {
+          ok: true,
+          error: null,
+          position: row?.out_position ?? null,
+          referralCode: row?.out_referral_code ?? null,
+          referralCount: row?.out_referral_count ?? 0
+        };
+      }
+      if (!isMissingRpc(error)) {
+        console.warn('Erro ao sincronizar lead com o Supabase:', error.message);
+        return { ok: false, error: error.message || 'Falha ao gravar na nuvem' };
+      }
+    }
+
     const { error } = await client
       .from('waitlist')
       .insert({
@@ -57,7 +87,7 @@ export async function pushWaitlistLeadToCloud(entry, client = supabase) {
  */
 export async function joinWaitlist(
   { name, email, goal = 'geral', phone = '' },
-  { supabaseClient = supabase, configured = isSupabaseConfigured() } = {}
+  { supabaseClient = supabase, configured = isSupabaseConfigured(), attribution = getAttribution() } = {}
 ) {
   const cleanEmail = (email || '').trim().toLowerCase();
   const cleanName = (name || '').trim();
@@ -77,7 +107,9 @@ export async function joinWaitlist(
     email: cleanEmail,
     goal: cleanGoal,
     phone: cleanPhone,
-    source: 'marketing_private_launch',
+    source: attribution?.utm_source ? `utm:${attribution.utm_source}` : attribution?.ref ? 'referral' : 'marketing_private_launch',
+    attribution: attribution ? { ...attribution, ref: undefined } : {},
+    referredBy: attribution?.ref || null,
     created_at: new Date().toISOString()
   };
 
@@ -111,7 +143,10 @@ export async function joinWaitlist(
     cloudSaved: true,
     queuedForRetry: false,
     syncError: null,
-    error: null
+    error: null,
+    position: syncRes.position ?? null,
+    referralCode: syncRes.referralCode ?? null,
+    referralCount: syncRes.referralCount ?? 0
   };
 }
 
@@ -178,13 +213,19 @@ export function getWaitlistCount() {
 export function exportWaitlistCsv(customList = null) {
   const list = customList || getLocalWaitlist();
   if (!list.length) return '';
-  const headers = ['Data', 'Nome', 'Email', 'Objetivo', 'Telefone'];
+  const headers = ['Posicao', 'Data', 'Nome', 'Email', 'Objetivo', 'Telefone', 'utm_source', 'utm_campaign', 'Indicado por', 'Indicacoes'];
+  const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const rows = list.map((l) => [
+    l.queue_position ?? '',
     l.created_at,
-    `"${(l.name || '').replace(/"/g, '""')}"`,
-    `"${l.email}"`,
-    `"${(l.goal || '').replace(/"/g, '""')}"`,
-    `"${(l.phone || '').replace(/"/g, '""')}"`
+    q(l.name),
+    q(l.email),
+    q(l.goal),
+    q(l.phone),
+    q(l.utm_source),
+    q(l.utm_campaign),
+    q(l.referred_by),
+    l.referral_count ?? 0
   ]);
   return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 }

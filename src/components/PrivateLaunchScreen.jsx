@@ -13,7 +13,8 @@ import {
   Activity, 
   ChevronRight,
   LogOut,
-  Crown
+  Crown,
+  Share2
 } from 'lucide-react';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
@@ -40,6 +41,9 @@ export default function PrivateLaunchScreen() {
   const [waitlistSuccess, setWaitlistSuccess] = useState(false);
   const [waitlistCloudSaved, setWaitlistCloudSaved] = useState(true);
   const [waitlistError, setWaitlistError] = useState('');
+  // Posição na fila e link de indicação (RPC join_waitlist)
+  const [queueInfo, setQueueInfo] = useState(null);
+  const [shareStatus, setShareStatus] = useState('');
   
   // Estado do formulário de Login do Fundador / Admin
   const [adminEmail, setAdminEmail] = useState('');
@@ -84,12 +88,32 @@ export default function PrivateLaunchScreen() {
       } else {
         triggerHaptic([12, 40, 12]);
         setWaitlistCloudSaved(Boolean(res.cloudSaved));
+        if (res.referralCode) {
+          setQueueInfo({ position: res.position, referralCode: res.referralCode, referralCount: res.referralCount || 0 });
+        }
         setWaitlistSuccess(true);
       }
     } catch {
       setWaitlistError('Não foi possível registar o e-mail no momento. Tenta novamente.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const referralLink = queueInfo?.referralCode ? `${window.location.origin}/?ref=${queueInfo.referralCode}` : '';
+
+  const handleShareReferral = async () => {
+    if (!referralLink) return;
+    triggerHaptic(10);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'AB Fitness', text: 'Entra na lista de acesso antecipado do AB Fitness.', url: referralLink });
+        return;
+      }
+      await navigator.clipboard.writeText(referralLink);
+      setShareStatus('Link copiado');
+    } catch {
+      setShareStatus('');
     }
   };
 
@@ -127,10 +151,10 @@ export default function PrivateLaunchScreen() {
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
-            <span className="text-[11px] font-semibold tracking-wider text-amber-400 uppercase truncate">
+            <span className="text-[11px] font-semibold tracking-wider text-zinc-300 uppercase truncate">
               Lançamento Privado · Acesso VIP
             </span>
           </div>
@@ -147,7 +171,7 @@ export default function PrivateLaunchScreen() {
               <span>Voltar à Waitlist</span>
             ) : (
               <>
-                <Crown className="w-4 h-4 text-amber-400" />
+                <Crown className="w-4 h-4 text-white" />
                 <span>Acesso Fundador</span>
               </>
             )}
@@ -180,9 +204,9 @@ export default function PrivateLaunchScreen() {
 
           {/* Se um utilizador não-admin estiver com sessão iniciada */}
           {isUserLoggedInNonAdmin && (
-            <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 text-amber-200 text-xs space-y-3">
+            <div className="p-4 rounded-2xl bg-surface-2 border border-accent-hover text-zinc-200 text-xs space-y-3">
               <div className="flex items-start gap-2.5">
-                <Crown className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                <Crown className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-white">Acesso Restrito ao Lançamento</p>
                   <p className="text-zinc-400 mt-0.5">
@@ -210,20 +234,40 @@ export default function PrivateLaunchScreen() {
                   <div className={`w-14 h-14 rounded-full border flex items-center justify-center mx-auto ${
                     waitlistCloudSaved
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                      : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                      : 'bg-accent/40 border-accent-hover text-white'
                   }`}>
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-lg font-bold text-white">
-                      {waitlistCloudSaved ? 'Vaga Reservada com Sucesso' : 'Pedido Registado — A Confirmar Ligação'}
+                      {waitlistCloudSaved ? 'Vaga Reservada com Sucesso' : 'Pedido registado, a confirmar ligação'}
                     </h3>
                     <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
                       {waitlistCloudSaved
-                        ? 'Adicionámos o teu e-mail à lista prioritária de membros fundadores. Serás notificado assim que o próximo lote de convites for libertado.'
+                        ? 'Adicionámos o teu e-mail à lista de acesso antecipado. Os convites saem por ordem da fila.'
                         : 'Guardámos os teus dados neste dispositivo. Mantém a página aberta ou volta quando tiveres ligação estável para confirmar o envio automático para a equipa.'}
                     </p>
                   </div>
+                  {waitlistCloudSaved && queueInfo && (
+                    <div className="space-y-3 pt-1">
+                      {queueInfo.position ? (
+                        <p className="font-display text-4xl font-black text-white tabular-nums">#{queueInfo.position}</p>
+                      ) : null}
+                      <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
+                        Cada amigo que se inscrever pelo teu link sobe-te na fila.
+                        {queueInfo.referralCount > 0 ? ` Já entraram ${queueInfo.referralCount} pelo teu link.` : ''}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleShareReferral}
+                        className="inline-flex items-center justify-center gap-2 w-full max-w-xs mx-auto bg-primary text-app font-semibold text-sm rounded-xl px-4 py-3"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        Partilhar o meu link
+                      </button>
+                      <p className="text-[11px] text-zinc-500 break-all">{shareStatus || referralLink}</p>
+                    </div>
+                  )}
                   <div className="pt-2">
                     {waitlistCloudSaved ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-zinc-300">
@@ -231,8 +275,8 @@ export default function PrivateLaunchScreen() {
                         Prioridade Fundador Garantida
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-[11px] font-medium text-amber-300">
-                        <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-2 border border-white/[0.08] text-[11px] font-medium text-zinc-300">
+                        <AlertCircle className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                         Guardado no dispositivo · será sincronizado automaticamente assim que houver rede
                       </span>
                     )}
@@ -242,7 +286,7 @@ export default function PrivateLaunchScreen() {
                 <form onSubmit={handleWaitlistSubmit} className="space-y-5">
                   <div className="space-y-1 text-center sm:text-left">
                     <h2 className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <Sparkles className="w-4 h-4 text-white" />
                       Garantir Acesso Antecipado VIP
                     </h2>
                     <p className="text-xs text-zinc-400">
@@ -276,7 +320,7 @@ export default function PrivateLaunchScreen() {
 
                     <div>
                       <label className="block text-[12px] font-medium text-zinc-400 mb-1.5">
-                        E-mail para convite <span className="text-amber-400">*</span>
+                        E-mail para convite <span className="text-zinc-400">*</span>
                       </label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -313,7 +357,7 @@ export default function PrivateLaunchScreen() {
                                   : 'bg-black/30 border-white/[0.06] text-zinc-400 hover:border-white/20'
                               }`}
                             >
-                              <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${selected ? 'text-amber-400' : 'text-zinc-500'}`} />
+                              <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${selected ? 'text-white' : 'text-zinc-500'}`} />
                               <span className="text-[11px] font-medium leading-tight truncate">{g.label}</span>
                             </button>
                           );
@@ -340,7 +384,7 @@ export default function PrivateLaunchScreen() {
                       }}
                       className="min-h-[44px] text-[12px] font-medium text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer inline-flex items-center justify-center gap-1.5 py-1.5 px-3 touch-manipulation"
                     >
-                      <Lock className="w-3.5 h-3.5 text-amber-400/80" />
+                      <Lock className="w-3.5 h-3.5 text-zinc-400" />
                       <span>És membro fundador ou admin? Entrar aqui</span>
                     </button>
                   </div>
@@ -366,7 +410,7 @@ export default function PrivateLaunchScreen() {
             <div className="bg-surface rounded-3xl p-6 sm:p-7 border border-white/[0.08] shadow-2xl shadow-black/80 space-y-6 animate-fadeIn">
               <div className="space-y-1 text-center sm:text-left">
                 <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <Crown className="w-4 h-4 text-amber-400" />
+                  <Crown className="w-4 h-4 text-white" />
                   <h2 className="text-base font-bold text-white">Acesso Fundador & Admin</h2>
                 </div>
                 <p className="text-xs text-zinc-400">

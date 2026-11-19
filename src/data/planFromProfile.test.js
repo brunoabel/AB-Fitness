@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlanFromProfile, toLegacyProfile } from './planFromProfile.js';
+import { buildPlanFromProfile, generateMesocyclePlan, toLegacyProfile } from './planFromProfile.js';
 import { formatTrainingDays } from '../components/onboarding/profileSchema.js';
 import { findExerciseIn100 } from './exercises100.js';
 
@@ -161,6 +161,24 @@ describe('Plano a partir do perfil Onboarding (planFromProfile)', () => {
       const { plan } = buildPlanFromProfile(profile);
       assert.ok(Array.isArray(plan[5].sportPrevention) && plan[5].sportPrevention.length > 0);
       assert.ok(plan[0].sportPrevention === undefined);
+    });
+  });
+
+  describe('Mesociclos com Sobrecarga Progressiva, Deload e Bi-Sets', () => {
+    it('gera mesociclo de 5 semanas com progressão RIR e Deload na semana 5', () => {
+      const meso = generateMesocyclePlan({ ...baseProfile, sessionMinutes: 45 }, 5);
+      assert.equal(meso.totalWeeks, 5);
+      assert.equal(meso.weeks.length, 5);
+      assert.equal(meso.weeks[0].isDeload, false);
+      assert.equal(meso.weeks[0].targetRir, 3);
+      assert.equal(meso.weeks[3].targetRir, 0);
+      assert.equal(meso.weeks[4].isDeload, true);
+      assert.equal(meso.weeks[4].loadMultiplier, 0.9);
+
+      const activeDayW1 = meso.weeks[0].plan.find((d) => !d.isRestDay);
+      const activeDayW5 = meso.weeks[4].plan.find((d) => !d.isRestDay);
+      assert.ok(activeDayW5.exercises[0].defaultSets < activeDayW1.exercises[0].defaultSets);
+      assert.ok(activeDayW1.exercises.some((ex) => Boolean(ex.supersetGroupId)));
     });
   });
 });

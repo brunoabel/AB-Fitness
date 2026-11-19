@@ -1,4 +1,5 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
+import { AnimatePresence } from 'motion/react';
 import { 
   Play, 
   Clock, 
@@ -10,7 +11,8 @@ import {
   Target,
   BookOpen,
   Check,
-  Flame
+  Flame,
+  Lock
 } from 'lucide-react';
 import { weekProgress } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
@@ -19,6 +21,13 @@ import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 import { loadExerciseMedia, useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
 import WearableReadinessCard from './wearables/WearableReadinessCard';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { useAuth } from '../context';
+import { canAccessFeature } from '../utils/userVerification';
+
+const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
+
+const MESO_WEEK_KEY = 'ab_fitness_meso_week_v1';
 
 // Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
 // DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
@@ -37,6 +46,52 @@ export default function WeeklyDashboard({
   const hasVerifiedExerciseVideo = useHasExerciseVideo();
   const [currentJsDay] = useState(() => new Date().getDay());
   const [selectedDayId, setSelectedDayId] = useState(() => new Date().getDay());
+  const [mesocycle, setMesocycle] = useState(null);
+  const { user, isGuest, isPro, isTrialActive, trialEndsAt, trialDaysLeft } = useAuth();
+  const [upgradeReason, setUpgradeReason] = useState(null);
+  const hasAccount = Boolean(user && !isGuest);
+  // Mesociclo é PRO: assinantes e quem está no período de teste (trial do vínculo ao PT)
+  const canUseMesocycle = canAccessFeature('mesocycles', { is_pro: isPro, trial_ends_at: isTrialActive ? trialEndsAt : null });
+  const trialNotice = !hasAccount || isPro
+    ? null
+    : isTrialActive && trialDaysLeft !== null && trialDaysLeft <= 3
+      ? 'trial_ending'
+      : !isTrialActive && trialEndsAt
+        ? 'trial_ended'
+        : null;
+  const [mesoWeek, setMesoWeek] = useState(() => {
+    try {
+      return Number(localStorage.getItem(MESO_WEEK_KEY)) || 1;
+    } catch {
+      return 1;
+    }
+  });
+
+  // Mesociclo real (generateMesocyclePlan) só para quem tem perfil de onboarding; import dinâmico mantém o catálogo fora do chunk inicial
+  useEffect(() => {
+    const fitnessProfile = getLocalFitnessProfile();
+    if (!fitnessProfile) return undefined;
+    let alive = true;
+    import('../data/planFromProfile')
+      .then(({ generateMesocyclePlan }) => {
+        if (alive) setMesocycle(generateMesocyclePlan(fitnessProfile, 5));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const selectMesoWeek = (w) => {
+    triggerHaptic(8);
+    setMesoWeek(w);
+    try {
+      localStorage.setItem(MESO_WEEK_KEY, String(w));
+    } catch {}
+  };
+  const activeMesoWeek = mesocycle
+    ? mesocycle.weeks[Math.min(Math.max(mesoWeek, 1), mesocycle.totalWeeks) - 1]
+    : null;
 
   const selectedWorkout = schedule.find((d) => d.dayId === selectedDayId) || schedule[0];
   const nextWorkoutDay = schedule.find((d) => !d.isRestDay && d.exercises && d.exercises.length > 0) || schedule[0];
@@ -110,6 +165,80 @@ export default function WeeklyDashboard({
           })}
         </div>
       </section>
+
+      {/* 1a. AVISO DO FIM DO TESTE PRO */}
+      {trialNotice && (
+        <section aria-label="Teste PRO" className="flex items-center justify-between gap-3 bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3.5 py-2.5">
+          <p className="text-[13px] text-white min-w-0">
+            {trialNotice === 'trial_ending'
+              ? `O teu teste PRO termina ${trialDaysLeft <= 1 ? 'hoje' : `em ${trialDaysLeft} dias`}.`
+              : 'O teu teste PRO terminou.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => setUpgradeReason(trialNotice)}
+            className="shrink-0 text-xs font-semibold bg-primary text-app rounded-lg px-3 py-1.5"
+          >
+            {trialNotice === 'trial_ending' ? 'Manter PRO' : 'Assinar PRO'}
+          </button>
+        </section>
+      )}
+
+      {/* 1b. SEMANA DO MESOCICLO (dados de generateMesocyclePlan); bloqueado para quem não é PRO */}
+      {activeMesoWeek && !canUseMesocycle && (
+        <section aria-label="Mesociclo PRO" className="flex items-center justify-between gap-3 border-y border-white/[0.08] py-2.5">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">Mesociclo · PRO</p>
+            <p className="text-[13px] font-semibold text-zinc-300 truncate">5 semanas com RIR alvo e deload planeado</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic(8);
+              setUpgradeReason('mesocycles');
+            }}
+            className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-white border border-white/[0.08] rounded-lg px-3 py-1.5 hover:bg-white/[0.06]"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            Desbloquear
+          </button>
+        </section>
+      )}
+      {activeMesoWeek && canUseMesocycle && (
+        <section aria-label="Semana do Mesociclo" className="flex items-center justify-between gap-3 border-y border-white/[0.08] py-2.5">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">Mesociclo</p>
+            <p className="text-[13px] font-semibold text-white tabular-nums truncate">
+              {activeMesoWeek.isDeload
+                ? `Semana ${activeMesoWeek.weekNumber} · Deload Regenerativo -40% séries`
+                : `Semana ${activeMesoWeek.weekNumber} · RIR Alvo ${activeMesoWeek.targetRir}`}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Escolher semana do mesociclo">
+            {mesocycle.weeks.map((w) => {
+              const isActive = w.weekNumber === activeMesoWeek.weekNumber;
+              return (
+                <button
+                  key={w.weekNumber}
+                  type="button"
+                  onClick={() => selectMesoWeek(w.weekNumber)}
+                  aria-pressed={isActive}
+                  aria-label={w.isDeload ? `Semana ${w.weekNumber}, deload` : `Semana ${w.weekNumber}, RIR ${w.targetRir}`}
+                  className={`w-8 h-8 rounded-lg border text-[12px] font-bold tabular-nums cursor-pointer transition-colors ${
+                    isActive
+                      ? 'bg-accent/70 text-white border-accent-hover'
+                      : w.isDeload
+                        ? 'border-white/[0.08] text-zinc-500 hover:text-white'
+                        : 'border-white/[0.08] text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  {w.isDeload ? 'D' : w.weekNumber}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* 2. THE HERO WORKOUT CARD — O Único Protagonista Elevado do Ecrã */}
       <section aria-label="Treino em Destaque">
@@ -398,6 +527,12 @@ export default function WeeklyDashboard({
       {/* 6. MAPA FISIOLÓGICO DE RECUPERAÇÃO MUSCULAR (LAZY) */}
       <Suspense fallback={<div className="rounded-3xl bg-white/[0.02] h-[340px] animate-pulse" />}>
         <MuscleRecoveryMap />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <AnimatePresence>
+          {upgradeReason && <ProUpgradeSheet key="pro-upgrade" reason={upgradeReason} onClose={() => setUpgradeReason(null)} />}
+        </AnimatePresence>
       </Suspense>
 
     </div>

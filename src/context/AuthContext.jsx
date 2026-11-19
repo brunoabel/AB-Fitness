@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { AuthContext } from './authContextDef';
 import { CONSENT_VERSION } from '../legal/config';
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
   const [roleState, setRoleState] = useState({ userId: null, role: null });
   // Incrementar força nova leitura do perfil (ex.: depois de vincular a um PT, que ativa o trial)
   const [profileVersion, setProfileVersion] = useState(0);
-  const refreshProfile = () => setProfileVersion((v) => v + 1);
+  const refreshProfile = useCallback(() => setProfileVersion((v) => v + 1), []);
   const userId = user?.id;
   useEffect(() => {
     let active = true;
@@ -38,6 +38,7 @@ export function AuthProvider({ children }) {
         isPro: Boolean(data?.is_pro || data?.is_premium),
         trialEndsAt: data?.trial_ends_at || null,
         isTrialActive: Boolean(data?.trial_ends_at && new Date(data.trial_ends_at).getTime() > Date.now()),
+        trialDaysLeft: data?.trial_ends_at ? Math.ceil((new Date(data.trial_ends_at).getTime() - Date.now()) / 86400000) : null,
         hasActiveTrainer: Boolean(!trainerRes?.error && Array.isArray(trainerRes?.data) && trainerRes.data.length > 0)
       });
       // Fuso do aparelho no perfil: o servidor agrupa streak e estatísticas por dia local
@@ -218,6 +219,7 @@ export function AuthProvider({ children }) {
   const ownState = roleState.userId === userId ? roleState : {};
   const trialEndsAt = ownState.trialEndsAt || null;
   const isTrialActive = Boolean(ownState.isTrialActive);
+  const trialDaysLeft = ownState.trialDaysLeft ?? null;
   const isPro = isCeo || Boolean(ownState.isPro);
   const hasActiveTrainer = Boolean(ownState.hasActiveTrainer);
 
@@ -232,6 +234,7 @@ export function AuthProvider({ children }) {
     isPro,
     isTrialActive,
     trialEndsAt,
+    trialDaysLeft,
     hasActiveTrainer,
     refreshProfile,
     isConfigured: configured,

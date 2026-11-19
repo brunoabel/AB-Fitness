@@ -25,6 +25,40 @@ export function isAthletePro(profileOrUser, contextUser) {
 }
 
 /**
+ * Lista de funcionalidades que requerem plano PRO ou período de Trial ativo.
+ */
+export const PRO_FEATURES = [
+  'coach_unlimited',
+  'mesocycles',
+  'wearable_autoreg',
+  'advanced_analytics',
+  'ghost_pacer_pro'
+];
+
+/**
+ * Avalia acesso granular a funcionalidades restritas ao plano PRO ou período de Trial ativo.
+ * @param {'coach_unlimited' | 'mesocycles' | 'wearable_autoreg' | 'advanced_analytics' | 'ghost_pacer_pro'} feature
+ * @param {object} [profileOrUser]
+ * @param {object} [contextUser]
+ * @returns {boolean}
+ */
+export function canAccessFeature(feature, profileOrUser, contextUser) {
+  if (isAthletePro(profileOrUser, contextUser)) return true;
+
+  const trialEnds = profileOrUser?.trial_ends_at;
+  if (trialEnds && new Date(trialEnds).getTime() > Date.now()) {
+    return true;
+  }
+
+  // Se a feature não estiver na lista PRO restrita, o plano Free tem acesso
+  if (!PRO_FEATURES.includes(feature)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Determina se um utilizador ou perfil de atleta é Verificado (selo azul).
  */
 export function isAthleteVerified(profileOrUser, contextUser, isAdmin = false) {

@@ -16,6 +16,19 @@ import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
 import { flushWearableSyncQueue } from './services/wearables/wearableManager';
 import { hydrateWorkoutHistory } from './services/historySyncService';
+import { captureAttribution } from './utils/attribution';
+
+// Origem do visitante (utm, ?ref= de indicação) guardada antes de qualquer redirecionamento
+captureAttribution();
+
+// Splash só para quem já tem conta ou modo convidado; visitante novo vai direto à landing
+const hasReturningSession = () => {
+  try {
+    return localStorage.getItem('ab_fitness_guest_mode_v1') === 'true' || Object.keys(localStorage).some((k) => /^sb-.+-auth-token$/.test(k));
+  } catch {
+    return false;
+  }
+};
 import { flushWaitlistSyncQueue } from './services/waitlistService';
 import { savePendingInviteUsername, readPendingInviteUsername } from './services/socialService';
 import { 
@@ -84,11 +97,25 @@ function TabFallback() {
 
 
 function AppContent() {
-  const { user, isGuest, loading, isTrainer, isAdmin, isCeo, hasActiveTrainer, refreshProfile } = useAuth();
+  const { user, isGuest, loading, isTrainer, isAdmin, isCeo, isPro, hasActiveTrainer, refreshProfile } = useAuth();
+  // Regresso do Stripe Checkout (?pro_success / ?pro_cancel definidos em api/stripe-checkout.js)
+  const [checkoutNotice, setCheckoutNotice] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('pro_success') ? 'success' : params.get('pro_cancel') ? 'cancel' : null;
+  });
+  useEffect(() => {
+    if (!checkoutNotice) return undefined;
+    window.history.replaceState({}, document.title, window.location.pathname);
+    if (checkoutNotice !== 'success') return undefined;
+    refreshProfile();
+    // O webhook do Stripe pode chegar depois do redirect: volta a ler o perfil uns segundos depois
+    const t = setTimeout(refreshProfile, 4000);
+    return () => clearTimeout(t);
+  }, [checkoutNotice, refreshProfile]);
   // Abertura cinematográfica só na primeira abertura da sessão
   const [showSplash, setShowSplash] = useState(() => {
     try {
-      return !sessionStorage.getItem(BOOT_SEEN_KEY);
+      return !sessionStorage.getItem(BOOT_SEEN_KEY) && hasReturningSession();
     } catch {
       return true;
     }
@@ -441,7 +468,7 @@ function AppContent() {
               <LinkTrainerSheet initialCode={trainerCodeFromUrl} onClose={clearPendingTrainerCode} onLinked={refreshProfile} />
             </div>
           ) : (
-            <AuthScreen />
+            <AuthScreen hideGuest />
           )}
         </Suspense>
       );
@@ -535,7 +562,24 @@ function AppContent() {
 
               <InstallPrompt />
 
-              {activeTab === 'dashboard' && <AssignedProgramsCard onStartWorkout={handleStartWorkout} />}
+              {checkoutNotice && (
+                <div role="status" className="max-w-5xl mx-auto w-full px-4 mt-3">
+                  <div className="flex items-center justify-between gap-3 bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3.5 py-2.5">
+                    <p className="text-[13px] text-white">
+                      {checkoutNotice === 'cancel'
+                        ? 'Pagamento cancelado. Nada foi cobrado.'
+                        : isPro
+                          ? 'PRO ativo. Obrigado pela confiança.'
+                          : 'Pagamento recebido. O PRO fica ativo assim que o Stripe confirmar.'}
+                    </p>
+                    <button type="button" onClick={() => setCheckoutNotice(null)} className="shrink-0 text-xs font-medium text-zinc-400 hover:text-white">
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'dashboard' && user && !isGuest && <AssignedProgramsCard onStartWorkout={handleStartWorkout} />}
 
               {activeTab === 'dashboard' && <TrainModeSwitch mode={trainMode} onChange={setTrainMode} />}
 

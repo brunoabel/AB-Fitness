@@ -555,8 +555,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
                       className="p-3.5 rounded-xl bg-zinc-900 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-xs">
-                          {(lead.name || lead.email).slice(0, 2).toUpperCase()}
+                        <div className="w-8 h-8 rounded-lg bg-surface-2 border border-white/[0.08] text-white flex items-center justify-center font-bold text-xs tabular-nums">
+                          {lead.queue_position ? `#${lead.queue_position}` : (lead.name || lead.email).slice(0, 2).toUpperCase()}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
@@ -566,6 +566,15 @@ export default function AdminDashboard({ onBackToWorkout }) {
                             </span>
                           </div>
                           <p className="text-[11px] text-zinc-400">{lead.email}</p>
+                          {(lead.utm_source || lead.referred_by || lead.referral_count > 0) && (
+                            <p className="text-[10px] text-zinc-500">
+                              {[
+                                lead.utm_source && `origem: ${lead.utm_source}${lead.utm_campaign ? ` / ${lead.utm_campaign}` : ''}`,
+                                lead.referred_by && `indicado por ${lead.referred_by}`,
+                                lead.referral_count > 0 && `${lead.referral_count} indicações`
+                              ].filter(Boolean).join(' · ')}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="text-[11px] text-zinc-500 tabular-nums">

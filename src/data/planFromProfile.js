@@ -347,4 +347,84 @@ export function buildPlanFromProfile(profile) {
   return { plan: adapted, notes, appliedSplit };
 }
 
+/**
+ * Gera um Mesociclo periodizado (4 a 6 semanas) com sobrecarga progressiva (volume/RIR)
+ * nas semanas de acumulação e semana final de Deload automático (-40% séries, -10% carga).
+ */
+export function generateMesocyclePlan(profile = {}, weeks = 5) {
+  const totalWeeks = Math.max(4, Math.min(6, Number(weeks) || 5));
+  const base = buildPlanFromProfile(profile);
+
+  const mesocycleWeeks = [];
+
+  for (let w = 1; w <= totalWeeks; w++) {
+    const isDeload = w === totalWeeks;
+    const isPeakWeek = w === totalWeeks - 1;
+    const targetRir = isDeload ? 4 : Math.max(0, 3 - (w - 1));
+    const loadMultiplier = isDeload ? 0.9 : Number((1 + (w - 1) * 0.025).toFixed(3));
+
+    const weekSchedule = base.plan.map((day) => {
+      if (day.isRestDay || !Array.isArray(day.exercises) || day.exercises.length === 0) {
+        return { ...day, weekNumber: w, isDeload };
+      }
+
+      const exercises = day.exercises.map((ex, idx, arr) => {
+        const baseSets = Number(ex.defaultSets) || 3;
+        let sets = baseSets;
+
+        if (isDeload) {
+          sets = Math.max(1, Math.round(baseSets * 0.6));
+        } else if (isPeakWeek && idx < 2) {
+          sets = Math.min(5, baseSets + 1);
+        }
+
+        // Agrupa os 2 últimos exercícios acessórios em Bi-Set se sessão curta (45m) ou condicionamento
+        const shouldSuperset =
+          (profile.sessionMinutes === 45 || profile.primaryGoal === 'conditioning') &&
+          arr.length >= 4 &&
+          idx >= arr.length - 2;
+
+        return {
+          ...ex,
+          defaultSets: sets,
+          targetRir,
+          loadMultiplier,
+          isDeload,
+          supersetGroupId: ex.supersetGroupId || (shouldSuperset ? `bi-${day.dayId}` : null)
+        };
+      });
+
+      return {
+        ...day,
+        weekNumber: w,
+        isDeload,
+        targetRir,
+        loadMultiplier,
+        badge: isDeload ? 'Semana de Deload (-40% Vol)' : `Semana ${w}/${totalWeeks} · RIR ${targetRir}`,
+        exercises
+      };
+    });
+
+    mesocycleWeeks.push({
+      weekNumber: w,
+      isDeload,
+      targetRir,
+      loadMultiplier,
+      label: isDeload ? `Semana ${w} · Deload Regenerativo` : `Semana ${w} · Acumulação Progressiva`,
+      plan: weekSchedule
+    });
+  }
+
+  return {
+    totalWeeks,
+    appliedSplit: base.appliedSplit,
+    notes: [
+      ...base.notes,
+      `Mesociclo de ${totalWeeks} semanas estruturado com progressão RIR 3→1 e Deload automático na semana ${totalWeeks}.`
+    ],
+    weeks: mesocycleWeeks,
+    plan: mesocycleWeeks[0].plan
+  };
+}
+
 export { toLegacyProfile } from '../components/onboarding/profileSchema.js';

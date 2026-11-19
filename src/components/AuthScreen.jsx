@@ -15,7 +15,8 @@ import { triggerHaptic } from '../utils/audio';
 import ABLogo from './ABLogo';
 import ConsentCheckboxes from './legal/ConsentCheckboxes';
 
-export default function AuthScreen() {
+// hideGuest: no convite de PT o vínculo exige conta, por isso o modo convidado não aparece
+export default function AuthScreen({ hideGuest = false }) {
   const { signInWithEmail, signUpWithEmail, resendConfirmationEmail, continueAsGuest } = useAuth();
 
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -299,6 +300,7 @@ export default function AuthScreen() {
             </button>
           </form>
 
+          {!hideGuest && (<>
           {/* Divisor Visual */}
           <div className="relative my-6 text-center">
             <div className="absolute inset-0 flex items-center">
@@ -326,6 +328,7 @@ export default function AuthScreen() {
             </div>
             <ChevronRight className="w-4 h-4 text-zinc-400" />
           </button>
+          </>)}
         </div>
 
         {/* Badge Informativo de Segurança */}
