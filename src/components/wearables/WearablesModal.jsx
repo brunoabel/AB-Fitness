@@ -22,14 +22,18 @@ import {
 } from '../../services/wearables/wearableManager';
 import { buildWhoopAuthUrl, getWhoopClientId } from '../../services/wearables/whoopService';
 import { buildFitbitAuthUrl, getFitbitClientId } from '../../services/wearables/fitbitService';
-import { WhoopMark, FitbitMark } from './WearableLogos';
+import { buildStravaAuthUrl, getStravaClientId } from '../../services/wearables/stravaService';
+import { buildGarminAuthUrl, getGarminClientId } from '../../services/wearables/garminService';
+import { WhoopMark, FitbitMark, StravaMark, GarminMark } from './WearableLogos';
 
 const SPRING = { type: 'spring', stiffness: 400, damping: 36 };
 
 function formatProviderName(providerUsed) {
-  if (providerUsed === 'composite') return 'WHOOP + Fitbit';
+  if (providerUsed === 'composite') return 'Fusão Multi-Sensor';
   if (providerUsed === 'whoop') return 'WHOOP';
   if (providerUsed === 'fitbit') return 'Fitbit';
+  if (providerUsed === 'strava') return 'Strava';
+  if (providerUsed === 'garmin') return 'Garmin';
   return providerUsed;
 }
 
@@ -97,9 +101,14 @@ export default function WearablesModal({ isOpen, onClose }) {
   const handleConnectOfficial = (provider) => {
     triggerHaptic(10);
     const redirectUri = `${window.location.origin}/auth/callback/wearable`;
-    const url = provider === 'whoop'
-      ? buildWhoopAuthUrl(redirectUri)
-      : buildFitbitAuthUrl(redirectUri);
+    const builders = {
+      whoop: buildWhoopAuthUrl,
+      fitbit: buildFitbitAuthUrl,
+      strava: buildStravaAuthUrl,
+      garmin: buildGarminAuthUrl
+    };
+    const buildFn = builders[provider];
+    const url = buildFn ? buildFn(redirectUri) : null;
     if (url) window.location.href = url;
   };
 
@@ -121,12 +130,18 @@ export default function WearablesModal({ isOpen, onClose }) {
 
   const whoopConn = connections.whoop;
   const fitbitConn = connections.fitbit;
+  const stravaConn = connections.strava;
+  const garminConn = connections.garmin;
   const whoopBio = biometrics.whoop;
   const fitbitBio = biometrics.fitbit;
+  const stravaBio = biometrics.strava;
+  const garminBio = biometrics.garmin;
 
   const readiness = computeReadinessIndex({
     whoop: whoopConn ? whoopBio : null,
-    fitbit: fitbitConn ? fitbitBio : null
+    fitbit: fitbitConn ? fitbitBio : null,
+    strava: stravaConn ? stravaBio : null,
+    garmin: garminConn ? garminBio : null
   });
 
   return (
@@ -454,6 +469,210 @@ export default function WearablesModal({ isOpen, onClose }) {
                   )}
                 </div>
               </div>
+
+              {/* Card GARMIN CONNECT */}
+              <div className="rounded-2xl bg-white/[0.025] border border-white/[0.08] p-4 transition-all">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <GarminMark size={40} />
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-heading text-[15px] font-semibold text-white tracking-tight">
+                          Garmin Connect
+                        </h3>
+                        {garminConn ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider inline-flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            {garminConn.status === 'simulated' ? 'Simulado' : 'Conectado'}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-zinc-500 font-medium">Desconectado</span>
+                        )}
+                      </div>
+                      <p className="text-[12px] text-zinc-400">
+                        Body Battery, HRV noturno, FC em repouso e sono
+                      </p>
+                    </div>
+                  </div>
+
+                  {garminConn && (
+                    <button
+                      type="button"
+                      onClick={() => handleSync('garmin')}
+                      disabled={syncingProvider === 'garmin'}
+                      className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
+                      title="Sincronizar agora"
+                    >
+                      <RefreshCw
+                        className={`w-4 h-4 ${syncingProvider === 'garmin' ? 'animate-spin text-white' : ''}`}
+                      />
+                    </button>
+                  )}
+                </div>
+
+                {garminConn && garminBio && (
+                  garminBio.is_stale || (garminBio.recovery_score == null && garminBio.sleep_score == null) ? (
+                    <p className="mt-4 pt-3.5 border-t border-white/[0.06] text-[12px] text-zinc-400">
+                      Sem dados recentes da Garmin — toca em sincronizar para tentar novamente.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
+                      <MetricBadge
+                        icon={Activity}
+                        label="Body Battery"
+                        value={garminBio.recovery_score != null ? `${garminBio.recovery_score}%` : '--'}
+                      />
+                      <MetricBadge
+                        icon={HeartPulse}
+                        label="HRV"
+                        value={garminBio.hrv_ms ?? '--'}
+                        sub={garminBio.hrv_ms != null ? 'ms' : undefined}
+                      />
+                      <MetricBadge
+                        icon={Moon}
+                        label="Score Sono"
+                        value={garminBio.sleep_score != null ? `${garminBio.sleep_score}/100` : '--'}
+                      />
+                      <MetricBadge
+                        icon={Flame}
+                        label="Calorias"
+                        value={garminBio.calories_burned ?? '--'}
+                        sub={garminBio.calories_burned != null ? 'kcal' : undefined}
+                      />
+                    </div>
+                  )
+                )}
+
+                <div className="mt-4 space-y-2">
+                  {!garminConn ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleConnectOfficial('garmin')}
+                        disabled={!getGarminClientId()}
+                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        title={getGarminClientId() ? undefined : 'Requer Client ID Garmin'}
+                      >
+                        <Link2 className="w-4 h-4" />
+                        Conectar com Garmin
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      {!getGarminClientId() && (
+                        <p className="text-[11px] text-zinc-500">
+                          Credenciais OAuth deste fornecedor ainda não configuradas neste ambiente.
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleDisconnect('garmin')}
+                      className="w-full min-h-[40px] rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
+                    >
+                      Desconectar Garmin
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Card STRAVA */}
+              <div className="rounded-2xl bg-white/[0.025] border border-white/[0.08] p-4 transition-all">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <StravaMark size={40} />
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-heading text-[15px] font-semibold text-white tracking-tight">
+                          Strava
+                        </h3>
+                        {stravaConn ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider inline-flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            {stravaConn.status === 'simulated' ? 'Simulado' : 'Conectado'}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-zinc-500 font-medium">Desconectado</span>
+                        )}
+                      </div>
+                      <p className="text-[12px] text-zinc-400">
+                        Carga cardiovascular relativa (Suffer Score) e atividades
+                      </p>
+                    </div>
+                  </div>
+
+                  {stravaConn && (
+                    <button
+                      type="button"
+                      onClick={() => handleSync('strava')}
+                      disabled={syncingProvider === 'strava'}
+                      className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer transition-colors"
+                      title="Sincronizar agora"
+                    >
+                      <RefreshCw
+                        className={`w-4 h-4 ${syncingProvider === 'strava' ? 'animate-spin text-white' : ''}`}
+                      />
+                    </button>
+                  )}
+                </div>
+
+                {stravaConn && stravaBio && (
+                  stravaBio.is_stale || stravaBio.recovery_score == null ? (
+                    <p className="mt-4 pt-3.5 border-t border-white/[0.06] text-[12px] text-zinc-400">
+                      Sem dados recentes da Strava — toca em sincronizar para tentar novamente.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 mt-4 pt-3.5 border-t border-white/[0.06]">
+                      <MetricBadge
+                        icon={Activity}
+                        label="Prontidão"
+                        value={`${stravaBio.recovery_score}%`}
+                      />
+                      <MetricBadge
+                        icon={Flame}
+                        label="Carga Relativa"
+                        value={stravaBio.day_strain ?? '--'}
+                      />
+                      <MetricBadge
+                        icon={HeartPulse}
+                        label="Calorias"
+                        value={stravaBio.calories_burned ?? '--'}
+                        sub={stravaBio.calories_burned != null ? 'kcal' : undefined}
+                      />
+                    </div>
+                  )
+                )}
+
+                <div className="mt-4 space-y-2">
+                  {!stravaConn ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleConnectOfficial('strava')}
+                        disabled={!getStravaClientId()}
+                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        title={getStravaClientId() ? undefined : 'Requer Client ID Strava'}
+                      >
+                        <Link2 className="w-4 h-4" />
+                        Conectar com Strava
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      {!getStravaClientId() && (
+                        <p className="text-[11px] text-zinc-500">
+                          Credenciais OAuth deste fornecedor ainda não configuradas neste ambiente.
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleDisconnect('strava')}
+                      className="w-full min-h-[40px] rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-zinc-400 hover:text-red-400 text-[12px] font-medium transition-colors cursor-pointer"
+                    >
+                      Desconectar Strava
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Nota de Privacidade & Atribuição de Marcas */}
@@ -462,7 +681,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                 O AB Fitness lê apenas dados fisiológicos necessários para calibrar a recuperação muscular. Nenhuma informação médica pessoal é partilhada com terceiros.
               </p>
               <p className="text-[10px] text-zinc-600 leading-relaxed">
-                Conexão direta via APIs oficiais OAuth 2.0. WHOOP® e Fitbit® são marcas registadas dos respetivos proprietários.
+                Conexão direta via APIs oficiais OAuth 2.0. WHOOP®, Fitbit®, Garmin® e Strava® são marcas registadas dos respetivos proprietários.
               </p>
             </div>
           </motion.div>

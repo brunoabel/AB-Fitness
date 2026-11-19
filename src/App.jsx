@@ -48,6 +48,8 @@ import Sidebar from './components/Sidebar';
 import { connectWearable } from './services/wearables/wearableManager';
 import { exchangeWhoopCodeForToken } from './services/wearables/whoopService';
 import { exchangeFitbitCodeForToken } from './services/wearables/fitbitService';
+import { exchangeStravaCodeForToken } from './services/wearables/stravaService';
+import { exchangeGarminCodeForToken } from './services/wearables/garminService';
 
 // Ecrãs secundários em chunks separados: a primeira abertura do app fica mais leve.
 // Depois do arranque são pré-carregados em segundo plano, para ficarem em cache (offline).
@@ -221,25 +223,34 @@ function AppContent() {
       const returnedState = params.get('state');
       const expectedWhoopState = sessionStorage.getItem('whoop_oauth_state');
       const expectedFitbitState = sessionStorage.getItem('fitbit_oauth_state');
+      const expectedStravaState = sessionStorage.getItem('strava_oauth_state');
+      const expectedGarminState = sessionStorage.getItem('garmin_oauth_state');
       sessionStorage.removeItem('whoop_oauth_state');
       sessionStorage.removeItem('fitbit_oauth_state');
+      sessionStorage.removeItem('strava_oauth_state');
+      sessionStorage.removeItem('garmin_oauth_state');
       const redirectUri = `${window.location.origin}/auth/callback/wearable`;
 
-      const isWhoopCallback = Boolean(code && expectedWhoopState && returnedState === expectedWhoopState);
-      const isFitbitCallback = Boolean(code && expectedFitbitState && returnedState === expectedFitbitState);
+      const callbackMap = [
+        { provider: 'whoop', state: expectedWhoopState, exchange: exchangeWhoopCodeForToken },
+        { provider: 'fitbit', state: expectedFitbitState, exchange: exchangeFitbitCodeForToken },
+        { provider: 'strava', state: expectedStravaState, exchange: exchangeStravaCodeForToken },
+        { provider: 'garmin', state: expectedGarminState, exchange: exchangeGarminCodeForToken }
+      ];
+      const matched = code ? callbackMap.find((item) => item.state && returnedState === item.state) : null;
 
-      if (!isWhoopCallback && !isFitbitCallback) {
+      if (!matched) {
         if (code) {
           console.warn('Estado OAuth do wearable não corresponde ao esperado; a ignorar o código recebido.');
         }
         window.history.replaceState({}, document.title, '/');
-      } else if (isWhoopCallback) {
-        exchangeWhoopCodeForToken(code, redirectUri)
+      } else {
+        matched.exchange(code, redirectUri)
           .then(async (tokenData) => {
             const expiresAt = tokenData.expires_in
               ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
               : null;
-            await connectWearable(user?.id, 'whoop', 'connected', {
+            await connectWearable(user?.id, matched.provider, 'connected', {
               accessToken: tokenData.access_token,
               refreshToken: tokenData.refresh_token,
               expiresAt
@@ -247,27 +258,7 @@ function AppContent() {
             sound.playLevelUp?.();
           })
           .catch((err) => {
-            console.warn('Erro no exchange de token Whoop:', err);
-          })
-          .finally(() => {
-            window.history.replaceState({}, document.title, '/');
-            window.dispatchEvent(new Event('storage'));
-          });
-      } else if (isFitbitCallback) {
-        exchangeFitbitCodeForToken(code, redirectUri)
-          .then(async (tokenData) => {
-            const expiresAt = tokenData.expires_in
-              ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
-              : null;
-            await connectWearable(user?.id, 'fitbit', 'connected', {
-              accessToken: tokenData.access_token,
-              refreshToken: tokenData.refresh_token,
-              expiresAt
-            });
-            sound.playLevelUp?.();
-          })
-          .catch((err) => {
-            console.warn('Erro no exchange de token Fitbit:', err);
+            console.warn(`Erro no exchange de token ${matched.provider}:`, err);
           })
           .finally(() => {
             window.history.replaceState({}, document.title, '/');

@@ -67,3 +67,47 @@ export function FitbitMark({ size = 40, className = '' }) {
     </span>
   );
 }
+
+export function StravaMark({ size = 40, className = '' }) {
+  const iconSize = Math.round(size * 0.56);
+
+  return (
+    <span
+      className={`inline-flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.14] text-white shrink-0 ${className}`}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <svg
+        width={iconSize}
+        height={iconSize}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M10.6 3L5.2 13.6H8.6L10.6 9.6L12.6 13.6H16L10.6 3ZM14.6 13.6L13.1 16.5L11.6 13.6H9.2L13.1 21L17 13.6H14.6Z" />
+      </svg>
+    </span>
+  );
+}
+
+export function GarminMark({ size = 40, className = '' }) {
+  const iconSize = Math.round(size * 0.54);
+
+  return (
+    <span
+      className={`inline-flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.14] text-white shrink-0 ${className}`}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <svg
+        width={iconSize}
+        height={iconSize}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M12 4L3.5 19H20.5L12 4Z" />
+      </svg>
+    </span>
+  );
+}

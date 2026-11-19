@@ -1,307 +1,404 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Dumbbell, 
-  ArrowUpRight 
+  ArrowUpRight,
+  Activity
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/audio';
 import { getLocalFitnessProfile } from '../services/fitnessProfileService';
 import { isBeginnerProfile } from './onboarding/profileSchema';
+import { e1RM } from '../utils/strengthMetrics';
+import { getWorkoutHistory } from '../utils/storage';
+import { getCatalogEntry } from '../data/exerciseMedia';
+import { regionsForExercise, MUSCLE_REGIONS } from '../data/muscleRegions';
+import { parseSessionTime } from '../utils/muscleFatigue';
 
-// Base de dados de progressão realista para os exercícios clássicos do Arnold Split
-const EXERCISE_PROGRESSION_DATA = {
-  'bench-press': {
-    name: 'Supino Plano com Barra',
-    splitGroup: 'Peito & Costas',
-    unit: 'kg',
-    sessions: [
-      { date: '15/Set', weight: 70, reps: 10, estimated1RM: 93 },
-      { date: '22/Set', weight: 72.5, reps: 10, estimated1RM: 96 },
-      { date: '29/Set', weight: 75, reps: 8, estimated1RM: 95 },
-      { date: '06/Out', weight: 77.5, reps: 8, estimated1RM: 98 },
-      { date: '10/Out', weight: 80, reps: 8, estimated1RM: 101 },
-      { date: '13/Out', weight: 82.5, reps: 8, estimated1RM: 104 }
-    ],
-    initialWeight: 70,
-    currentWeight: 82.5,
-    gainPercent: '+17.8%'
-  },
-  'barbell-row': {
-    name: 'Remada Curvada com Barra',
-    splitGroup: 'Peito & Costas',
-    unit: 'kg',
-    sessions: [
-      { date: '15/Set', weight: 60, reps: 10, estimated1RM: 80 },
-      { date: '22/Set', weight: 62.5, reps: 10, estimated1RM: 83 },
-      { date: '29/Set', weight: 65, reps: 10, estimated1RM: 86 },
-      { date: '06/Out', weight: 67.5, reps: 8, estimated1RM: 85 },
-      { date: '10/Out', weight: 70, reps: 8, estimated1RM: 89 },
-      { date: '13/Out', weight: 72.5, reps: 8, estimated1RM: 92 }
-    ],
-    initialWeight: 60,
-    currentWeight: 72.5,
-    gainPercent: '+20.8%'
-  },
-  'military-press': {
-    name: 'Desenvolvimento Militar',
-    splitGroup: 'Ombros & Braços',
-    unit: 'kg',
-    sessions: [
-      { date: '16/Set', weight: 35, reps: 10, estimated1RM: 46 },
-      { date: '23/Set', weight: 37.5, reps: 10, estimated1RM: 50 },
-      { date: '30/Set', weight: 40, reps: 8, estimated1RM: 50 },
-      { date: '07/Out', weight: 40, reps: 10, estimated1RM: 53 },
-      { date: '11/Out', weight: 42.5, reps: 8, estimated1RM: 54 },
-      { date: '14/Out', weight: 45, reps: 8, estimated1RM: 57 }
-    ],
-    initialWeight: 35,
-    currentWeight: 45,
-    gainPercent: '+28.5%'
-  },
-  'bicep-curl': {
-    name: 'Bíceps com Barra W',
-    splitGroup: 'Ombros & Braços',
-    unit: 'kg',
-    sessions: [
-      { date: '16/Set', weight: 26, reps: 12, estimated1RM: 36 },
-      { date: '23/Set', weight: 28, reps: 10, estimated1RM: 37 },
-      { date: '30/Set', weight: 30, reps: 10, estimated1RM: 40 },
-      { date: '07/Out', weight: 30, reps: 12, estimated1RM: 42 },
-      { date: '11/Out', weight: 32, reps: 10, estimated1RM: 43 },
-      { date: '14/Out', weight: 34, reps: 8, estimated1RM: 43 }
-    ],
-    initialWeight: 26,
-    currentWeight: 34,
-    gainPercent: '+30.7%'
-  },
-  'squat': {
-    name: 'Agachamento com Barra',
-    splitGroup: 'Pernas & Gémeos',
-    unit: 'kg',
-    sessions: [
-      { date: '17/Set', weight: 90, reps: 10, estimated1RM: 120 },
-      { date: '24/Set', weight: 95, reps: 10, estimated1RM: 126 },
-      { date: '01/Out', weight: 100, reps: 8, estimated1RM: 126 },
-      { date: '08/Out', weight: 105, reps: 8, estimated1RM: 133 },
-      { date: '12/Out', weight: 110, reps: 8, estimated1RM: 139 },
-      { date: '14/Out', weight: 115, reps: 6, estimated1RM: 138 }
-    ],
-    initialWeight: 90,
-    currentWeight: 115,
-    gainPercent: '+27.7%'
-  },
-  'leg-press': {
-    name: 'Leg Press 45°',
-    splitGroup: 'Pernas & Gémeos',
-    unit: 'kg',
-    sessions: [
-      { date: '17/Set', weight: 200, reps: 12, estimated1RM: 280 },
-      { date: '24/Set', weight: 220, reps: 10, estimated1RM: 293 },
-      { date: '01/Out', weight: 240, reps: 10, estimated1RM: 320 },
-      { date: '08/Out', weight: 250, reps: 10, estimated1RM: 333 },
-      { date: '12/Out', weight: 260, reps: 8, estimated1RM: 330 },
-      { date: '14/Out', weight: 280, reps: 8, estimated1RM: 355 }
-    ],
-    initialWeight: 200,
-    currentWeight: 280,
-    gainPercent: '+40.0%'
+/**
+ * Constrói histórico real de progressão por exercício a partir das sessões gravadas.
+ * Formato: { [exerciseId]: { name, splitGroup, unit: 'kg', sessions: [{ date, weight, reps, estimated1RM }], initialWeight, currentWeight, gainPercent } }
+ */
+export function buildRealProgression(history = []) {
+  if (!Array.isArray(history) || history.length === 0) return {};
+
+  const sortedHistory = [...history].sort((a, b) => parseSessionTime(a) - parseSessionTime(b));
+
+  const map = {};
+
+  for (const session of sortedHistory) {
+    const exercisesData = session.exercisesData || {};
+    const ts = parseSessionTime(session);
+    const dateStr = session.date || (ts > 0 ? new Date(ts).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }) : 'Treino');
+
+    for (const [rawExId, sets] of Object.entries(exercisesData)) {
+      if (!Array.isArray(sets) || sets.length === 0) continue;
+
+      const workingSets = sets.filter(s => (s.done || s.completed) && s.type !== 'W' && Number(s.weight) > 0);
+      if (workingSets.length === 0) continue;
+
+      let bestSet = workingSets[0];
+      for (const s of workingSets) {
+        const sw = Number(s.weight) || 0;
+        const sr = Number(s.reps) || 0;
+        const bw = Number(bestSet.weight) || 0;
+        const br = Number(bestSet.reps) || 0;
+        if (sw > bw || (sw === bw && sr > br)) {
+          bestSet = s;
+        }
+      }
+
+      const weight = Number(bestSet.weight) || 0;
+      const reps = Number(bestSet.reps) || 0;
+      if (weight <= 0) continue;
+
+      const calc1RM = e1RM(weight, reps) || (reps > 0 ? Math.round(weight * (1 + reps / 30) * 10) / 10 : weight);
+      const catalogEntry = getCatalogEntry(rawExId);
+      const exKey = catalogEntry?.id || rawExId;
+      const exName = catalogEntry?.name || rawExId.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      const splitGroup = catalogEntry?.primary_muscle || session.targetGroup || 'Geral';
+
+      if (!map[exKey]) {
+        map[exKey] = {
+          name: exName,
+          splitGroup,
+          unit: 'kg',
+          sessions: []
+        };
+      }
+
+      map[exKey].sessions.push({
+        date: dateStr,
+        weight,
+        reps,
+        estimated1RM: calc1RM
+      });
+    }
   }
-};
 
-// Dados de volume semanal por bloco do Arnold Split
+  for (const exKey of Object.keys(map)) {
+    const ex = map[exKey];
+    if (ex.sessions.length > 0) {
+      ex.initialWeight = ex.sessions[0].weight;
+      ex.currentWeight = ex.sessions[ex.sessions.length - 1].weight;
+      const diff = ex.currentWeight - ex.initialWeight;
+      const pct = ex.initialWeight > 0 ? ((diff / ex.initialWeight) * 100).toFixed(1) : '0.0';
+      ex.gainPercent = diff >= 0 ? `+${pct}%` : `${pct}%`;
+    }
+  }
+
+  return map;
+}
+
+/**
+ * Agrega o volume de séries efetivas dos últimos 7 dias por região muscular.
+ */
+export function computeWeeklyVolumeByMuscle(history = []) {
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const recent = (history || []).filter(s => parseSessionTime(s) >= oneWeekAgo);
+
+  const volumeMap = {};
+  for (const reg of MUSCLE_REGIONS) {
+    volumeMap[reg.id] = 0;
+  }
+
+  for (const s of recent) {
+    const exercisesData = s.exercisesData || {};
+    for (const [exId, sets] of Object.entries(exercisesData)) {
+      if (!Array.isArray(sets)) continue;
+      const hardSetsCount = sets.filter(st => (st.completed || st.done) && st.type !== 'W' && Number(st.reps) > 0).length;
+      if (hardSetsCount === 0) continue;
+
+      const entry = getCatalogEntry(exId);
+      const regions = regionsForExercise(entry);
+      for (const { region, weight } of regions) {
+        volumeMap[region] = (volumeMap[region] || 0) + hardSetsCount * weight;
+      }
+    }
+  }
+
+  return volumeMap;
+}
+
 export default function ProgressionCharts() {
   const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
-  const [selectedExKey, setSelectedExKey] = useState('bench-press');
+  const history = useMemo(() => getWorkoutHistory(), []);
+  const progressionData = useMemo(() => buildRealProgression(history), [history]);
+  const weeklyVolume = useMemo(() => computeWeeklyVolumeByMuscle(history), [history]);
+
+  const exerciseKeys = useMemo(() => Object.keys(progressionData), [progressionData]);
+  const defaultExKey = useMemo(
+    () => exerciseKeys.find((k) => progressionData[k].sessions.length >= 2) || exerciseKeys[0] || '',
+    [exerciseKeys, progressionData]
+  );
+  const [selectedExKey, setSelectedExKey] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
 
-  const currentEx = EXERCISE_PROGRESSION_DATA[selectedExKey] || EXERCISE_PROGRESSION_DATA['bench-press'];
-  const sessions = currentEx.sessions;
+  const activeExKey = (selectedExKey && progressionData[selectedExKey]) 
+    ? selectedExKey 
+    : defaultExKey;
 
-  // Cálculos do gráfico SVG de sobrecarga
-  const weights = sessions.map(s => s.weight);
-  const minW = Math.min(...weights) - 5;
-  const maxW = Math.max(...weights) + 5;
-  const range = maxW - minW || 1;
+  const currentEx = activeExKey ? progressionData[activeExKey] : null;
+  const sessions = currentEx?.sessions || [];
+  const hasEnoughData = sessions.length >= 2;
 
-  // Coordenadas SVG (viewBox 0 0 340 160)
+  // Parâmetros do gráfico SVG
   const chartWidth = 340;
   const chartHeight = 150;
   const paddingX = 25;
   const paddingTop = 20;
   const paddingBottom = 30;
 
-  const points = sessions.map((s, idx) => {
-    const x = paddingX + (idx / (sessions.length - 1)) * (chartWidth - paddingX * 2);
-    const y = paddingTop + (1 - (s.weight - minW) / range) * (chartHeight - paddingTop - paddingBottom);
-    return { ...s, x, y };
-  });
+  let points = [];
+  let linePath = '';
+  let areaPath = '';
 
-  // Caminho da linha SVG suave (Curva Bézier cúbica)
-  const linePath = points.reduce((acc, pt, i, arr) => {
-    if (i === 0) return `M ${pt.x} ${pt.y}`;
-    const prev = arr[i - 1];
-    const cp1x = prev.x + (pt.x - prev.x) / 2;
-    const cp1y = prev.y;
-    const cp2x = prev.x + (pt.x - prev.x) / 2;
-    const cp2y = pt.y;
-    return `${acc} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${pt.x} ${pt.y}`;
-  }, '');
+  if (hasEnoughData) {
+    const weights = sessions.map(s => s.weight);
+    const minW = Math.max(0, Math.min(...weights) - 5);
+    const maxW = Math.max(...weights) + 5;
+    const range = maxW - minW || 1;
 
-  // Caminho da área com gradiente preenchido
-  const areaPath = `${linePath} L ${points[points.length - 1].x} ${chartHeight - paddingBottom} L ${points[0].x} ${chartHeight - paddingBottom} Z`;
+    points = sessions.map((s, idx) => {
+      const x = paddingX + (idx / (sessions.length - 1)) * (chartWidth - paddingX * 2);
+      const y = paddingTop + (1 - (s.weight - minW) / range) * (chartHeight - paddingTop - paddingBottom);
+      return { ...s, x, y };
+    });
+
+    linePath = points.reduce((acc, pt, i, arr) => {
+      if (i === 0) return `M ${pt.x} ${pt.y}`;
+      const prev = arr[i - 1];
+      const cp1x = prev.x + (pt.x - prev.x) / 2;
+      const cp1y = prev.y;
+      const cp2x = prev.x + (pt.x - prev.x) / 2;
+      const cp2y = pt.y;
+      return `${acc} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${pt.x} ${pt.y}`;
+    }, '');
+
+    areaPath = `${linePath} L ${points[points.length - 1].x} ${chartHeight - paddingBottom} L ${points[0].x} ${chartHeight - paddingBottom} Z`;
+  }
+
+  const activeVolumeRegions = useMemo(() => {
+    return MUSCLE_REGIONS
+      .map(r => ({ ...r, sets: Math.round((weeklyVolume[r.id] || 0) * 10) / 10 }))
+      .filter(r => r.sets > 0)
+      .sort((a, b) => b.sets - a.sets);
+  }, [weeklyVolume]);
 
   return (
     <div className="space-y-4 animate-fadeIn">
       {/* 1. VISUALIZAÇÃO DE SOBRECARGA PROGRESSIVA POR EXERCÍCIO */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/10 shadow-sm space-y-4 transition-colors">
+      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/[0.08] shadow-sm space-y-4 transition-colors">
         
-        {/* Seletor de Exercício */}
+        {/* Cabeçalho e Seletor */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs font-medium">
               <Dumbbell className="w-3.5 h-3.5 text-zinc-300" />
-              <span>{currentEx.splitGroup}</span>
+              <span>{currentEx?.splitGroup || 'Sobrecarga Real'}</span>
             </div>
             <h3 className="text-base font-bold text-white mt-0.5">
-              {currentEx.name}
+              {currentEx?.name || 'Progressão de Cargas'}
             </h3>
           </div>
 
-          {/* Select de exercício */}
-          <select
-            value={selectedExKey}
-            onChange={(e) => {
-              setSelectedExKey(e.target.value);
-              triggerHaptic(10);
-            }}
-            className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-white/[0.04] text-zinc-100 text-xs font-semibold border border-white/[0.08] outline-none cursor-pointer"
-          >
-            <option value="bench-press">Supino Plano (Peito)</option>
-            <option value="barbell-row">Remada Curvada (Costas)</option>
-            <option value="military-press">Desenvolvimento Militar (Ombros)</option>
-            <option value="bicep-curl">Bíceps Barra W (Braços)</option>
-            <option value="squat">Agachamento com Barra (Pernas)</option>
-            <option value="leg-press">Leg Press 45° (Pernas)</option>
-          </select>
-        </div>
-
-        {/* Ledger Editorial de Métricas do Exercício (sem caixas aninhadas) */}
-        <div className="grid grid-cols-3 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3">
-          <div className="pr-3">
-            <span className="text-[11px] text-zinc-400 block">Carga Inicial</span>
-            <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">{currentEx.initialWeight} kg</span>
-          </div>
-
-          <div className="px-3">
-            <span className="text-[11px] text-zinc-400 block">Carga Atual</span>
-            <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">{currentEx.currentWeight} kg</span>
-          </div>
-
-          <div className="pl-3">
-            <span className="text-[11px] text-emerald-400 block">Ganho Total</span>
-            <span className="text-sm font-bold font-display tabular-nums text-emerald-400 flex items-center gap-0.5 mt-0.5">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              {currentEx.gainPercent}
-            </span>
-          </div>
-        </div>
-
-        {/* Gráfico SVG de Linha e Área Suave */}
-        <div className="relative pt-2">
-          <svg 
-            className="w-full h-44 overflow-visible" 
-            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-          >
-            <defs>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-
-            {/* Linhas horizontais de grade técnica */}
-            <line x1={paddingX} y1={paddingTop} x2={chartWidth - paddingX} y2={paddingTop} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
-            <line x1={paddingX} y1={chartHeight / 2} x2={chartWidth - paddingX} y2={chartHeight / 2} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
-            <line x1={paddingX} y1={chartHeight - paddingBottom} x2={chartWidth - paddingX} y2={chartHeight - paddingBottom} stroke="currentColor" className="text-zinc-800" strokeWidth="1" />
-
-            {/* Área com Gradiente neutro */}
-            <path d={areaPath} fill="url(#areaGrad)" />
-
-            {/* Linha Principal de Carga */}
-            <path 
-              d={linePath} 
-              fill="none" 
-              stroke="currentColor" 
-              className="text-white"
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-            />
-
-            {/* Pontos nas sessões */}
-            {points.map((pt, i) => {
-              const isHovered = hoveredPoint === i;
-              return (
-                <g key={i}>
-                  <circle
-                    cx={pt.x}
-                    cy={pt.y}
-                    r={isHovered ? 5.5 : 3.5}
-                    className="fill-zinc-950 stroke-white cursor-pointer transition-all duration-150"
-                    strokeWidth={isHovered ? 2.5 : 2}
-                    onMouseEnter={() => setHoveredPoint(i)}
-                    onTouchStart={() => setHoveredPoint(i)}
-                  />
-                  {/* Rótulo da Data embaixo */}
-                  <text
-                    x={pt.x}
-                    y={chartHeight - 12}
-                    textAnchor="middle"
-                    className="text-[11px] tabular-nums fill-zinc-400 font-medium"
-                  >
-                    {pt.date}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Tooltip Dinâmico ao passar o dedo/mouse */}
-          {hoveredPoint !== null && points[hoveredPoint] && (
-            <div 
-              className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-100 text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-300 animate-fadeIn"
+          {exerciseKeys.length > 0 && (
+            <select
+              value={activeExKey}
+              onChange={(e) => {
+                setSelectedExKey(e.target.value);
+                setHoveredPoint(null);
+                triggerHaptic(10);
+              }}
+              className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-white/[0.04] text-zinc-100 text-xs font-semibold border border-white/[0.08] outline-none cursor-pointer max-w-xs truncate"
             >
-              <span className="tabular-nums">{points[hoveredPoint].date}:</span>
-              <span className="font-bold font-display tabular-nums">
-                {points[hoveredPoint].weight} kg
-              </span>
-              <span className="text-[11px] opacity-80 tabular-nums">
-                ({points[hoveredPoint].reps} reps{!isSimpleMode ? ` · 1RM ~${points[hoveredPoint].estimated1RM} kg` : ''})
-              </span>
-            </div>
+              {exerciseKeys.map((key) => (
+                <option key={key} value={key} className="bg-zinc-950 text-white">
+                  {progressionData[key]?.name}
+                </option>
+              ))}
+            </select>
           )}
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/10">
-          <span className="flex items-center gap-1 font-medium">
-            {isSimpleMode ? (
-              <>
-                Maior Carga Registada:{' '}
-                <strong className="font-display tabular-nums text-white font-bold">
-                  {Math.max(...sessions.map((s) => s.weight))} kg
-                </strong>
-              </>
-            ) : (
-              <>
-                1RM Máximo Estimado:{' '}
-                <strong className="font-display tabular-nums text-white font-bold">
-                  {Math.max(...sessions.map((s) => s.estimated1RM))} kg
-                </strong>
-              </>
-            )}
-          </span>
-          <span className="text-[11px]">Toque nos pontos para detalhes</span>
+        {/* Estado com Dados Suficientes (>= 2 sessões) */}
+        {hasEnoughData ? (
+          <>
+            {/* Ledger Editorial de Métricas */}
+            <div className="grid grid-cols-3 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3">
+              <div className="pr-3">
+                <span className="text-[11px] text-zinc-400 block">Carga Inicial</span>
+                <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">
+                  {currentEx.initialWeight} kg
+                </span>
+              </div>
+
+              <div className="px-3">
+                <span className="text-[11px] text-zinc-400 block">Carga Atual</span>
+                <span className="text-sm font-bold font-display tabular-nums text-white mt-0.5 block">
+                  {currentEx.currentWeight} kg
+                </span>
+              </div>
+
+              <div className="pl-3">
+                <span className="text-[11px] text-emerald-400 block">Ganho Total</span>
+                <span className="text-sm font-bold font-display tabular-nums text-emerald-400 flex items-center gap-0.5 mt-0.5">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  {currentEx.gainPercent}
+                </span>
+              </div>
+            </div>
+
+            {/* Gráfico SVG */}
+            <div className="relative pt-2">
+              <svg 
+                className="w-full h-44 overflow-visible" 
+                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+              >
+                <defs>
+                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+
+                <line x1={paddingX} y1={paddingTop} x2={chartWidth - paddingX} y2={paddingTop} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
+                <line x1={paddingX} y1={chartHeight / 2} x2={chartWidth - paddingX} y2={chartHeight / 2} stroke="currentColor" className="text-zinc-800" strokeDasharray="4 4" strokeWidth="1" />
+                <line x1={paddingX} y1={chartHeight - paddingBottom} x2={chartWidth - paddingX} y2={chartHeight - paddingBottom} stroke="currentColor" className="text-zinc-800" strokeWidth="1" />
+
+                <path d={areaPath} fill="url(#areaGrad)" />
+
+                <path 
+                  d={linePath} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  className="text-white"
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+
+                {points.map((pt, i) => {
+                  const isHovered = hoveredPoint === i;
+                  return (
+                    <g key={i}>
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r={isHovered ? 5.5 : 3.5}
+                        className="fill-zinc-950 stroke-white cursor-pointer transition-all duration-150"
+                        strokeWidth={isHovered ? 2.5 : 2}
+                        onMouseEnter={() => setHoveredPoint(i)}
+                        onTouchStart={() => setHoveredPoint(i)}
+                      />
+                      <text
+                        x={pt.x}
+                        y={chartHeight - 12}
+                        textAnchor="middle"
+                        className="text-[11px] tabular-nums fill-zinc-400 font-medium"
+                      >
+                        {pt.date}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {hoveredPoint !== null && points[hoveredPoint] && (
+                <div 
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-100 text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-300 animate-fadeIn"
+                >
+                  <span className="tabular-nums">{points[hoveredPoint].date}:</span>
+                  <span className="font-bold font-display tabular-nums">
+                    {points[hoveredPoint].weight} kg
+                  </span>
+                  <span className="text-[11px] opacity-80 tabular-nums">
+                    ({points[hoveredPoint].reps} reps{!isSimpleMode ? ` · 1RM ~${points[hoveredPoint].estimated1RM} kg` : ''})
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/[0.08]">
+              <span className="flex items-center gap-1 font-medium">
+                {isSimpleMode ? (
+                  <>
+                    Maior Carga Registada:{' '}
+                    <strong className="font-display tabular-nums text-white font-bold">
+                      {Math.max(...sessions.map((s) => s.weight))} kg
+                    </strong>
+                  </>
+                ) : (
+                  <>
+                    1RM Máximo Estimado:{' '}
+                    <strong className="font-display tabular-nums text-white font-bold">
+                      {Math.max(...sessions.map((s) => s.estimated1RM))} kg
+                    </strong>
+                  </>
+                )}
+              </span>
+              <span className="text-[11px]">Toque nos pontos para detalhes</span>
+            </div>
+          </>
+        ) : (
+          /* Estado Vazio Elegante (<2 sessões) */
+          <div className="py-10 text-center space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto text-zinc-400">
+              <Dumbbell className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-sm font-semibold text-white">
+                {exerciseKeys.length === 0 ? 'Sem treinos registados' : 'Sessões insuficientes'}
+              </h4>
+              <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
+                {exerciseKeys.length === 0
+                  ? 'Completa os teus treinos no AB Fitness para gerar a progressão de cargas real.'
+                  : sessions.length === 1
+                    ? 'Tens 1 sessão registada deste exercício. Regista mais uma para traçar a curva de sobrecarga.'
+                    : 'Conclui pelo menos 2 sessões para gerar a curva de progressão e 1RM.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* 2. VOLUME SEMANAL REAL POR GRUPO MUSCULAR */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/[0.08] shadow-sm space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-zinc-400" />
+            <h4 className="text-sm font-semibold text-white">Volume Semanal Real</h4>
+          </div>
+          <span className="text-[11px] text-zinc-400">Últimos 7 dias</span>
         </div>
 
+        {activeVolumeRegions.length > 0 ? (
+          <div className="space-y-2.5 pt-1">
+            {activeVolumeRegions.map(reg => {
+              const maxDisplay = 20; // Alvo ótimo de 10-20 séries/semana
+              const pct = Math.min(100, Math.round((reg.sets / maxDisplay) * 100));
+              return (
+                <div key={reg.id} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-300 font-medium">{reg.label}</span>
+                    <span className="tabular-nums font-semibold text-white">
+                      {reg.sets} <span className="text-[10px] text-zinc-500 font-normal">séries</span>
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-white rounded-full transition-all duration-300"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="py-4 text-center text-xs text-zinc-500">
+            Nenhuma série efetiva registada nos últimos 7 dias.
+          </div>
+        )}
       </div>
     </div>
   );

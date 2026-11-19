@@ -33,3 +33,7 @@ supabase/.temp/
 # Cópia local da mídia de exercícios (scripts/mirror_exercise_media.mjs)
 media/
 .env*
+
+# Marketing (/marketing-man): renders, previews e histórico locais
+tmp/marketing/
+tools/marketing/.cache/

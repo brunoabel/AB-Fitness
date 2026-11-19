@@ -4,6 +4,7 @@
  * 20261114_trainer_hub_rpcs.sql), que já validam o vínculo ativo no servidor via RLS.
  */
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { escapeHtml } from '../utils/ogAthleteHtml.js';
 
 const GUEST_ID = 'guest-local-user';
 export const canUseTrainerHub = (userId, env = { configured: isSupabaseConfigured(), client: supabase }) =>
@@ -11,12 +12,19 @@ export const canUseTrainerHub = (userId, env = { configured: isSupabaseConfigure
 
 const fail = (error) => ({ data: null, error: error?.message || String(error) });
 
-/** Atleta troca o código de 6 dígitos do PT pelo vínculo (RPC redeem_trainer_invite_code). */
-export async function redeemInviteCode(code) {
+/**
+ * Atleta troca o código de 6 dígitos do PT pelo vínculo (RPC redeem_trainer_invite_code).
+ * A RPC devolve só { trainer_id, trainer_name } e ativa 14 dias de PRO em profiles.trial_ends_at;
+ * com userId, lê essa data da própria linha de profiles (melhor esforço).
+ */
+export async function redeemInviteCode(code, userId) {
   if (!canUseTrainerHub()) return fail('Sem sessão');
   const { data, error } = await supabase.rpc('redeem_trainer_invite_code', { p_code: (code || '').trim() });
   if (error) return fail(error.message?.includes('inválido') ? 'Código de convite inválido.' : error);
-  return { data: data?.[0] || null, error: null };
+  const row = data?.[0] || null;
+  if (!row || !canUseTrainerHub(userId)) return { data: row, error: null };
+  const { data: profile } = await supabase.from('profiles').select('trial_ends_at').eq('id', userId).maybeSingle();
+  return { data: { ...row, trial_ends_at: profile?.trial_ends_at || null }, error: null };
 }
 
 /** Trainer ativo do atleta logado (ou null se não tiver nenhum). */
@@ -125,10 +133,11 @@ export async function deleteTemplate(templateId) {
 /** Dados de contexto do atleta (lesões + ficha + nota privada) visíveis ao trainer via RLS (is_active_trainer_of). */
 export async function getAthleteContext(athleteId) {
   if (!canUseTrainerHub()) return { data: null, error: null };
-  const [{ data: profile }, { data: fitness }, rosterRes] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, avatar_url, created_at, is_verified, is_pro, role').eq('id', athleteId).maybeSingle(),
+  const [{ data: profile }, { data: fitness }, rosterRes, recoveryRes] = await Promise.all([
+    supabase.from('profiles').select('id, full_name, avatar_url, created_at, is_verified, is_pro, trial_ends_at, role').eq('id', athleteId).maybeSingle(),
     supabase.from('user_fitness_profiles').select('injuries, priority_muscles, experience_level, primary_goal').eq('user_id', athleteId).maybeSingle(),
     supabase.from('trainer_rosters').select('private_notes, tags').eq('athlete_id', athleteId).eq('status', 'active').maybeSingle(),
+    Promise.resolve(supabase.rpc('get_athlete_recovery_for_trainer', { p_athlete_id: athleteId })).catch(() => ({ data: null }))
   ]);
   return {
     data: {
@@ -136,9 +145,95 @@ export async function getAthleteContext(athleteId) {
       fitness: fitness || null,
       privateNote: rosterRes?.data?.private_notes ?? null,
       tags: rosterRes?.data?.tags ?? null,
+      recovery: recoveryRes?.data || null
     },
     error: null,
   };
+}
+
+/**
+ * Gera e dispara impressão PDF do Dossier Mensal do Atleta (B2B2C Trainer Hub).
+ */
+export function exportAthleteMonthlyPdf(athleteContext, programs = [], feedback = []) {
+  if (typeof window === 'undefined') return false;
+  const safeName = escapeHtml(athleteContext?.profile?.full_name || 'Atleta AB Fitness');
+  const dateStr = escapeHtml(new Date().toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }));
+  const bio = athleteContext?.recovery?.biometrics;
+  const fatigueList = Array.isArray(athleteContext?.recovery?.fatigue) ? athleteContext.recovery.fatigue : [];
+
+  const programsHtml = (programs || [])
+    .slice(0, 6)
+    .map((p) => {
+      const title = escapeHtml(p.title || 'Programa');
+      const statusLabel = p.status === 'active' ? 'Ativo' : 'Histórico';
+      const rpe = escapeHtml(p.target_rpe ?? 8);
+      return `<li><strong>${title}</strong> (${statusLabel}) · RPE Alvo ${rpe}</li>`;
+    })
+    .join('');
+
+  const feedbackHtml = (feedback || [])
+    .slice(0, 10)
+    .map((f) => {
+      const rawDate = f.completed_at || f.created_at;
+      const dateLabel = rawDate && !Number.isNaN(new Date(rawDate).getTime())
+        ? escapeHtml(new Date(rawDate).toLocaleDateString('pt-PT'))
+        : '-';
+      const sessionTitle = escapeHtml(f.workout_title || 'Sessão');
+      const rpeVal = escapeHtml(f.actual_rpe ?? f.session_rpe ?? '-');
+      const painVal = f.pain_flag
+        ? 'Dor reportada'
+        : (f.joint_comfort != null ? escapeHtml(`${f.joint_comfort}/5`) : 'Sem dor');
+      const notesVal = escapeHtml(f.athlete_feedback || f.notes || '-');
+      return `<tr><td>${dateLabel}</td><td>${sessionTitle}</td><td>${rpeVal}</td><td>${painVal}</td><td>${notesVal}</td></tr>`;
+    })
+    .join('');
+
+  const fatigueHtml = fatigueList
+    .map((m) => `<span style="display:inline-block;margin:2px 6px 2px 0;padding:2px 6px;border:1px solid #ccc;border-radius:4px;font-size:11px;">${escapeHtml(m.muscle_id)}: ${escapeHtml(m.recovery)}% rec.</span>`)
+    .join('');
+
+  const bioSummary = bio
+    ? `Fornecedor: <strong>${escapeHtml((bio.provider || 'wearable').toUpperCase())}</strong> · Recuperação: <strong>${escapeHtml(bio.recovery_score ?? bio.sleep_score ?? '--')}%</strong> · HRV: <strong>${escapeHtml(bio.hrv_ms ?? '--')} ms</strong> · FC Repouso: <strong>${escapeHtml(bio.resting_hr_bpm ?? '--')} bpm</strong>`
+    : 'Sem leitura wearable sincronizada recentemente.';
+
+  const html = `<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <title>Dossier Mensal - ${safeName}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #070709; padding: 32px; max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 24px; }
+    .meta { color: #555; font-size: 12px; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    th, td { border-bottom: 1px solid #eee; text-align: left; padding: 6px 8px; }
+    @media print { body { padding: 12px; } }
+  </style>
+</head>
+<body>
+  <h1>AB FITNESS · Relatório Mensal do Atleta</h1>
+  <div class="meta">Atleta: <strong>${safeName}</strong> · Período: ${dateStr}</div>
+  <h2>1. Biometria & Prontidão Wearable</h2>
+  <p style="font-size:13px;">${bioSummary}</p>
+  <div>${fatigueHtml}</div>
+  <h2>2. Programas Prescritos</h2>
+  <ul style="font-size:13px;">${programsHtml || '<li>Nenhum programa atribuído.</li>'}</ul>
+  <h2>3. Registo de Check-ins Pós-Sessão</h2>
+  <table>
+    <thead><tr><th>Data</th><th>Sessão</th><th>RPE</th><th>Conforto / Dor</th><th>Notas</th></tr></thead>
+    <tbody>${feedbackHtml || '<tr><td colspan="5">Sem check-ins registados.</td></tr>'}</tbody>
+  </table>
+  <script>window.onload = () => { window.print(); };</script>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank', 'width=840,height=900');
+  if (!w) return false;
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  return true;
 }
 
 /** Programas que o trainer já atribuiu a um atleta (histórico + ativo). */
@@ -213,6 +308,7 @@ export function assignedProgramToWorkout(program, trainerName, options = {}) {
       restTime: Number(ex.restSeconds || program.rest_timer_seconds) || 60,
       badge: rpeVal ? (isBeginner ? `Esforço ${rpeVal}/10` : `RPE ${rpeVal}`) : undefined,
       notes: ex.coachNote || '',
+      supersetGroupId: ex.supersetGroupId || null,
     };
   });
   return {

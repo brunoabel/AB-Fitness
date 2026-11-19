@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { computeReadinessIndex, syncWearableData } from './wearableManager.js';
 import { generateSimulatedWhoopData } from './whoopService.js';
 import { generateSimulatedFitbitData } from './fitbitService.js';
+import { generateSimulatedStravaData } from './stravaService.js';
+import { generateSimulatedGarminData } from './garminService.js';
+import { canAccessFeature } from '../../utils/userVerification.js';
+import { computeLocalFatigue, parseSessionTime } from '../../utils/muscleFatigue.js';
 
 describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica', () => {
   it('retorna null quando nenhum wearable está conectado', () => {
@@ -134,6 +138,58 @@ describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica
     assert.equal(bio.is_simulated, false);
     assert.equal(bio.recovery_score, 77);
     assert.equal(bio.hrv_ms, 68.5);
+  });
+
+  it('suporta normalização de prontidão com Strava e Garmin isolados ou compostos', () => {
+    const strava = generateSimulatedStravaData('2026-11-22');
+    const garmin = generateSimulatedGarminData('2026-11-22');
+
+    const resStrava = computeReadinessIndex({ strava });
+    assert.equal(resStrava.providerUsed, 'strava');
+    assert.equal(resStrava.score, strava.recovery_score);
+    assert.equal(resStrava.strain, strava.day_strain);
+
+    const resGarmin = computeReadinessIndex({ garmin });
+    assert.equal(resGarmin.providerUsed, 'garmin');
+    assert.equal(resGarmin.score, garmin.recovery_score);
+    assert.equal(resGarmin.hrv, garmin.hrv_ms);
+
+    const resCombo = computeReadinessIndex({ strava, garmin });
+    assert.equal(resCombo.providerUsed, 'composite');
+    assert.ok(resCombo.score >= 40 && resCombo.score <= 100);
+  });
+
+  it('canAccessFeature distingue Free, PRO, Trial ativo e Trial expirado', () => {
+    const freeProfile = { is_pro: false, is_premium: false };
+    assert.equal(canAccessFeature('coach_unlimited', freeProfile), false);
+    assert.equal(canAccessFeature('mesocycles', freeProfile), false);
+    assert.equal(canAccessFeature('basic_workout', freeProfile), true);
+
+    const proProfile = { is_pro: true };
+    assert.equal(canAccessFeature('coach_unlimited', proProfile), true);
+    assert.equal(canAccessFeature('mesocycles', proProfile), true);
+
+    const activeTrial = { is_pro: false, trial_ends_at: new Date(Date.now() + 86400000).toISOString() };
+    assert.equal(canAccessFeature('coach_unlimited', activeTrial), true);
+
+    const expiredTrial = { is_pro: false, trial_ends_at: new Date(Date.now() - 86400000).toISOString() };
+    assert.equal(canAccessFeature('coach_unlimited', expiredTrial), false);
+  });
+
+  it('computeLocalFatigue e parseSessionTime injetam corridas GPS nos membros inferiores e ignoram string de data PT', () => {
+    const now = Date.now();
+    const recentTs = now - 2 * 3600000;
+    assert.equal(parseSessionTime({ timestamp: recentTs, date: '18 de nov.' }), recentTs);
+    assert.equal(parseSessionTime({ date: '18 de nov.' }), 0);
+
+    const fatigue = computeLocalFatigue([], now, [
+      { timestamp: recentTs, date: '18 de nov.', distanceKm: 10, elevationGainM: 150 }
+    ]);
+
+    assert.ok(fatigue.muscles.quadriceps.fatigue > 25);
+    assert.ok(fatigue.muscles.posteriores.fatigue > 20);
+    assert.ok(fatigue.muscles.gemeos.fatigue > 30);
+    assert.equal(fatigue.muscles.peito.fatigue, 0);
   });
 });
 

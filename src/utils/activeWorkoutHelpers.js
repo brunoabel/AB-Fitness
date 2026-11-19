@@ -17,7 +17,9 @@ export function getCurrentReadinessScore() {
   const bios = getLocalBiometrics();
   const readiness = computeReadinessIndex({
     whoop: conns.whoop ? bios.whoop : null,
-    fitbit: conns.fitbit ? bios.fitbit : null
+    fitbit: conns.fitbit ? bios.fitbit : null,
+    strava: conns.strava ? bios.strava : null,
+    garmin: conns.garmin ? bios.garmin : null
   });
   return readiness ? readiness.score : null;
 }

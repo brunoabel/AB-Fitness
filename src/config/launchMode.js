@@ -9,4 +9,5 @@
  * de Acesso Privado VIP / Early Access para captação de leads de marketing.
  */
 export const PRIVATE_LAUNCH_MODE = true;
+export const TRIAL_DAYS = 14;
 

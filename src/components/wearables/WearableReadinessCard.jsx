@@ -6,43 +6,47 @@ import {
   getLocalBiometrics,
   computeReadinessIndex
 } from '../../services/wearables/wearableManager';
-import { WhoopMark, FitbitMark } from './WearableLogos';
+import { WhoopMark, FitbitMark, GarminMark, StravaMark } from './WearableLogos';
 
 const WearablesModal = lazy(() => import('./WearablesModal'));
 
 function formatProviderName(providerUsed) {
-  if (providerUsed === 'composite') return 'WHOOP + Fitbit';
+  if (providerUsed === 'composite') return 'Fusão Multi-Sensor';
   if (providerUsed === 'whoop') return 'WHOOP';
   if (providerUsed === 'fitbit') return 'Fitbit';
+  if (providerUsed === 'strava') return 'Strava';
+  if (providerUsed === 'garmin') return 'Garmin';
   return providerUsed;
 }
 
 function readLocalWearableSnapshot() {
   const conns = getLocalConnections();
-  const hasAny = Object.keys(conns || {}).length > 0;
-  if (!hasAny) {
-    return { hasAny: false, readiness: null };
+  const activeProviders = ['whoop', 'fitbit', 'garmin', 'strava'].filter((p) => Boolean(conns?.[p]));
+  if (activeProviders.length === 0) {
+    return { hasAny: false, readiness: null, activeProviders: [] };
   }
   const bios = getLocalBiometrics();
   return {
     hasAny: true,
+    activeProviders,
     readiness: computeReadinessIndex({
       whoop: conns.whoop ? bios.whoop : null,
-      fitbit: conns.fitbit ? bios.fitbit : null
+      fitbit: conns.fitbit ? bios.fitbit : null,
+      strava: conns.strava ? bios.strava : null,
+      garmin: conns.garmin ? bios.garmin : null
     })
   };
 }
 
 export default function WearableReadinessCard({ onOpenWearables }) {
-  const [readiness, setReadiness] = useState(() => readLocalWearableSnapshot().readiness);
-  const [hasConnection, setHasConnection] = useState(() => readLocalWearableSnapshot().hasAny);
+  const [snapshot, setSnapshot] = useState(() => readLocalWearableSnapshot());
   const [modalOpen, setModalOpen] = useState(false);
 
   const refresh = () => {
-    const snap = readLocalWearableSnapshot();
-    setHasConnection(snap.hasAny);
-    setReadiness(snap.readiness);
+    setSnapshot(readLocalWearableSnapshot());
   };
+
+  const { hasAny: hasConnection, readiness, activeProviders } = snapshot;
 
   useEffect(() => {
     window.addEventListener('storage', refresh);
@@ -66,13 +70,15 @@ export default function WearableReadinessCard({ onOpenWearables }) {
           className="px-4 py-3.5 min-h-[56px] rounded-2xl bg-white/[0.025] hover:bg-white/[0.045] border border-white/[0.08] hover:border-white/[0.14] transition-all flex items-center justify-between gap-3 cursor-pointer group select-none"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center gap-1.5 shrink-0">
-              <WhoopMark size={28} className="rounded-lg" />
-              <FitbitMark size={28} className="rounded-lg" />
+            <div className="flex items-center gap-1 shrink-0">
+              <WhoopMark size={24} className="rounded-lg" />
+              <GarminMark size={24} className="rounded-lg" />
+              <FitbitMark size={24} className="rounded-lg" />
+              <StravaMark size={24} className="rounded-lg" />
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-white tracking-tight truncate">
-                Sincronizar WHOOP ou Fitbit
+                Sincronizar Wearables
               </p>
               <p className="text-[11px] text-zinc-400 truncate">
                 Prontidão, HRV e sono integrados ao teu treino
@@ -120,11 +126,17 @@ export default function WearableReadinessCard({ onOpenWearables }) {
                 </span>
                 <span className="text-zinc-600 text-[10px]" aria-hidden="true">•</span>
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-400">
-                  {(readiness.providerUsed === 'whoop' || readiness.providerUsed === 'composite') && (
+                  {(readiness.providerUsed === 'whoop' || (readiness.providerUsed === 'composite' && activeProviders.includes('whoop'))) && (
                     <WhoopMark size={15} className="rounded-[4px]" />
                   )}
-                  {(readiness.providerUsed === 'fitbit' || readiness.providerUsed === 'composite') && (
+                  {(readiness.providerUsed === 'garmin' || (readiness.providerUsed === 'composite' && activeProviders.includes('garmin'))) && (
+                    <GarminMark size={15} className="rounded-[4px]" />
+                  )}
+                  {(readiness.providerUsed === 'fitbit' || (readiness.providerUsed === 'composite' && activeProviders.includes('fitbit'))) && (
                     <FitbitMark size={15} className="rounded-[4px]" />
+                  )}
+                  {(readiness.providerUsed === 'strava' || (readiness.providerUsed === 'composite' && activeProviders.includes('strava'))) && (
+                    <StravaMark size={15} className="rounded-[4px]" />
                   )}
                   <span>{formatProviderName(readiness.providerUsed)}</span>
                 </span>

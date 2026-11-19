@@ -17,6 +17,7 @@
     {
       "files": [
         "scripts/**",
+        "tools/**",
         "*.config.js",
         "*.cjs",
         "**/*.test.js",

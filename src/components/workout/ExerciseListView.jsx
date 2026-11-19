@@ -31,6 +31,8 @@ export default function ExerciseListView({
           <div
             key={exercise.id}
             className={`rounded-2xl border transition-all duration-200 bg-surface shadow-xs overflow-hidden ${
+              exercise.supersetGroupId ? 'border-l-2 border-l-accent-hover ' : ''
+            }${
               isCompletedAll ? 'border-emerald-500/40' : isExpanded ? 'border-zinc-500' : 'border-white/10'
             }`}
           >
@@ -42,7 +44,14 @@ export default function ExerciseListView({
                   {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}
                 </div>
                 <div>
-                  <span className="text-[11px] text-zinc-500 block">{exercise.target}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-zinc-500">{exercise.target}</span>
+                    {exercise.supersetGroupId && (
+                      <span className="px-1.5 py-0.5 rounded bg-accent/70 border border-accent-hover text-[9px] font-semibold uppercase tracking-wider text-white">
+                        Bi-Set
+                      </span>
+                    )}
+                  </div>
                   <h2 className="text-sm font-bold text-zinc-100 leading-tight">{exercise.name}</h2>
                 </div>
               </div>

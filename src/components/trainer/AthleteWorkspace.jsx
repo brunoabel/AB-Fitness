@@ -10,7 +10,9 @@ import {
   MessageSquareText,
   Check,
   Copy,
-  UserMinus
+  UserMinus,
+  FileDown,
+  Activity
 } from 'lucide-react';
 import { SkeletonList } from '../ui/Skeleton';
 import { useAuth } from '../../context';
@@ -20,7 +22,8 @@ import {
   archiveAssignedProgram,
   setRosterNote,
   setRosterTags,
-  listAthleteFeedback
+  listAthleteFeedback,
+  exportAthleteMonthlyPdf
 } from '../../services/trainerService';
 import { triggerHaptic } from '../../utils/audio';
 import VerifiedBadge from '../ui/VerifiedBadge';
@@ -184,14 +187,25 @@ export default function AthleteWorkspace({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => { triggerHaptic(10); setBuildingProgram({ seedProgram: lastProgram }); }}
-                className="min-h-[42px] px-3.5 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer shrink-0"
-              >
-                <Plus className="w-4 h-4" strokeWidth={2.5} />
-                Prescrever
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { triggerHaptic(10); exportAthleteMonthlyPdf(context, programs, feedback); }}
+                  className="min-h-[42px] px-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-white font-semibold text-[12px] inline-flex items-center gap-1.5 cursor-pointer"
+                  title="Exportar relatório mensal em PDF"
+                >
+                  <FileDown className="w-3.5 h-3.5" strokeWidth={2} />
+                  PDF
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { triggerHaptic(10); setBuildingProgram({ seedProgram: lastProgram }); }}
+                  className="min-h-[42px] px-3.5 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <Plus className="w-4 h-4" strokeWidth={2.5} />
+                  Prescrever
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-3 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3">
@@ -214,6 +228,42 @@ export default function AthleteWorkspace({
                 </span>
               </div>
             </div>
+
+            {/* Prontidão Wearable & Fadiga Muscular do Atleta */}
+            {context?.recovery && (
+              <div className="p-3.5 rounded-xl bg-surface-2 border border-white/[0.08] space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1.5 font-semibold text-white">
+                    <Activity className="w-3.5 h-3.5 text-zinc-400" />
+                    Prontidão & Recuperação (72h)
+                  </span>
+                  {context.recovery.biometrics ? (
+                    <span className="text-[11px] font-semibold text-emerald-400 tabular-nums">
+                      {String(context.recovery.biometrics.provider || '').toUpperCase()} · {context.recovery.biometrics.recovery_score ?? context.recovery.biometrics.sleep_score ?? '--'}%
+                      {context.recovery.biometrics.hrv_ms ? ` · HRV ${context.recovery.biometrics.hrv_ms}ms` : ''}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-zinc-500">Sem wearable ativo</span>
+                  )}
+                </div>
+                {Array.isArray(context.recovery.fatigue) && context.recovery.fatigue.some((m) => Number(m.fatigue) >= 35) ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {context.recovery.fatigue
+                      .filter((m) => Number(m.fatigue) >= 35)
+                      .map((m) => (
+                        <span
+                          key={m.muscle_id}
+                          className="px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-[11px] text-zinc-300 tabular-nums"
+                        >
+                          {m.muscle_id}: <strong className="text-white">{m.recovery}%</strong> rec.
+                        </span>
+                      ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-zinc-400">Todas as regiões musculares 100% recuperadas.</p>
+                )}
+              </div>
+            )}
           </section>
 
           {/* Restrições / Lesões em linha editorial */}
@@ -445,6 +495,8 @@ export default function AthleteWorkspace({
           athleteId={athleteId}
           athleteName={displayName}
           lastProgram={buildingProgram.seedProgram || lastProgram}
+          athleteRecovery={context?.recovery}
+          athleteInjuries={injuries}
           onClose={() => setBuildingProgram(null)}
           onSaved={() => {
             setBuildingProgram(null);

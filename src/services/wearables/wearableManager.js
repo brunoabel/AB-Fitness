@@ -15,6 +15,16 @@ import {
   fetchLiveFitbitBiometrics,
   refreshFitbitToken
 } from './fitbitService.js';
+import {
+  generateSimulatedStravaData,
+  fetchLiveStravaBiometrics,
+  refreshStravaToken
+} from './stravaService.js';
+import {
+  generateSimulatedGarminData,
+  fetchLiveGarminBiometrics,
+  refreshGarminToken
+} from './garminService.js';
 import { enqueueJob, flushQueue } from '../../utils/syncQueue.js';
 
 const STORAGE_KEY_CONNECTIONS = 'ab_wearable_connections_v1';
@@ -242,8 +252,13 @@ export async function syncWearableData(userId, provider, options = {}) {
 
     if (isExpired && conn.refresh_token) {
       try {
-        const refreshFn = options.refreshFn
-          || (provider === 'whoop' ? refreshWhoopToken : refreshFitbitToken);
+        const refreshMap = {
+          whoop: refreshWhoopToken,
+          fitbit: refreshFitbitToken,
+          strava: refreshStravaToken,
+          garmin: refreshGarminToken
+        };
+        const refreshFn = options.refreshFn || refreshMap[provider] || refreshFitbitToken;
         const refreshed = await refreshFn(conn.refresh_token);
         if (refreshed?.access_token) {
           activeToken = refreshed.access_token;
@@ -263,8 +278,13 @@ export async function syncWearableData(userId, provider, options = {}) {
     }
 
     try {
-      const liveFetcher = options.liveFetcher
-        || (provider === 'whoop' ? fetchLiveWhoopBiometrics : fetchLiveFitbitBiometrics);
+      const fetcherMap = {
+        whoop: fetchLiveWhoopBiometrics,
+        fitbit: fetchLiveFitbitBiometrics,
+        strava: fetchLiveStravaBiometrics,
+        garmin: fetchLiveGarminBiometrics
+      };
+      const liveFetcher = options.liveFetcher || fetcherMap[provider] || fetchLiveFitbitBiometrics;
       const live = await liveFetcher(activeToken, today);
       bioData = {
         ...live,
@@ -293,6 +313,10 @@ export async function syncWearableData(userId, provider, options = {}) {
     bioData = generateSimulatedWhoopData(today);
   } else if (provider === 'fitbit') {
     bioData = generateSimulatedFitbitData(today);
+  } else if (provider === 'strava') {
+    bioData = generateSimulatedStravaData(today);
+  } else if (provider === 'garmin') {
+    bioData = generateSimulatedGarminData(today);
   }
 
   if (!bioData) return null;
@@ -340,15 +364,28 @@ export function computeReadinessIndex(biometrics = {}) {
   }
   const whoop = biometrics.whoop;
   const fitbit = biometrics.fitbit;
+  const strava = biometrics.strava;
+  const garmin = biometrics.garmin;
 
-  if (!whoop && !fitbit) {
+  const connectedKeys = ['whoop', 'fitbit', 'strava', 'garmin'].filter((k) => Boolean(biometrics[k]));
+  if (connectedKeys.length === 0) {
     return null;
   }
 
   const whoopValid = Boolean(whoop && !whoop.is_stale && typeof whoop.recovery_score === 'number');
   const fitbitValid = Boolean(fitbit && !fitbit.is_stale && typeof fitbit.sleep_score === 'number');
+  const stravaValid = Boolean(strava && !strava.is_stale && typeof strava.recovery_score === 'number');
+  const garminScoreVal = garmin?.recovery_score ?? garmin?.sleep_score ?? null;
+  const garminValid = Boolean(garmin && !garmin.is_stale && typeof garminScoreVal === 'number');
 
-  if (!whoopValid && !fitbitValid) {
+  const validEntries = [
+    whoopValid && { id: 'whoop', val: whoop.recovery_score, weight: 0.6 },
+    garminValid && { id: 'garmin', val: garminScoreVal, weight: 0.55 },
+    fitbitValid && { id: 'fitbit', val: fitbit.sleep_score, weight: 0.4 },
+    stravaValid && { id: 'strava', val: strava.recovery_score, weight: 0.35 }
+  ].filter(Boolean);
+
+  if (validEntries.length === 0) {
     return {
       score: null,
       isStale: true,
@@ -356,7 +393,7 @@ export function computeReadinessIndex(biometrics = {}) {
       label: 'Sem dados recentes',
       color: '#8E929F',
       advice: 'Sem leitura recente dos sensores. Abre os dispositivos e toca em sincronizar para atualizar.',
-      providerUsed: whoop && fitbit ? 'composite' : (whoop ? 'whoop' : 'fitbit'),
+      providerUsed: connectedKeys.length > 1 ? 'composite' : connectedKeys[0],
       hrv: null,
       restingHr: null,
       strain: null,
@@ -365,18 +402,16 @@ export function computeReadinessIndex(biometrics = {}) {
   }
 
   let score = 80;
-  let providerUsed = 'whoop';
+  let providerUsed = validEntries[0].id;
 
-  if (whoopValid && fitbitValid) {
-    // Whoop tem peso 60%, Fitbit 40%
-    score = Math.round((whoop.recovery_score * 0.6) + (fitbit.sleep_score * 0.4));
+  if (validEntries.length > 1) {
+    const totalWeight = validEntries.reduce((acc, e) => acc + e.weight, 0);
+    const weightedSum = validEntries.reduce((acc, e) => acc + e.val * e.weight, 0);
+    score = Math.round(weightedSum / totalWeight);
     providerUsed = 'composite';
-  } else if (whoopValid) {
-    score = whoop.recovery_score;
-    providerUsed = 'whoop';
-  } else if (fitbitValid) {
-    score = fitbit.sleep_score;
-    providerUsed = 'fitbit';
+  } else {
+    score = validEntries[0].val;
+    providerUsed = validEntries[0].id;
   }
 
   score = Math.max(0, Math.min(100, score));
@@ -411,9 +446,17 @@ export function computeReadinessIndex(biometrics = {}) {
     color,
     advice,
     providerUsed,
-    hrv: whoopValid ? (whoop?.hrv_ms ?? null) : null,
-    restingHr: (whoopValid ? whoop?.resting_hr_bpm : null) ?? (fitbitValid ? fitbit?.resting_hr_bpm : null) ?? null,
-    strain: whoopValid ? (whoop?.day_strain ?? null) : null,
-    sleepScore: (whoopValid ? whoop?.sleep_score : null) ?? (fitbitValid ? fitbit?.sleep_score : null) ?? null
+    hrv: (whoopValid ? whoop?.hrv_ms : null) ?? (garminValid ? garmin?.hrv_ms : null) ?? null,
+    restingHr:
+      (whoopValid ? whoop?.resting_hr_bpm : null) ??
+      (garminValid ? garmin?.resting_hr_bpm : null) ??
+      (fitbitValid ? fitbit?.resting_hr_bpm : null) ??
+      null,
+    strain: (whoopValid ? whoop?.day_strain : null) ?? (stravaValid ? strava?.day_strain : null) ?? null,
+    sleepScore:
+      (whoopValid ? whoop?.sleep_score : null) ??
+      (garminValid ? garmin?.sleep_score : null) ??
+      (fitbitValid ? fitbit?.sleep_score : null) ??
+      null
   };
 }

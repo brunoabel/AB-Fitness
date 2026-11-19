@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Search, Plus, Trash2, Copy, Layers, Check, BookmarkPlus } from 'lucide-react';
+import { X, Search, Plus, Trash2, Copy, Layers, Check, BookmarkPlus, Link2, Activity } from 'lucide-react';
 import { EXERCISES_100, MUSCLE_GROUPS } from '../../data/exercises100';
 import {
   createAssignedProgram,
@@ -29,9 +29,19 @@ const mapStructureToRows = (structure = [], factor = 1) =>
       repsRange: ex.repsRange || '10-12',
       restSeconds: ex.restSeconds || 60,
       targetWeight: progressedWeight,
-      coachNote: ex.coachNote || ''
+      coachNote: ex.coachNote || '',
+      supersetGroupId: ex.supersetGroupId || null
     };
   });
+
+/** Grupos com um único membro deixam de ser Bi-Set. */
+const pruneLoneSupersets = (list) => {
+  const counts = list.reduce((acc, r) => {
+    if (r.supersetGroupId) acc[r.supersetGroupId] = (acc[r.supersetGroupId] || 0) + 1;
+    return acc;
+  }, {});
+  return list.map((r) => (r.supersetGroupId && counts[r.supersetGroupId] < 2 ? { ...r, supersetGroupId: null } : r));
+};
 
 /**
  * Consola de Prescrição e Biblioteca de Modelos (OLED sem blocos aninhados):
@@ -44,6 +54,8 @@ export default function ProgramBuilderSheet({
   athleteName = '',
   lastProgram = null,
   templateOnly = false,
+  athleteRecovery = null,
+  athleteInjuries = [],
   onClose,
   onSaved
 }) {
@@ -137,7 +149,8 @@ export default function ProgramBuilderSheet({
         repsRange: ex.reps || '10-12',
         restSeconds: ex.descanso_seg || 60,
         targetWeight: '',
-        coachNote: ''
+        coachNote: '',
+        supersetGroupId: null
       }
     ]);
     setPickerOpen(false);
@@ -146,13 +159,61 @@ export default function ProgramBuilderSheet({
 
   const updateRow = (rowId, patch) =>
     setRows((prev) => prev.map((r) => (r.rowId === rowId ? { ...r, ...patch } : r)));
-  const removeRow = (rowId) => setRows((prev) => prev.filter((r) => r.rowId !== rowId));
+  const removeRow = (rowId) => setRows((prev) => pruneLoneSupersets(prev.filter((r) => r.rowId !== rowId)));
+
+  const toggleSuperset = (idx) => {
+    triggerHaptic(8);
+    setRows((prev) => {
+      const prevRow = prev[idx - 1];
+      const row = prev[idx];
+      if (!prevRow || !row) return prev;
+      const linked = Boolean(row.supersetGroupId) && row.supersetGroupId === prevRow.supersetGroupId;
+      if (linked) {
+        // Desliga: as linhas seguintes do mesmo grupo passam a um grupo próprio
+        const oldId = row.supersetGroupId;
+        const splitId = `${oldId}_${idx}`;
+        return pruneLoneSupersets(
+          prev.map((r, i) => {
+            if (i === idx) return { ...r, supersetGroupId: null };
+            if (i > idx && r.supersetGroupId === oldId) return { ...r, supersetGroupId: splitId };
+            return r;
+          })
+        );
+      }
+      let groupId = prevRow.supersetGroupId || `bi_${idx - 1}`;
+      if (!prevRow.supersetGroupId && prev.some((r, i) => i !== idx - 1 && i !== idx && r.supersetGroupId === groupId)) {
+        groupId = `${groupId}_${row.rowId.slice(-5)}`;
+      }
+      return pruneLoneSupersets(
+        prev.map((r, i) => (i === idx - 1 || i === idx ? { ...r, supersetGroupId: groupId } : r))
+      );
+    });
+  };
+
+  const fatigueList = Array.isArray(athleteRecovery?.fatigue) ? athleteRecovery.fatigue : [];
+  const overloadedMuscles = fatigueList.filter((m) => Number(m.fatigue) >= 70);
+  const recoveryScore = athleteRecovery?.biometrics?.recovery_score;
+  const lowRecovery = recoveryScore !== null && recoveryScore !== undefined && Number(recoveryScore) < 55;
+  const injuryList = Array.isArray(athleteInjuries) ? athleteInjuries : [];
+  const showClinicalBar = !templateOnly && (overloadedMuscles.length > 0 || lowRecovery || injuryList.length > 0);
+  const hasWeights = rows.some((r) => r.targetWeight !== '' && Number(r.targetWeight) > 0);
+
+  const applyDeload = () => {
+    triggerHaptic([10, 30, 10]);
+    setRows((prev) =>
+      prev.map((r) => {
+        const w = Number(r.targetWeight);
+        return r.targetWeight !== '' && Number.isFinite(w) && w > 0 ? { ...r, targetWeight: Math.round(w * 0.9 * 2) / 2 } : r;
+      })
+    );
+  };
 
   const canSave = title.trim().length > 0 && rows.length > 0 && !saving;
 
   const serializeStructure = () =>
-    rows.map(({ rowId: _rowId, targetWeight, ...rest }) => ({
+    rows.map(({ rowId: _rowId, targetWeight, supersetGroupId, ...rest }) => ({
       ...rest,
+      ...(supersetGroupId ? { supersetGroupId } : {}),
       sets: Math.max(1, Number(rest.sets) || 3),
       restSeconds: Math.max(0, Number(rest.restSeconds) || 60),
       ...(targetWeight !== '' && targetWeight !== null && targetWeight !== undefined && Number.isFinite(Number(targetWeight))
@@ -243,6 +304,46 @@ export default function ProgramBuilderSheet({
 
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="max-w-2xl mx-auto px-5 py-5 space-y-6">
+          {showClinicalBar && (
+            <section
+              aria-label="Alerta clínico do atleta"
+              className="bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3.5 py-3 flex items-start justify-between gap-3"
+            >
+              <div className="min-w-0 space-y-1">
+                <p className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-300">
+                  <Activity className="w-3.5 h-3.5" strokeWidth={1.9} />
+                  Copiloto biométrico
+                </p>
+                {overloadedMuscles.length > 0 && (
+                  <p className="text-[12px] text-zinc-300">
+                    Sobrecarga:{' '}
+                    <span className="text-white font-semibold">
+                      {overloadedMuscles.map((m) => `${m.muscle_id} ${Math.round(Number(m.fatigue))}%`).join(', ')}
+                    </span>
+                  </p>
+                )}
+                {lowRecovery && (
+                  <p className="text-[12px] text-zinc-300 tabular-nums">
+                    Recuperação do wearable: <span className="text-white font-semibold">{Math.round(Number(recoveryScore))}%</span>
+                  </p>
+                )}
+                {injuryList.length > 0 && (
+                  <p className="text-[12px] text-zinc-300">
+                    Lesões: <span className="text-white font-semibold">{injuryList.join(', ')}</span>
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={applyDeload}
+                disabled={!hasWeights}
+                className="shrink-0 min-h-[36px] px-3 rounded-lg border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.1] text-white text-[12px] font-semibold tabular-nums cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Deload (-10% carga)
+              </button>
+            </section>
+          )}
+
           {/* 1. Biblioteca de Modelos Guardados */}
           {(templates.length > 0 || templateOnly) && (
             <section className="space-y-2">
@@ -408,8 +509,13 @@ export default function ProgramBuilderSheet({
               </div>
             ) : (
               <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
-                {rows.map((row, index) => (
-                  <div key={row.rowId} className="py-3.5 space-y-2.5">
+                {rows.map((row, index) => {
+                  const linkedToPrev = index > 0 && Boolean(row.supersetGroupId) && row.supersetGroupId === rows[index - 1].supersetGroupId;
+                  return (
+                  <div
+                    key={row.rowId}
+                    className={`py-3.5 space-y-2.5 ${row.supersetGroupId ? 'border-l-2 border-l-accent-hover pl-3' : ''}`}
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-baseline gap-2.5 min-w-0">
                         <span className="font-display text-[12px] font-bold text-zinc-500 tabular-nums shrink-0">
@@ -422,6 +528,23 @@ export default function ProgramBuilderSheet({
                           </span>
                         )}
                       </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => toggleSuperset(index)}
+                          aria-pressed={linkedToPrev}
+                          aria-label={linkedToPrev ? `Desligar Bi-Set de ${row.name}` : `Ligar ${row.name} em Bi-Set ao exercício anterior`}
+                          className={`min-h-[30px] px-2.5 rounded-lg border text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors ${
+                            linkedToPrev
+                              ? 'bg-accent/70 text-white border-accent-hover'
+                              : 'border-white/[0.1] text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          <Link2 className="w-3.5 h-3.5" strokeWidth={2} />
+                          Bi-Set
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => removeRow(row.rowId)}
@@ -430,6 +553,7 @@ export default function ProgramBuilderSheet({
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={1.75} />
                       </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-4 divide-x divide-white/[0.08] border-y border-white/[0.06]">
@@ -485,7 +609,8 @@ export default function ProgramBuilderSheet({
                       className="w-full px-1 py-1 bg-transparent border-b border-white/[0.05] focus:border-accent-hover text-zinc-200 text-[13px] placeholder:text-zinc-600 focus:outline-none"
                     />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </section>

@@ -221,6 +221,21 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     if (!wasCompleted && isNowCompleted) {
       sound.playTick();
       const ex = currentExercisesList.find((e) => e.id === exId);
+      const groupId = ex?.supersetGroupId;
+      if (groupId) {
+        const groupMembers = currentExercisesList.filter((e) => e.supersetGroupId === groupId);
+        if (groupMembers.length > 1) {
+          const memberIdx = groupMembers.findIndex((e) => e.id === exId);
+          const nextPartner = groupMembers[(memberIdx + 1) % groupMembers.length];
+          const partnerSets = draftDataRef.current.exercisesData[nextPartner.id] || [];
+          const partnerSetDone = Boolean(partnerSets[setIdx]?.completed || partnerSets[setIdx]?.done);
+          if (!partnerSetDone) {
+            setFocusedExerciseId(nextPartner.id);
+            return;
+          }
+          setFocusedExerciseId(groupMembers[0].id);
+        }
+      }
       setCurrentRestDefault(isExpressMode ? 45 : (ex?.restTime || 60));
       setRestTimerTrigger(Date.now());
     }
