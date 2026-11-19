@@ -28,6 +28,8 @@ import { canAccessFeature } from '../utils/userVerification';
 const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
 
 import { MESO_WEEK_KEY } from '../utils/mesocycleWeek';
+import { precacheWorkoutVideos } from '../services/videoPrecache';
+import { localDateKey } from '../utils/dateKey';
 
 // Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
 // DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
@@ -95,6 +97,19 @@ export default function WeeklyDashboard({
 
   const selectedWorkout = schedule.find((d) => d.dayId === selectedDayId) || schedule[0];
   const nextWorkoutDay = schedule.find((d) => !d.isRestDay && d.exercises && d.exercises.length > 0) || schedule[0];
+
+  // Vídeos 3D do treino de hoje guardados em segundo plano (Wi-Fi), para tocarem sem rede no ginásio
+  const todayWorkout = schedule.find((d) => d.dayId === currentJsDay);
+  useEffect(() => {
+    if (!todayWorkout || todayWorkout.isRestDay) return undefined;
+    const run = () => precacheWorkoutVideos(todayWorkout, localDateKey()).catch(() => {});
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(run, { timeout: 8000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const t = setTimeout(run, 4000);
+    return () => clearTimeout(t);
+  }, [todayWorkout]);
 
   const isSelectedDayCompleted = completedDays.some((c) => (c?.dayId ?? c) === selectedDayId);
   const { done: completedCount, target: weeklyTarget } = weekProgress(completedDays, schedule);

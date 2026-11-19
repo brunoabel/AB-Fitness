@@ -17,3 +17,15 @@ const page = LEGAL_PATHS.has(legalPath)
 page.then((element) => {
   createRoot(document.getElementById('root')).render(<StrictMode>{element}</StrictMode>);
 });
+
+// Service Worker (PWA e offline). O host de média próprio (VITE_MEDIA_BASE_URL) vai no URL de registo,
+// para o SW também guardar e servir vídeos desse domínio.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    let mediaHost = '';
+    try {
+      mediaHost = import.meta.env.VITE_MEDIA_BASE_URL ? new URL(import.meta.env.VITE_MEDIA_BASE_URL).host : '';
+    } catch {}
+    navigator.serviceWorker.register(mediaHost ? `/sw.js?media=${encodeURIComponent(mediaHost)}` : '/sw.js').catch(() => {});
+  });
+}

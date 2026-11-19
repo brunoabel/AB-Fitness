@@ -300,13 +300,5 @@
     </div>
     <noscript>AB Fitness precisa de JavaScript para funcionar. Termos, privacidade e aviso médico estão em /termos, /privacidade e /aviso-medico.</noscript>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // Registro do Service Worker para suporte PWA e offline
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {});
-        });
-      }
-    </script>
   </body>
 </html>
