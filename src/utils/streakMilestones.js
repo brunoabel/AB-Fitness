@@ -2,6 +2,7 @@
  * streakMilestones.js — Lógica pura do Motion Graphic de Streak (celebração de sequência).
  * Sem Canvas, sem localStorage no corpo das funções de cálculo, para ser testável isoladamente.
  */
+import { localDateKey } from './dateKey.js';
 
 export const STREAK_MILESTONES = [3, 7, 10, 14, 21, 30, 45, 60, 90, 100, 180, 365];
 
@@ -81,7 +82,7 @@ export function getStreakMilestoneInfo(streakDays, previousStreakDays = 0) {
 const LAST_DATE_KEY = 'ab_last_celebrated_streak_date';
 const LAST_VALUE_KEY = 'ab_last_celebrated_streak_value';
 
-const isoDay = (date) => date.toISOString().slice(0, 10);
+const isoDay = (date) => localDateKey(date);
 
 /** `storage` é injetável (testes passam um mock); por omissão usa o localStorage do browser. */
 function resolveStorage(storage) {

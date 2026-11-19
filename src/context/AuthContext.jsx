@@ -18,24 +18,40 @@ export function AuthProvider({ children }) {
 
   // Papel lido do servidor (public.profiles.role). Nunca de user_metadata, que o próprio utilizador pode editar.
   const [roleState, setRoleState] = useState({ userId: null, role: null });
+  // Incrementar força nova leitura do perfil (ex.: depois de vincular a um PT, que ativa o trial)
+  const [profileVersion, setProfileVersion] = useState(0);
+  const refreshProfile = () => setProfileVersion((v) => v + 1);
   const userId = user?.id;
   useEffect(() => {
     let active = true;
     if (!configured || !supabase || !userId || userId === 'guest-local-user') return undefined;
-    supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (!active) return;
-        if (error) console.warn('Não foi possível ler o papel do utilizador:', error.message);
-        setRoleState({ userId, role: data?.role || null });
+    // select('*'): colunas novas (trial_ends_at, timezone) podem ainda não existir se a migration não correu
+    Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
+      supabase.rpc('get_my_trainer')
+    ]).then(([{ data, error }, trainerRes]) => {
+      if (!active) return;
+      if (error) console.warn('Não foi possível ler o papel do utilizador:', error.message);
+      setRoleState({
+        userId,
+        role: data?.role || null,
+        isPro: Boolean(data?.is_pro || data?.is_premium),
+        trialEndsAt: data?.trial_ends_at || null,
+        isTrialActive: Boolean(data?.trial_ends_at && new Date(data.trial_ends_at).getTime() > Date.now()),
+        hasActiveTrainer: Boolean(!trainerRes?.error && Array.isArray(trainerRes?.data) && trainerRes.data.length > 0)
       });
+      // Fuso do aparelho no perfil: o servidor agrupa streak e estatísticas por dia local
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (data && 'timezone' in data && tz && data.timezone !== tz) {
+        supabase.from('profiles').update({ timezone: tz }).eq('id', userId).then(() => {});
+      }
+    }).catch(() => {
+      if (active) setRoleState({ userId, role: null });
+    });
     return () => {
       active = false;
     };
-  }, [configured, userId]);
+  }, [configured, userId, profileVersion]);
 
   useEffect(() => {
     let mounted = true;
@@ -202,7 +218,11 @@ export function AuthProvider({ children }) {
   );
   const isAdmin = isCeo || Boolean(profileRole === 'admin');
   const isTrainer = isCeo || Boolean(profileRole === 'coach');
-  const isPro = isCeo || Boolean(roleState.isPremium);
+  const ownState = roleState.userId === userId ? roleState : {};
+  const trialEndsAt = ownState.trialEndsAt || null;
+  const isTrialActive = Boolean(ownState.isTrialActive);
+  const isPro = isCeo || Boolean(ownState.isPro);
+  const hasActiveTrainer = Boolean(ownState.hasActiveTrainer);
 
   const value = {
     user,
@@ -213,6 +233,10 @@ export function AuthProvider({ children }) {
     isAdmin,
     isTrainer,
     isPro,
+    isTrialActive,
+    trialEndsAt,
+    hasActiveTrainer,
+    refreshProfile,
     isConfigured: configured,
     signInWithEmail,
     signUpWithEmail,

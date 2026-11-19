@@ -15,6 +15,7 @@ import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
 import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
 import { flushWearableSyncQueue } from './services/wearables/wearableManager';
+import { hydrateWorkoutHistory } from './services/historySyncService';
 import { flushWaitlistSyncQueue } from './services/waitlistService';
 import { savePendingInviteUsername, readPendingInviteUsername } from './services/socialService';
 import { 
@@ -63,6 +64,7 @@ const AICoachModal = lazy(lazyImports.coach);
 const AdminDashboard = lazy(lazyImports.admin);
 const TrainerHubView = lazy(lazyImports.trainerHub);
 const LinkTrainerSheet = lazy(lazyImports.linkTrainer);
+const PENDING_TRAINER_CODE_KEY = 'ab_fitness_pending_trainer_code_v1';
 const AthleteManualModal = lazy(lazyImports.manual);
 const OnboardingCoach = lazy(lazyImports.onboarding);
 const SocialHub = lazy(lazyImports.social);
@@ -82,7 +84,7 @@ function TabFallback() {
 
 
 function AppContent() {
-  const { user, isGuest, loading, isTrainer, isAdmin, isCeo } = useAuth();
+  const { user, isGuest, loading, isTrainer, isAdmin, isCeo, hasActiveTrainer, refreshProfile } = useAuth();
   // Abertura cinematográfica só na primeira abertura da sessão
   const [showSplash, setShowSplash] = useState(() => {
     try {
@@ -125,8 +127,26 @@ function AppContent() {
     }
   }, [user, isGuest]);
   // Link de convite do PT (?trainer=CODE) abre a folha de vínculo já com o código preenchido
-  const [trainerCodeFromUrl] = useState(() => new URLSearchParams(window.location.search).get('trainer') || '');
-  const [showLinkTrainer, setShowLinkTrainer] = useState(() => Boolean(new URLSearchParams(window.location.search).get('trainer')));
+  // O código fica guardado para sobreviver ao registo e à confirmação de e-mail (o gate privado deixa-o passar)
+  const [trainerCodeFromUrl, setTrainerCodeFromUrl] = useState(() => {
+    try {
+      const fromUrl = new URLSearchParams(window.location.search).get('trainer') || '';
+      if (fromUrl) localStorage.setItem(PENDING_TRAINER_CODE_KEY, fromUrl);
+      return fromUrl || localStorage.getItem(PENDING_TRAINER_CODE_KEY) || '';
+    } catch {
+      return '';
+    }
+  });
+  const [showLinkTrainer, setShowLinkTrainer] = useState(() => Boolean(trainerCodeFromUrl));
+  const clearPendingTrainerCode = () => {
+    try {
+      localStorage.removeItem(PENDING_TRAINER_CODE_KEY);
+    } catch {}
+    setTrainerCodeFromUrl('');
+  };
+  useEffect(() => {
+    if (hasActiveTrainer && trainerCodeFromUrl) queueMicrotask(clearPendingTrainerCode);
+  }, [hasActiveTrainer, trainerCodeFromUrl]);
   const [activeWorkout, setActiveWorkout] = useState(() => {
     const draft = getActiveDraft();
     if (draft && draft.workoutDayId !== undefined) {
@@ -252,7 +272,14 @@ function AppContent() {
     }
 
     const flushUserQueues = () => {
-      flushWorkoutSyncQueue(user.id).catch(() => {});
+      // Primeiro envia o que está pendente, depois traz da nuvem o que falta neste aparelho
+      flushWorkoutSyncQueue(user.id)
+        .catch(() => {})
+        .then(() => hydrateWorkoutHistory(user.id))
+        .then((added) => {
+          if (added > 0) setCompletedDays(getCompletedDays());
+        })
+        .catch(() => {});
       flushWearableSyncQueue(user.id).catch(() => {});
     };
     flushUserQueues();
@@ -398,11 +425,27 @@ function AppContent() {
   }
 
   // 3. Modo Fechado para Marketing / Lançamento Privado
-  // Apenas a conta de administrador/CEO tem acesso total à app.
+  // Entram: admin/CEO, personal trainers (role coach) e alunos com vínculo ativo a um PT.
+  // Quem chega com convite de PT (?trainer=CODE) só vê o registo e a folha de vínculo até concluir.
   // Todos os restantes visitantes vêem a landing page VIP de Lançamento Privado.
-  const isAuthorizedAdmin = Boolean(isAdmin || isCeo);
+  const isGateMember = Boolean(isAdmin || isCeo || isTrainer || hasActiveTrainer);
+  // Só em `vite dev`: tools/marketing/capture-ui.mjs liga esta flag para capturar telas internas reais.
+  const isMarketingCapture = import.meta.env.DEV && localStorage.getItem('ab_fitness_marketing_capture_v1') === 'true';
 
-  if (PRIVATE_LAUNCH_MODE && !isAuthorizedAdmin) {
+  if (PRIVATE_LAUNCH_MODE && !isGateMember && !isMarketingCapture) {
+    if (trainerCodeFromUrl && !isGuest) {
+      return (
+        <Suspense fallback={<div className="min-h-screen bg-app flex items-center justify-center"><ABLogo size={76} showText={true} /></div>}>
+          {user ? (
+            <div className="min-h-screen bg-app">
+              <LinkTrainerSheet initialCode={trainerCodeFromUrl} onClose={clearPendingTrainerCode} onLinked={refreshProfile} />
+            </div>
+          ) : (
+            <AuthScreen />
+          )}
+        </Suspense>
+      );
+    }
     return (
       <Suspense fallback={<div className="min-h-screen bg-app flex items-center justify-center"><ABLogo size={76} showText={true} /></div>}>
         <PrivateLaunchScreen />
@@ -573,7 +616,7 @@ function AppContent() {
         {/* Folha de vínculo ao PT a partir de um link de convite (?trainer=CODE) */}
         {showLinkTrainer && !isTrainer && (
           <Suspense fallback={null}>
-            <LinkTrainerSheet initialCode={trainerCodeFromUrl} onClose={() => setShowLinkTrainer(false)} />
+            <LinkTrainerSheet initialCode={trainerCodeFromUrl} onClose={() => setShowLinkTrainer(false)} onLinked={refreshProfile} />
           </Suspense>
         )}
 

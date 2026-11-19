@@ -1,9 +1,10 @@
 /**
  * consistencyCalendar.js — Agregação pura para o Calendário de Consistência do Perfil.
  * Junta musculação (completedDays/workoutHistory) e corrida (runsHistory) por dia do mês,
- * usando a mesma convenção de data (UTC via toISOString) que utils/streak.js já usa para o
- * streak e a meta semanal — para o calendário nunca discordar visualmente desses números.
+ * usando a mesma convenção de data (dia local, utils/dateKey.js) que utils/streak.js usa para o
+ * streak e a meta semanal, para o calendário nunca discordar visualmente desses números.
  */
+import { localDateKey, toLocalDateKey } from './dateKey.js';
 
 export const MONTH_NAMES_PT = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -13,7 +14,7 @@ export const MONTH_NAMES_PT = [
 /** Letras de cabeçalho da semana, Segunda a Domingo. */
 export const WEEKDAY_LETTERS_PT = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
 
-const isoDateKey = (date) => date.toISOString().slice(0, 10);
+const isoDateKey = (date) => localDateKey(date);
 
 /** Segunda=0 ... Domingo=6, a partir do getDay() nativo (Domingo=0 ... Sábado=6). */
 const mondayFirstIndex = (jsDay) => (jsDay + 6) % 7;
@@ -36,18 +37,18 @@ export function buildMonthCalendarMatrix(year, month, {
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
   const gymDates = new Set((completedDays || []).map((c) => c?.date).filter(Boolean));
-  const runDates = new Set((runsHistory || []).map((r) => (r?.date || '').slice(0, 10)).filter(Boolean));
+  const runDates = new Set((runsHistory || []).map((r) => toLocalDateKey(r?.date)).filter(Boolean));
   const restWeekdays = new Set((schedule || []).filter((d) => d?.isRestDay).map((d) => d.dayId));
 
   // Indexa o registo mais recente de cada dia (musculação e corrida) para o detalhe ao toque
   const workoutByDate = new Map();
   for (const w of workoutHistory || []) {
-    const key = (w?.completedAt || '').slice(0, 10);
+    const key = toLocalDateKey(w?.completedAt);
     if (key && !workoutByDate.has(key)) workoutByDate.set(key, w);
   }
   const runByDate = new Map();
   for (const r of runsHistory || []) {
-    const key = (r?.date || '').slice(0, 10);
+    const key = toLocalDateKey(r?.date);
     if (key && !runByDate.has(key)) runByDate.set(key, r);
   }
 

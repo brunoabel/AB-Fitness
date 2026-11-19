@@ -15,6 +15,8 @@ export default function LinkTrainerSheet({ initialCode = '', onClose, onLinked }
   const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'error' | 'done' | 'unlinked'
   const [error, setError] = useState('');
   const [trainerName, setTrainerName] = useState('');
+  const [trialEndsAt, setTrialEndsAt] = useState(null);
+  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false);
   const [currentTrainer, setCurrentTrainer] = useState(null);
   const [loadingTrainer, setLoadingTrainer] = useState(true);
   const [confirmUnlink, setConfirmUnlink] = useState(false);
@@ -44,7 +46,7 @@ export default function LinkTrainerSheet({ initialCode = '', onClose, onLinked }
     if (trimmed.length < 6) return;
     setStatus('sending');
     setError('');
-    const { data, error: err } = await redeemInviteCode(trimmed);
+    const { data, error: err } = await redeemInviteCode(trimmed, user?.id);
     if (err || !data) {
       setStatus('error');
       setError(err || 'Código de convite inválido.');
@@ -52,6 +54,8 @@ export default function LinkTrainerSheet({ initialCode = '', onClose, onLinked }
     }
     triggerHaptic([12, 40, 12]);
     setTrainerName(data.trainer_name || '');
+    setTrialEndsAt(data.trial_ends_at || null);
+    setTrialAlreadyUsed(Boolean(data.trial_ends_at && new Date(data.trial_ends_at).getTime() <= Date.now()));
     setCurrentTrainer({ trainer_id: data.trainer_id, full_name: data.trainer_name });
     setStatus('done');
     if (typeof window !== 'undefined' && window.location.search.includes('trainer=')) {
@@ -124,6 +128,19 @@ export default function LinkTrainerSheet({ initialCode = '', onClose, onLinked }
               <p className="text-[13px] text-zinc-400">
                 O teu PT já pode acompanhar o teu progresso e prescrever treinos.
               </p>
+              {trialAlreadyUsed ? (
+                // O trial B2B2C é concedido uma vez por conta (trial_granted_at)
+                <p className="mt-3 text-[12px] text-zinc-500">O período de teste PRO já foi usado nesta conta.</p>
+              ) : (
+                <div className="mt-3 bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3.5 py-2.5 text-left">
+                  <p className="text-[13px] font-semibold text-white">14 dias de AB Fitness PRO ativados</p>
+                  <p className="text-[12px] text-zinc-400 tabular-nums">
+                    {trialEndsAt && !Number.isNaN(new Date(trialEndsAt).getTime())
+                      ? `Acesso PRO até ${new Date(trialEndsAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}.`
+                      : 'Oferta do vínculo com o teu PT: mesociclos, coach ilimitado e análise avançada.'}
+                  </p>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={onClose}

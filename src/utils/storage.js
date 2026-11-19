@@ -1,5 +1,7 @@
 // Gerenciamento de persistência local com LocalStorage para o AB Fitness
 // Garante que o utilizador nunca perca as suas cargas nem o histórico
+import { localDateKey } from './dateKey.js';
+import { HISTORY_CAP, mergeHistory, missingCompletedDays } from './historyMerge.js';
 
 const KEYS = {
   WEIGHTS: 'ab_fitness_weights_v1',
@@ -45,21 +47,64 @@ export const getWorkoutHistory = () => {
   }
 };
 
+// Guarda os últimos 200 treinos; se a quota do browser não chegar, recua para 100
+const writeHistory = (list) => {
+  try {
+    localStorage.setItem(KEYS.HISTORY, JSON.stringify(list.slice(0, HISTORY_CAP)));
+  } catch {
+    localStorage.setItem(KEYS.HISTORY, JSON.stringify(list.slice(0, 100)));
+  }
+};
+
 export const addWorkoutToHistory = (workoutRecord) => {
   try {
     const history = getWorkoutHistory();
     const updated = [workoutRecord, ...history];
-    localStorage.setItem(KEYS.HISTORY, JSON.stringify(updated.slice(0, 50))); // Guarda os últimos 50 treinos
+    writeHistory(updated);
     return updated;
   } catch {
     return [];
   }
 };
 
+/** Junta treinos vindos da nuvem ao histórico e ao streak locais. Devolve quantos foram acrescentados. */
+export const mergeCloudWorkouts = (cloudRecords = []) => {
+  try {
+    const { merged, added } = mergeHistory(getWorkoutHistory(), cloudRecords);
+    if (added > 0) writeHistory(merged);
+    const missingDays = missingCompletedDays(getCompletedDays(), cloudRecords);
+    if (missingDays.length > 0) {
+      localStorage.setItem(KEYS.COMPLETED_DAYS, JSON.stringify([...getCompletedDays(), ...missingDays]));
+    }
+    return added;
+  } catch {
+    return 0;
+  }
+};
+
+// Chaves de dia antigas eram gravadas em UTC; recalcula uma vez no fuso local a partir do timestamp
+const DAY_KEYS_LOCAL_FLAG = 'ab_fitness_day_keys_local_v1';
+const migrateCompletedDaysToLocal = (list) => {
+  if (localStorage.getItem(DAY_KEYS_LOCAL_FLAG)) return list;
+  const seen = new Set();
+  const migrated = [];
+  for (const item of list) {
+    const date = item?.timestamp ? localDateKey(new Date(item.timestamp)) : item?.date;
+    const key = `${item?.dayId}|${date}`;
+    if (!date || seen.has(key)) continue;
+    seen.add(key);
+    migrated.push({ ...item, date });
+  }
+  localStorage.setItem(KEYS.COMPLETED_DAYS, JSON.stringify(migrated));
+  localStorage.setItem(DAY_KEYS_LOCAL_FLAG, '1');
+  return migrated;
+};
+
 export const getCompletedDays = () => {
   try {
     const raw = getWithLegacyFallback(KEYS.COMPLETED_DAYS, 'la_workout_completed_days_v1');
-    return raw ? JSON.parse(raw) : [];
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? migrateCompletedDaysToLocal(list) : [];
   } catch {
     return [];
   }
@@ -68,7 +113,7 @@ export const getCompletedDays = () => {
 export const markDayCompleted = (dayId) => {
   try {
     const completed = getCompletedDays();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateKey();
     const item = { dayId, date: todayStr, timestamp: Date.now() };
     const updated = [item, ...completed.filter(c => c.date !== todayStr || c.dayId !== dayId)];
     localStorage.setItem(KEYS.COMPLETED_DAYS, JSON.stringify(updated));

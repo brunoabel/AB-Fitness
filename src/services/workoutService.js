@@ -4,6 +4,7 @@ import {
   saveExerciseWeights, 
   addWorkoutToHistory 
 } from '../utils/storage';
+import { isPermanentSyncError } from '../utils/syncErrors.js';
 
 /**
  * Serviço Modular de Treinos e Banco de Dados (Supabase PostgreSQL & Fallback Local)
@@ -262,10 +263,14 @@ export async function recordWorkoutCompletion({
     notes,
     exercisesData,
     assignedProgramId,
+    completedAt: summary.completedAt,
     queuedAt: Date.now()
   };
   const result = await syncSessionToCloud(job);
-  if (!result.synced) enqueueSync(job);
+  if (!result.synced) {
+    if (result.permanent) moveToDeadLetter(job, result.error);
+    else enqueueSync(job);
+  }
   return { ...result, summary, sessionId: job.sessionId };
 }
 
@@ -307,6 +312,50 @@ function enqueueSync(job) {
 
 export const getPendingSyncCount = (userId) => readQueue().filter((j) => !userId || j.userId === userId).length;
 
+/* Dead-letter: treinos que o servidor rejeitou de forma definitiva (dados inválidos, permissão).
+ * Saem da fila para não bloquearem os seguintes; o utilizador pode tentar de novo ou descartar. */
+const DEAD_LETTER_KEY = 'ab_fitness_sync_deadletter_v1';
+
+function readDeadLetter() {
+  try {
+    const list = JSON.parse(localStorage.getItem(DEAD_LETTER_KEY) || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeDeadLetter(list) {
+  try {
+    localStorage.setItem(DEAD_LETTER_KEY, JSON.stringify(list));
+  } catch {}
+}
+
+function moveToDeadLetter(job, error) {
+  writeQueue(readQueue().filter((j) => j.sessionId !== job.sessionId));
+  writeDeadLetter([
+    ...readDeadLetter().filter((j) => j.sessionId !== job.sessionId),
+    { ...job, failedAt: Date.now(), lastError: String(error || 'Erro desconhecido') }
+  ]);
+}
+
+export const getFailedSyncJobs = (userId) => readDeadLetter().filter((j) => !userId || j.userId === userId);
+
+/** Devolve o treino à fila e tenta reenviar já. */
+export function retryFailedSyncJob(sessionId, userId) {
+  const job = readDeadLetter().find((j) => j.sessionId === sessionId);
+  if (!job) return Promise.resolve(0);
+  writeDeadLetter(readDeadLetter().filter((j) => j.sessionId !== sessionId));
+  const { failedAt: _failedAt, lastError: _lastError, ...clean } = job;
+  enqueueSync(clean);
+  return flushWorkoutSyncQueue(userId);
+}
+
+export function discardFailedSyncJob(sessionId) {
+  writeDeadLetter(readDeadLetter().filter((j) => j.sessionId !== sessionId));
+}
+
+
 const VALID_SET_TYPES = new Set(['N', 'W', 'D', 'F']);
 
 function buildCloudLogPayloads(job) {
@@ -340,9 +389,17 @@ async function syncSessionToCloud(job) {
   const notes = job.notes || 'Treino finalizado com sucesso no AB Fitness';
   const richLogs = buildCloudLogPayloads(job);
 
+  // Hora real do treino (jobs antigos na fila só têm queuedAt)
+  const completedAt = job.completedAt || new Date(job.queuedAt || Date.now()).toISOString();
+  const fail = (error) => ({ synced: false, error: error?.message || String(error), permanent: isPermanentSyncError(error) });
+  const isRpcMissing = (error) =>
+    error.code === 'PGRST202' ||
+    error.code === '42883' ||
+    /sync_workout_session_atomic/i.test(error.message || '');
+
   try {
     // 1. Caminho preferencial: RPC transacional atómica (preserva set_type, rpe e duration_seconds)
-    const { error: rpcError } = await supabase.rpc('sync_workout_session_atomic', {
+    const rpcArgs = {
       p_session_id: job.sessionId,
       p_workout_day_name: job.workoutName,
       p_workout_title: job.workoutTitle,
@@ -350,16 +407,15 @@ async function syncSessionToCloud(job) {
       p_notes: notes,
       p_assigned_program_id: job.assignedProgramId || null,
       p_logs: richLogs
-    });
+    };
+    let { error: rpcError } = await supabase.rpc('sync_workout_session_atomic', { ...rpcArgs, p_completed_at: completedAt });
+    // BD ainda sem a migration 20261134: a assinatura antiga não conhece p_completed_at
+    if (rpcError && isRpcMissing(rpcError)) {
+      ({ error: rpcError } = await supabase.rpc('sync_workout_session_atomic', rpcArgs));
+    }
 
     if (!rpcError) return { synced: true };
-
-    const rpcMissing =
-      rpcError.code === 'PGRST202' ||
-      rpcError.code === '42883' ||
-      /sync_workout_session_atomic/i.test(rpcError.message || '');
-
-    if (!rpcMissing) return { synced: false, error: rpcError.message };
+    if (!isRpcMissing(rpcError)) return fail(rpcError);
 
     // 2. Fallback retrocompatível caso a migration 20261123 ainda não tenha sido aplicada na BD
     const { error: sessionError } = await supabase
@@ -372,11 +428,12 @@ async function syncSessionToCloud(job) {
           workout_title: job.workoutTitle,
           duration_seconds: job.durationSeconds,
           notes,
-          assigned_program_id: job.assignedProgramId || null
+          assigned_program_id: job.assignedProgramId || null,
+          completed_at: completedAt
         },
         { onConflict: 'id', ignoreDuplicates: true }
       );
-    if (sessionError) return { synced: false, error: sessionError.message };
+    if (sessionError) return fail(sessionError);
 
     const legacyPayloads = richLogs.map((l) => ({
       user_id: job.userId,
@@ -389,10 +446,10 @@ async function syncSessionToCloud(job) {
     }));
 
     const { error: deleteError } = await supabase.from('exercise_logs').delete().eq('session_id', job.sessionId);
-    if (deleteError) return { synced: false, error: deleteError.message };
+    if (deleteError) return fail(deleteError);
     if (legacyPayloads.length > 0) {
       const { error: logsError } = await supabase.from('exercise_logs').insert(legacyPayloads);
-      if (logsError) return { synced: false, error: logsError.message };
+      if (logsError) return fail(logsError);
     }
     return { synced: true };
   } catch (err) {
@@ -409,7 +466,14 @@ export function flushWorkoutSyncQueue(userId) {
     let sent = 0;
     for (const job of readQueue().filter((j) => j.userId === userId)) {
       const res = await syncSessionToCloud(job);
-      if (!res.synced) break;
+      if (!res.synced) {
+        // Erro definitivo sai da fila; transitório (rede) para o ciclo e preserva a ordem
+        if (res.permanent) {
+          moveToDeadLetter(job, res.error);
+          continue;
+        }
+        break;
+      }
       writeQueue(readQueue().filter((j) => j.sessionId !== job.sessionId));
       sent += 1;
     }

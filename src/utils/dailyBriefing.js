@@ -3,9 +3,11 @@
  * o ActiveWorkout.jsx reduz 1 série dos exercícios que atacam esse músculo, só na primeira
  * vez que o treino de hoje é iniciado (nunca num rascunho já em curso).
  */
+import { localDateKey } from './dateKey.js';
+
 const KEY_PREFIX = 'ab_ease_mode_';
 
-const todayKey = (today = new Date()) => `${KEY_PREFIX}${today.toISOString().slice(0, 10)}`;
+const todayKey = (today = new Date()) => `${KEY_PREFIX}${localDateKey(today)}`;
 
 /** `storage` é injetável (testes passam um mock); por omissão usa o localStorage do browser. */
 function resolveStorage(storage) {

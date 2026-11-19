@@ -2,15 +2,15 @@
  * Streak de treino em dias, que respeita o plano: dias de descanso agendados não quebram nem somam.
  * Um dia de treino agendado sem treino quebra a sequência (hoje ainda não conta como falha).
  */
-const iso = (d) => {
-  // Mesmo formato (UTC) que markDayCompleted grava em storage.js
-  return d.toISOString().slice(0, 10);
-};
+import { localDateKey, toLocalDateKey } from './dateKey.js';
+
+// Mesmo formato (dia local) que markDayCompleted grava em storage.js
+const iso = (d) => localDateKey(d);
 
 export function computeStreak(completedDays = [], schedule = [], runsHistory = [], today = new Date()) {
   const trained = new Set([
     ...completedDays.map((c) => c?.date),
-    ...runsHistory.map((r) => (r?.date || '').slice(0, 10))
+    ...runsHistory.map((r) => toLocalDateKey(r?.date))
   ].filter(Boolean));
   const restDays = new Set(schedule.filter((d) => d?.isRestDay).map((d) => d.dayId));
   let streak = 0;
@@ -21,7 +21,7 @@ export function computeStreak(completedDays = [], schedule = [], runsHistory = [
     else if (i === 0 || restDays.has(cursor.getDay())) {
       // hoje ainda está em aberto; descanso agendado não quebra
     } else break;
-    cursor.setUTCDate(cursor.getUTCDate() - 1);
+    cursor.setDate(cursor.getDate() - 1);
   }
   return streak;
 }

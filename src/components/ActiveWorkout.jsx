@@ -285,8 +285,11 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     setFinalDurationMinutes(computedMinutes);
     const now = new Date();
     const workoutTitle = workout?.title || workout?.name || 'Treino Concluído';
+    // Mesmo id local e na nuvem: o histórico hidratado do servidor faz merge sem duplicar
+    const pendingSessionId = newSessionId();
     const workoutRecord = {
       id: `workout_${Date.now()}`,
+      sessionId: pendingSessionId,
       timestamp: Date.now(),
       completedAt: now.toISOString(),
       date: now.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }),
@@ -325,7 +328,6 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     else if (registerSessionAndCheckDue()) setCheckin('due');
 
     if (user?.id) {
-      const pendingSessionId = newSessionId();
       if (isAssigned) setCheckinSessionId(pendingSessionId);
       recordWorkoutCompletion({
         userId: user.id,

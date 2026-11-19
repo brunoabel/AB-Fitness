@@ -11,7 +11,7 @@ import { getWorkoutHistory } from '../utils/storage';
 import ProgressionCharts from './ProgressionCharts';
 import BadgesView from './BadgesView';
 import { getUnlockedBadges } from '../utils/badgeService';
-import { getPendingSyncCount } from '../services/workoutService';
+import { getPendingSyncCount, getFailedSyncJobs, retryFailedSyncJob, discardFailedSyncJob } from '../services/workoutService';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
 import { getLocalFitnessProfile } from '../services/fitnessProfileService';
@@ -34,7 +34,10 @@ export default function HistoryView() {
   const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
   const [subTab, setSubTab] = useState('history'); // 'history' | 'charts' | 'badges' | 'body'
   const history = getWorkoutHistory();
+  const [, setSyncTick] = useState(0);
+  const refreshSync = () => setSyncTick((t) => t + 1);
   const pendingSyncCount = getPendingSyncCount(user?.id);
+  const failedSyncJobs = getFailedSyncJobs(user?.id);
   const unlockedBadges = getUnlockedBadges();
   const unlockedCount = Object.keys(unlockedBadges).length;
 
@@ -128,11 +131,37 @@ export default function HistoryView() {
                 Histórico de sessões
               </h3>
               {pendingSyncCount > 0 && (
-                <span className="text-xs font-medium text-amber-300 tabular-nums">
+                <span className="text-xs font-medium text-zinc-400 tabular-nums">
                   {pendingSyncCount} por sincronizar
                 </span>
               )}
             </div>
+
+            {failedSyncJobs.map((job) => (
+              <div key={job.sessionId} className="bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3 py-2.5 flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white truncate">{job.workoutTitle || job.workoutName || 'Treino'} não sincronizado</p>
+                  <p className="text-xs text-zinc-400">O servidor recusou este treino. Continua guardado neste aparelho.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => retryFailedSyncJob(job.sessionId, user?.id).finally(refreshSync)}
+                  className="shrink-0 text-xs font-semibold text-white px-2.5 py-1.5 rounded-lg border border-white/[0.08] hover:bg-white/[0.06]"
+                >
+                  Tentar de novo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    discardFailedSyncJob(job.sessionId);
+                    refreshSync();
+                  }}
+                  className="shrink-0 text-xs font-medium text-zinc-400 px-2 py-1.5 hover:text-white"
+                >
+                  Descartar
+                </button>
+              </div>
+            ))}
 
             {history.length === 0 ? (
               <div className="py-8 border-t border-white/[0.06] text-center space-y-2">

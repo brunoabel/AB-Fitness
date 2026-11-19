@@ -5,6 +5,7 @@ import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { computeStreak, weekProgress } from '../utils/streak';
+import { localDateKey } from '../utils/dateKey.js';
 import { getRunsHistory } from '../utils/storage';
 import { buildGreeting } from '../utils/greetings';
 
@@ -91,7 +92,7 @@ export default function Header({
   }, []);
 
   const greetingText = useMemo(() => {
-    const todayIso = now.toISOString().slice(0, 10); // formato gravado por markDayCompleted
+    const todayIso = localDateKey(now); // formato gravado por markDayCompleted
     return buildGreeting({
       name: identity.firstName,
       streak,
