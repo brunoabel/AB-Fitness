@@ -31,7 +31,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const [refreshing, setRefreshing] = useState(false);
   const [athletes, setAthletes] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const [stats, setStats] = useState({ totalLogs: 0, totalVolume: 0 });
+  const [stats, setStats] = useState({ totalLogs: 0, totalVolume: 0, totals: null });
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('athletes'); // 'athletes' | 'sessions' | 'waitlist'
   const [waitlistLeads, setWaitlistLeads] = useState(() => getLocalWaitlist());
@@ -51,7 +51,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
       setSessions(data.sessions || []);
       setStats({
         totalLogs: data.totalLogsCount || 0,
-        totalVolume: data.totalVolumeKg || 0
+        totalVolume: data.totalVolumeKg || 0,
+        totals: data.totals || null
       });
       if (Array.isArray(leads)) setWaitlistLeads(leads);
     } catch (err) {
@@ -74,7 +75,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
           setSessions(data.sessions || []);
           setStats({
             totalLogs: data.totalLogsCount || 0,
-            totalVolume: data.totalVolumeKg || 0
+            totalVolume: data.totalVolumeKg || 0,
+            totals: data.totals || null
           });
           if (Array.isArray(leads)) setWaitlistLeads(leads);
         }
@@ -255,9 +257,11 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 <span>Atletas</span>
               </div>
               <div className="text-xl sm:text-2xl font-bold font-display tabular-nums text-white">
-                {athletes.length}
+                {stats.totals?.athletes ?? athletes.length}
               </div>
-              <div className="text-[11px] text-zinc-500 mt-0.5">registados</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5">
+                {stats.totals ? `${stats.totals.activeAthletes7d} ativos em 7 dias` : 'registados'}
+              </div>
             </div>
 
             <div className="px-3 sm:px-4">
@@ -266,9 +270,11 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 <span>Treinos</span>
               </div>
               <div className="text-xl sm:text-2xl font-bold font-display tabular-nums text-white">
-                {sessions.length}
+                {stats.totals?.sessions ?? sessions.length}
               </div>
-              <div className="text-[11px] text-zinc-500 mt-0.5">concluídos</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5">
+                {stats.totals ? `${stats.totals.sessions7d} em 7 dias` : 'concluídos'}
+              </div>
             </div>
 
             <div className="pl-3 sm:pl-4">
@@ -319,7 +325,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Atletas ({athletes.length})
+              Atletas ({stats.totals?.athletes ?? athletes.length})
             </button>
             <button
               onClick={() => {
@@ -332,7 +338,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              Treinos ({sessions.length})
+              Treinos ({stats.totals?.sessions ?? sessions.length})
             </button>
             <button
               onClick={() => {
@@ -375,7 +381,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {filteredAthletes.map((ath) => {
-                    const athSessionsCount = sessions.filter((s) => s.user_id === ath.id).length;
+                    const athSessionsCount = ath.session_count ?? sessions.filter((s) => s.user_id === ath.id).length;
                     const isAthCeo = ath.role === 'ceo';
                     const isCurrentAdmin = isAthCeo || ath.role === 'admin';
                     const initials = (ath.full_name || ath.email || 'A')
@@ -442,6 +448,9 @@ export default function AdminDashboard({ onBackToWorkout }) {
           {/* TAB 2: SESSÕES RECENTES CONCLUÍDAS */}
           {activeTab === 'sessions' && (
             <div className="space-y-2">
+              {stats.totals && stats.totals.sessions > sessions.length && (
+                <p className="text-[11px] text-zinc-500">A mostrar os {sessions.length} treinos mais recentes de {stats.totals.sessions}.</p>
+              )}
               {sessions.length === 0 ? (
                 <div className="p-8 rounded-xl border border-dashed border-white/10 text-center space-y-2">
                   <Activity className="w-6 h-6 text-zinc-400 mx-auto" />
@@ -455,8 +464,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {sessions.map((sess) => {
-                    const athleteOwner = athletes.find((a) => a.id === sess.user_id);
-                    const athleteName = athleteOwner?.full_name || athleteOwner?.email?.split('@')[0] || 'Atleta';
+                    const athleteOwner = sess.athlete_name ? null : athletes.find((a) => a.id === sess.user_id);
+                    const athleteName = sess.athlete_name || athleteOwner?.full_name || athleteOwner?.email?.split('@')[0] || 'Atleta';
                     const durationMin = Math.round((sess.duration_seconds || 0) / 60);
 
                     return (

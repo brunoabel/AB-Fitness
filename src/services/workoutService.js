@@ -611,9 +611,36 @@ export function getLocalCustomPlan() {
 // Busca todos os atletas, treinos e estatísticas gerais
 export async function fetchAdminAthletesData() {
   if (!isSupabaseConfigured() || !supabase) {
-    return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0 };
+    return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0, totals: null };
   }
 
+  // Caminho preferencial (migration 20261138): totais e listas limitadas calculados no servidor
+  try {
+    const [summaryRes, athletesRes, sessionsRes] = await Promise.all([
+      supabase.rpc('admin_dashboard_summary'),
+      supabase.rpc('admin_list_athletes', { p_search: null, p_limit: 500, p_offset: 0 }),
+      supabase.rpc('admin_recent_sessions', { p_limit: 100 })
+    ]);
+    if (!summaryRes.error && !athletesRes.error && !sessionsRes.error) {
+      const summary = Array.isArray(summaryRes.data) ? summaryRes.data[0] : summaryRes.data;
+      return {
+        athletes: athletesRes.data || [],
+        sessions: sessionsRes.data || [],
+        totalLogsCount: Number(summary?.logs) || 0,
+        totalVolumeKg: Math.round(Number(summary?.volume_kg) || 0),
+        totals: {
+          athletes: Number(summary?.athletes) || 0,
+          sessions: Number(summary?.sessions) || 0,
+          sessions7d: Number(summary?.sessions_7d) || 0,
+          activeAthletes7d: Number(summary?.active_athletes_7d) || 0
+        }
+      };
+    }
+  } catch (err) {
+    console.warn('RPCs do painel admin indisponíveis, a usar o caminho antigo:', err);
+  }
+
+  // Fallback sem a migration: lê as tabelas inteiras (só viável com poucos dados)
   try {
     // 1. Buscar todos os perfis cadastrados
     const { data: athletes, error: athError } = await supabase
@@ -650,7 +677,8 @@ export async function fetchAdminAthletesData() {
       athletes: athletes || [],
       sessions: sessions || [],
       totalLogsCount: logs?.length || 0,
-      totalVolumeKg: Math.round(totalVolumeKg)
+      totalVolumeKg: Math.round(totalVolumeKg),
+      totals: null
     };
   } catch (err) {
     console.error('Erro no serviço administrativo:', err);
