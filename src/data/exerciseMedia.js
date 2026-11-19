@@ -5,9 +5,9 @@
  * VITE_MEDIA_BASE_URL permite servir os vídeos a partir do teu próprio bucket R2 (ver scripts/mirror_exercise_media.mjs)
  * sem alterar nenhuma URL nos dados.
  */
-import { EXERCISE_CATALOG } from './exerciseCatalog';
-import { getVerifiedExerciseVideo } from './exerciseVideos';
-import { findExerciseIn100 } from './exercises100';
+import { EXERCISE_CATALOG } from './exerciseCatalog.js';
+import { getVerifiedExerciseVideo } from './exerciseVideos.js';
+import { findExerciseIn100 } from './exercises100.js';
 
 const SOURCE_HOST = 'https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev';
 const MEDIA_BASE = (import.meta.env?.VITE_MEDIA_BASE_URL || '').replace(/\/+$/, '');

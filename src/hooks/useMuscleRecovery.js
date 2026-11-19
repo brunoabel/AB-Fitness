@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context';
 import { canUseSocial } from '../services/socialService';
-import { getWorkoutHistory } from '../utils/storage';
+import { getWorkoutHistory, getRunsHistory } from '../utils/storage';
 import { buildState, computeLocalFatigue } from '../utils/muscleFatigue';
+import { getCurrentReadinessScore } from '../utils/activeWorkoutHelpers';
 
 const REFRESH_MS = 10 * 60 * 1000; // a fadiga decai com o tempo; recalcula a cada 10 min
 
@@ -17,7 +18,7 @@ export default function useMuscleRecovery() {
   const { user } = useAuth();
   const userId = user?.id;
   const [tick, setTick] = useState(0);
-  const [state, setState] = useState(() => ({ ...computeLocalFatigue(getWorkoutHistory()), loading: canUseSocial(userId) }));
+  const [state, setState] = useState(() => ({ ...computeLocalFatigue(getWorkoutHistory(), Date.now(), getRunsHistory(), getCurrentReadinessScore()), loading: canUseSocial(userId) }));
 
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), REFRESH_MS);
@@ -31,7 +32,8 @@ export default function useMuscleRecovery() {
 
   useEffect(() => {
     let alive = true;
-    const local = computeLocalFatigue(getWorkoutHistory());
+    // Prontidão do wearable abranda ou acelera a recuperação (a nuvem faz o mesmo com athlete_biometrics)
+    const local = computeLocalFatigue(getWorkoutHistory(), Date.now(), getRunsHistory(), getCurrentReadinessScore());
     const request = canUseSocial(userId)
       ? supabase.rpc('get_muscle_fatigue', { p_window_hours: 72 })
       : Promise.resolve({ data: null, error: 'local' });
@@ -47,7 +49,7 @@ export default function useMuscleRecovery() {
         const cloud = Number(r.fatigue) || 0;
         rows[r.muscle_id] =
           loc && loc.fatigue > cloud
-            ? { fatigue: loc.fatigue, lastTrainedAt: loc.lastTrainedAt }
+            ? { fatigue: loc.fatigue, lastTrainedAt: loc.lastTrainedAt, hoursToRecovered: loc.hoursToRecovered }
             : { fatigue: cloud, lastTrainedAt: r.last_trained_at, hoursToRecovered: Number(r.hours_to_recovered) || 0 };
       }
       setState(buildState(rows, 'cloud'));

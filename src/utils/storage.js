@@ -210,7 +210,7 @@ export const deleteRunRecord = (runId) => {
 };
 
 // Rascunho / Sessão Ativa de Corrida (armazenado em IndexedDB para alta performance com milhares de pontos GPS)
-import { getRunDraftFromIDB, saveRunDraftToIDB, clearRunDraftFromIDB } from './idbDraft';
+import { getRunDraftFromIDB, saveRunDraftToIDB, clearRunDraftFromIDB } from './idbDraft.js';
 export { getRunDraftFromIDB, saveRunDraftToIDB, clearRunDraftFromIDB };
 
 export const getActiveRunDraft = () => {
