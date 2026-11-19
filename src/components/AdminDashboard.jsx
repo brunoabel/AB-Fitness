@@ -376,7 +376,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {filteredAthletes.map((ath) => {
                     const athSessionsCount = sessions.filter((s) => s.user_id === ath.id).length;
-                    const isAthCeo = ath.role === 'ceo' || ath.email === 'brunoaaraujo2005@gmail.com';
+                    const isAthCeo = ath.role === 'ceo';
                     const isCurrentAdmin = isAthCeo || ath.role === 'admin';
                     const initials = (ath.full_name || ath.email || 'A')
                       .split(' ')
@@ -675,7 +675,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
               </div>
 
               {/* Promover/remover papel de Trainer */}
-              {selectedAthlete && selectedAthlete.role !== 'admin' && selectedAthlete.role !== 'ceo' && selectedAthlete.email !== 'brunoaaraujo2005@gmail.com' && (
+              {selectedAthlete && selectedAthlete.role !== 'admin' && selectedAthlete.role !== 'ceo' && (
                 <div className="px-4 pt-3.5 border-t border-white/10 bg-zinc-900 space-y-2">
                   {roleActionError && (
                     <p className="text-[11px] text-red-400">{roleActionError}</p>

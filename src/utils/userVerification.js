@@ -9,13 +9,9 @@
 export function isAthleteCeo(profileOrUser, contextUser) {
   if (!profileOrUser && !contextUser) return false;
 
-  const role = (profileOrUser?.role || '').toLowerCase();
-  if (role === 'ceo') return true;
-
-  const email = (contextUser?.email || profileOrUser?.email || '').toLowerCase().trim();
-  if (email === 'brunoaaraujo2005@gmail.com') return true;
-
-  return false;
+  // Só o papel guardado na base (protegido por trigger) conta; nunca o e-mail
+  const role = (profileOrUser?.role || contextUser?.role || '').toLowerCase();
+  return role === 'ceo';
 }
 
 /**

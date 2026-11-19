@@ -210,12 +210,9 @@ export function AuthProvider({ children }) {
 
   // Só para mostrar/ocultar a UI de admin/trainer: o acesso real aos dados é garantido pelas políticas RLS.
   // Role protegido na base de dados por trigger (prevent_profile_role_change) — "coach" é o papel de PT.
-  // O papel 'ceo' (ou o criador Bruno Araújo) possui acesso supremo a todo o ecossistema (Admin + PT + Pro).
+  // O papel 'ceo' possui acesso supremo a todo o ecossistema (Admin + PT + Pro). Lido só da base, nunca por e-mail.
   const profileRole = roleState.userId === userId ? roleState.role : null;
-  const isCeo = Boolean(
-    profileRole === 'ceo' ||
-    user?.email === 'brunoaaraujo2005@gmail.com'
-  );
+  const isCeo = profileRole === 'ceo';
   const isAdmin = isCeo || Boolean(profileRole === 'admin');
   const isTrainer = isCeo || Boolean(profileRole === 'coach');
   const ownState = roleState.userId === userId ? roleState : {};
