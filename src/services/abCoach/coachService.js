@@ -108,9 +108,9 @@ export async function sendMessageToCoach(messages, perfil = null) {
 
       lastError = error;
 
-      // Não faz retry se for erro de autenticação, rate limit ou tempo esgotado (evita esperas de 40s)
+      // Não faz retry se for erro de autenticação, quota, rate limit ou tempo esgotado (evita esperas de 40s)
       const status = error?.status || error?.context?.status;
-      if (status === 401 || status === 429 || isTimeoutError(error)) {
+      if (status === 401 || status === 402 || status === 429 || isTimeoutError(error)) {
         break;
       }
 
@@ -129,11 +129,12 @@ export async function sendMessageToCoach(messages, perfil = null) {
 
   if (lastError) {
     let friendlyMessage = 'O motor de IA está momentaneamente indisponível. Por favor, tenta novamente dentro de instantes.';
+    let payload = null;
     
     // O SDK da Supabase armazena o objeto Response original em error.context
     if (lastError.context && typeof lastError.context.json === 'function') {
       try {
-        const payload = await lastError.context.json();
+        payload = await lastError.context.json();
         if (payload?.mensagem) {
           friendlyMessage = payload.mensagem;
         } else if (payload?.error) {
@@ -149,6 +150,13 @@ export async function sendMessageToCoach(messages, perfil = null) {
     }
 
     const status = lastError.status || lastError.context?.status;
+    // Quota diária do AB Coach (edge function devolve 402 com error: 'quota_exceeded')
+    if (status === 402 || payload?.error === 'quota_exceeded') {
+      const quotaError = new Error(payload?.mensagem || 'Chegaste ao limite diário do AB Coach.');
+      quotaError.code = 'COACH_QUOTA';
+      quotaError.isPro = Boolean(payload?.isPro);
+      throw quotaError;
+    }
     if (status === 401) {
       throw new Error('A tua sessão expirou ou não está autenticada. Por favor, inicia sessão novamente.');
     }

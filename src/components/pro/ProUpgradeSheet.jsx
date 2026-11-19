@@ -6,11 +6,13 @@ import { triggerHaptic } from '../../utils/audio';
 
 // Só o que o PRO desbloqueia hoje no app; nada de promessas de funcionalidades por lançar
 const PRO_BENEFITS = [
-  'Mesociclo de 5 semanas com RIR alvo por semana e deload planeado'
+  'Mesociclo de 5 semanas com RIR alvo por semana e deload planeado',
+  'AB Coach com até 50 mensagens por dia (5 no plano gratuito)'
 ];
 
 const REASON_TITLES = {
   mesocycles: 'O mesociclo faz parte do PRO',
+  coach_limit: 'Mais conversas com o AB Coach',
   trial_ending: 'O teu teste PRO está a terminar',
   trial_ended: 'O teu teste PRO terminou'
 };

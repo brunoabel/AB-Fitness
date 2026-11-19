@@ -17,6 +17,7 @@ export default function CoachChatMessage({
   onClose,
   onOpenAuth,
   onRetry,
+  onUpgrade,
   onSaveToWorkouts,
   onShareCard,
   onStartWorkout,
@@ -39,7 +40,9 @@ export default function CoachChatMessage({
           className={`p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
             isUser
               ? 'bg-accent/70 text-white font-medium'
-              : msg.isError
+              : msg.isQuotaError
+                ? 'bg-surface-2 text-zinc-100 border-l-2 border-accent-hover'
+                : msg.isError
                 ? 'bg-rose-950/40 text-rose-300 border border-rose-800/60'
                 : 'bg-surface-2 text-zinc-100 border border-white/10'
           }`}
@@ -62,7 +65,19 @@ export default function CoachChatMessage({
             </div>
           )}
 
-          {msg.isError && !msg.isAuthError && (
+          {msg.isQuotaError && !msg.quotaIsPro && onUpgrade && (
+            <div className="mt-3 pt-2 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={onUpgrade}
+                className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
+              >
+                Ver o AB Fitness PRO
+              </button>
+            </div>
+          )}
+
+          {msg.isError && !msg.isAuthError && !msg.isQuotaError && (
             <div className="mt-3 pt-2 border-t border-rose-800/40">
               <button
                 type="button"

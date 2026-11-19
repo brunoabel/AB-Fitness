@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { RotateCcw, Send, X } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
@@ -13,6 +13,7 @@ import { saveCustomWorkout, getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 
 const STORAGE_CHAT_KEY = 'ab_fitness_coach_chat_v1';
+const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
 
 export default function AICoachModal({
   isOpen,
@@ -34,6 +35,7 @@ export default function AICoachModal({
 
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [savedWorkouts, setSavedWorkouts] = useState({});
   const [scheduledWorkouts, setScheduledWorkouts] = useState({});
   const [showDayPickerIndex, setShowDayPickerIndex] = useState(null);
@@ -132,7 +134,8 @@ export default function AICoachModal({
     } catch (err) {
       console.error('Erro na conversa com AB Coach:', err);
       const errorText = err.message || 'Falha ao ligar ao assistente AB Coach.';
-      const isAuthError = errorText.includes('conectado') || errorText.includes('login') || errorText.includes('sessão');
+      const isQuotaError = err.code === 'COACH_QUOTA';
+      const isAuthError = !isQuotaError && (errorText.includes('conectado') || errorText.includes('login') || errorText.includes('sessão'));
 
       setMessages((prev) => [
         ...prev,
@@ -143,6 +146,8 @@ export default function AICoachModal({
             : errorText,
           isError: true,
           isAuthError,
+          isQuotaError,
+          quotaIsPro: Boolean(err.isPro),
           timestamp: new Date().toISOString()
         }
       ]);
@@ -334,6 +339,7 @@ export default function AICoachModal({
                   onClose={onClose}
                   onOpenAuth={onOpenAuth}
                   onRetry={handleRetryLastMessage}
+                  onUpgrade={() => setShowUpgrade(true)}
                   onSaveToWorkouts={handleSaveToMyWorkouts}
                   onShareCard={handleShareCard}
                   onStartWorkout={handleStartGeneratedWorkout}
@@ -418,6 +424,11 @@ export default function AICoachModal({
             </div>
           </ModalPanel>
         </ModalBackdrop>
+      )}
+      {isOpen && showUpgrade && (
+        <Suspense key="pro-upgrade" fallback={null}>
+          <ProUpgradeSheet reason="coach_limit" onClose={() => setShowUpgrade(false)} />
+        </Suspense>
       )}
     </AnimatePresence>
   );

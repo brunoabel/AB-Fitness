@@ -77,6 +77,7 @@ export function buildWorkoutInsights(currentSession, history = []) {
 export async function fetchCoachNarrative(facts, workoutTitle = 'Treino') {
   if (!facts) return null;
 
+  let timeoutId;
   try {
     if (!isSupabaseConfigured() || !supabase) {
       return getFallbackNarrative(facts);
@@ -87,26 +88,30 @@ export async function fetchCoachNarrative(facts, workoutTitle = 'Treino') {
     if (!token) return getFallbackNarrative(facts);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500); // Limite de 3.5s
+    timeoutId = setTimeout(() => controller.abort(), 3500); // Limite de 3.5s
 
     const res = await supabase.functions.invoke('ab-coach', {
       body: {
-        action: 'narrate_post_workout',
-        facts,
-        workoutTitle
+        messages: [{
+          role: 'user',
+          content: `Analisa como treinador em 2 frases diretas os factos da sessão concluída "${workoutTitle}" (responde apenas no campo mensagem com treino: null): ${JSON.stringify(facts)}`
+        }],
+        perfil: null,
+        // Conta na quota de análises pós-treino, não na das conversas
+        kind: 'narrative'
       },
       signal: controller.signal
     });
 
-    clearTimeout(timeoutId);
-
-    if (res.data?.response) {
-      return res.data.response;
+    if (res.data?.mensagem) {
+      return res.data.mensagem;
     }
 
     return getFallbackNarrative(facts);
   } catch {
     return getFallbackNarrative(facts);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
 }
 

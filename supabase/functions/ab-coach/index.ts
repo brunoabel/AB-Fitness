@@ -307,7 +307,33 @@ export function sanitizePerfil(raw: any) {
   };
 }
 
-export function buildCoachSystemInstruction(perfil?: any): string {
+// Contexto de treino das últimas 8 semanas (RPC get_coach_training_context), em texto curto para o prompt
+export function formatTrainingContext(ctx: any): string {
+  if (!ctx || typeof ctx !== 'object') return '';
+  const parts: string[] = [];
+  const semanas = Array.isArray(ctx.semanas) ? ctx.semanas.slice(-8) : [];
+  if (semanas.length) {
+    const txt = semanas
+      .map((w: any) => `${String(w.inicio).slice(0, 10)}: ${Number(w.sessoes) || 0} sessões, ${Number(w.series) || 0} séries, ${Math.round(Number(w.volume_kg) || 0)} kg`)
+      .join('; ');
+    parts.push(`VOLUME SEMANAL REGISTADO (8 semanas, semana a começar em): ${txt}`);
+  }
+  const exercicios = Array.isArray(ctx.exercicios) ? ctx.exercicios.slice(0, 12) : [];
+  if (exercicios.length) {
+    const txt = exercicios
+      .map((e: any) => {
+        const nome = findExerciseInCatalog(e.codigo)?.nome || String(e.codigo).slice(0, 40);
+        const atual = e.e1rm_4s ? `${e.e1rm_4s} kg` : 'sem registo';
+        const antes = e.e1rm_4s_anteriores ? `${e.e1rm_4s_anteriores} kg` : 'sem registo';
+        return `${nome} (e1RM últimas 4 semanas ${atual}; 4 semanas anteriores ${antes})`;
+      })
+      .join('; ');
+    parts.push(`TENDÊNCIA DE FORÇA POR EXERCÍCIO: ${txt}`);
+  }
+  return parts.join(' | ');
+}
+
+export function buildCoachSystemInstruction(perfil?: any, trainingContext = ''): string {
   const catalogText = formatCatalogForPrompt();
   let perfilContext = '';
 
@@ -335,6 +361,9 @@ export function buildCoachSystemInstruction(perfil?: any): string {
     if (parts.length > 0) {
       perfilContext = `\n\nPERFIL & HISTÓRICO REAL DO ATLETA (considere estritamente ao prescrever cargas e fadiga):\n${parts.join(' | ')}`;
     }
+  }
+  if (trainingContext) {
+    perfilContext += `\n\nHISTÓRICO GUARDADO NA CONTA (fonte mais fiável que o resumo do aparelho):\n${trainingContext}`;
   }
 
   return `${AB_COACH_SYSTEM_PROMPT}${perfilContext}
@@ -395,6 +424,17 @@ function isRateLimited(userId: string): boolean {
   timestamps.push(now);
   userRequestTimestamps.set(userId, timestamps);
   return false;
+}
+
+// Chama uma RPC do PostgREST com o JWT do próprio utilizador (RLS e auth.uid() aplicados)
+async function callUserRpc(supabaseUrl: string, anonKey: string, authHeader: string, name: string, args: Record<string, unknown> = {}) {
+  const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${name}`, {
+    method: "POST",
+    headers: { "Authorization": authHeader, "apikey": anonKey, "Content-Type": "application/json" },
+    body: JSON.stringify(args)
+  });
+  const data = await res.json().catch(() => null);
+  return { ok: res.ok, status: res.status, data };
 }
 
 Deno.serve(async (req: Request) => {
@@ -471,6 +511,33 @@ Deno.serve(async (req: Request) => {
     const rawMessages = body.messages.slice(-10);
     const rawPerfil = body.perfil && typeof body.perfil === "object" ? body.perfil : null;
     const perfil = sanitizePerfil(rawPerfil);
+    const kind = body.kind === "narrative" ? "narrative" : "chat";
+
+    // 3b. Quota diária persistente (migration 20261136). Sem a RPC, segue só com o limite por hora.
+    const quota = await callUserRpc(supabaseUrl, supabaseAnonKey, authHeader, "consume_ab_coach_quota", { p_kind: kind })
+      .catch(() => ({ ok: false, status: 0, data: null }));
+    if (quota.ok && Array.isArray(quota.data) && quota.data[0]) {
+      const q = quota.data[0];
+      if (!q.out_allowed) {
+        const mensagem = q.out_is_pro
+          ? `Chegaste ao limite diário de ${q.out_limit} ${kind === "chat" ? "mensagens" : "análises"} do AB Coach. Volta amanhã.`
+          : `Chegaste ao limite diário do plano gratuito (${q.out_limit} ${kind === "chat" ? "mensagens" : "análises"}). Com PRO tens até ${kind === "chat" ? 50 : 10} por dia.`;
+        return new Response(
+          JSON.stringify({ error: "quota_exceeded", mensagem, limit: q.out_limit, used: q.out_used, isPro: Boolean(q.out_is_pro) }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      console.warn(`Quota do AB Coach indisponível (status ${quota.status}); pedido segue com o limite por hora.`);
+    }
+
+    // 3c. Histórico de 8 semanas guardado na conta (só nas conversas; a análise pós-treino já traz os factos)
+    let trainingContext = "";
+    if (kind === "chat") {
+      const ctx = await callUserRpc(supabaseUrl, supabaseAnonKey, authHeader, "get_coach_training_context")
+        .catch(() => ({ ok: false, status: 0, data: null }));
+      if (ctx.ok) trainingContext = formatTrainingContext(ctx.data);
+    }
 
     const geminiContents = rawMessages
       .filter((m: any) => m && typeof m.content === "string" && m.content.trim() !== "")
@@ -499,7 +566,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite";
-    const systemInstructionText = buildCoachSystemInstruction(perfil);
+    const systemInstructionText = buildCoachSystemInstruction(perfil, trainingContext);
 
     const geminiPayload = {
       systemInstruction: {
