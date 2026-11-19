@@ -1,6 +1,7 @@
 import { getEaseModeToday } from './dailyBriefing';
 import { getLocalBiometrics, getLocalConnections, computeReadinessIndex } from '../services/wearables/wearableManager';
 import { getSavedWeights } from './storage';
+import { applyMesoWeekToSets } from './mesocycleWeek.js';
 import {
   e1RM,
   getBestHistorical1RM,
@@ -21,8 +22,11 @@ export function getCurrentReadinessScore() {
   return readiness ? readiness.score : null;
 }
 
-/** Constrói o estado inicial das séries a partir de um rascunho ativo, cargas prévias e briefing diário. */
-export function buildInitialExercisesData(workout, activeDraft) {
+/**
+ * Constrói o estado inicial das séries a partir de um rascunho ativo, cargas prévias e briefing diário.
+ * `mesoParams` (mesocycleWeek.mesoWeekParams): semana do mesociclo a aplicar; null quando não se aplica.
+ */
+export function buildInitialExercisesData(workout, activeDraft, mesoParams = null) {
   if (activeDraft && activeDraft.exercisesData) {
     return activeDraft.exercisesData;
   }
@@ -65,6 +69,12 @@ export function buildInitialExercisesData(workout, activeDraft) {
       }));
     }
   });
+
+  if (mesoParams) {
+    exercisesList.forEach((ex, idx) => {
+      initial[ex.id] = applyMesoWeekToSets(initial[ex.id], idx, mesoParams, { isTimed: isTimedExercise(ex, ex.id) });
+    });
+  }
 
   return initial;
 }

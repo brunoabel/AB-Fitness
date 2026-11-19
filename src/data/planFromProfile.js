@@ -6,6 +6,7 @@ import { generatePersonalizedWorkoutPlan } from './workoutGenerator.js';
 import { EXERCISES_100, findExerciseIn100 } from './exercises100.js';
 import { SPLIT_BY_DAYS, TRAINING_DAYS, WEEK_DAYS, HIGH_IMPACT_LEG_SPORTS, SPORT_PREVENTION_REGIONS } from '../components/onboarding/profileSchema.js';
 import { DRILLS, REGION_PLANS } from './recoveryProtocols.js';
+import { mesoWeekParams, mesoSetCount } from '../utils/mesocycleWeek.js';
 
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[-_]+/g, ' ');
 
@@ -358,10 +359,8 @@ export function generateMesocyclePlan(profile = {}, weeks = 5) {
   const mesocycleWeeks = [];
 
   for (let w = 1; w <= totalWeeks; w++) {
-    const isDeload = w === totalWeeks;
-    const isPeakWeek = w === totalWeeks - 1;
-    const targetRir = isDeload ? 4 : Math.max(0, 3 - (w - 1));
-    const loadMultiplier = isDeload ? 0.9 : Number((1 + (w - 1) * 0.025).toFixed(3));
+    const params = mesoWeekParams(w, totalWeeks);
+    const { isDeload, targetRir, loadMultiplier } = params;
 
     const weekSchedule = base.plan.map((day) => {
       if (day.isRestDay || !Array.isArray(day.exercises) || day.exercises.length === 0) {
@@ -369,14 +368,7 @@ export function generateMesocyclePlan(profile = {}, weeks = 5) {
       }
 
       const exercises = day.exercises.map((ex, idx, arr) => {
-        const baseSets = Number(ex.defaultSets) || 3;
-        let sets = baseSets;
-
-        if (isDeload) {
-          sets = Math.max(1, Math.round(baseSets * 0.6));
-        } else if (isPeakWeek && idx < 2) {
-          sets = Math.min(5, baseSets + 1);
-        }
+        const sets = mesoSetCount(ex.defaultSets, idx, params);
 
         // Agrupa os 2 últimos exercícios acessórios em Bi-Set se sessão curta (45m) ou condicionamento
         const shouldSuperset =

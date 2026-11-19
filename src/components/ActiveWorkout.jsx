@@ -43,10 +43,13 @@ import {
 } from '../utils/activeWorkoutHelpers';
 import { buildWorkoutInsights, fetchCoachNarrative } from '../services/abCoach/coachInsightsService';
 import { useAuth } from '../context';
+import { canAccessFeature } from '../utils/userVerification';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { mesoWeekParams, readSelectedMesoWeek, applyMesoWeekToHint, mesoWeekLabel } from '../utils/mesocycleWeek';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export default function ActiveWorkout({ workout, onBackToDashboard }) {
-  const { user } = useAuth();
+  const { user, isPro, isTrialActive, trialEndsAt } = useAuth();
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState(null);
   const [streakInfo, setStreakInfo] = useState(null);
 
@@ -62,6 +65,15 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const prevIndex = useMemo(() => buildPrevIndex(pastHistory), [pastHistory]);
   const [readinessScore] = useState(() => getCurrentReadinessScore());
 
+  // Semana do mesociclo: só PRO/teste com perfil de onboarding e só nos treinos do plano semanal
+  // (dayId 0-6). Programas do PT e treinos personalizados ficam como foram prescritos.
+  const [mesoParams] = useState(() => {
+    const isPlanWorkout = Number.isInteger(workout?.dayId) && !workout?.assignedProgramId;
+    const canUse = canAccessFeature('mesocycles', { is_pro: isPro, trial_ends_at: isTrialActive ? trialEndsAt : null });
+    if (!isPlanWorkout || !canUse || !getLocalFitnessProfile()) return null;
+    return mesoWeekParams(readSelectedMesoWeek());
+  });
+
   const progressionHints = useMemo(() => {
     const hints = {};
     const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
@@ -72,13 +84,15 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
         repRange: ex.repRange,
         progressionIncrementKg: ex.progressionIncrementKg
       }, readinessScore);
-      if (hint) hints[ex.id] = hint;
+      if (!hint) return;
+      const lastWorking = prevSets.find((s) => (s.completed || s.done) && s.type !== 'W' && Number(s.weight) > 0);
+      hints[ex.id] = applyMesoWeekToHint(hint, mesoParams, lastWorking?.weight);
     });
     return hints;
-  }, [prevIndex, workout, readinessScore]);
+  }, [prevIndex, workout, readinessScore, mesoParams]);
 
   const [isFocusMode, setIsFocusMode] = useState(true);
-  const [exercisesData, setExercisesData] = useState(() => buildInitialExercisesData(workout, activeDraft));
+  const [exercisesData, setExercisesData] = useState(() => buildInitialExercisesData(workout, activeDraft, mesoParams));
   const [pastWeights] = useState(() => getSavedWeights());
 
   const { isTimerRunning, setIsTimerRunning, computeElapsed, timerRef } = useWorkoutTimer(activeDraft);
@@ -408,6 +422,12 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
             >
               OK
             </button>
+          </div>
+        )}
+
+        {mesoParams && (
+          <div className="border-l-2 border-accent-hover pl-3.5 py-1.5 text-xs text-zinc-200 leading-relaxed">
+            <strong className="text-white font-semibold">Mesociclo:</strong> {mesoWeekLabel(mesoParams)}
           </div>
         )}
 

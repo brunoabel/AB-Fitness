@@ -13,14 +13,16 @@ const HINT_STYLE = {
   OVERLOAD: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
   REP_BUMP: 'bg-white/10 border-white/20 text-white',
   MAINTAIN: 'bg-white/[0.04] border-white/[0.08] text-zinc-300',
-  DELOAD: 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+  DELOAD: 'bg-accent/40 border-accent-hover text-white',
+  MESO_DELOAD: 'bg-accent/40 border-accent-hover text-white'
 };
 
 const HUMAN_HINT_LABEL = {
   OVERLOAD: 'Meta de hoje: Subir carga',
   REP_BUMP: 'Meta de hoje: +1 repetição',
   MAINTAIN: 'Meta de hoje: Consolidar carga',
-  DELOAD: 'Ajuste: Aliviar carga (-5%)'
+  DELOAD: 'Ajuste: Aliviar carga (-5%)',
+  MESO_DELOAD: 'Semana de deload: carga a 90%'
 };
 
 export default function FocusExerciseCard({

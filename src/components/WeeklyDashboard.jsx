@@ -27,7 +27,7 @@ import { canAccessFeature } from '../utils/userVerification';
 
 const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
 
-const MESO_WEEK_KEY = 'ab_fitness_meso_week_v1';
+import { MESO_WEEK_KEY } from '../utils/mesocycleWeek';
 
 // Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
 // DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
