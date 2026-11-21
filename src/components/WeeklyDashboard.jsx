@@ -257,13 +257,7 @@ export default function WeeklyDashboard({
 
       {/* 2. THE HERO WORKOUT CARD — O Único Protagonista Elevado do Ecrã */}
       <section aria-label="Treino em Destaque">
-        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-surface-2 via-surface to-app border border-white/[0.12] p-6 sm:p-8 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.14)]">
-          
-          {/* Iluminação Volumétrica Sutil */}
-          <div 
-            aria-hidden 
-            className="absolute -top-28 -right-20 w-72 h-72 rounded-full bg-white/[0.06] blur-3xl pointer-events-none" 
-          />
+        <div className="relative overflow-hidden rounded-[24px] bg-surface border border-white/[0.10] p-6 sm:p-7">
 
           {/* Linha de Estado */}
           <div className="flex items-center justify-between gap-3 text-xs text-zinc-400 mb-3 relative">
@@ -365,83 +359,14 @@ export default function WeeklyDashboard({
         </div>
       </section>
 
-      {/* 2.5 BRIEFING DIÁRIO DO AB COACH — cruza fadiga muscular com prontidão dos wearables */}
+      {/* 2.5 STATUS DIÁRIO — linha editorial sem caixa */}
       {isToday && (
-        <Suspense fallback={<div className="rounded-2xl bg-white/[0.02] h-[88px] animate-pulse" />}>
+        <Suspense fallback={null}>
           <DailyBriefing todayWorkout={selectedWorkout} />
         </Suspense>
       )}
 
-      {/* 3. PRONTIDÃO & CONSISTÊNCIA SEMANAL — Anel visual + Pips em vez de barra SaaS */}
-      <section aria-label="Painel de Prontidão e Consistência" className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-        
-        {/* Card A: Wearable Readiness HUD */}
-        <div className="flex flex-col justify-center">
-          <WearableReadinessCard />
-        </div>
-
-        {/* Bloco B: Anel de Consistência da Semana (sem caixa pesada) */}
-        <div className="px-2 py-2 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 min-w-0">
-            {/* Anel SVG estilo Apple Fitness */}
-            <div className="relative w-12 h-12 shrink-0 flex items-center justify-center">
-              <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44" aria-hidden>
-                <circle
-                  cx="22"
-                  cy="22"
-                  r="18"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.08)"
-                  strokeWidth="4"
-                />
-                <circle
-                  cx="22"
-                  cy="22"
-                  r="18"
-                  fill="none"
-                  stroke={weeklyProgressPercent >= 100 ? '#34d399' : '#ffffff'}
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 18}
-                  strokeDashoffset={(2 * Math.PI * 18) * (1 - weeklyProgressPercent / 100)}
-                  className="transition-all duration-500 ease-out"
-                />
-              </svg>
-              <span className="absolute text-xs font-display font-semibold text-white tabular-nums tracking-[-0.01em]">
-                {completedCount}/{weeklyTarget}
-              </span>
-            </div>
-
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-white">
-                <Flame className="w-3.5 h-3.5 text-amber-400 stroke-[2]" />
-                <span>Consistência semanal</span>
-              </div>
-              <p className="text-[12px] text-zinc-400 mt-0.5 truncate">
-                {weeklyProgressPercent >= 100
-                  ? 'Meta semanal batida!'
-                  : `${weeklyTarget - completedCount} ${weeklyTarget - completedCount === 1 ? 'treino restante' : 'treinos restantes'} para a meta`}
-              </p>
-            </div>
-          </div>
-
-          {onOpenCustomize && (
-            <button
-              type="button"
-              onClick={() => {
-                onOpenCustomize();
-                triggerHaptic(8);
-              }}
-              className="shrink-0 px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-zinc-200 hover:text-white inline-flex items-center gap-1.5 cursor-pointer transition-colors"
-            >
-              <Target className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Metas</span>
-            </button>
-          )}
-        </div>
-      </section>
-
-      {/* 4. LISTA DE EXERCÍCIOS DA SESSÃO — Editorial Limpo sem caixilhos empilhados */}
+      {/* 3. LISTA DE EXERCÍCIOS DA SESSÃO — Editorial Limpo sem caixilhos empilhados */}
       {!selectedWorkout.isRestDay && totalExercisesCount > 0 && (
         <section aria-label="Sequência de Exercícios" className="space-y-3">
           <div className="flex items-baseline justify-between px-1">
@@ -505,6 +430,69 @@ export default function WeeklyDashboard({
           </div>
         </section>
       )}
+
+      {/* 4. CONSISTÊNCIA & WEARABLES — linhas limpas com hairline, sem caixas */}
+      <section aria-label="Painel de Prontidão e Consistência" className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]">
+        <div className="px-2 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
+              <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44" aria-hidden>
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="18"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.08)"
+                  strokeWidth="4"
+                />
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="18"
+                  fill="none"
+                  stroke={weeklyProgressPercent >= 100 ? '#34d399' : '#ffffff'}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 18}
+                  strokeDashoffset={(2 * Math.PI * 18) * (1 - weeklyProgressPercent / 100)}
+                  className="transition-all duration-500 ease-out"
+                />
+              </svg>
+              <span className="absolute text-[11px] font-display font-semibold text-white tabular-nums tracking-[-0.01em]">
+                {completedCount}/{weeklyTarget}
+              </span>
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-[13px] font-semibold text-white">
+                <Flame className="w-3.5 h-3.5 text-amber-400 stroke-[2]" />
+                <span>Consistência semanal</span>
+              </div>
+              <p className="text-[12px] text-zinc-400 mt-0.5 truncate">
+                {weeklyProgressPercent >= 100
+                  ? 'Meta semanal batida!'
+                  : `${weeklyTarget - completedCount} ${weeklyTarget - completedCount === 1 ? 'treino restante' : 'treinos restantes'} para a meta`}
+              </p>
+            </div>
+          </div>
+
+          {onOpenCustomize && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenCustomize();
+                triggerHaptic(8);
+              }}
+              className="shrink-0 px-3 py-1.5 rounded-lg border border-white/[0.08] hover:bg-white/[0.06] text-xs font-semibold text-zinc-200 hover:text-white inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <Target className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Metas</span>
+            </button>
+          )}
+        </div>
+
+        <WearableReadinessCard />
+      </section>
 
       {/* 5. ATALHO: MANUAL DO ATLETA (Linha limpa sem caixa cinzenta) */}
       {(() => {

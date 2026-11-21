@@ -117,8 +117,8 @@ export default function MuscleRecoveryMap() {
   };
 
   return (
-    <section aria-labelledby="recovery-title" className="rounded-3xl bg-app border border-white/[0.08] overflow-hidden">
-      <header className="flex items-end justify-between gap-4 px-5 pt-5">
+    <section aria-labelledby="recovery-title" className="border-t border-white/[0.08] pt-6">
+      <header className="flex items-end justify-between gap-4 px-1">
         <div className="min-w-0">
           <h3 id="recovery-title" className="font-heading text-section font-semibold text-white">Recuperação muscular</h3>
           <p className="text-[13px] text-zinc-400">
@@ -134,7 +134,7 @@ export default function MuscleRecoveryMap() {
         </p>
       </header>
 
-      <div className="relative grid grid-cols-2 gap-3 px-6 pt-5">
+      <div className="relative grid grid-cols-2 gap-3 px-4 pt-5">
         <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,var(--color-surface-2),transparent_70%)]" />
         {['front', 'back'].map((view) => (
           <figure key={view} className="relative">
@@ -144,13 +144,13 @@ export default function MuscleRecoveryMap() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2.5 px-5 pt-4 text-[12px] text-zinc-400" aria-hidden>
+      <div className="flex items-center gap-2.5 px-1 pt-4 text-[12px] text-zinc-400" aria-hidden>
         <span>Fresco</span>
         <span className="flex-1 h-1.5 rounded-full" style={{ background: HEAT_GRADIENT }} />
         <span>Fadigado</span>
       </div>
 
-      <div className="px-3 pt-3 pb-3">
+      <div className="pt-3">
         {ranked.length ? (
           <ul className="divide-y divide-white/[0.06]">
             {ranked.slice(0, 4).map((m) => (

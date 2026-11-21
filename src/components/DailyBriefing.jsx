@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import useMuscleRecovery from '../hooks/useMuscleRecovery';
 import { getLocalConnections, getLocalBiometrics, computeReadinessIndex } from '../services/wearables/wearableManager';
 import { triggerHaptic } from '../utils/audio';
@@ -75,24 +75,24 @@ export default function DailyBriefing({ todayWorkout }) {
     setApplied(true);
   };
 
+  const accentBorder = shouldEase
+    ? 'border-amber-400/70'
+    : attention
+      ? 'border-zinc-500/70'
+      : 'border-emerald-400/50';
+
   return (
-    <div className="p-4 rounded-2xl bg-white/[0.025] border border-white/[0.08] space-y-2.5">
-      <div className="flex items-center gap-2">
-        <Sparkles className="w-3.5 h-3.5 text-accent-hover shrink-0" strokeWidth={1.75} />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Briefing do AB Coach</span>
-      </div>
-      <div>
-        <p className="text-[14px] font-semibold text-white">{headline}</p>
-        <p className="text-[12px] text-zinc-400 mt-0.5 leading-relaxed">{detail}</p>
-      </div>
+    <div className={`pl-3.5 py-0.5 border-l-2 ${accentBorder} space-y-1`}>
+      <p className="text-[13px] font-semibold text-white leading-snug">{headline}</p>
+      <p className="text-[12px] text-zinc-400 leading-relaxed">{detail}</p>
       {shouldEase && targeted && (
         applied ? (
-          <p className="text-[12px] font-semibold text-emerald-400">Ajuste aplicado — o treino de hoje começa com 1 série a menos nesse grupo.</p>
+          <p className="text-[12px] font-semibold text-emerald-400 pt-0.5">Ajuste aplicado: o treino de hoje começa com 1 série a menos nesse grupo.</p>
         ) : (
           <button
             type="button"
             onClick={applyEase}
-            className="inline-flex items-center gap-1 text-[12px] font-bold text-accent-hover hover:text-white cursor-pointer"
+            className="inline-flex items-center gap-1 pt-0.5 text-[12px] font-semibold text-white hover:text-zinc-300 cursor-pointer"
           >
             Aplicar −1 série hoje nesse grupo
             <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />

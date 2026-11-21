@@ -65,28 +65,29 @@ export default function WearableReadinessCard({ onOpenWearables }) {
   if (!hasConnection) {
     return (
       <>
-        <div
+        <button
+          type="button"
           onClick={handleClick}
-          className="px-4 py-3.5 min-h-[56px] rounded-2xl bg-white/[0.025] hover:bg-white/[0.045] border border-white/[0.08] hover:border-white/[0.14] transition-all flex items-center justify-between gap-3 cursor-pointer group select-none"
+          className="w-full py-3 px-2 min-h-[56px] rounded-xl hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors flex items-center justify-between gap-3 cursor-pointer text-left group select-none"
         >
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-1 shrink-0">
-              <WhoopMark size={24} className="rounded-lg" />
-              <GarminMark size={24} className="rounded-lg" />
-              <FitbitMark size={24} className="rounded-lg" />
-              <StravaMark size={24} className="rounded-lg" />
+              <WhoopMark size={22} className="rounded-md" />
+              <GarminMark size={22} className="rounded-md" />
+              <FitbitMark size={22} className="rounded-md" />
+              <StravaMark size={22} className="rounded-md" />
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-white tracking-tight truncate">
                 Sincronizar Wearables
               </p>
               <p className="text-[11px] text-zinc-400 truncate">
-                Prontidão, HRV e sono integrados ao teu treino
+                Prontidão, HRV e sono integrados ao treino
               </p>
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors shrink-0" />
-        </div>
+        </button>
         {modalOpen && (
           <Suspense fallback={null}>
             <WearablesModal isOpen={modalOpen} onClose={() => { setModalOpen(false); refresh(); }} />
@@ -100,9 +101,10 @@ export default function WearableReadinessCard({ onOpenWearables }) {
 
   return (
     <>
-      <div
+      <button
+        type="button"
         onClick={handleClick}
-        className="p-4 rounded-2xl bg-white/[0.025] hover:bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.14] transition-all cursor-pointer group select-none relative overflow-hidden"
+        className="w-full py-3 px-2 rounded-xl hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer text-left group select-none"
       >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -160,7 +162,7 @@ export default function WearableReadinessCard({ onOpenWearables }) {
             <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
           </div>
         </div>
-      </div>
+      </button>
       {modalOpen && (
         <Suspense fallback={null}>
           <WearablesModal isOpen={modalOpen} onClose={() => { setModalOpen(false); refresh(); }} />
