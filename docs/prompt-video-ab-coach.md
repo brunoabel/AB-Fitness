@@ -37,7 +37,7 @@ Avatar do AB Coach (render 3D estilo animação, rapaz com cabelo encaracolado, 
 Ecrãs reais da app:
 
 - `public/screens/1-dashboard.png`, `2-biomechanics.png`, `3-workout.png`, `4-running.png`, `5-badges.png`
-- `public/ab-logo-white.png` (logo sobre fundo escuro)
+- `public/ab-logo.png` (logo oficial sobre fundo escuro; versão vetorial em `public/pwa-icon.svg`)
 - Se precisares de mais ecrãs (AB Coach em conversa, mapa de recuperação muscular, temporizador de descanso, amigos), captura-os da app a correr em viewport mobile 390x844 com `puppeteer-core` (já é devDependency do projeto). Usa dados de demonstração, nunca dados reais de utilizadores.
 
 Abre e olha para cada imagem antes de a usar. Respeita a orientação e o recorte reais de cada uma.

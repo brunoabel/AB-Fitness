@@ -1,12 +1,10 @@
 import React from 'react';
 
 /**
- * ABLogo — Logo Oficial AB Fitness
- * 
+ * ABLogo: Logo Oficial AB Fitness
+ *
  * Especificações:
- * - Novo logo principal oficial em alta resolução (/icon-512.png)
- * - showText=true: exibe o logo oficial completo (Monograma AB estilizado + FITNESS integrado)
- * - showText=false: exibe o monograma AB isolado em alta resolução (/ab-logo-monogram.png)
+ * - Logo oficial em alta resolução (/ab-logo.png)
  * - Fundo preto puro (#000000) com cantos arredondados proporcionais e borda sutil neutra
  * - Estilo 100% minimalista de acordo com STYLESEED.md (sem LED azul ou bordas saturadas)
  */
