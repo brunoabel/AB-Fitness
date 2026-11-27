@@ -84,7 +84,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Ângulo dos cotovelos fixo em 15° durante todo…",
    "Não descer os halteres excessivamente…",
-   "Mantenha as escápulas coladas no banco"
+   "Mantém as escápulas coladas no banco"
   ],
   "home_alternative_id": null
  },
@@ -602,7 +602,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/military-press.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Glúteos e abdômen contraídos para impedir…",
+   "Glúteos e abdómen contraídos para impedir…",
    "Cotovelos posicionados ligeiramente à frente…",
    "Finalização com os braços alinhados sobre as…"
   ],
@@ -1129,7 +1129,7 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Cotovelos permanecem apontados para o teto…",
-   "Leve inclinação dos braços para trás…",
+   "Leva inclinação dos braços para trás…",
    "Descer com controle de 2-3 segundos para não…"
   ],
   "home_alternative_id": "triceps-testa-halteres-banco-reto"
@@ -1965,7 +1965,7 @@ export const EXERCISE_CATALOG = {
   "primary_muscle": "Abdômen",
   "secondary_muscles": [
    "Oblíquos",
-   "Transverso do Abdômen"
+   "Transverso do Abdómen"
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
@@ -2029,7 +2029,7 @@ export const EXERCISE_CATALOG = {
   "name": "Elevação de Pernas Deitado",
   "primary_muscle": "Abdômen",
   "secondary_muscles": [
-   "Transverso do Abdômen"
+   "Transverso do Abdómen"
   ],
   "environment": "home_no_equip",
   "equipment": "bodyweight",
@@ -2601,7 +2601,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/deep-push-ups.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Desça abaixo do nível das mãos com conforto…",
+   "Desce abaixo do nível das mãos com conforto…",
    "Core ativado",
    "Movimento sem pressa"
   ],
@@ -5918,7 +5918,7 @@ export const EXERCISE_CATALOG = {
   "name": "Prancha Lateral no Solo",
   "primary_muscle": "Abdômen",
   "secondary_muscles": [
-   "Transverso do Abdômen",
+   "Transverso do Abdómen",
    "Deltoide"
   ],
   "environment": "home_no_equip",
@@ -6388,7 +6388,7 @@ export const EXERCISE_CATALOG = {
   "video_source": null,
   "form_cues": [
    "Trajetória vertical rente ao corpo",
-   "Encaixe suave no antebraço sem colisão",
+   "Encaixa suave no antebraço sem colisão",
    "Bloqueio sólido no topo"
   ],
   "home_alternative_id": null
@@ -6457,7 +6457,7 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Peito toca fisicamente o chão",
-   "Salte estendendo o quadril",
+   "Salta estendendo o quadril",
    "Amortecimento suave"
   ],
   "home_alternative_id": null
@@ -7203,7 +7203,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Cotovelos permanecem próximos ao tronco…",
    "Tronco ereto",
-   "Puxada termina na altura do abdômen superior"
+   "Puxada termina na altura do abdómen superior"
   ],
   "home_alternative_id": "remada-sentada-elastico"
  },
@@ -7639,7 +7639,7 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Lombar colada ao chão",
-   "Gire pelo tronco",
+   "Roda pelo tronco",
    "Sem puxar o pescoço"
   ],
   "home_alternative_id": null
@@ -7663,7 +7663,7 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Corpo firme",
-   "Alterne os lados",
+   "Alterna os lados",
    "Descida controlada"
   ],
   "home_alternative_id": null
@@ -7686,7 +7686,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Cotovelos travados",
    "Ombros longe das orelhas",
-   "Mova só as escápulas"
+   "Move só as escápulas"
   ],
   "home_alternative_id": null
  },
@@ -7752,7 +7752,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-seated-row.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Puxe guiando pelos cotovelos",
+   "Puxa guiando pelos cotovelos",
    "Peito aberto",
    "Escápulas juntas no fim"
   ],
@@ -7800,7 +7800,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Costas retas",
    "Cotovelos levemente flexionados",
-   "Aperte atrás dos ombros"
+   "Aperta atrás dos ombros"
   ],
   "home_alternative_id": null
  },
@@ -7820,7 +7820,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-one-arm-forward-raise.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Suba até a altura do ombro",
+   "Sobe até a altura do ombro",
    "Cotovelo levemente flexionado",
    "Sem balanço"
   ],
@@ -7845,7 +7845,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Cotovelos levemente flexionados",
    "Movimento controlado",
-   "Aperte o peito no fim"
+   "Aperta o peito no fim"
   ],
   "home_alternative_id": null
  },
@@ -7867,7 +7867,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Cotovelos apontados para a frente",
    "Braços parados",
-   "Abdômen firme"
+   "Abdómen firme"
   ],
   "home_alternative_id": null
  },
@@ -7908,7 +7908,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-seated-leg-extension.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Sente-se alto",
+   "Senta-te alto",
    "Coxa parada",
    "Extensão controlada"
   ],
@@ -7932,7 +7932,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Quadril colado ao chão",
    "Pontas dos pés esticadas",
-   "Aperte o posterior no topo"
+   "Aperta o posterior no topo"
   ],
   "home_alternative_id": null
  },
@@ -7954,7 +7954,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Coxas alinhadas",
    "Postura alta",
-   "Aperte o posterior"
+   "Aperta o posterior"
   ],
   "home_alternative_id": null
  },
@@ -7976,7 +7976,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Quadril para trás",
    "Costelas para baixo",
-   "Estenda o quadril no topo"
+   "Estende o quadril no topo"
   ],
   "home_alternative_id": null
  },
@@ -7998,7 +7998,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Costas retas",
    "Calcanhar empurra para cima",
-   "Aperte o glúteo"
+   "Aperta o glúteo"
   ],
   "home_alternative_id": null
  },
@@ -8040,7 +8040,7 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-hip-adduction.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Abdômen firme",
+   "Abdómen firme",
    "Movimento controlado",
    "Sem balanço"
   ],
@@ -8062,9 +8062,9 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/band-standing-calf-raise.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Suba ao máximo",
+   "Sobe ao máximo",
    "Pausa no topo",
-   "Desça devagar"
+   "Desce devagar"
   ],
   "home_alternative_id": null
  },
@@ -8084,7 +8084,7 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Costelas para baixo",
-   "Enrole a coluna",
+   "Enrola a coluna",
    "Quadril parado"
   ],
   "home_alternative_id": null
@@ -8107,7 +8107,7 @@ export const EXERCISE_CATALOG = {
   "form_cues": [
    "Peito erguido",
    "Quadril sem girar",
-   "Incline só para o lado"
+   "Inclina só para o lado"
   ],
   "home_alternative_id": null
  },
@@ -8129,8 +8129,8 @@ export const EXERCISE_CATALOG = {
   "video_source": "verified",
   "form_cues": [
    "Braços quase estendidos",
-   "Gire pelo core",
-   "Gire os pés junto"
+   "Roda pelo core",
+   "Roda os pés junto"
   ],
   "home_alternative_id": null
  },
@@ -8173,9 +8173,9 @@ export const EXERCISE_CATALOG = {
   "poster_url": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-posters/male/spell-caster.jpg",
   "video_source": "verified",
   "form_cues": [
-   "Gire pelo tronco",
+   "Roda pelo tronco",
    "Costas retas",
-   "Flexione no quadril"
+   "Flete no quadril"
   ],
   "home_alternative_id": null
  }

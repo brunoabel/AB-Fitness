@@ -102,10 +102,12 @@ export default function DataPortabilityCard({ onImported }) {
 
       if (result.workouts.length === 0) {
         setStatus({
-          type: 'ok',
+          type: result.skippedInvalid > 0 && !result.skippedDuplicates ? 'error' : 'ok',
           text: result.skippedDuplicates > 0
             ? `Todos os ${result.skippedDuplicates} treinos deste ficheiro já existiam no teu histórico.`
-            : 'Nenhum treino novo encontrado no ficheiro.'
+            : result.skippedInvalid > 0
+              ? 'Não conseguimos ler as datas deste ficheiro. Exporta de novo da app original.'
+              : 'Nenhum treino novo encontrado no ficheiro.'
         });
         return;
       }
@@ -117,7 +119,11 @@ export default function DataPortabilityCard({ onImported }) {
       triggerHaptic([15, 40, 15]);
 
       const formatLabel = result.format === 'hevy' ? 'Hevy' : result.format === 'strong' ? 'Strong' : 'AB Fitness';
-      const dupNote = result.skippedDuplicates > 0 ? ` (${result.skippedDuplicates} duplicados ignorados)` : '';
+      const notes = [
+        result.skippedDuplicates > 0 ? `${result.skippedDuplicates} duplicados ignorados` : '',
+        result.skippedInvalid > 0 ? `${result.skippedInvalid} ${result.skippedInvalid === 1 ? 'linha' : 'linhas'} sem data válida` : ''
+      ].filter(Boolean);
+      const dupNote = notes.length ? ` (${notes.join(', ')})` : '';
       setStatus({
         type: 'ok',
         text: `${result.workouts.length} treinos (${result.setsImported} séries) importados da ${formatLabel}${dupNote}.`

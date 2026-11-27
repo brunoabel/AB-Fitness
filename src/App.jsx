@@ -89,14 +89,22 @@ const ActiveWorkout = lazy(lazyImports.workout);
 const ExerciseModal = lazy(lazyImports.exerciseModal);
 const SidebarDrawer = lazy(lazyImports.sidebarDrawer);
 
+const exerciseIdsKey = (w) => (Array.isArray(w?.exercises) ? w.exercises.map((e) => e?.id).join('|') : '');
+
+/**
+ * Treino a retomar a partir do rascunho. O `workoutSnapshot` (sempre gravado) ganha quando o dia do plano
+ * deixou de existir ou foi regenerado com outros exercícios: o rascunho nunca é aplicado a exercícios novos.
+ */
 function resolveDraftWorkout(draft, currentSchedule) {
   if (!draft || draft.workoutDayId === undefined) return null;
+  const snapshot = draft.workoutSnapshot && Array.isArray(draft.workoutSnapshot.exercises) ? draft.workoutSnapshot : null;
   const planWorkout = (currentSchedule || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId);
-  if (planWorkout) return planWorkout;
-  const customList = getCustomWorkouts();
-  const customWorkout = customList.find((w) => w.id === draft.workoutDayId || w.dayId === draft.workoutDayId);
-  if (customWorkout) return customWorkout;
-  return draft.workoutSnapshot || null;
+  const candidate = planWorkout
+    || getCustomWorkouts().find((w) => w.id === draft.workoutDayId || w.dayId === draft.workoutDayId)
+    || null;
+  if (!candidate) return snapshot;
+  if (snapshot && exerciseIdsKey(snapshot) !== exerciseIdsKey(candidate)) return snapshot;
+  return candidate;
 }
 
 function formatDraftElapsed(seconds) {
@@ -118,6 +126,7 @@ function TabFallback() {
 
 function AppContent() {
   const { user, isGuest, loading, isTrainer, isAdmin, isCeo, isPro, hasActiveTrainer, refreshProfile } = useAuth();
+  const checkoutPollRef = useRef(null);
   // Regresso do Stripe Checkout (?pro_success / ?pro_cancel definidos em api/stripe-checkout.js)
   const [checkoutNotice, setCheckoutNotice] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -132,10 +141,23 @@ function AppContent() {
     window.history.replaceState({}, document.title, window.location.pathname);
     if (checkoutNotice === 'cancel') return undefined;
     refreshProfile();
-    // O webhook do Stripe pode chegar depois do redirect: volta a ler o perfil algumas vezes
-    const timers = [4000, 10000, 20000].map((ms) => setTimeout(refreshProfile, ms));
-    return () => timers.forEach(clearTimeout);
+    // O webhook do Stripe pode chegar depois do redirect: relê a cada 3 s durante 30 s
+    // (no checkout concluído, para assim que o PRO ficar ativo; ver efeito seguinte)
+    let ticks = 0;
+    const timer = setInterval(() => {
+      ticks += 1;
+      refreshProfile();
+      if (ticks >= 10) clearInterval(timer);
+    }, 3000);
+    checkoutPollRef.current = timer;
+    return () => clearInterval(timer);
   }, [checkoutNotice, refreshProfile]);
+  useEffect(() => {
+    if (checkoutNotice === 'success' && isPro && checkoutPollRef.current) {
+      clearInterval(checkoutPollRef.current);
+      checkoutPollRef.current = null;
+    }
+  }, [checkoutNotice, isPro]);
   // Abertura cinematográfica só na primeira abertura da sessão
   const [showSplash, setShowSplash] = useState(() => {
     try {

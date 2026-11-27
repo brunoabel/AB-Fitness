@@ -23,6 +23,7 @@ import ExerciseVideoPlayer from './video/ExerciseVideoPlayer';
 import { getExerciseVisual } from '../data/exerciseVisuals';
 import { exercisePreferenceOf, setExercisePreference } from '../utils/exercisePreferences';
 
+import { displayLabel } from '../utils/displayLabel.js';
 const prefIdOf = (exercise) => findExerciseIn100(exercise?.id || exercise?.name || exercise?.nome)?.slug || exercise?.id;
 
 export default function ExerciseModal({ exercise, onClose }) {
@@ -64,7 +65,7 @@ export default function ExerciseModal({ exercise, onClose }) {
   const checkpoints = (bio?.checkpoints && bio.checkpoints.length > 0)
     ? bio.checkpoints
     : (visual?.checkpoints || [
-        'Coluna vertebral mantida em curvatura neutra e abdômen contraído.',
+        'Coluna vertebral mantida em curvatura neutra e abdómen contraído.',
         'Trajetória de movimento controlada sem compensações nem impulsos.',
         'Amplitude completa de movimento sem encurtamento precoce.'
       ]);
@@ -94,7 +95,7 @@ export default function ExerciseModal({ exercise, onClose }) {
             </div>
             <div>
               <p className="text-xs text-zinc-500">
-                Guia técnico · {bio?.grupo || official100?.grupo || exercise.target || visual?.targetGroup}
+                Guia técnico · {displayLabel(bio?.grupo || official100?.grupo || exercise.target || visual?.targetGroup)}
               </p>
               <h2 className="text-base sm:text-lg font-bold text-white leading-tight">
                 {bio?.nome || official100?.nome || exercise.name}
@@ -115,7 +116,7 @@ export default function ExerciseModal({ exercise, onClose }) {
         {(official100 || bio) && (
           <div className="px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between gap-2 overflow-x-auto text-[11px] font-display tabular-nums">
             <div className="flex items-center gap-1.5 shrink-0 text-zinc-400">
-              <span className="font-bold text-white uppercase">{bio?.grupo || official100?.grupo}</span>
+              <span className="font-bold text-white uppercase">{displayLabel(bio?.grupo || official100?.grupo)}</span>
               <span>·</span>
               <span className="uppercase">{official100?.mecanica || 'Composto / Padrão'}</span>
               {verifiedVideo && (
@@ -188,7 +189,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                 </div>
 
                 <h3 className="text-lg font-bold text-white tracking-[-0.02em]">
-                  {bio?.alvo || official100?.grupo || exercise.target}
+                  {displayLabel(bio?.alvo || official100?.grupo || exercise.target)}
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
                   {bio?.alvo ? `Ativação primária: ${bio.alvo}` : `Foco mecânico direcionado para hipertrofia e força muscular.`}

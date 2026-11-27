@@ -33,11 +33,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Estabilidade Escapular',
         soccerBenefit: 'Aumenta a estabilização articular do complexo do ombro e hipertrofia o peitoral maior com máxima amplitude e controle excêntrico.',
         steps: [
-          'Deite firme no banco com escápulas aduzidas e pés plantados no chão para máxima base.',
-          'Suba os halteres em trajetória convergente controlada sem colidir as anilhas no topo.',
-          'Desça em 2 a 3 segundos sentindo o peitoral alongar até a linha média do tórax.'
+          'Deita firme no banco com escápulas aduzidas e pés plantados no chão para máxima base.',
+          'Sobe os halteres em trajetória convergente controlada sem colidir as anilhas no topo.',
+          'Desce em 2 a 3 segundos sentindo o peitoral alongar até a linha média do tórax.'
         ],
-        breathingTip: 'Solte o ar na força da subida; inspire na descida controlada.',
+        breathingTip: 'Solta o ar na força da subida; inspira na descida controlada.',
         beginnerMistake: 'Fazer com carga excessiva e balançar o corpo no banco. Pés firmes e escápulas travadas!',
         animationType: 'dumbbell-press'
       },
@@ -57,11 +57,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Força Vertical',
         soccerBenefit: 'Desenvolve força de empurrar vertical e estabilidade escapular, fortalecendo deltoides e cadeia superior.',
         steps: [
-          'Sente-se com as costas coladas no encosto e cotovelos a 75-80 graus no plano escapular.',
-          'Empurre os halteres para cima de forma explosiva até quase estender os braços.',
-          'Desça em 2 segundos mantendo o controle até a linha das orelhas.'
+          'Senta-te com as costas coladas no encosto e cotovelos a 75-80 graus no plano escapular.',
+          'Empurra os halteres para cima de forma explosiva até quase estender os braços.',
+          'Desce em 2 segundos mantendo o controle até a linha das orelhas.'
         ],
-        breathingTip: 'Expire na subida concêntrica; inspire na descida excêntrica suave.',
+        breathingTip: 'Expira na subida concêntrica; inspira na descida excêntrica suave.',
         beginnerMistake: 'Arredondar a lombar descolando as costas do banco.',
         animationType: 'shoulder-press'
       },
@@ -81,12 +81,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Largura de Ombros',
         soccerBenefit: 'Isola o deltoide lateral proporcionando maior densidade e aspecto em V na silhueta atlética.',
         steps: [
-          'Em pé, incline o tronco 5 graus à frente e segure os halteres ao lado da coxa.',
-          'Abra os braços até a altura do ombro com cotovelos levemente flexionados.',
-          'Segure 1 segundo no pico de contração e desça sem deixar o peso bater na coxa.'
+          'Em pé, inclina o tronco 5 graus à frente e segura os halteres ao lado da coxa.',
+          'Abre os braços até a altura do ombro com cotovelos levemente flexionados.',
+          'Segura 1 segundo no pico de contração e desce sem deixar o peso bater na coxa.'
         ],
-        breathingTip: 'Solte o ar ao subir e puxe o ar ao descer.',
-        beginnerMistake: 'Usar impulso com o quadril jogando o corpo para trás. Mantenha o tronco estável e isole os deltoides!',
+        breathingTip: 'Solta o ar ao subir e puxa o ar ao descer.',
+        beginnerMistake: 'Usar impulso com o quadril jogando o corpo para trás. Mantém o tronco estável e isole os deltoides!',
         animationType: 'lateral-raise'
       },
       {
@@ -105,11 +105,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Extensão de Cotovelo',
         soccerBenefit: 'Desenvolve as três cabeças do tríceps com ênfase na contração terminal e proteção articular dos cotovelos.',
         steps: [
-          'Cotovelos alinhados às costelas, incline ligeiramente o tronco à frente para estabilizar o centro de gravidade.',
-          'Estenda os cotovelos para baixo abrindo as pontas da corda na máxima contração.',
-          'Retorne de forma controlada até 90 graus mantendo os cotovelos fixos.'
+          'Cotovelos alinhados às costelas, inclina ligeiramente o tronco à frente para estabilizar o centro de gravidade.',
+          'Estende os cotovelos para baixo abrindo as pontas da corda na máxima contração.',
+          'Regressa de forma controlada até 90 graus mantendo os cotovelos fixos.'
         ],
-        breathingTip: 'Solte o ar esticando para baixo; puxe o ar na subida controlada.',
+        breathingTip: 'Solta o ar esticando para baixo; puxa o ar na subida controlada.',
         beginnerMistake: 'Mexer os ombros para frente e para trás. Cotovelo fica travado.',
         animationType: 'triceps-pushdown'
       },
@@ -129,10 +129,10 @@ export const WEEKLY_SCHEDULE = [
         soccerBenefit: 'Ativação do core profundo e oblíquos para resistir a forças rotacionais e proteger a coluna vertebral.',
         steps: [
           'Posição de flexão com pés afastados na largura dos ombros para garantir estabilidade.',
-          'Retire a mão direita e toque no ombro esquerdo sem rotacionar a bacia.',
-          'Alterne os lados lentamente, mantendo a musculatura abdominal em contração isométrica rígida.'
+          'Retira a mão direita e toca no ombro esquerdo sem rotacionar a bacia.',
+          'Alterna os lados lentamente, mantendo a musculatura abdominal em contração isométrica rígida.'
         ],
-        breathingTip: 'Respire continuamente sem travar o ar na barriga.',
+        breathingTip: 'Respira continuamente sem travar o ar na barriga.',
         beginnerMistake: 'Ficar balançando o quadril de um lado para o outro. O corpo deve ficar 100% reto.',
         animationType: 'crunch'
       }
@@ -169,11 +169,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Estabilidade Unilateral',
         soccerBenefit: 'O agachamento unilateral corrige assimetrias de força entre os membros inferiores, ativa o glúteo médio e aumenta a estabilidade dinâmica do joelho.',
         steps: [
-          'Apoie o peito do pé de trás no banco e dê um passo à frente com a outra perna.',
-          'Desça o joelho de trás em direção ao chão mantendo o tronco levemente inclinado.',
-          'Empurre o chão com o calcanhar da frente para subir com cadência controlada.'
+          'Apoia o peito do pé de trás no banco e dê um passo à frente com a outra perna.',
+          'Desce o joelho de trás em direção ao chão mantendo o tronco levemente inclinado.',
+          'Empurra o chão com o calcanhar da frente para subir com cadência controlada.'
         ],
-        breathingTip: 'Inspire ao descer; solte o ar empurrando o chão na subida.',
+        breathingTip: 'Inspira ao descer; solta o ar empurrando o chão na subida.',
         beginnerMistake: 'Deixar o joelho da frente desabar em valgo dinâmico. Joelho sempre alinhado com o segundo dedo do pé.',
         animationType: 'squat'
       },
@@ -194,10 +194,10 @@ export const WEEKLY_SCHEDULE = [
         soccerBenefit: 'O RDL fortalece os isquiotibiais em posição de máximo alongamento sob tensão excêntrica, chave contra encurtamento e lesões musculares.',
         steps: [
           'Pés na largura do quadril, joelhos levemente destravados (flexão de 15 a 20 graus).',
-          'Projete o quadril posteriormente mantendo a coluna em alinhamento neutro.',
-          'Desça os halteres rentes à canela sentindo o alongamento dos isquiotibiais e retorne estendendo o quadril.'
+          'Projeta o quadril posteriormente mantendo a coluna em alinhamento neutro.',
+          'Desce os halteres rentes à canela sentindo o alongamento dos isquiotibiais e regressa estendendo o quadril.'
         ],
-        breathingTip: 'Inspire descendo com a coluna alinhada; expire na extensão de quadril.',
+        breathingTip: 'Inspira descendo com a coluna alinhada; expira na extensão de quadril.',
         beginnerMistake: 'Flexionar os joelhos em excesso transformando em agachamento. O movimento é um hinge de quadril!',
         animationType: 'leg-curl'
       },
@@ -217,11 +217,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Extensão de Quadril',
         soccerBenefit: 'Desenvolve força no pico de contração do glúteo máximo, fundamental para potência explosiva, velocidade e saúde lombar.',
         steps: [
-          'Apoie a região escapular no banco e posicione o peso sobre a linha do quadril.',
+          'Apoia a região escapular no banco e posiciona o peso sobre a linha do quadril.',
           'Pés plantados no chão com tíbias verticais no topo do movimento.',
-          'Estenda o quadril até a linha neutra, sustentando 1 segundo de contração isométrica no topo.'
+          'Estende o quadril até a linha neutra, sustentando 1 segundo de contração isométrica no topo.'
         ],
-        breathingTip: 'Solte o ar na subida apertando o glúteo; inspire no retorno.',
+        breathingTip: 'Solta o ar na subida apertando o glúteo; inspira no retorno.',
         beginnerMistake: 'Hiperestender a coluna lombar no topo. A força deve vir exclusivamente da extensão do quadril.',
         animationType: 'leg-press'
       },
@@ -242,10 +242,10 @@ export const WEEKLY_SCHEDULE = [
         soccerBenefit: 'Fortalece a musculatura da panturrilha e tendão de Aquiles, aprimorando rigidez elástica, impulsão e estabilidade articular.',
         steps: [
           'Antepé na borda do step com calcanhares livres para máxima amplitude.',
-          'Suba na ponta dos pés com flexão plantar máxima controlada.',
-          'Desça devagar em 3 segundos permitindo alongamento completo abaixo do nível do step.'
+          'Sobe na ponta dos pés com flexão plantar máxima controlada.',
+          'Desce devagar em 3 segundos permitindo alongamento completo abaixo do nível do step.'
         ],
-        breathingTip: 'Expire na subida concêntrica e inspire na descida excêntrica profunda.',
+        breathingTip: 'Expira na subida concêntrica e inspira na descida excêntrica profunda.',
         beginnerMistake: 'Ficar quicando sem controle de tempo. Priorize pausa de 1s no topo e descida lenta.',
         animationType: 'calf-raise'
       }
@@ -282,11 +282,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Isolamento de Quadríceps',
         soccerBenefit: 'Isola o quadríceps na extensão completa do joelho, fortalecendo o vasto medial e protegendo a articulação patelofemoral — o volume direto que o agachamento unilateral de terça sozinho não entrega.',
         steps: [
-          'Ajuste o encosto para que o joelho fique alinhado ao eixo de rotação da máquina.',
-          'Estenda os joelhos até quase a extensão total, sem travar bruscamente a articulação.',
-          'Desça em 2 a 3 segundos controlando o peso até a flexão inicial, sem soltar a carga.'
+          'Ajusta o encosto para que o joelho fica alinhado ao eixo de rotação da máquina.',
+          'Estende os joelhos até quase a extensão total, sem travar bruscamente a articulação.',
+          'Desce em 2 a 3 segundos controlando o peso até a flexão inicial, sem soltar a carga.'
         ],
-        breathingTip: 'Expire na extensão; inspire na descida controlada.',
+        breathingTip: 'Expira na extensão; inspira na descida controlada.',
         beginnerMistake: 'Usar impulso do quadril pra arrancar o peso. O movimento deve vir só do joelho.',
         animationType: 'leg-extension'
       },
@@ -306,12 +306,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Isolamento Posterior',
         soccerBenefit: 'Flexiona o joelho isolando os isquiotibiais sob tensão constante, complementando o RDL de terça com um segundo estímulo semanal — equilibra a força quadríceps/isquiotibiais e reduz risco de lesão muscular.',
         steps: [
-          'Deite de bruços com os tornozelos sob o rolo acolchoado, joelhos alinhados ao eixo da máquina.',
-          'Flexione os joelhos trazendo os calcanhares em direção ao glúteo com força controlada.',
-          'Retorne em 2 a 3 segundos sem deixar o peso bater nas anilhas no fim do curso.'
+          'Deita de bruços com os tornozelos sob o rolo acolchoado, joelhos alinhados ao eixo da máquina.',
+          'Flete os joelhos trazendo os calcanhares em direção ao glúteo com força controlada.',
+          'Regressa em 2 a 3 segundos sem deixar o peso bater nas anilhas no fim do curso.'
         ],
-        breathingTip: 'Expire na flexão; inspire no retorno excêntrico.',
-        beginnerMistake: 'Elevar o quadril do banco pra compensar a carga. Mantenha o tronco fixo no apoio.',
+        breathingTip: 'Expira na flexão; inspira no retorno excêntrico.',
+        beginnerMistake: 'Elevar o quadril do banco pra compensar a carga. Mantém o tronco fixo no apoio.',
         animationType: 'leg-curl'
       },
       {
@@ -327,12 +327,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Fortalecimento Adutor',
         soccerBenefit: 'A prancha Copenhague fortalece os adutores e músculos estabilizadores da pelve, prevenindo pubalgia e desequilíbrios biomecânicos.',
         steps: [
-          'Deite de lado em prancha lateral com o joelho da perna superior apoiado sobre o banco.',
-          'Eleve o quadril mantendo alinhamento longitudinal neutro e a perna inferior em suspensão.',
-          'Sustente a contração isométrica por 15 segundos em cada lado.'
+          'Deita de lado em prancha lateral com o joelho da perna superior apoiado sobre o banco.',
+          'Eleva o quadril mantendo alinhamento longitudinal neutro e a perna inferior em suspensão.',
+          'Sustenta a contração isométrica por 15 segundos em cada lado.'
         ],
-        breathingTip: 'Mantenha respiração constante e diafragmática sem travar o ar.',
-        beginnerMistake: 'Permitir a queda da pelve em direção ao chão. Mantenha o corpo perfeitamente alinhado.',
+        breathingTip: 'Mantém respiração constante e diafragmática sem travar o ar.',
+        beginnerMistake: 'Permitir a queda da pelve em direção ao chão. Mantém o corpo perfeitamente alinhado.',
         animationType: 'mobility'
       },
       {
@@ -348,11 +348,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Mobilidade de Quadril',
         soccerBenefit: 'Aumenta a amplitude de rotação interna e externa da cabeça femoral, aliviando sobrecargas na coluna lombar e joelhos.',
         steps: [
-          'Sente-se no solo com ambas as pernas flexionadas a 90 graus.',
-          'Incline o tronco com coluna ereta sobre o fêmur dianteiro, ativando a cápsula articular.',
-          'Transicione os membros para o lado oposto mantendo os calcanhares em contato com o solo.'
+          'Senta-te no solo com ambas as pernas flexionadas a 90 graus.',
+          'Inclina o tronco com coluna ereta sobre o fêmur dianteiro, ativando a cápsula articular.',
+          'Passa os membros para o lado oposto mantendo os calcanhares em contato com o solo.'
         ],
-        breathingTip: 'Inspire profundamente e expire na flexão anterior relaxando os tecidos.',
+        breathingTip: 'Inspira profundamente e expira na flexão anterior relaxando os tecidos.',
         beginnerMistake: 'Arredondar excessivamente a coluna torácica. O movimento deve provir do quadril.',
         animationType: 'mobility'
       },
@@ -369,11 +369,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Dorsiflexão & Isquiotibiais',
         soccerBenefit: 'Aumenta a complacência do tecido conectivo e melhora a dorsiflexão do tornozelo, essencial para amplitude em agachamentos e passadas.',
         steps: [
-          'Em decúbito dorsal, eleve um membro estendido com suporte posterior manual ou elástico.',
-          'Execute flexão e extensão do tornozelo (dorsiflexão e flexão plantar) de forma compassada.',
-          'Alterne os membros focando no relaxamento da cadeia posterior sob tração leve.'
+          'Em decúbito dorsal, eleva um membro estendido com suporte posterior manual ou elástico.',
+          'Executa flexão e extensão do tornozelo (dorsiflexão e flexão plantar) de forma compassada.',
+          'Alterna os membros focando no relaxamento da cadeia posterior sob tração leve.'
         ],
-        breathingTip: 'Respire ritmicamente em cadência relaxante.',
+        breathingTip: 'Respira ritmicamente em cadência relaxante.',
         beginnerMistake: 'Aplicar tração excessiva gerando compensação na região lombar.',
         animationType: 'stretch'
       }
@@ -410,12 +410,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Largura Dorsal',
         soccerBenefit: 'Estimula o grande dorsal em movimento de adução escapular, promovendo expansão da caixa torácica e postura alinhada.',
         steps: [
-          'Ajuste o apoio dos joelhos para estabilização firme da pelve.',
-          'Puxe a barra em direção à porção superior do esterno com depressão escapular ativa.',
-          'Sustente 1 segundo no pico de contração dorsal e controle o retorno excêntrico em 2 a 3 segundos.'
+          'Ajusta o apoio dos joelhos para estabilização firme da pelve.',
+          'Puxa a barra em direção à porção superior do esterno com depressão escapular ativa.',
+          'Sustenta 1 segundo no pico de contração dorsal e controle o retorno excêntrico em 2 a 3 segundos.'
         ],
-        breathingTip: 'Inspire antes de iniciar; expire na fase concêntrica puxando ao peito.',
-        beginnerMistake: 'Inclinar o tronco excessivamente para trás transformando em remada. Mantenha ligeira inclinação fixa de 10-15 graus.',
+        breathingTip: 'Inspira antes de iniciar; expira na fase concêntrica puxando ao peito.',
+        beginnerMistake: 'Inclinar o tronco excessivamente para trás transformando em remada. Mantém ligeira inclinação fixa de 10-15 graus.',
         animationType: 'lat-pulldown'
       },
       {
@@ -434,11 +434,11 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Densidade Escapular',
         soccerBenefit: 'Promove espessura das costas e corrige desequilíbrios musculares bilaterais mantendo a coluna em alinhamento neutro.',
         steps: [
-          'Apoie mão e joelho contralaterais no banco com coluna paralela ao solo.',
-          'Puxe o halter em direção ao quadril conduzindo o movimento com o cotovelo rente ao tronco.',
-          'Estenda completamente o braço na descida para alongamento seguro da fáscia dorsal.'
+          'Apoia mão e joelho contralaterais no banco com coluna paralela ao solo.',
+          'Puxa o halter em direção ao quadril conduzindo o movimento com o cotovelo rente ao tronco.',
+          'Estende completamente o braço na descida para alongamento seguro da fáscia dorsal.'
         ],
-        breathingTip: 'Solte o ar na tração concêntrica; inspire no alongamento excêntrico.',
+        breathingTip: 'Solta o ar na tração concêntrica; inspira no alongamento excêntrico.',
         beginnerMistake: 'Rotacionar excessivamente o tronco para compensar o peso. Isole o trabalho nas costas.',
         animationType: 'one-arm-row'
       },
@@ -458,12 +458,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Pico de Bíceps',
         soccerBenefit: 'A angulação semi-pronada da barra W reduz o estresse sobre as articulações radioulnares e isola as duas cabeças do bíceps.',
         steps: [
-          'Em posição ortostática estável, segure a barra W nas empunhaduras anguladas.',
-          'Flexione os cotovelos sem movimentação anterior dos ombros ou balanço do tronco.',
-          'Sustente a contração máxima no topo por 1 segundo e desça em 2 a 3 segundos controlados.'
+          'Em posição ortostática estável, segura a barra W nas empunhaduras anguladas.',
+          'Flete os cotovelos sem movimentação anterior dos ombros ou balanço do tronco.',
+          'Sustenta a contração máxima no topo por 1 segundo e desce em 2 a 3 segundos controlados.'
         ],
-        breathingTip: 'Expire na flexão do cotovelo; inspire na extensão excêntrica.',
-        beginnerMistake: 'Usar pêndulo lombar para impulsionar a barra. Reduza a carga e preserve o isolamento neuromuscular.',
+        breathingTip: 'Expira na flexão do cotovelo; inspira na extensão excêntrica.',
+        beginnerMistake: 'Usar pêndulo lombar para impulsionar a barra. Reduz a carga e preserve o isolamento neuromuscular.',
         animationType: 'bicep-curl'
       },
       {
@@ -481,12 +481,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Flexão de Tronco',
         soccerBenefit: 'Fortalece o reto abdominal com sobrecarga progressiva, aprimorando a transmissão de força do core e estabilidade pélvica.',
         steps: [
-          'Em decúbito dorsal com joelhos flexionados a 90 graus, apoie a carga sobre o tórax superior.',
-          'Flexione o tronco aproximando as costelas da crista ilíaca, promovendo expiração completa.',
-          'Retorne controladamente sem relaxar a tensão muscular contra o solo.'
+          'Em decúbito dorsal com joelhos flexionados a 90 graus, apoia a carga sobre o tórax superior.',
+          'Flete o tronco aproximando as costelas da crista ilíaca, promovendo expiração completa.',
+          'Regressa controladamente sem relaxar a tensão muscular contra o solo.'
         ],
-        breathingTip: 'Expire completamente o ar no topo da contração; inspire no retorno.',
-        beginnerMistake: 'Puxar a região cervical. O movimento deve provir estritamente do encurtamento do abdômen.',
+        breathingTip: 'Expira completamente o ar no topo da contração; inspira no retorno.',
+        beginnerMistake: 'Puxar a região cervical. O movimento deve provir estritamente do encurtamento do abdómen.',
         animationType: 'crunch'
       }
     ]
@@ -523,10 +523,10 @@ export const WEEKLY_SCHEDULE = [
         soccerBenefit: 'Estimula o feixe clavicular do peitoral superior, conferindo aspecto denso e atlético.',
         steps: [
           'Banco inclinado a 30 graus (não mais que isso).',
-          'Suba os halteres alinhados ao peito com cotovelos em 45 graus.',
-          'Desça com controle sentindo o peito esticar bem.'
+          'Sobe os halteres alinhados ao peito com cotovelos em 45 graus.',
+          'Desce com controle sentindo o peito esticar bem.'
         ],
-        breathingTip: 'Expire na subida; inspire na descida.',
+        breathingTip: 'Expira na subida; inspira na descida.',
         beginnerMistake: 'Abrir os cotovelos a 90 graus forçando os ombros.',
         animationType: 'incline-press'
       },
@@ -547,10 +547,10 @@ export const WEEKLY_SCHEDULE = [
         soccerBenefit: 'Desenvolve o músculo braquial e antebraços, gerando braços mais densos e pegada poderosa.',
         steps: [
           'Palmas viradas uma para a outra (pegada neutra de martelo).',
-          'Suba os dois halteres juntos sem balançar o corpo.',
-          'Segure 1 segundo no topo e desça controlando.'
+          'Sobe os dois halteres juntos sem balançar o corpo.',
+          'Segura 1 segundo no topo e desce controlando.'
         ],
-        breathingTip: 'Solte o ar na subida; puxe na descida.',
+        breathingTip: 'Solta o ar na subida; puxa na descida.',
         beginnerMistake: 'Soltar o peso rápido na descida.',
         animationType: 'hammer-curl'
       },
@@ -570,12 +570,12 @@ export const WEEKLY_SCHEDULE = [
         badge: 'Braço Definido',
         soccerBenefit: 'Isola a cabeça longa do tríceps em máxima amplitude de alongamento.',
         steps: [
-          'Segure o halter com o braço estendido acima da cabeça.',
-          'Dobre o cotovelo descendo o halter atrás da cabeça.',
-          'Estenda de volta para cima mantendo o cotovelo apontado pro teto.'
+          'Segura o halter com o braço estendido acima da cabeça.',
+          'Dobra o cotovelo descendo o halter atrás da cabeça.',
+          'Estende de volta para cima mantendo o cotovelo apontado pro teto.'
         ],
-        breathingTip: 'Inspire ao descer; expire esticando o braço.',
-        beginnerMistake: 'Abrir demais o cotovelo para o lado. Mantenha perto da cabeça.',
+        breathingTip: 'Inspira ao descer; expira esticando o braço.',
+        beginnerMistake: 'Abrir demais o cotovelo para o lado. Mantém perto da cabeça.',
         animationType: 'overhead-triceps'
       }
     ]

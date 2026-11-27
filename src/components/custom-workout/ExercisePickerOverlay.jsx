@@ -3,6 +3,7 @@ import { Dumbbell, Search, Sparkles, X } from 'lucide-react';
 import { EXERCISES_100, MUSCLE_GROUPS } from '../../data/exercises100';
 import { triggerHaptic } from '../../utils/audio';
 
+import { displayLabel } from '../../utils/displayLabel.js';
 /** Sub-modal para escolher exercícios da biblioteca oficial ou registar um exercício avulso. */
 export default function ExercisePickerOverlay({ createTempId, onAddExercise, onClose }) {
   const [pickerTab, setPickerTab] = useState('library');
@@ -162,7 +163,7 @@ export default function ExercisePickerOverlay({ createTempId, onAddExercise, onC
                       : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
                   }`}
                 >
-                  {group}
+                  {displayLabel(group)}
                 </button>
               ))}
             </div>
@@ -186,7 +187,7 @@ export default function ExercisePickerOverlay({ createTempId, onAddExercise, onC
                       {ex.nome}
                     </h4>
                     <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 mt-0.5 tabular-nums">
-                      <span className="font-semibold text-zinc-300">{ex.grupo}</span>
+                      <span className="font-semibold text-zinc-300">{displayLabel(ex.grupo)}</span>
                       <span>·</span>
                       <span>{ex.mecanica}</span>
                       <span>·</span>
@@ -234,7 +235,7 @@ export default function ExercisePickerOverlay({ createTempId, onAddExercise, onC
                 className="w-full px-3 py-2 rounded-xl bg-surface border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-zinc-400 cursor-pointer"
               >
                 {MUSCLE_GROUPS.map((g) => (
-                  <option key={g} value={g}>{g}</option>
+                  <option key={g} value={g}>{displayLabel(g)}</option>
                 ))}
               </select>
             </div>

@@ -4,6 +4,7 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { isValidRoomCode } from '../utils/roomCode.js';
 
 /**
  * Entra numa sala de sessão partilhada via Supabase Realtime (Presence + Broadcast).
@@ -19,8 +20,10 @@ export function joinLiveWorkoutRoom({
 } = {}) {
   if (!isSupabaseConfigured() || !supabase || !roomCode || !userId) return null;
 
-  const cleanCode = String(roomCode).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-  if (!cleanCode) return null;
+  // Só códigos completos de 8 caracteres (utils/roomCode.js): códigos curtos seriam fáceis de adivinhar
+  const upper = String(roomCode).trim().toUpperCase();
+  if (!isValidRoomCode(upper)) return null;
+  const cleanCode = upper.toLowerCase();
 
   const channel = supabase.channel(`ab-live:${cleanCode}`, {
     config: {

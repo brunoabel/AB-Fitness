@@ -225,14 +225,47 @@ function normalizeSetType(raw) {
   return 'N';
 }
 
-function parseFlexibleDate(raw) {
-  if (!raw) return new Date();
-  const parsed = new Date(raw);
-  if (!Number.isNaN(parsed.getTime())) return parsed;
-  // Formato Hevy ex: "25 Nov 2025, 18:30"
-  const cleaned = String(raw).replace(',', '');
-  const retry = new Date(cleaned);
-  return Number.isNaN(retry.getTime()) ? new Date() : retry;
+const MONTHS = {
+  jan: 0, feb: 1, fev: 1, mar: 2, apr: 3, abr: 3, may: 4, mai: 4, jun: 5, jul: 6,
+  aug: 7, ago: 7, sep: 8, set: 8, oct: 9, out: 9, nov: 10, dec: 11, dez: 11
+};
+
+function localDate(y, m, d, hh = 0, mm = 0, ss = 0) {
+  const dt = new Date(Number(y), Number(m), Number(d), Number(hh) || 0, Number(mm) || 0, Number(ss) || 0);
+  // Recusa datas que o construtor "corrige" (ex.: 31 fev) e anos fora do razoável
+  if (dt.getFullYear() !== Number(y) || dt.getMonth() !== Number(m) || dt.getDate() !== Number(d)) return null;
+  if (dt.getFullYear() < 2000 || dt.getTime() > Date.now() + 86400000) return null;
+  return dt;
+}
+
+/**
+ * Data de uma linha CSV, sem depender do parser do browser (o Safari recusa "2025-11-25 18:30:00").
+ * Aceita ISO / Strong ("YYYY-MM-DD HH:mm[:ss]"), Hevy ("25 Nov 2025, 18:30") e "DD/MM/YYYY [HH:mm]".
+ * Devolve `null` quando não consegue ler: a linha é ignorada em vez de cair no dia de hoje.
+ */
+export function parseFlexibleDate(raw) {
+  const str = String(raw ?? '').trim();
+  if (!str) return null;
+
+  // ISO com fuso explícito (Z ou +01:00): o construtor é fiável em todos os browsers
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})$/.test(str)) {
+    const dt = new Date(str);
+    return Number.isNaN(dt.getTime()) ? null : dt;
+  }
+
+  let m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if (m) return localDate(m[1], Number(m[2]) - 1, m[3], m[4], m[5], m[6]);
+
+  m = str.match(/^(\d{1,2})\s+([A-Za-zÀ-ÿ]{3,})\.?\s+(\d{4})(?:,?\s+(\d{1,2}):(\d{2}))?/);
+  if (m) {
+    const month = MONTHS[m[2].slice(0, 3).toLowerCase()];
+    return month === undefined ? null : localDate(m[3], month, m[1], m[4], m[5]);
+  }
+
+  m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s+(\d{1,2}):(\d{2}))?/);
+  if (m) return localDate(m[3], Number(m[2]) - 1, m[1], m[4], m[5]);
+
+  return null;
 }
 
 /**
@@ -293,6 +326,7 @@ export function parseCompetitorWorkoutsCsv(csvText, existingHistory = []) {
 
   const grouped = new Map();
   let setsImported = 0;
+  let skippedInvalid = 0;
 
   for (let r = 1; r < rows.length; r++) {
     const cols = rows[r];
@@ -300,6 +334,10 @@ export function parseCompetitorWorkoutsCsv(csvText, existingHistory = []) {
     if (!exRaw) continue;
 
     const dt = parseFlexibleDate(cols[colDate]);
+    if (!dt) {
+      skippedInvalid += 1;
+      continue;
+    }
     const dateKey = localDateKey(dt);
     const title = (colTitle !== -1 && cols[colTitle]) ? cols[colTitle] : `Treino Importado (${dateKey})`;
     const groupKey = `${dateKey}|${normalizeStr(title)}`;
@@ -386,7 +424,7 @@ export function parseCompetitorWorkoutsCsv(csvText, existingHistory = []) {
     });
   }
 
-  return { format, workouts, setsImported, skippedDuplicates, error: null };
+  return { format, workouts, setsImported, skippedDuplicates, skippedInvalid, error: null };
 }
 
 /** Dispara o download de um ficheiro de texto (JSON/CSV) no browser. */

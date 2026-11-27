@@ -69,7 +69,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "equipment": "bodyweight",
     "keyCues": [
       "Lombar colada ao chão",
-      "Gire pelo tronco",
+      "Roda pelo tronco",
       "Sem puxar o pescoço"
     ],
     "aliases": [
@@ -93,7 +93,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "equipment": "bodyweight",
     "keyCues": [
       "Corpo firme",
-      "Alterne os lados",
+      "Alterna os lados",
       "Descida controlada"
     ],
     "aliases": [
@@ -118,7 +118,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Cotovelos travados",
       "Ombros longe das orelhas",
-      "Mova só as escápulas"
+      "Move só as escápulas"
     ],
     "aliases": [
       "1005",
@@ -188,7 +188,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "bands",
     "keyCues": [
-      "Puxe guiando pelos cotovelos",
+      "Puxa guiando pelos cotovelos",
       "Peito aberto",
       "Escápulas juntas no fim"
     ],
@@ -238,7 +238,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Costas retas",
       "Cotovelos levemente flexionados",
-      "Aperte atrás dos ombros"
+      "Aperta atrás dos ombros"
     ],
     "aliases": [
       "1010",
@@ -260,7 +260,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "bands",
     "keyCues": [
-      "Suba até a altura do ombro",
+      "Sobe até a altura do ombro",
       "Cotovelo levemente flexionado",
       "Sem balanço"
     ],
@@ -286,7 +286,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Cotovelos levemente flexionados",
       "Movimento controlado",
-      "Aperte o peito no fim"
+      "Aperta o peito no fim"
     ],
     "aliases": [
       "1012",
@@ -310,7 +310,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Cotovelos apontados para a frente",
       "Braços parados",
-      "Abdômen firme"
+      "Abdómen firme"
     ],
     "aliases": [
       "1013",
@@ -356,7 +356,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "bands",
     "keyCues": [
-      "Sente-se alto",
+      "Senta-te alto",
       "Coxa parada",
       "Extensão controlada"
     ],
@@ -382,7 +382,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Quadril colado ao chão",
       "Pontas dos pés esticadas",
-      "Aperte o posterior no topo"
+      "Aperta o posterior no topo"
     ],
     "aliases": [
       "1016",
@@ -406,7 +406,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Coxas alinhadas",
       "Postura alta",
-      "Aperte o posterior"
+      "Aperta o posterior"
     ],
     "aliases": [
       "1017",
@@ -430,7 +430,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Quadril para trás",
       "Costelas para baixo",
-      "Estenda o quadril no topo"
+      "Estende o quadril no topo"
     ],
     "aliases": [
       "1018",
@@ -454,7 +454,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Costas retas",
       "Calcanhar empurra para cima",
-      "Aperte o glúteo"
+      "Aperta o glúteo"
     ],
     "aliases": [
       "1019",
@@ -500,7 +500,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "bands",
     "keyCues": [
-      "Abdômen firme",
+      "Abdómen firme",
       "Movimento controlado",
       "Sem balanço"
     ],
@@ -524,9 +524,9 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "bands",
     "keyCues": [
-      "Suba ao máximo",
+      "Sobe ao máximo",
       "Pausa no topo",
-      "Desça devagar"
+      "Desce devagar"
     ],
     "aliases": [
       "1022",
@@ -549,7 +549,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "equipment": "bands",
     "keyCues": [
       "Costelas para baixo",
-      "Enrole a coluna",
+      "Enrola a coluna",
       "Quadril parado"
     ],
     "aliases": [
@@ -574,7 +574,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "keyCues": [
       "Peito erguido",
       "Quadril sem girar",
-      "Incline só para o lado"
+      "Inclina só para o lado"
     ],
     "aliases": [
       "1024",
@@ -597,8 +597,8 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "equipment": "bands",
     "keyCues": [
       "Braços quase estendidos",
-      "Gire pelo core",
-      "Gire os pés junto"
+      "Roda pelo core",
+      "Roda os pés junto"
     ],
     "aliases": [
       "1025",
@@ -644,9 +644,9 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "dumbbell",
     "keyCues": [
-      "Gire pelo tronco",
+      "Roda pelo tronco",
       "Costas retas",
-      "Flexione no quadril"
+      "Flete no quadril"
     ],
     "aliases": [
       "1027",
@@ -682,7 +682,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "supino-inclinado-halteres": {
     "canonicalId": "supino-inclinado-halteres",
     "name": "Supino Inclinado com Halteres",
-    "englishName": "Dumbbell Incline Bench Press",
+    "englishName": "Dumbbell Inclina Bench Press",
     "category": "chest",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-bench-press.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-bench-press.mp4",
@@ -759,7 +759,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "crucifixo-inclinado-halteres": {
     "canonicalId": "crucifixo-inclinado-halteres",
     "name": "Crucifixo Inclinado com Halteres",
-    "englishName": "Dumbbell Incline Fly",
+    "englishName": "Dumbbell Inclina Fly",
     "category": "chest",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-fly.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-fly.mp4",
@@ -1625,7 +1625,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "rosca-aranha-spider-curl": {
     "canonicalId": "rosca-aranha-spider-curl",
     "name": "Rosca Aranha (Spider Curl)",
-    "englishName": "Barbell Prone Incline Curl",
+    "englishName": "Barbell Prone Inclina Curl",
     "category": "biceps",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-prone-incline-curl.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-prone-incline-curl.mp4",
@@ -2382,7 +2382,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
       "Move only at ankles",
       "Keep legs straight (but not locked)",
       "Control the movement",
-      "Pause at top"
+      "Pausa at top"
     ],
     "aliases": [
       "87",
@@ -2624,7 +2624,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "supino-inclinado-barra": {
     "canonicalId": "supino-inclinado-barra",
     "name": "Supino Inclinado com Barra",
-    "englishName": "Barbell Incline Bench Press",
+    "englishName": "Barbell Inclina Bench Press",
     "category": "chest",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/barbell-incline-bench-press.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/barbell-incline-bench-press.mp4",
@@ -2724,7 +2724,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "supino-articulado-maquina-inclinado": {
     "canonicalId": "supino-articulado-maquina-inclinado",
     "name": "Supino Articulado Máquina Inclinado",
-    "englishName": "Lever Incline Hammer Chest Press",
+    "englishName": "Lever Inclina Hammer Chest Press",
     "category": "chest",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/lever-incline-hammer-chest-press.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/lever-incline-hammer-chest-press.mp4",
@@ -2738,7 +2738,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
       "Press upward and slightly forward",
       "Keep feet flat on floor",
       "Don't shrug shoulders",
-      "Pause at top"
+      "Pausa at top"
     ],
     "aliases": [
       "110",
@@ -2848,7 +2848,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "flexao-inclinada-maos-elevadas": {
     "canonicalId": "flexao-inclinada-maos-elevadas",
     "name": "Flexão Inclinada com Mãos Elevadas",
-    "englishName": "Incline Push-Up",
+    "englishName": "Inclina Push-Up",
     "category": "chest",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/incline-push-ups.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/incline-push-ups.mp4",
@@ -3024,7 +3024,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "remada-apoiada-banco-inclinado-halteres": {
     "canonicalId": "remada-apoiada-banco-inclinado-halteres",
     "name": "Remada Apoiada no Banco Inclinado com Halteres",
-    "englishName": "Dumbbell Incline Row",
+    "englishName": "Dumbbell Inclina Row",
     "category": "back",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-row.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-row.mp4",
@@ -3285,9 +3285,9 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     ],
     "equipment": "cable",
     "keyCues": [
-      "Eleve até a altura dos ombros",
+      "Eleva até a altura dos ombros",
       "Tronco firme sem balanço",
-      "Desça segurando a tensão do cabo"
+      "Desce segurando a tensão do cabo"
     ],
     "aliases": [
       "158",
@@ -3298,7 +3298,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "crucifixo-invertido-banco-inclinado-halteres": {
     "canonicalId": "crucifixo-invertido-banco-inclinado-halteres",
     "name": "Crucifixo Invertido no Banco Inclinado com Halteres",
-    "englishName": "Dumbbell Incline Rear Lateral Raise",
+    "englishName": "Dumbbell Inclina Rear Lateral Raise",
     "category": "shoulders",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-rear-lateral-raise.mp4",
@@ -3374,7 +3374,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "rosca-banco-inclinado-45-halteres": {
     "canonicalId": "rosca-banco-inclinado-45-halteres",
     "name": "Rosca no Banco Inclinado 45° com Halteres",
-    "englishName": "Dumbbell Incline Curl",
+    "englishName": "Dumbbell Inclina Curl",
     "category": "biceps",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-curl.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-curl.mp4",
@@ -3478,7 +3478,7 @@ export const VERIFIED_EXERCISE_VIDEOS = {
   "rosca-martelo-banco-inclinado": {
     "canonicalId": "rosca-martelo-banco-inclinado",
     "name": "Rosca Martelo no Banco Inclinado",
-    "englishName": "Dumbbell Incline Hammer Curl",
+    "englishName": "Dumbbell Inclina Hammer Curl",
     "category": "biceps",
     "videoMale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/male/dumbbell-incline-hammer-curl.mp4",
     "videoFemale": "https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev/exercise-videos/female/dumbbell-incline-hammer-curl.mp4",
@@ -4263,8 +4263,8 @@ export const VERIFIED_EXERCISE_VIDEOS = {
     "equipment": "barbell",
     "keyCues": [
       "Calcanhares perto dos glúteos",
-      "Suba até alinhar ombro, quadril e joelho",
-      "Aperte os glúteos no topo"
+      "Sobe até alinhar ombro, quadril e joelho",
+      "Aperta os glúteos no topo"
     ],
     "aliases": [
       "ponte-gluteos-barra-glute-bridge",

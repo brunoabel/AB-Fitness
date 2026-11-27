@@ -157,6 +157,9 @@ export default function RunningHub({ isDark = true }) {
       } else if (instSpeedMs >= DEFAULT_TRACKING_CONFIG.autoPauseSpeedMs + 0.3) {
         lowSpeedSinceRef.current = null;
         lastValidMoveTimestampRef.current = now;
+      } else if (isAutoPausedRef.current) {
+        // Histerese: em pausa, só retoma acima de limiar + 0,3 m/s (o jitter do GPS parado fica nesta faixa)
+        return;
       }
     } else {
       lowSpeedSinceRef.current = null;
@@ -665,11 +668,12 @@ export default function RunningHub({ isDark = true }) {
       pushWorkoutToConnectedWearables({
         name: `Corrida AB Fitness · ${finalDistance.toFixed(2)} km`,
         sportType: 'Run',
-        startDateIso: new Date(Date.now() - finalSeconds * 1000).toISOString(),
+        // Início real da corrida (com pausas pelo meio), não "agora menos o tempo em movimento"
+        startDateIso: new Date(startTimestampRef.current || Date.now() - finalSeconds * 1000).toISOString(),
         elapsedSeconds: finalSeconds,
         distanceMeters: Math.round(finalDistance * 1000),
         description: `Pace médio ${runRecord.avgPace} · +${Math.round(elevationRef.current)} m — AB Fitness`
-      }).catch(() => {});
+      }, userId).catch(() => {});
     }
 
     try {

@@ -194,8 +194,8 @@ function toPlanExercise(ex100, template) {
     name: ex100.nome,
     target: `${ex100.grupo} (${ex100.mecanica})`,
     equipment: ex100.mecanica,
-    executionSteps: ['Posicione-se com alinhamento articular e estabilidade.', 'Fase excêntrica controlada em 2 a 3 segundos.', 'Concêntrica com aceleração e contração no pico.'],
-    postureCheckpoints: ['Coluna neutra e abdômen ativado.', 'Controle articular completo, sem impulsos.'],
+    executionSteps: ['Posiciona-te com alinhamento articular e estabilidade.', 'Fase excêntrica controlada em 2 a 3 segundos.', 'Concêntrica com aceleração e contração no pico.'],
+    postureCheckpoints: ['Coluna neutra e abdómen ativado.', 'Controle articular completo, sem impulsos.'],
     suggestedReps: template.suggestedReps,
     defaultSets: template.defaultSets,
     restTime: template.restTime,
@@ -203,7 +203,7 @@ function toPlanExercise(ex100, template) {
   };
 }
 
-/** Contexto do utilizador para a escolha de exercícios: equipamento, lesões, nível, objetivo e preferências. */
+/** Contexto do utilizador para a escolhe de exercícios: equipamento, lesões, nível, objetivo e preferências. */
 function selectionContext(profile, preferences = null) {
   return {
     inventory: inventoryFor(profile.trainingLocation, profile.equipment),
@@ -322,7 +322,7 @@ export function buildPlanFromProfile(profile, extras = {}) {
       intensity: 'Baixa',
       badge: 'Regeneração',
       color: 'from-emerald-400 to-teal-500',
-      description: 'O músculo cresce durante o descanso. Hidrate-se e faça uma caminhada leve.'
+      description: 'O músculo cresce durante o descanso. Hidrate-se e faz uma caminhada leve.'
     },
     {
       title: 'Descanso e Síntese Proteica',

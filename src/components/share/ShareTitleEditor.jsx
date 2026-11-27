@@ -25,7 +25,7 @@ export default function ShareTitleEditor({ isEditingTitle, sessionTitle, setIsEd
             <span
               onClick={() => setIsEditingTitle(true)}
               className="text-xs font-bold text-white hover:text-accent-hover transition-colors cursor-pointer truncate flex items-center gap-1.5"
-              title="Clique para editar"
+              title="Toca para editar"
             >
               <span className="truncate">{sessionTitle}</span>
               <Edit2 className="w-3 h-3 text-zinc-500 shrink-0" />

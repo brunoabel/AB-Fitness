@@ -253,6 +253,61 @@ async function pushBiometricsToCloud(job) {
   }
 }
 
+/** Calcula `expires_at` (ISO) a partir da resposta OAuth: `expires_at` em segundos (Strava) ou `expires_in`. */
+function expiryFromTokenResponse(refreshed, fallback) {
+  if (Number.isFinite(Number(refreshed?.expires_at)) && Number(refreshed.expires_at) > 1e9) {
+    return new Date(Number(refreshed.expires_at) * 1000).toISOString();
+  }
+  if (Number.isFinite(Number(refreshed?.expires_in)) && Number(refreshed.expires_in) > 0) {
+    return new Date(Date.now() + Number(refreshed.expires_in) * 1000).toISOString();
+  }
+  return fallback || null;
+}
+
+/**
+ * Renova o token de uma ligação e grava o resultado no aparelho e na nuvem (com fila offline).
+ * A Strava troca o refresh_token a cada renovação: gravar só localmente deixava o antigo na nuvem,
+ * e getConnectedWearables voltava a pô-lo por cima do novo. Devolve a ligação atualizada ou `null`.
+ */
+async function refreshAndPersistConnection(userId, provider, conn, refreshFn) {
+  if (!conn?.refresh_token || typeof refreshFn !== 'function') return null;
+  const refreshed = await refreshFn(conn.refresh_token);
+  if (!refreshed?.access_token) return null;
+
+  const next = {
+    ...conn,
+    access_token: refreshed.access_token,
+    refresh_token: refreshed.refresh_token || conn.refresh_token,
+    expires_at: expiryFromTokenResponse(refreshed, conn.expires_at)
+  };
+
+  const conns = getLocalConnections();
+  if (conns[provider]) {
+    conns[provider] = { ...conns[provider], ...next };
+    saveLocalConnections(conns);
+  }
+
+  const owner = userId || conn.user_id;
+  if (canSyncUser(owner)) {
+    const job = {
+      key: `conn:${owner}:${provider}`,
+      type: 'connection',
+      userId: owner,
+      provider,
+      status: next.status || 'connected',
+      access_token: next.access_token,
+      refresh_token: next.refresh_token,
+      expires_at: next.expires_at,
+      connected_at: next.connected_at || null,
+      last_synced_at: next.last_synced_at || null,
+      metadata: next.metadata || {}
+    };
+    const ok = await pushConnectionToCloud(job);
+    if (!ok) enqueueJob(SYNC_QUEUE_KEY, job);
+  }
+  return next;
+}
+
 /**
  * Sincroniza dados biométricos do wearable:
  * - Se a ligação estiver em modo 'connected' com access_token real, consulta a API oficial
@@ -280,18 +335,11 @@ export async function syncWearableData(userId, provider, options = {}) {
           garmin: refreshGarminToken
         };
         const refreshFn = options.refreshFn || refreshMap[provider] || refreshFitbitToken;
-        const refreshed = await refreshFn(conn.refresh_token);
-        if (refreshed?.access_token) {
-          activeToken = refreshed.access_token;
-          conn.access_token = refreshed.access_token;
-          if (refreshed.refresh_token) conn.refresh_token = refreshed.refresh_token;
-          if (refreshed.expires_in) {
-            conn.expires_at = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
-          }
-          if (currentConns[provider]) {
-            currentConns[provider] = { ...currentConns[provider], ...conn };
-            saveLocalConnections(currentConns);
-          }
+        const next = await refreshAndPersistConnection(userId, provider, conn, refreshFn);
+        if (next) {
+          activeToken = next.access_token;
+          Object.assign(conn, next);
+          if (currentConns[provider]) currentConns[provider] = { ...currentConns[provider], ...next };
         }
       } catch {
         // Se o refresh falhar, tenta ainda a leitura ou devolverá is_stale
@@ -505,7 +553,7 @@ export { deduplicateWearableActivities };
  * Envia uma atividade concluída na AB Fitness (treino de força ou corrida) para wearables
  * conectados com suporte a escrita (atualmente Strava `activity:write`). Falha silenciosa.
  */
-export async function pushWorkoutToConnectedWearables(activity) {
+export async function pushWorkoutToConnectedWearables(activity, userId = null) {
   const conns = getLocalConnections();
   const strava = conns?.strava;
   if (!strava || strava.mode === 'simulated' || !strava.access_token) {
@@ -513,16 +561,16 @@ export async function pushWorkoutToConnectedWearables(activity) {
   }
 
   try {
-    let res = await pushActivityToStrava(strava.access_token, activity);
+    let token = strava.access_token;
+    const expired = strava.expires_at ? new Date(strava.expires_at).getTime() <= Date.now() + 60000 : false;
+    if (expired && strava.refresh_token) {
+      const next = await refreshAndPersistConnection(userId, 'strava', strava, refreshStravaToken).catch(() => null);
+      if (next) token = next.access_token;
+    }
+    let res = await pushActivityToStrava(token, activity);
     if (!res.pushed && res.status === 401 && strava.refresh_token) {
-      const refreshed = await refreshStravaToken(strava.refresh_token);
-      if (refreshed?.access_token) {
-        conns.strava = { ...strava, access_token: refreshed.access_token, refresh_token: refreshed.refresh_token || strava.refresh_token };
-        try {
-          localStorage.setItem('ab_wearable_connections_v1', JSON.stringify(conns));
-        } catch {}
-        res = await pushActivityToStrava(refreshed.access_token, activity);
-      }
+      const next = await refreshAndPersistConnection(userId, 'strava', strava, refreshStravaToken);
+      if (next) res = await pushActivityToStrava(next.access_token, activity);
     }
     return res;
   } catch (err) {

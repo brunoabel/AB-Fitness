@@ -253,13 +253,13 @@ function getFallbackBiomechanics(exercise) {
     alvo: `${grupo} (Ativação Principal)`,
     sinergistas: 'Cadeia cinemática de estabilização e core',
     equipamento: exercise.equipment || 'Equipamento Livre / Máquina',
-    posicao_inicial: 'Posicione-se com alinhamento articular neutro, pés bem apoiados e postura estável antes de iniciar o movimento.',
+    posicao_inicial: 'Posiciona-te com alinhamento articular neutro, pés bem apoiados e postura estável antes de iniciar o movimento.',
     concentrica: 'Aplique força contra a carga estendendo/flexionando a articulação alvo de forma consciente até o pico de contração.',
-    excentrica: 'Retorne à posição inicial de forma lenta e controlada em 2 a 3 segundos, resistindo ao peso com o músculo sob tensão.',
+    excentrica: 'Regressa à posição inicial de forma lenta e controlada em 2 a 3 segundos, resistindo ao peso com o músculo sob tensão.',
     passos: [
-      'Ajuste o equipamento ou posicione o peso com pegada firme e confortável.',
-      'Estabilize a coluna vertebral, contraia o abdômen e respire adequadamente.',
-      'Execute a fase concêntrica empurrando ou puxando a carga com aceleração constante.',
+      'Ajusta o equipamento ou posiciona o peso com pegada firme e confortável.',
+      'Estabiliza a coluna vertebral, contrai o abdómen e respira adequadamente.',
+      'Executa a fase concêntrica empurrando ou puxando a carga com aceleração constante.',
       'Controle a descida excêntrica sem deixar o peso despencar nem usar impulsos.'
     ],
     checkpoints: [
@@ -267,7 +267,7 @@ function getFallbackBiomechanics(exercise) {
       'Articulações adjacentes estáveis sem desvios laterais descontrolados.',
       'Amplitude de movimento completa e sem rebote no final da trajetória.'
     ],
-    respiracao: 'Inspire profundamente na fase excêntrica (ao resistir ao peso); expire vigorosamente na fase concêntrica (ao vencer a resistência).',
+    respiracao: 'Inspira profundamente na fase excêntrica (ao resistir ao peso); expira vigorosamente na fase concêntrica (ao vencer a resistência).',
     erro_comum: 'Usar carga excessiva que sacrifique a técnica e obrigue o corpo a realizar balanços e compensações articulares perigosas.',
     beneficio: 'Promove sobrecarga mecânica progressiva com alta ativação das fibras musculares, estimulando síntese proteica e adaptação neural segura.'
   };

@@ -9,6 +9,7 @@ import {
 } from '../../services/trainerService';
 import { triggerHaptic } from '../../utils/audio';
 
+import { displayLabel } from '../../utils/displayLabel.js';
 const createRowId = () => `pb_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 const PROGRESSION_STEPS = [0, 2.5, 5];
 
@@ -747,7 +748,7 @@ export default function ProgramBuilderSheet({
                     muscleFilter === g ? 'bg-primary text-app' : 'bg-white/[0.04] text-zinc-300'
                   }`}
                 >
-                  {g}
+                  {displayLabel(g)}
                 </button>
               ))}
             </div>
@@ -763,7 +764,7 @@ export default function ProgramBuilderSheet({
                 <div>
                   <h4 className="text-[14px] font-semibold text-white">{ex.nome}</h4>
                   <p className="text-[12px] text-zinc-400 tabular-nums">
-                    {ex.grupo} · {ex.series}×{ex.reps}
+                    {displayLabel(ex.grupo)} · {ex.series}×{ex.reps}
                   </p>
                 </div>
                 <Plus className="w-4 h-4 text-zinc-400" strokeWidth={2} />

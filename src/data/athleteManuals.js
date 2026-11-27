@@ -123,7 +123,7 @@ export const ATHLETE_MANUALS = {
       },
       {
         name: 'Aquecimento Específico com Carga Progressiva',
-        solution: 'Faça 2 séries de aquecimento com 50% e 70% do peso de trabalho antes da primeira série pesada do dia.'
+        solution: 'Faz 2 séries de aquecimento com 50% e 70% do peso de trabalho antes da primeira série pesada do dia.'
       }
     ],
 
@@ -143,7 +143,7 @@ export const ATHLETE_MANUALS = {
     subtitle: 'Preservação de massa magra sob déficit calórico, queima de gordura e definição.',
     accent: 'amber',
     badgeColor: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-    philosophy: 'O maior erro de quem quer perder peso é fazer treinos leves com muitas repetições. Você DEVE treinar pesado para sinalizar ao corpo que os músculos são fundamentais, forçando o organismo a oxidar gordura como fonte de energia.',
+    philosophy: 'O maior erro de quem quer perder peso é fazer treinos leves com muitas repetições. Tens de treinar pesado para sinalizar ao corpo que os músculos são fundamentais, forçando o organismo a oxidar gordura como fonte de energia.',
 
     weeklySplit: [
       {
@@ -173,7 +173,7 @@ export const ATHLETE_MANUALS = {
       protein: 'Alta: 2.2g a 2.4g por kg de peso corporal. A proteína gera saciedade potente e tem efeito térmico digestivo elevado.',
       fiber: 'Mínimo de 30g a 40g de fibras ao dia (vegetais verdes, maçã, aveia, sementes) para saciedade gástrica.',
       hydration: '40 a 50 ml de água por kg de peso corporal ao dia. Frequentemente o cérebro confunde desidratação leve com fome.',
-      caution: 'Evite calorias líquidas (refrigerantes comuns, sucos adoçados, bebidas energéticas carregadas em açúcar).'
+      caution: 'Evita calorias líquidas (refrigerantes comuns, sucos adoçados, bebidas energéticas carregadas em açúcar).'
     },
 
     injuryPrevention: [
@@ -187,7 +187,7 @@ export const ATHLETE_MANUALS = {
       },
       {
         name: 'Ajuste de Cargas em Dias de Cansaço',
-        solution: 'Se estiver em déficit agressivo, mantenha a técnica impecável e use repetições na reserva (RIR 2).'
+        solution: 'Se estiver em déficit agressivo, mantém a técnica impecável e use repetições na reserva (RIR 2).'
       }
     ],
 
@@ -228,7 +228,7 @@ export const ATHLETE_MANUALS = {
       {
         day: 'Acessórios de Suporte',
         focus: '8 a 10 reps nos isolados',
-        detail: 'Tríceps, manguito rotador, panturrilhas e abdômen para blindar os pontos de vulnerabilidade mecânica.'
+        detail: 'Tríceps, manguito rotador, panturrilhas e abdómen para blindar os pontos de vulnerabilidade mecânica.'
       }
     ],
 
@@ -242,7 +242,7 @@ export const ATHLETE_MANUALS = {
     injuryPrevention: [
       {
         name: 'Manobra de Valsalva & Bracing Abdominal',
-        solution: 'Inspire expandindo o abdômen em 360° e trave a pressão intra-abdominal antes de iniciar a descida.'
+        solution: 'Inspira expandindo o abdómen em 360° e trave a pressão intra-abdominal antes de iniciar a descida.'
       },
       {
         name: 'Trajetória Impecável da Barra / Halteres',
@@ -309,7 +309,7 @@ export const ATHLETE_MANUALS = {
       },
       {
         name: 'Respiração Rítmica Fluida',
-        solution: 'Nunca prenda a respiração se tiver histórico de pressão arterial alta; expire no esforço.'
+        solution: 'Nunca prende a respiração se tiver histórico de pressão arterial alta; expira no esforço.'
       },
       {
         name: 'Postura Neutra em Todos os Movimentos',
@@ -320,7 +320,7 @@ export const ATHLETE_MANUALS = {
     recoveryRoutine: [
       'Caminhadas ao ar livre sob a luz da manhã para regular o ciclo circadiano e a vitamina D.',
       'Alongamentos leves antes de dormir para aliviar a tensão da fáscia muscular.',
-      'Consistência acima de intensidade extrema: o melhor treino é aquele que você consegue manter por décadas.'
+      'Consistência acima de intensidade extrema: o melhor treino é aquele que consegues manter durante décadas.'
     ]
   }
 };

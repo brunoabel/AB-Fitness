@@ -140,6 +140,19 @@ describe('AB Wearables Engine — Gestão de Biometria e Prontidão Fisiológica
     assert.equal(bio.hrv_ms, 68.5);
   });
 
+  it('renovação guarda o novo refresh_token e o expires_at em segundos da Strava', async () => {
+    const conn = { provider: 'strava', status: 'connected', access_token: 'a0', refresh_token: 'r0', expires_at: new Date(Date.now() - 1000).toISOString() };
+    const expiresEpoch = Math.floor(Date.now() / 1000) + 21600;
+    await syncWearableData('guest-local-user', 'strava', {
+      connectionOverride: conn,
+      refreshFn: async () => ({ access_token: 'a1', refresh_token: 'r1', expires_at: expiresEpoch, expires_in: 21600 }),
+      liveFetcher: async () => ({ is_stale: false })
+    });
+    assert.equal(conn.access_token, 'a1');
+    assert.equal(conn.refresh_token, 'r1');
+    assert.equal(new Date(conn.expires_at).getTime(), expiresEpoch * 1000);
+  });
+
   it('suporta normalização de prontidão com Strava e Garmin isolados ou compostos', () => {
     const strava = generateSimulatedStravaData('2026-11-22');
     const garmin = generateSimulatedGarminData('2026-11-22');

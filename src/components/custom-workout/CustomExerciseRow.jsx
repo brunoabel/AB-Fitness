@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { REST_OPTIONS } from './options';
 
+import { displayLabel } from '../../utils/displayLabel.js';
 /** Item editável de exercício dentro do construtor de treino personalizado. */
 export default function CustomExerciseRow({
   exercise,
@@ -24,7 +25,7 @@ export default function CustomExerciseRow({
               {exercise.name}
             </h4>
             <span className="text-[11px] text-zinc-400 font-medium">
-              {exercise.target} · {exercise.equipment}
+              {displayLabel(exercise.target)} · {exercise.equipment}
             </span>
           </div>
         </div>

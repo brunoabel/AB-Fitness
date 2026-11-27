@@ -36,6 +36,7 @@ import { triggerHaptic } from '../../utils/audio';
 import { getLocalFitnessProfile } from '../../services/fitnessProfileService';
 import { isBeginnerProfile } from '../onboarding/profileSchema';
 
+import { displayLabel } from '../../utils/displayLabel.js';
 const HUMAN_HINT_LABEL = {
   OVERLOAD: 'Meta de hoje: Subir carga',
   REP_BUMP: 'Meta de hoje: +1 repetição',
@@ -356,7 +357,7 @@ export default function FocusExerciseCard({
       <div className="flex items-start justify-between gap-3 pt-1">
         <div className="space-y-1 min-w-0">
           {exercise.target && (
-            <span className="block text-xs font-medium text-zinc-400 truncate">{exercise.target}</span>
+            <span className="block text-xs font-medium text-zinc-400 truncate">{displayLabel(exercise.target)}</span>
           )}
 
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">

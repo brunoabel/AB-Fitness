@@ -13,20 +13,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps Braquial, Braquial, Romboides e Trapézio Inferior',
     equipamento: 'Barra Fixa Suspensa',
     posicao_inicial: 'Suspenso na barra fixa com pegada pronada (palmas voltadas para a frente) cerca de 1,5x a largura dos ombros. Corpo estendido, pernas cruzadas ou unidas, escápulas deprimidas antes de iniciar a tração.',
-    concentrica: 'Puxe o corpo para cima levando o peito em direção à barra, conduzindo o movimento com os cotovelos para baixo e para os lados até o queixo ultrapassar a barra.',
-    excentrica: 'Desça de forma controlada em 2 a 3 segundos até a extensão completa dos braços sem soltar o corpo bruscamente no fundo.',
+    concentrica: 'Puxa o corpo para cima levando o peito em direção à barra, conduzindo o movimento com os cotovelos para baixo e para os lados até o queixo ultrapassar a barra.',
+    excentrica: 'Desce de forma controlada em 2 a 3 segundos até a extensão completa dos braços sem soltar o corpo bruscamente no fundo.',
     passos: [
-      'Segure a barra com pegada pronada afastada e suspenda o corpo.',
-      'Inicie deprimindo e aduzindo as escápulas (ativação escapular inicial).',
-      'Puxe o corpo trazendo o peito para a barra com cotovelos apontando para o chão.',
-      'Desça suavemente até estender os braços, preservando a tensão dorsal.'
+      'Segura a barra com pegada pronada afastada e suspende o corpo.',
+      'Inicia deprimindo e aduzindo as escápulas (ativação escapular inicial).',
+      'Puxa o corpo trazendo o peito para a barra com cotovelos apontando para o chão.',
+      'Desce suavemente até estender os braços, preservando a tensão dorsal.'
     ],
     checkpoints: [
       'Iniciar a puxada pela depressão das escápulas e não pelos braços.',
       'Peito estufado com leve curvatura torácica superior.',
       'Evitar balanço ou "kipping" com as pernas.'
     ],
-    respiracao: 'Inspire no início e expire forte durante a subida; inspire na descida controlada.',
+    respiracao: 'Inspira no início e expira forte durante a subida; inspira na descida controlada.',
     erro_comum: 'Fazer o movimento com impulsos e chutes das pernas ou encolher os ombros em direção às orelhas no topo.',
     beneficio: 'O teste definitivo de força relativa de puxada vertical, proporcionando grande largura para as dorsais e espessamento do redondo maior.'
   },
@@ -38,17 +38,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal e Bíceps Braquial (Porção Curta e Longa)',
     sinergistas: 'Braquial, Redondo Maior e Romboides',
     equipamento: 'Barra Fixa',
-    posicao_inicial: 'Suspenso na barra com pegada supinada (palmas voltadas para você) na largura dos ombros. Corpo alinhado e core engajado.',
-    concentrica: 'Puxe o corpo para cima flexionando os cotovelos junto ao tronco até que o queixo passe completamente a barra.',
-    excentrica: 'Desça o corpo em 3 segundos controlados até a extensão total dos braços, aproveitando o alongamento dorsal e do bíceps.',
+    posicao_inicial: 'Suspenso na barra com pegada supinada (palmas voltadas para ti) na largura dos ombros. Corpo alinhado e core engajado.',
+    concentrica: 'Puxa o corpo para cima flexionando os cotovelos junto ao tronco até que o queixo passe completamente a barra.',
+    excentrica: 'Desce o corpo em 3 segundos controlados até a extensão total dos braços, aproveitando o alongamento dorsal e do bíceps.',
     passos: [
-      'Segure a barra com pegada supinada na largura exata dos ombros.',
-      'Puxe o corpo para cima concentrando na flexão de braço e adução dorsal.',
-      'Sustente 1 segundo de contração no topo com o queixo acima da barra.',
-      'Desça de maneira compassada resistindo à gravidade.'
+      'Segura a barra com pegada supinada na largura exata dos ombros.',
+      'Puxa o corpo para cima concentrando na flexão de braço e adução dorsal.',
+      'Sustenta 1 segundo de contração no topo com o queixo acima da barra.',
+      'Desce de maneira compassada resistindo à gravidade.'
     ],
     checkpoints: ['Pegada na largura dos ombros', 'Cotovelos descem rente ao corpo', 'Descida completa sem despencar'],
-    respiracao: 'Inspire na descida; expire com força na subida.',
+    respiracao: 'Inspira na descida; expira com força na subida.',
     erro_comum: 'Não estender os braços completamente na descida por cansaço, cortando metade da amplitude do movimento.',
     beneficio: 'Permite maior vantagem mecânica para o bíceps e recruta fortemente as fibras inferiores do latíssimo do dorso.'
   },
@@ -61,20 +61,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Redondo Maior, Bíceps Braquial, Romboides e Trapézio Médio/Inferior',
     equipamento: 'Máquina Lat Pulldown + Barra Larga',
     posicao_inicial: 'Sentado com as coxas firmemente presas sob os rolos acolchoados. Pegada pronada aberta cerca de 1,5x a largura dos ombros. Tronco levemente inclinado para trás (10°-15°), peito estufado.',
-    concentrica: 'Puxe a barra para baixo em direção à parte superior do esterno, conduzindo o movimento com a depressão e adução das escápulas e os cotovelos apontando para o solo.',
-    excentrica: 'Retorne a barra suavemente em 2 a 3 segundos até a extensão completa dos braços permitindo que as escápulas se elevem de forma controlada.',
+    concentrica: 'Puxa a barra para baixo em direção à parte superior do esterno, conduzindo o movimento com a depressão e adução das escápulas e os cotovelos apontando para o solo.',
+    excentrica: 'Regressa a barra suavemente em 2 a 3 segundos até a extensão completa dos braços permitindo que as escápulas se elevem de forma controlada.',
     passos: [
-      'Ajuste o apoio de coxas para não levantar do banco.',
-      'Pegue a barra com pegada aberta e sente-se mantendo o tronco levemente inclinado.',
-      'Puxe a barra em direção à fúrcula esternal/clavícula sem balançar o tronco.',
-      'Sustente a contração das costas por 1 segundo e suba controlando o peso.'
+      'Ajusta o apoio de coxas para não levantar do banco.',
+      'Pega a barra com pegada aberta e senta-te mantendo o tronco levemente inclinado.',
+      'Puxa a barra em direção à fúrcula esternal/clavícula sem balançar o tronco.',
+      'Sustenta a contração das costas por 1 segundo e sobe controlando o peso.'
     ],
     checkpoints: [
       'Puxar a barra na frente do peito (nunca atrás da nuca).',
       'Cotovelos se movimentam para baixo e para dentro.',
       'Tronco com inclinação fixa de 10°-15° sem gangorra.'
     ],
-    respiracao: 'Inspire no retorno dos braços; expire enquanto puxa a barra ao peito.',
+    respiracao: 'Inspira no retorno dos braços; expira enquanto puxa a barra ao peito.',
     erro_comum: 'Inclinar o corpo 45° para trás e transformar a puxada vertical em uma remada horizontal usando o peso do corpo como pêndulo.',
     beneficio: 'Permite isolar a tração vertical do grande dorsal com cargas controladas, sendo o melhor exercício para construir o clássico físico em V.'
   },
@@ -86,17 +86,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal (Fibras Inferiores) e Romboides',
     sinergistas: 'Bíceps Braquial e Braquiorradial',
     equipamento: 'Máquina Lat Pulldown + Puxador Triângulo Neutro',
-    posicao_inicial: 'Sentado na máquina com coxas presas. Segure o triângulo com pegada neutra e estenda os braços acima da cabeça.',
-    concentrica: 'Puxe o triângulo para baixo até encostar na parte superior do peito, mantendo os cotovelos bem próximos ao tronco.',
-    excentrica: 'Suba o peso em 3 segundos sentindo o alongamento na borda lateral das costas.',
+    posicao_inicial: 'Sentado na máquina com coxas presas. Segura o triângulo com pegada neutra e estende os braços acima da cabeça.',
+    concentrica: 'Puxa o triângulo para baixo até encostar na parte superior do peito, mantendo os cotovelos bem próximos ao tronco.',
+    excentrica: 'Sobe o peso em 3 segundos sentindo o alongamento na borda lateral das costas.',
     passos: [
-      'Encaixe o triângulo na polia alta e sente-se travando as pernas.',
-      'Puxe o triângulo até o peito alto mantendo os cotovelos fechados.',
-      'Aperte as costas no topo do peito.',
-      'Retorne devagar permitindo a extensão total das dorsais.'
+      'Encaixa o triângulo na polia alta e senta-te travando as pernas.',
+      'Puxa o triângulo até o peito alto mantendo os cotovelos fechados.',
+      'Aperta as costas no topo do peito.',
+      'Regressa devagar permitindo a extensão total das dorsais.'
     ],
     checkpoints: ['Pegada neutra confortável', 'Cotovelos descem colados às costelas', 'Sem reclinar demais o tronco'],
-    respiracao: 'Inspire na subida dos braços; expire ao puxar ao peito.',
+    respiracao: 'Inspira na subida dos braços; expira ao puxar ao peito.',
     erro_comum: 'Puxar com a força dos braços e arredondar os ombros para a frente no final do percurso.',
     beneficio: 'A pegada neutra coloca o bíceps e o latíssimo em ótimo plano de tração, permitindo movimentar boas cargas com conforto articular no punho.'
   },
@@ -108,21 +108,21 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Dorsais, Romboides, Trapézio Médio e Eretores da Espinha',
     sinergistas: 'Bíceps Braquial e Deltoide Posterior',
     equipamento: 'Barra Olímpica + Anilhas',
-    posicao_inicial: 'Pés na largura do quadril, joelhos ligeiramente destravados (flexão de 20°). Incline o tronco para a frente a cerca de 45° com a coluna lombar rigorosamente neutra. Segure a barra com pegada pronada na largura dos ombros.',
-    concentrica: 'Puxe a barra em direção ao umbigo conduzindo o movimento pelos cotovelos para trás e aproximando as escápulas com força.',
-    excentrica: 'Desça a barra em 2 a 3 segundos até a extensão dos braços sem perder a curvatura neutra da coluna lombar.',
+    posicao_inicial: 'Pés na largura do quadril, joelhos ligeiramente destravados (flexão de 20°). Inclina o tronco para a frente a cerca de 45° com a coluna lombar rigorosamente neutra. Segura a barra com pegada pronada na largura dos ombros.',
+    concentrica: 'Puxa a barra em direção ao umbigo conduzindo o movimento pelos cotovelos para trás e aproximando as escápulas com força.',
+    excentrica: 'Desce a barra em 2 a 3 segundos até a extensão dos braços sem perder a curvatura neutra da coluna lombar.',
     passos: [
-      'Incline o tronco a 45° com coluna lombar travada e peito aberto.',
-      'Segure a barra com pegada pronada e braços estendidos.',
-      'Puxe a barra em direção ao umbigo puxando com as costas.',
-      'Desça com cadência controlada até a extensão total dos braços.'
+      'Inclina o tronco a 45° com coluna lombar travada e peito aberto.',
+      'Segura a barra com pegada pronada e braços estendidos.',
+      'Puxa a barra em direção ao umbigo puxando com as costas.',
+      'Desce com cadência controlada até a extensão total dos braços.'
     ],
     checkpoints: [
       'Coluna lombar totalmente reta durante todo o exercício (sem curvar nem hiperestender).',
       'Barra puxada na altura do umbigo/linha da cintura.',
       'Manter os joelhos destravados para absorver a tensão na cadeia posterior.'
     ],
-    respiracao: 'Inspire na descida da barra; expire forte na puxada ao umbigo.',
+    respiracao: 'Inspira na descida da barra; expira forte na puxada ao umbigo.',
     erro_comum: 'Arredondar a coluna lombar (postura de corcunda) para puxar carga acima da capacidade, gerando alto risco de hérnia de disco.',
     beneficio: 'O exercício mais potente para espessura e densidade da musculatura das costas, além de desenvolver força isométrica na cadeia posterior.'
   },
@@ -134,17 +134,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal, Romboides e Espessura Dorsal',
     sinergistas: 'Bíceps, Deltoide Posterior e Trapézio',
     equipamento: 'Barra T / Suporte Landmine + Puxador',
-    posicao_inicial: 'Posicione-se sobre a barra T com uma perna de cada lado. Flexione os joelhos e incline o tronco a 45°. Segure o pegador triangular com braços estendidos e coluna neutra.',
-    concentrica: 'Puxe o peso para cima em direção à base do abdômen, unindo as escápulas no topo.',
-    excentrica: 'Desça o peso de forma controlada em 2 a 3 segundos estendendo os braços sem encostar as anilhas no solo.',
+    posicao_inicial: 'Posiciona-te sobre a barra T com uma perna de cada lado. Flete os joelhos e inclina o tronco a 45°. Segura o pegador triangular com braços estendidos e coluna neutra.',
+    concentrica: 'Puxa o peso para cima em direção à base do abdómen, unindo as escápulas no topo.',
+    excentrica: 'Desce o peso de forma controlada em 2 a 3 segundos estendendo os braços sem encostar as anilhas no solo.',
     passos: [
-      'Fique sobre a barra com postura firme e pegue o suporte.',
-      'Trave a coluna lombar e estufe o peito.',
-      'Puxe a carga em direção ao estômago com os cotovelos apontando para trás.',
-      'Controle a descida sentindo o alongamento da musculatura média das costas.'
+      'Fica sobre a barra com postura firme e pega o suporte.',
+      'Trava a coluna lombar e estufa o peito.',
+      'Puxa a carga em direção ao estômago com os cotovelos apontando para trás.',
+      'Controla a descida sentindo o alongamento da musculatura média das costas.'
     ],
     checkpoints: ['Tronco travado a 45°', 'Pés bem apoiados no piso', 'Escápulas fecham no topo'],
-    respiracao: 'Inspire ao descer a barra; expire puxando a carga.',
+    respiracao: 'Inspira ao descer a barra; expira puxando a carga.',
     erro_comum: 'Ficar em pé e empurrar o quadril para frente para dar impulso à carga.',
     beneficio: 'Proporciona suporte angular muito favorável para gerar enorme sobrecarga na espessura dorsal e romboides.'
   },
@@ -156,21 +156,21 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal (Isolamento Unilateral)',
     sinergistas: 'Romboides, Deltoide Posterior, Bíceps e Core',
     equipamento: 'Banco Reto + 1 Halter Pesado',
-    posicao_inicial: 'Apoie o joelho e a mão do mesmo lado no banco reto, deixando a coluna paralela ao chão. O outro pé fica bem plantado no chão ao lado. Segure o halter com a mão livre e braço estendido para baixo.',
-    concentrica: 'Puxe o halter em direção ao quadril (trajetória em formato de vírgula ou J), conduzindo o movimento com o cotovelo colado ao tronco até passar a linha das costas.',
-    excentrica: 'Desça o halter em 3 segundos controlados até o braço ficar estendido, permitindo uma protração escapular segura para alongamento das fibras do dorsal.',
+    posicao_inicial: 'Apoia o joelho e a mão do mesmo lado no banco reto, deixando a coluna paralela ao chão. O outro pé fica bem plantado no chão ao lado. Segura o halter com a mão livre e braço estendido para baixo.',
+    concentrica: 'Puxa o halter em direção ao quadril (trajetória em formato de vírgula ou J), conduzindo o movimento com o cotovelo colado ao tronco até passar a linha das costas.',
+    excentrica: 'Desce o halter em 3 segundos controlados até o braço ficar estendido, permitindo uma protração escapular segura para alongamento das fibras do dorsal.',
     passos: [
-      'Apoie mão e joelho no banco mantendo as costas retas e paralelas ao chão.',
-      'Segure o halter com o braço estendido e peito aberto.',
-      'Puxe o peso em direção ao quadril, levando o cotovelo para cima e para trás.',
-      'Desça de forma suave até sentir o dorsal esticar no ponto inferior.'
+      'Apoia mão e joelho no banco mantendo as costas retas e paralelas ao chão.',
+      'Segura o halter com o braço estendido e peito aberto.',
+      'Puxa o peso em direção ao quadril, levando o cotovelo para cima e para trás.',
+      'Desce de forma suave até sentir o dorsal esticar no ponto inferior.'
     ],
     checkpoints: [
       'Trajetória puxando para o quadril e não para o peito/ombro.',
       'Coluna horizontal reta sem girar o tronco na subida.',
       'Cotovelo sobe raspando o tronco.'
     ],
-    respiracao: 'Inspire na descida com alongamento; expire na puxada até o quadril.',
+    respiracao: 'Inspira na descida com alongamento; expira na puxada até o quadril.',
     erro_comum: 'Girar o tronco para o lado como se estivesse puxando uma corda de barco para trapacear na subida.',
     beneficio: 'Permite corrigir assimetrias de força e volume entre os lados direito e esquerdo, além de proporcionar a maior amplitude de alongamento do latíssimo.'
   },
@@ -182,17 +182,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Romboides, Grande Dorsal e Trapézio Médio',
     sinergistas: 'Bíceps Braquial, Braquial e Eretores da Espinha',
     equipamento: 'Máquina de Remada Baixa + Puxador Triângulo',
-    posicao_inicial: 'Sentado na máquina com os pés nos apoios e joelhos levemente destravados. Segure o triângulo com os braços estendidos e tronco ereto.',
-    concentrica: 'Puxe o triângulo em direção ao abdômen inferior retraindo as escápulas e estufando o peito, sustentando 1 segundo no pico.',
-    excentrica: 'Retorne à posição inicial em 3 segundos estendendo os braços e permitindo que as escápulas se abram controladamente, sem inclinar o tronco excessivamente para a frente.',
+    posicao_inicial: 'Sentado na máquina com os pés nos apoios e joelhos levemente destravados. Segura o triângulo com os braços estendidos e tronco ereto.',
+    concentrica: 'Puxa o triângulo em direção ao abdómen inferior retraindo as escápulas e estufando o peito, sustentando 1 segundo no pico.',
+    excentrica: 'Regressa à posição inicial em 3 segundos estendendo os braços e permitindo que as escápulas se abram controladamente, sem inclinar o tronco excessivamente para a frente.',
     passos: [
-      'Sente-se com pés firmes nos apoios e segure o triângulo.',
-      'Estabilize o tronco reto com peito erguido.',
-      'Puxe as mãos em direção à linha do umbigo, unindo as escápulas atrás.',
-      'Controle o retorno em 3 segundos mantendo a coluna ereta.'
+      'Senta-te com pés firmes nos apoios e segura o triângulo.',
+      'Estabiliza o tronco reto com peito erguido.',
+      'Puxa as mãos em direção à linha do umbigo, unindo as escápulas atrás.',
+      'Controla o retorno em 3 segundos mantendo a coluna ereta.'
     ],
     checkpoints: ['Manter a coluna firme sem curvar', 'Puxar na altura do umbigo', 'Não balançar o tronco como se estivesse remando em barco de corrida'],
-    respiracao: 'Inspire na volta dos braços; expire na contração ao abdômen.',
+    respiracao: 'Inspira na volta dos braços; expira na contração ao abdómen.',
     erro_comum: 'Fazer o movimento como uma gangorra (hiperestender as costas para trás e dobrar para a frente no retorno).',
     beneficio: 'Excelente estímulo de tensão contínua na musculatura interescapular (romboides e trapézio médio), essencial para saúde postural.'
   },
@@ -204,17 +204,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal e Romboides',
     sinergistas: 'Bíceps e Deltoide Posterior',
     equipamento: 'Máquina Articulada de Remada com Apoio no Peito',
-    posicao_inicial: 'Sentado com o peito apoiado firmemente na almofada frontal. Ajuste a altura do banco para que as manoplas fiquem na linha do abdômen superior.',
-    concentrica: 'Puxe as manoplas para trás aproximando as escápulas, mantendo o peito sempre colado no apoio.',
-    excentrica: 'Retorne controladamente em 3 segundos estendendo os braços e sentindo a fáscia dorsal alongar.',
+    posicao_inicial: 'Sentado com o peito apoiado firmemente na almofada frontal. Ajusta a altura do banco para que as manoplas fiquem na linha do abdómen superior.',
+    concentrica: 'Puxa as manoplas para trás aproximando as escápulas, mantendo o peito sempre colado no apoio.',
+    excentrica: 'Regressa controladamente em 3 segundos estendendo os braços e sentindo a fáscia dorsal alongar.',
     passos: [
-      'Ajuste o apoio do peito para permitir a extensão completa dos braços.',
-      'Segure as manoplas e cole o esterno no encosto frontal.',
-      'Puxe os cotovelos para trás espremendo as costas.',
-      'Retorne devagar sem deixar o peito descolar da almofada.'
+      'Ajusta o apoio do peito para permitir a extensão completa dos braços.',
+      'Segura as manoplas e cola o esterno no encosto frontal.',
+      'Puxa os cotovelos para trás espremendo as costas.',
+      'Regressa devagar sem deixar o peito descolar da almofada.'
     ],
     checkpoints: ['Peito 100% apoiado durante toda a repetição', 'Puxada com os cotovelos', 'Retorno lento'],
-    respiracao: 'Inspire no alongamento; expire na puxada.',
+    respiracao: 'Inspira no alongamento; expira na puxada.',
     erro_comum: 'Descolar o tórax da almofada para puxar o peso com impulso lombar.',
     beneficio: 'Elimina a sobrecarga e fadiga na coluna lombar, permitindo focar 100% da energia no dorsal e romboides.'
   },
@@ -226,21 +226,21 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal (Isolamento sem Bíceps)',
     sinergistas: 'Redondo Maior, Tríceps (Cabeça Longa) e Peitoral Menor',
     equipamento: 'Polia Alta + Corda',
-    posicao_inicial: 'Em pé em frente à polia alta segurando a corda com as mãos. Afaste-se um passo, flexione os joelhos e incline o tronco cerca de 30° para a frente com os braços estendidos acima da cabeça.',
-    concentrica: 'Puxe a corda para baixo em arco amplo até as mãos chegarem ao lado das coxas, abrindo levemente as pontas da corda na máxima contração.',
-    excentrica: 'Retorne os braços para cima em 3 segundos controlados sentindo o grande dorsal alongar totalmente sob a tração do cabo.',
+    posicao_inicial: 'Em pé em frente à polia alta segurando a corda com as mãos. Afasta-te um passo, flete os joelhos e inclina o tronco cerca de 30° para a frente com os braços estendidos acima da cabeça.',
+    concentrica: 'Puxa a corda para baixo em arco amplo até as mãos chegarem ao lado das coxas, abrindo levemente as pontas da corda na máxima contração.',
+    excentrica: 'Regressa os braços para cima em 3 segundos controlados sentindo o grande dorsal alongar totalmente sob a tração do cabo.',
     passos: [
-      'Segure a corda no ponto alto e dê um passo para trás.',
-      'Incline o tronco 30° com cotovelos ligeiramente destravados (10° fixos).',
-      'Desça as mãos em arco até a lateral do quadril, contraindo o dorsal.',
-      'Suba de forma compassada até sentir as dorsais bem esticadas.'
+      'Segura a corda no ponto alto e dá um passo para trás.',
+      'Inclina o tronco 30° com cotovelos ligeiramente destravados (10° fixos).',
+      'Desce as mãos em arco até a lateral do quadril, contraindo o dorsal.',
+      'Sobe de forma compassada até sentir as dorsais bem esticadas.'
     ],
     checkpoints: [
-      'Cotovelos permanecem em leve flexão fixa (não dobre como extensão de tríceps).',
+      'Cotovelos permanecem em leve flexão fixa (não dobra como extensão de tríceps).',
       'Movimento circular amplo de cima para baixo.',
       'Tronco permanece estável sem balanço.'
     ],
-    respiracao: 'Inspire ao deixar os braços subirem; expire ao conduzir a corda para o quadril.',
+    respiracao: 'Inspira ao deixar os braços subirem; expira ao conduzir a corda para o quadril.',
     erro_comum: 'Dobrar e esticar os cotovelos transformando o exercício em um tríceps na corda.',
     beneficio: 'Isola o grande dorsal em extensão pura de ombro sem fadigar o bíceps braquial, ideal como pré-exaustão ou finalizador.'
   },
@@ -253,16 +253,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Tríceps (Cabeça Longa) e Peitoral Menor',
     equipamento: 'Polia Alta + Barra Reta ou Barra W',
     posicao_inicial: 'Em pé com tronco inclinado 30° segurando a barra com pegada pronada na largura dos ombros.',
-    concentrica: 'Puxe a barra para baixo em arco até encostar suavemente na frente das coxas.',
-    excentrica: 'Retorne em 3 segundos permitindo que a barra suba acima da linha dos olhos.',
+    concentrica: 'Puxa a barra para baixo em arco até encostar suavemente na frente das coxas.',
+    excentrica: 'Regressa em 3 segundos permitindo que a barra sobe acima da linha dos olhos.',
     passos: [
-      'Segure a barra com pegada pronada e afaste-se da polia.',
-      'Mantenha cotovelos destravados e peito estufado.',
-      'Traga a barra em direção às coxas em movimento circular.',
-      'Controle o retorno até a extensão alta.'
+      'Segura a barra com pegada pronada e afasta-te da polia.',
+      'Mantém cotovelos destravados e peito estufado.',
+      'Traz a barra em direção às coxas em movimento circular.',
+      'Controla o retorno até a extensão alta.'
     ],
     checkpoints: ['Braços quase retos', 'Descida até as coxas', 'Costas ativas'],
-    respiracao: 'Inspire na subida da barra; expire ao puxar às coxas.',
+    respiracao: 'Inspira na subida da barra; expira ao puxar às coxas.',
     erro_comum: 'Usar o peso do corpo para empurrar a barra para baixo.',
     beneficio: 'Excelente para aprender a ativação consciente do latíssimo do dorso e conexão mente-músculo.'
   },
@@ -274,21 +274,21 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Cadeia Posterior Completa (Eretores da Espinha, Glúteos, Isquiotibiais e Trapézio)',
     sinergistas: 'Grande Dorsal, Quadríceps, Antebraços e Core',
     equipamento: 'Barra Olímpica no Solo + Anilhas',
-    posicao_inicial: 'Em pé com a barra sobre o meio dos pés (2-3 cm da canela). Pés na largura do quadril. Dobre o quadril e joelhos para segurar a barra por fora das pernas. Peito erguido, escápulas sobre a barra, coluna lombar neutra e ar travado no abdômen.',
-    concentrica: 'Empurre o chão com os calcanhares estendendo simultaneamente joelhos e quadril, mantendo a barra raspando as canelas e coxas até a postura ereta.',
-    excentrica: 'Inicie com a flexão do quadril levando o bumbum para trás até a barra passar os joelhos, então flexione os joelhos para pousar a barra no solo em 2 segundos.',
+    posicao_inicial: 'Em pé com a barra sobre o meio dos pés (2-3 cm da canela). Pés na largura do quadril. Dobra o quadril e joelhos para segurar a barra por fora das pernas. Peito erguido, escápulas sobre a barra, coluna lombar neutra e ar travado no abdómen.',
+    concentrica: 'Empurra o chão com os calcanhares estendendo simultaneamente joelhos e quadril, mantendo a barra raspando as canelas e coxas até a postura ereta.',
+    excentrica: 'Inicia com a flexão do quadril levando o bumbum para trás até a barra passar os joelhos, então flete os joelhos para pousar a barra no solo em 2 segundos.',
     passos: [
-      'Posicione os pés sob a barra com canelas próximas ao metal.',
-      'Segure a barra firme, estufe o peito e trave as dorsais como se estivesse entortando a barra.',
-      'Faça o brace abdominal e empurre o chão com os pés.',
-      'Fique ereto sem hiperestender a lombar para trás no topo.'
+      'Posiciona os pés sob a barra com canelas próximas ao metal.',
+      'Segura a barra firme, estufa o peito e trava as dorsais como se estivesse entortando a barra.',
+      'Faz o brace abdominal e empurra o chão com os pés.',
+      'Fica ereto sem hiperestender a lombar para trás no topo.'
     ],
     checkpoints: [
       'Barra sobe em linha vertical reta rente ao corpo.',
       'Quadril e ombros sobem na mesma velocidade na saída do chão.',
       'Coluna lombar totalmente neutra durante todo o trajeto.'
     ],
-    respiracao: 'Puxe o ar e faça brace abdominal no chão; solte o ar apenas ao travar no topo ou após descer.',
+    respiracao: 'Puxa o ar e faz brace abdominal no chão; solta o ar apenas ao travar no topo ou após descer.',
     erro_comum: 'Arredondar a coluna lombar na saída do solo ou puxar com os braços flexionados.',
     beneficio: 'O exercício de força mais completo da musculatura humana, construindo densidade óssea, espessura espinhal e potência atlética bruta.'
   },
@@ -301,16 +301,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Glúteo Máximo e Isquiotibiais',
     equipamento: 'Banco Romano / Hiperextensão 45°',
     posicao_inicial: 'Apoiado no banco romano com os tornozelos travados nos rolos e a almofada superior posicionada logo abaixo da crista ilíaca (permitindo livre flexão do quadril). Tronco alinhado com as pernas.',
-    concentrica: 'Eleve o tronco estendendo a coluna e o quadril até formar uma linha reta com as pernas, sustentando 1 segundo.',
-    excentrica: 'Desça o tronco flexionando o quadril em 3 segundos controlados até onde for confortável.',
+    concentrica: 'Eleva o tronco estendendo a coluna e o quadril até formar uma linha reta com as pernas, sustentando 1 segundo.',
+    excentrica: 'Desce o tronco flexionando o quadril em 3 segundos controlados até onde for confortável.',
     passos: [
-      'Encaixe os pés e ajuste a almofada abaixo do quadril.',
-      'Cruze os braços no peito ou atrás da cabeça.',
-      'Desça o tronco suavemente em direção ao solo.',
-      'Suba até a linha neutra sem arquear para trás em excesso.'
+      'Encaixa os pés e ajusta a almofada abaixo do quadril.',
+      'Cruza os braços no peito ou atrás da cabeça.',
+      'Desce o tronco suavemente em direção ao solo.',
+      'Sobe até a linha neutra sem arquear para trás em excesso.'
     ],
     checkpoints: ['Almofada abaixo da dobra do quadril', 'Subir até alinhar com as pernas (não hiperestender)', 'Movimento cadenciado'],
-    respiracao: 'Inspire ao descer; expire ao subir alinhando o tronco.',
+    respiracao: 'Inspira ao descer; expira ao subir alinhando o tronco.',
     erro_comum: 'Hiperestender violentamente a coluna lombar para trás no topo do movimento.',
     beneficio: 'Fortalecimento preventivo crucial dos eretores da coluna, prevenindo lombalgias e melhorando a estabilidade no agachamento e terra.'
   },
@@ -323,16 +323,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Glúteos, Grande Dorsal e Antebraços',
     equipamento: 'Barra Olímpica sobre Travas de Segurança da Gaiola (Altura do Joelho)',
     posicao_inicial: 'Barra posicionada nas travas da gaiola na altura logo abaixo ou acima dos joelhos. Postura igual à fase final do terra.',
-    concentrica: 'Puxe a barra estendendo o quadril e puxando os ombros para trás em postura firme.',
-    excentrica: 'Desça a barra controladamente pousando nas travas sem bater com impacto destrutivo.',
+    concentrica: 'Puxa a barra estendendo o quadril e puxando os ombros para trás em postura firme.',
+    excentrica: 'Desce a barra controladamente pousando nas travas sem bater com impacto destrutivo.',
     passos: [
-      'Ajuste as travas da gaiola na linha dos joelhos.',
-      'Segure a barra com pegada firme e escápulas travadas.',
-      'Estenda o quadril ficando ereto com os ombros para trás.',
-      'Desça acompanhando a barra até o apoio.'
+      'Ajusta as travas da gaiola na linha dos joelhos.',
+      'Segura a barra com pegada firme e escápulas travadas.',
+      'Estende o quadril ficando ereto com os ombros para trás.',
+      'Desce acompanhando a barra até o apoio.'
     ],
     checkpoints: ['Trava na altura dos joelhos', 'Coluna reta', 'Finalização com extensão de quadril'],
-    respiracao: 'Inspire e faça brace antes de puxar; expire no topo.',
+    respiracao: 'Inspira e faz brace antes de puxar; expira no topo.',
     erro_comum: 'Jogar o tronco excessivamente para trás no topo forçando as vértebras lombares.',
     beneficio: 'Permite sobrecarga supramáxima no trapézio e eretores da espinha com menor demanda de mobilidade dos quadris.'
   },
@@ -345,16 +345,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps, Romboides e Peitoral Menor',
     equipamento: 'Barra Fixa com Pegadores Paralelos',
     posicao_inicial: 'Suspenso com as palmas voltadas uma para a outra nos pegadores paralelos.',
-    concentrica: 'Puxe o corpo para cima até o peito se aproximar das manoplas, com cotovelos fechados.',
-    excentrica: 'Desça em 3 segundos até a extensão total dos braços.',
+    concentrica: 'Puxa o corpo para cima até o peito se aproximar das manoplas, com cotovelos fechados.',
+    excentrica: 'Desce em 3 segundos até a extensão total dos braços.',
     passos: [
-      'Segure as manoplas paralelas.',
-      'Deprima as escápulas e suba com força suave.',
-      'Passe o queixo da linha dos pegadores.',
-      'Retorne de forma contínua e controlada.'
+      'Segura as manoplas paralelas.',
+      'Deprime as escápulas e sobe com força suave.',
+      'Passa o queixo da linha dos pegadores.',
+      'Regressa de forma contínua e controlada.'
     ],
     checkpoints: ['Palmas voltadas uma para a outra', 'Cotovelos junto ao corpo', 'Sem embalo'],
-    respiracao: 'Inspire na descida; expire na subida.',
+    respiracao: 'Inspira na descida; expira na subida.',
     erro_comum: 'Puxar apenas com os braços sem ativar a retração escapular.',
     beneficio: 'A variação mais anatômica e segura para quem sofre de dores nos punhos ou cotovelos na barra pronada.'
   },
@@ -366,17 +366,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal e Força Absoluta de Puxada',
     sinergistas: 'Bíceps, Antebraço e Romboides',
     equipamento: 'Cinto de Carga (Dip Belt) + Anilhas ou Halter entre as Pernas',
-    posicao_inicial: 'Cinto com peso preso na cintura. Suba no apoio e segure a barra pronada ou neutra.',
-    concentrica: 'Puxe o corpo e a carga adicional até o queixo ultrapassar a barra com aceleração concêntrica.',
-    excentrica: 'Desça em 3 segundos controlando rigorosamente o peso suspenso.',
+    posicao_inicial: 'Cinto com peso preso na cintura. Sobe no apoio e segura a barra pronada ou neutra.',
+    concentrica: 'Puxa o corpo e a carga adicional até o queixo ultrapassar a barra com aceleração concêntrica.',
+    excentrica: 'Desce em 3 segundos controlando rigorosamente o peso suspenso.',
     passos: [
-      'Prenda o cinto de carga com a anilha equilibrada.',
-      'Segure a barra com pegada firme.',
-      'Puxe o peso corporal + anilha em direção à barra.',
-      'Desça suavemente até estender os braços.'
+      'Prende o cinto de carga com a anilha equilibrada.',
+      'Segura a barra com pegada firme.',
+      'Puxa o peso corporal + anilha em direção à barra.',
+      'Desce suavemente até estender os braços.'
     ],
     checkpoints: ['Carga estável sem balançar', 'Subida completa do queixo', 'Descida sob controle'],
-    respiracao: 'Inspire no fundo; expire na tração.',
+    respiracao: 'Inspira no fundo; expira na tração.',
     erro_comum: 'Adicionar peso excessivo e realizar apenas repetições parciais.',
     beneficio: 'Sobrecarga progressiva avançada quando o peso corporal já não é suficiente para gerar estímulo hipertrófico.'
   },
@@ -388,17 +388,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal Inferior e Bíceps',
     sinergistas: 'Redondo Maior e Braquial',
     equipamento: 'Polia Alta + Barra Reta',
-    posicao_inicial: 'Sentado com coxas travadas segurando a barra com palmas voltadas para você na largura dos ombros.',
-    concentrica: 'Puxe a barra para o peito alto conduzindo os cotovelos para baixo e para trás.',
-    excentrica: 'Suba o peso em 3 segundos até a extensão total dos braços.',
+    posicao_inicial: 'Sentado com coxas travadas segurando a barra com palmas voltadas para ti na largura dos ombros.',
+    concentrica: 'Puxa a barra para o peito alto conduzindo os cotovelos para baixo e para trás.',
+    excentrica: 'Sobe o peso em 3 segundos até a extensão total dos braços.',
     passos: [
-      'Segure a barra em pegada supinada na largura dos ombros.',
-      'Sente-se com o peito erguido.',
-      'Puxe até encostar na parte superior do peitoral.',
-      'Controle o retorno aproveitando o alongamento.'
+      'Segura a barra em pegada supinada na largura dos ombros.',
+      'Senta-te com o peito erguido.',
+      'Puxa até encostar na parte superior do peitoral.',
+      'Controla o retorno aproveitando o alongamento.'
     ],
     checkpoints: ['Pegada na largura dos ombros', 'Cotovelos descem rente ao corpo', 'Peito estufado'],
-    respiracao: 'Inspire na subida; expire na puxada.',
+    respiracao: 'Inspira na subida; expira na puxada.',
     erro_comum: 'Usar pegada aberta demais na pegada supinada, forçando os punhos.',
     beneficio: 'Excelente recrutamento das fibras inferiores do dorsal com grande auxílio de flexores de cotovelo.'
   },
@@ -411,16 +411,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Braquiorradial',
     equipamento: 'Polia Alta + Barra com Pegadas Neutras',
     posicao_inicial: 'Sentado na máquina segurando as empunhaduras paralelas na largura dos ombros.',
-    concentrica: 'Puxe a barra até a altura da clavícula com cotovelos descendo no plano escapular.',
-    excentrica: 'Suba em 3 segundos controlados mantendo a postura ereta.',
+    concentrica: 'Puxa a barra até a altura da clavícula com cotovelos descendo no plano escapular.',
+    excentrica: 'Sobe em 3 segundos controlados mantendo a postura ereta.',
     passos: [
-      'Segure as manoplas neutras.',
-      'Sente-se e estabilize o tronco.',
-      'Puxe de forma contínua até o peito.',
-      'Retorne resistindo à carga.'
+      'Segura as manoplas neutras.',
+      'Senta-te e estabiliza o tronco.',
+      'Puxa de forma contínua até o peito.',
+      'Regressa resistindo à carga.'
     ],
     checkpoints: ['Palmas paralelas', 'Movimento suave', 'Sem solavanco no início'],
-    respiracao: 'Inspire subindo; expire puxando.',
+    respiracao: 'Inspira subindo; expira puxando.',
     erro_comum: 'Inclinar o corpo muito para trás no momento da puxada.',
     beneficio: 'Proporciona conforto anatômico excepcional para os ombros enquanto maximiza a ativação do grande dorsal.'
   },
@@ -433,16 +433,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Redondo Maior',
     equipamento: 'Polia Alta + Pegador Simples (D-Handle)',
     posicao_inicial: 'Sentado ou ajoelhado lateralmente à polia segurando o pegador com uma das mãos, braço totalmente estendido no alto.',
-    concentrica: 'Puxe o pegador para baixo conduzindo o cotovelo em direção ao quadril, sentindo o dorsal contrair intensamente.',
-    excentrica: 'Retorne o braço para cima em 3 segundos acompanhando o alinhamento do cabo.',
+    concentrica: 'Puxa o pegador para baixo conduzindo o cotovelo em direção ao quadril, sentindo o dorsal contrair intensamente.',
+    excentrica: 'Regressa o braço para cima em 3 segundos acompanhando o alinhamento do cabo.',
     passos: [
-      'Segure o pegador simples e posicione o joelho de apoio no solo.',
-      'Inicie a puxada guiando o cotovelo rente ao corpo.',
-      'Aperte o grande dorsal na linha do quadril por 1 segundo.',
-      'Suba com cadência até o alongamento completo.'
+      'Segura o pegador simples e posiciona o joelho de apoio no solo.',
+      'Inicia a puxada guiando o cotovelo rente ao corpo.',
+      'Aperta o grande dorsal na linha do quadril por 1 segundo.',
+      'Sobe com cadência até o alongamento completo.'
     ],
     checkpoints: ['Cotovelo direcionado para o bolso da calça', 'Tronco firme sem inclinação lateral', 'Amplitude máxima'],
-    respiracao: 'Inspire no topo; expire na puxada.',
+    respiracao: 'Inspira no topo; expira na puxada.',
     erro_comum: 'Torcer o tronco para o lado para conseguir puxar mais carga.',
     beneficio: 'Permite alinhar perfeitamente a linha de ação do cabo com a orientação das fibras do latíssimo do dorso de cada lado.'
   },
@@ -455,16 +455,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Grande Dorsal e Bíceps',
     equipamento: 'Lat Machine + Barra Larga',
     posicao_inicial: 'Sentado na máquina com tronco ligeiramente inclinado para frente e cabeça alinhada.',
-    concentrica: 'Puxe a barra para baixo suavemente até a linha da nuca, sem bater no pescoço.',
-    excentrica: 'Retorne em 3 segundos com velocidade controlada.',
+    concentrica: 'Puxa a barra para baixo suavemente até a linha da nuca, sem bater no pescoço.',
+    excentrica: 'Regressa em 3 segundos com velocidade controlada.',
     passos: [
-      'Pegue a barra com pegada moderada.',
-      'Sente-se com postura ereta e cabeça levemente à frente.',
-      'Puxe a barra com calma até a altura da nuca.',
-      'Suba controlando o peso.'
+      'Pega a barra com pegada moderada.',
+      'Senta-te com postura ereta e cabeça levemente à frente.',
+      'Puxa a barra com calma até a altura da nuca.',
+      'Sobe controlando o peso.'
     ],
     checkpoints: ['Apenas para quem possui excelente mobilidade de ombro', 'Carga leve a moderada', 'Sem empurrar o pescoço para frente'],
-    respiracao: 'Inspire ao subir; expire ao puxar.',
+    respiracao: 'Inspira ao subir; expira ao puxar.',
     erro_comum: 'Bater a barra com força nas vértebras cervicais ou usar carga excessiva que projeta a cabeça bruscamente.',
     beneficio: 'Trabalho de adução escapular com rotação externa de ombro, indicado para mobilidade e ativação de trapézio médio.'
   },
@@ -477,16 +477,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Tríceps (Cabeça Longa)',
     equipamento: 'Polia Alta + Barra Reta',
     posicao_inicial: 'Em pé com braços quase retos segurando a barra na polia alta.',
-    concentrica: 'Puxe a barra para baixo em arco até a linha da coxa com os cotovelos travados em 10°.',
-    excentrica: 'Retorne em 3 segundos permitindo que as dorsais se alongem no topo.',
+    concentrica: 'Puxa a barra para baixo em arco até a linha da coxa com os cotovelos travados em 10°.',
+    excentrica: 'Regressa em 3 segundos permitindo que as dorsais se alongem no topo.',
     passos: [
-      'Afaste-se um passo da polia e incline o tronco 25°.',
-      'Desça a barra em arco firme até a frente das coxas.',
-      'Sustente 1 segundo no pico de contração.',
-      'Suba devagar até a altura dos olhos.'
+      'Afasta-te um passo da polia e inclina o tronco 25°.',
+      'Desce a barra em arco firme até a frente das coxas.',
+      'Sustenta 1 segundo no pico de contração.',
+      'Sobe devagar até a altura dos olhos.'
     ],
     checkpoints: ['Cotovelos fixos', 'Movimento parte do ombro', 'Peito estufado'],
-    respiracao: 'Inspire subindo; expire descendo.',
+    respiracao: 'Inspira subindo; expira descendo.',
     erro_comum: 'Flexionar os braços durante o exercício.',
     beneficio: 'Isolamento completo do latíssimo do dorso sem exigir esforço dos flexores do cotovelo.'
   },
@@ -499,16 +499,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps, Romboides e Core',
     equipamento: 'Polia Baixa + Pegador Simples',
     posicao_inicial: 'Sentado de frente para a polia baixa segurando o pegador com uma mão, tronco ereto.',
-    concentrica: 'Puxe o pegador em direção ao quadril mantendo o cotovelo colado ao corpo.',
-    excentrica: 'Retorne em 3 segundos permitindo que o braço estique e o dorsal alongue.',
+    concentrica: 'Puxa o pegador em direção ao quadril mantendo o cotovelo colado ao corpo.',
+    excentrica: 'Regressa em 3 segundos permitindo que o braço estica e o dorsal alongue.',
     passos: [
-      'Segure o pegador com uma mão e apoie os pés.',
-      'Puxe até a cintura conduzindo com o cotovelo.',
-      'Aperte o lado das costas.',
-      'Retorne esticando o braço com controle.'
+      'Segura o pegador com uma mão e apoia os pés.',
+      'Puxa até a cintura conduzindo com o cotovelo.',
+      'Aperta o lado das costas.',
+      'Regressa esticando o braço com controle.'
     ],
     checkpoints: ['Cotovelo rente às costelas', 'Tronco estável', 'Pico de contração de 1s'],
-    respiracao: 'Inspire na extensão; expire na remada.',
+    respiracao: 'Inspira na extensão; expira na remada.',
     erro_comum: 'Girar a coluna excessivamente para compensar o peso.',
     beneficio: 'Permite rotação livre do punho para maior contração do feixe inferior do grande dorsal.'
   },
@@ -520,17 +520,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Costas Completas (Dorsais e Romboides)',
     sinergistas: 'Bíceps, Deltoide Posterior e Lombar',
     equipamento: 'Par de Halteres',
-    posicao_inicial: 'Em pé, incline o tronco a 45° segurando os halteres com pegada neutra ou pronada.',
-    concentrica: 'Puxe os halteres para cima e para trás aproximando as escápulas.',
-    excentrica: 'Desça em 2 a 3 segundos até a extensão dos braços.',
+    posicao_inicial: 'Em pé, inclina o tronco a 45° segurando os halteres com pegada neutra ou pronada.',
+    concentrica: 'Puxa os halteres para cima e para trás aproximando as escápulas.',
+    excentrica: 'Desce em 2 a 3 segundos até a extensão dos braços.',
     passos: [
-      'Incline o tronco com joelhos destravados e coluna reta.',
-      'Puxe os halteres em direção ao abdômen.',
-      'Una as escápulas no topo.',
-      'Desça de forma compassada.'
+      'Inclina o tronco com joelhos destravados e coluna reta.',
+      'Puxa os halteres em direção ao abdómen.',
+      'Une as escápulas no topo.',
+      'Desce de forma compassada.'
     ],
     checkpoints: ['Coluna neutra', 'Pescoço alinhado com a espinha', 'Cotovelos sobem para trás'],
-    respiracao: 'Inspire na descida; expire ao puxar.',
+    respiracao: 'Inspira na descida; expira ao puxar.',
     erro_comum: 'Arredondar a coluna lombar durante a execução.',
     beneficio: 'Maior liberdade articular para os ombros e punhos em comparação com a barra rígida.'
   },
@@ -543,16 +543,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Deltoide Posterior e Bíceps',
     equipamento: 'Banco Inclinado (30°-45°) + Halteres',
     posicao_inicial: 'Deitado de bruços com o peito apoiado no banco inclinado, segurando os halteres com braços estendidos para baixo.',
-    concentrica: 'Puxe os halteres para cima e para trás unindo as escápulas com força.',
-    excentrica: 'Desça em 3 segundos até os braços estenderem totalmente.',
+    concentrica: 'Puxa os halteres para cima e para trás unindo as escápulas com força.',
+    excentrica: 'Desce em 3 segundos até os braços estenderem totalmente.',
     passos: [
-      'Deite de bruços no banco inclinado.',
-      'Segure os halteres com pegada neutra ou semi-pronada.',
-      'Puxe os pesos pelos cotovelos espremendo as costas.',
-      'Desça suavemente até o fundo.'
+      'Deita de bruços no banco inclinado.',
+      'Segura os halteres com pegada neutra ou semi-pronada.',
+      'Puxa os pesos pelos cotovelos espremendo as costas.',
+      'Desce suavemente até o fundo.'
     ],
     checkpoints: ['Peito colado no banco', 'Zero impulso de pernas ou coluna', 'Escápulas se fecham'],
-    respiracao: 'Inspire descendo; expire subindo.',
+    respiracao: 'Inspira descendo; expira subindo.',
     erro_comum: 'Levantar o peito do banco usando a força lombar.',
     beneficio: 'Elimina completamente a fadiga e a estabilização lombar, isolando os romboides e o dorso.'
   },
@@ -565,16 +565,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Deltoide Posterior',
     equipamento: 'Banco Reto Elevado em Blocos + Barra ou Halteres',
     posicao_inicial: 'Deitado de bruços no banco horizontal elevado. Braços estendidos segurando a barra no chão.',
-    concentrica: 'Puxe a barra para cima até encostar no fundo do banco, espremendo as costas.',
-    excentrica: 'Desça a barra em 2 a 3 segundos até a extensão completa dos braços sem tocar o chão.',
+    concentrica: 'Puxa a barra para cima até encostar no fundo do banco, espremendo as costas.',
+    excentrica: 'Desce a barra em 2 a 3 segundos até a extensão completa dos braços sem tocar o chão.',
     passos: [
-      'Deite de bruços no banco elevado horizontal.',
-      'Segure a barra com pegada pronada.',
-      'Puxe com força dorsal até a barra bater suavemente na base do banco.',
-      'Desça com controle mantendo a tensão.'
+      'Deita de bruços no banco elevado horizontal.',
+      'Segura a barra com pegada pronada.',
+      'Puxa com força dorsal até a barra bater suavemente na base do banco.',
+      'Desce com controle mantendo a tensão.'
     ],
     checkpoints: ['Corpo horizontal estritamente apoiado', 'Puxada pura de costas', 'Sem embalo'],
-    respiracao: 'Inspire na descida; expire na subida.',
+    respiracao: 'Inspira na descida; expira na subida.',
     erro_comum: 'Tentar levantar a cabeça e o peito do banco.',
     beneficio: 'Padrão ouro de remada estrita que anula totalmente a trapaça corporal e protege 100% a lombar.'
   },
@@ -587,16 +587,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Trapézio, Lombar e Bíceps',
     equipamento: 'Barra Olímpica no Solo + Anilhas',
     posicao_inicial: 'Tronco estritamente paralelo ao chão (90° com as pernas). Barra repousando imóvel no piso a cada repetição.',
-    concentrica: 'Puxe a barra do chão de forma explosiva até encostar no abdômen superior/esterno.',
-    excentrica: 'Desça a barra de volta ao chão e solte a tensão momentaneamente antes da próxima repetição.',
+    concentrica: 'Puxa a barra do chão de forma explosiva até encostar no abdómen superior/esterno.',
+    excentrica: 'Desce a barra de volta ao chão e solta a tensão momentaneamente antes da próxima repetição.',
     passos: [
-      'Incline o tronco 100% paralelo ao piso e pegue a barra.',
-      'Trave as costas retas e puxe a barra do solo de forma potente até o peito.',
-      'Desça e pouse a barra no chão por 1 segundo (dead stop).',
-      'Inicie a próxima repetição do zero sem rebote.'
+      'Inclina o tronco 100% paralelo ao piso e pega a barra.',
+      'Trava as costas retas e puxa a barra do solo de forma potente até o peito.',
+      'Desce e pousa a barra no chão por 1 segundo (dead stop).',
+      'Inicia a próxima repetição do zero sem rebote.'
     ],
     checkpoints: ['Tronco paralelo ao chão', 'Barra pousa no solo em toda repetição', 'Puxada explosiva sem erguer o tronco'],
-    respiracao: 'Inspire no chão travando o abdômen; expire forte na puxada explosiva.',
+    respiracao: 'Inspira no chão travando o abdómen; expira forte na puxada explosiva.',
     erro_comum: 'Erguer o tronco para 45° durante a puxada perdendo a horizontalidade.',
     beneficio: 'Desenvolve potência de arrancada pura para as costas a partir da inércia zero (dead stop).'
   },
@@ -609,16 +609,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Romboides',
     equipamento: 'Barra Olímpica + Anilhas',
     posicao_inicial: 'Tronco inclinado a apenas cerca de 60°-70° (mais ereto que o convencional). Pegada supinada na largura dos ombros.',
-    concentrica: 'Puxe a barra rente às coxas em direção ao umbigo inferior, contraindo fortemente as dorsais.',
-    excentrica: 'Desça a barra controladamente em 2 a 3 segundos até a linha dos joelhos.',
+    concentrica: 'Puxa a barra rente às coxas em direção ao umbigo inferior, contraindo fortemente as dorsais.',
+    excentrica: 'Desce a barra controladamente em 2 a 3 segundos até a linha dos joelhos.',
     passos: [
-      'Fique mais ereto com tronco a cerca de 60°-70°.',
-      'Segure a barra com pegada supinada.',
-      'Puxe a barra em direção ao púbis/umbigo inferior.',
-      'Sustente a contração e retorne devagar.'
+      'Fica mais ereto com tronco a cerca de 60°-70°.',
+      'Segura a barra com pegada supinada.',
+      'Puxa a barra em direção ao púbis/umbigo inferior.',
+      'Sustenta a contração e regressa devagar.'
     ],
     checkpoints: ['Tronco mais ereto reduzindo estresse lombar', 'Pegada supinada firme', 'Puxada rente às coxas'],
-    respiracao: 'Inspire descendo; expire puxando.',
+    respiracao: 'Inspira descendo; expira puxando.',
     erro_comum: 'Usar carga excessiva e dobrar demais a coluna.',
     beneficio: 'Criada pelo 6x Mr. Olympia Dorian Yates, permite manipular cargas imensas com foco nas fibras inferiores do dorsal.'
   },
@@ -631,16 +631,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Trapézio',
     equipamento: 'Smith Machine',
     posicao_inicial: 'Em pé no Smith, tronco inclinado 45°, segurando a barra com pegada pronada.',
-    concentrica: 'Puxe a barra para cima nos trilhos até o abdômen.',
-    excentrica: 'Desça em 3 segundos controlando a trajetória linear do aparelho.',
+    concentrica: 'Puxa a barra para cima nos trilhos até o abdómen.',
+    excentrica: 'Desce em 3 segundos controlando a trajetória linear do aparelho.',
     passos: [
-      'Destrave a barra do Smith e incline o tronco.',
-      'Puxe com as costas guiado pelo trilho.',
-      'Aperte as escápulas no topo.',
-      'Desça de forma suave.'
+      'Destrava a barra do Smith e inclina o tronco.',
+      'Puxa com as costas guiado pelo trilho.',
+      'Aperta as escápulas no topo.',
+      'Desce de forma suave.'
     ],
     checkpoints: ['Trilho alinhado ao umbigo', 'Coluna neutra', 'Movimento contínuo'],
-    respiracao: 'Inspire na descida; expire na subida.',
+    respiracao: 'Inspira na descida; expira na subida.',
     erro_comum: 'Posicionar os pés muito atrás forçando a curvatura lombar.',
     beneficio: 'Permite treinar com foco na contração sem se preocupar com o balanço horizontal da barra.'
   },
@@ -652,17 +652,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal (Unilateral com Landmine)',
     sinergistas: 'Bíceps e Core',
     equipamento: 'Barra Landmine + Halter ou Pegador',
-    posicao_inicial: 'Posicione-se ao lado da barra, tronco inclinado, segurando a ponta da barra com uma mão.',
-    concentrica: 'Puxe a ponta da barra em direção ao quadril com o cotovelo rente.',
-    excentrica: 'Desça em 3 segundos até estender o braço.',
+    posicao_inicial: 'Posiciona-te ao lado da barra, tronco inclinado, segurando a ponta da barra com uma mão.',
+    concentrica: 'Puxa a ponta da barra em direção ao quadril com o cotovelo rente.',
+    excentrica: 'Desce em 3 segundos até estender o braço.',
     passos: [
-      'Fique de lado para a ponta da barra landmine.',
-      'Incline o tronco com base sólida.',
-      'Puxe a barra para a lateral do quadril.',
-      'Retorne esticando o braço com controle.'
+      'Fica de lado para a ponta da barra landmine.',
+      'Inclina o tronco com base sólida.',
+      'Puxa a barra para a lateral do quadril.',
+      'Regressa esticando o braço com controle.'
     ],
     checkpoints: ['Base ampla de pernas', 'Cotovelo sobe rente', 'Coluna alinhada'],
-    respiracao: 'Inspire descendo; expire puxando.',
+    respiracao: 'Inspira descendo; expira puxando.',
     erro_comum: 'Girar o quadril durante a remada.',
     beneficio: 'Arco natural do landmine que acompanha a mecânica perfeita do grande dorsal.'
   },
@@ -674,17 +674,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal, Trapézio, Romboides e Pegada',
     sinergistas: 'Bíceps e Core',
     equipamento: '1 Halter Muito Pesado + Banco ou Apoio',
-    posicao_inicial: 'Apoiado em um banco ou suporte alto com tronco inclinado 45°. Segure o halter pesado com braço estendido.',
-    concentrica: 'Puxe o halter de forma vigorosa e pesada em direção ao quadril, permitindo leve uso natural do tronco sem desleixo postural.',
-    excentrica: 'Desça o halter em 2 segundos sentindo o peso esticar o dorsal e a escápula no fundo.',
+    posicao_inicial: 'Apoiado em um banco ou suporte alto com tronco inclinado 45°. Segura o halter pesado com braço estendido.',
+    concentrica: 'Puxa o halter de forma vigorosa e pesada em direção ao quadril, permitindo leve uso natural do tronco sem desleixo postural.',
+    excentrica: 'Desce o halter em 2 segundos sentindo o peso esticar o dorsal e a escápula no fundo.',
     passos: [
-      'Apoie a mão livre em uma superfície firme.',
-      'Segure o halter pesado com pegada firme.',
-      'Puxe com agressividade até a linha da cintura.',
-      'Desça controladamente aproveitando o peso para alongar a escápula.'
+      'Apoia a mão livre em uma superfície firme.',
+      'Segura o halter pesado com pegada firme.',
+      'Puxa com agressividade até a linha da cintura.',
+      'Desce controladamente aproveitando o peso para alongar a escápula.'
     ],
-    checkpoints: ['Séries de alta repetição pesada (15-25 reps)', 'Pegada poderosa', 'Controle da descida'],
-    respiracao: 'Respire ritmicamente em cadência alta.',
+    checkpoints: ['Séries de alta repetição pesada (15-25 reps)', 'Pegada poderosa', 'Controla da descida'],
+    respiracao: 'Respira ritmicamente em cadência alta.',
     erro_comum: 'Deixar o peso cair sem frear a descida com as costas.',
     beneficio: 'Popularizada por Matt Kroc, desenvolve força de pegada colossal e espessura brutal nas costas.'
   },
@@ -696,17 +696,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Grande Dorsal e Redondo Maior',
     sinergistas: 'Deltoide Posterior e Bíceps',
     equipamento: 'Barra Landmine com Anilha na Ponta',
-    posicao_inicial: 'Em pé perpendicular à ponta da barra landmine. Segure a ponta com pegada pronada (sobre a ponta da barra).',
-    concentrica: 'Puxe a ponta da barra para cima abrindo o cotovelo ligeiramente para fora, sentindo a contração do dorsal lateral.',
-    excentrica: 'Desça esticando o braço e permitindo que o dorsal se abra em alongamento profundo.',
+    posicao_inicial: 'Em pé perpendicular à ponta da barra landmine. Segura a ponta com pegada pronada (sobre a ponta da barra).',
+    concentrica: 'Puxa a ponta da barra para cima abrindo o cotovelo ligeiramente para fora, sentindo a contração do dorsal lateral.',
+    excentrica: 'Desce esticando o braço e permitindo que o dorsal se abre em alongamento profundo.',
     passos: [
-      'Fique em pé transversalmente à ponta da barra.',
-      'Incline o tronco com mão de apoio no joelho.',
-      'Puxe a ponta da barra conduzindo o cotovelo para cima e para fora.',
-      'Desça devagar até o alongamento máximo.'
+      'Fica em pé transversalmente à ponta da barra.',
+      'Inclina o tronco com mão de apoio no joelho.',
+      'Puxa a ponta da barra conduzindo o cotovelo para cima e para fora.',
+      'Desce devagar até o alongamento máximo.'
     ],
     checkpoints: ['Corpo perpendicular à barra', 'Pegada pronada na extremidade', 'Alongamento profundo'],
-    respiracao: 'Inspire descendo; expire puxando.',
+    respiracao: 'Inspira descendo; expira puxando.',
     erro_comum: 'Ficar alinhado com a barra em vez de perpendicular.',
     beneficio: 'Criada pelo lendário John Meadows, isola a porção externa do dorsal com estímulo único de alongamento.'
   },
@@ -719,16 +719,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Braquial',
     equipamento: 'Máquina Articulada com Manoplas Verticais',
     posicao_inicial: 'Sentado com peito apoiado, segurando as manoplas verticais (palmas para dentro).',
-    concentrica: 'Puxe as manoplas para trás mantendo os cotovelos colados ao corpo.',
-    excentrica: 'Retorne em 3 segundos até a extensão dos braços.',
+    concentrica: 'Puxa as manoplas para trás mantendo os cotovelos colados ao corpo.',
+    excentrica: 'Regressa em 3 segundos até a extensão dos braços.',
     passos: [
-      'Ajuste o assento para que as manoplas fiquem no meio do tronco.',
-      'Segure com pegada neutra e cole o peito no apoio.',
-      'Puxe conduzindo com os cotovelos.',
-      'Retorne devagar sem bater os pesos.'
+      'Ajusta o assento para que as manoplas fiquem no meio do tronco.',
+      'Segura com pegada neutra e cola o peito no apoio.',
+      'Puxa conduzindo com os cotovelos.',
+      'Regressa devagar sem bater os pesos.'
     ],
     checkpoints: ['Cotovelos rentes ao tronco', 'Peito apoiado', 'Contração de 1s'],
-    respiracao: 'Inspire voltando; expire puxando.',
+    respiracao: 'Inspira voltando; expira puxando.',
     erro_comum: 'Afastar os cotovelos para os lados.',
     beneficio: 'Foco exclusivo na ativação do latíssimo do dorso com conforto articular ideal.'
   },
@@ -741,16 +741,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Grande Dorsal e Bíceps',
     equipamento: 'Máquina Articulada com Manoplas Horizontais Largas',
     posicao_inicial: 'Sentado com peito apoiado segurando as manoplas horizontais abertas com pegada pronada.',
-    concentrica: 'Puxe as manoplas para trás com os cotovelos apontando para fora a 70°-80° do tronco.',
-    excentrica: 'Retorne em 3 segundos estendendo os braços.',
+    concentrica: 'Puxa as manoplas para trás com os cotovelos apontando para fora a 70°-80° do tronco.',
+    excentrica: 'Regressa em 3 segundos estendendo os braços.',
     passos: [
-      'Segure as manoplas abertas pronadas.',
-      'Apoie o peito firmemente.',
-      'Puxe abrindo os cotovelos e juntando as escápulas.',
-      'Volte com controle.'
+      'Segura as manoplas abertas pronadas.',
+      'Apoia o peito firmemente.',
+      'Puxa abrindo os cotovelos e juntando as escápulas.',
+      'Volta com controle.'
     ],
     checkpoints: ['Cotovelos altos e abertos', 'Foco no centro das costas', 'Peito firme no encosto'],
-    respiracao: 'Inspire no retorno; expire na tração.',
+    respiracao: 'Inspira no retorno; expira na tração.',
     erro_comum: 'Encolher os ombros para cima em direção às orelhas.',
     beneficio: 'Direciona a sobrecarga para a musculatura que dá espessura e densidade ao centro das costas.'
   },
@@ -763,16 +763,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps e Redondo Maior',
     equipamento: 'Máquina de Puxada Articulada com Braços Independentes',
     posicao_inicial: 'Sentado com coxas travadas segurando uma das manoplas altas.',
-    concentrica: 'Puxe a manopla para baixo em arco convergente até o nível da clavícula/ombro.',
-    excentrica: 'Retorne em 3 segundos até a extensão alta.',
+    concentrica: 'Puxa a manopla para baixo em arco convergente até o nível da clavícula/ombro.',
+    excentrica: 'Regressa em 3 segundos até a extensão alta.',
     passos: [
-      'Trave as pernas e segure a manopla com uma das mãos.',
-      'Puxe de forma contínua até o ombro.',
-      'Aperte o grande dorsal no final.',
-      'Suba com cadência uniforme.'
+      'Trava as pernas e segura a manopla com uma das mãos.',
+      'Puxa de forma contínua até o ombro.',
+      'Aperta o grande dorsal no final.',
+      'Sobe com cadência uniforme.'
     ],
     checkpoints: ['Movimento convergente da máquina', 'Tronco reto', 'Foco unilateral'],
-    respiracao: 'Inspire subindo; expire puxando.',
+    respiracao: 'Inspira subindo; expira puxando.',
     erro_comum: 'Inclinar o tronco para o lado para completar a repetição.',
     beneficio: 'Permite focar toda a concentração neural em cada lado individualmente sem assimetrias.'
   },
@@ -785,20 +785,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Trapézio, Isquiotibiais e Core',
     equipamento: 'Barra Olímpica no Solo + Anilhas',
     posicao_inicial: 'Pés bem afastados (além da largura dos ombros) com pontas dos pés apontando a 45° para fora. Canelas encostadas na barra. Pegada na barra com braços verticais por dentro das pernas. Tronco ereto e quadril rebaixado.',
-    concentrica: 'Empurre o chão afastando o solo com os pés, mantendo o tronco ereto até a extensão completa dos quadris e joelhos.',
-    excentrica: 'Desça a barra rente às pernas flexionando o quadril e joelhos de forma controlada.',
+    concentrica: 'Empurra o chão afastando o solo com os pés, mantendo o tronco ereto até a extensão completa dos quadris e joelhos.',
+    excentrica: 'Desce a barra rente às pernas flexionando o quadril e joelhos de forma controlada.',
     passos: [
-      'Abra a base com pés apontados para fora.',
-      'Segure a barra por dentro dos joelhos com braços retos.',
-      'Abra o peito, abaixe o quadril e empurre o chão com os calcanhares.',
-      'Trave o quadril no topo sem reclinar o tronco para trás.'
+      'Abre a base com pés apontados para fora.',
+      'Segura a barra por dentro dos joelhos com braços retos.',
+      'Abre o peito, baixa o quadril e empurra o chão com os calcanhares.',
+      'Trava o quadril no topo sem reclinar o tronco para trás.'
     ],
     checkpoints: [
       'Tronco muito mais ereto que no terra convencional.',
       'Joelhos acompanham exatamente a linha dos dedos dos pés.',
       'Braços verticais pendendo diretamente dos ombros.'
     ],
-    respiracao: 'Inspire no solo travando o abdômen; expire ao ficar de pé.',
+    respiracao: 'Inspira no solo travando o abdómen; expira ao ficar de pé.',
     erro_comum: 'Deixar os joelhos desabarem para dentro (valgo) na saída do solo.',
     beneficio: 'Reduz significativamente o braço de momento sobre a coluna lombar, aumentando a ativação dos glúteos e adutores com máxima força.'
   },
@@ -810,21 +810,21 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Quadríceps, Glúteos, Eretores da Espinha e Trapézio',
     sinergistas: 'Isquiotibiais, Antebraços e Core',
     equipamento: 'Barra Hexagonal (Trap Bar) + Anilhas',
-    posicao_inicial: 'Em pé dentro do centro da barra hexagonal. Pés na largura do quadril. Agache segurando as empunhaduras laterais neutras. Coluna neutra e peito aberto.',
-    concentrica: 'Empurre o chão com os pés subindo em linha reta até ficar completamente ereto com ombros estáveis.',
-    excentrica: 'Desça flexionando o quadril e joelhos até os pesos tocarem o chão suavemente.',
+    posicao_inicial: 'Em pé dentro do centro da barra hexagonal. Pés na largura do quadril. Agacha segurando as empunhaduras laterais neutras. Coluna neutra e peito aberto.',
+    concentrica: 'Empurra o chão com os pés subindo em linha reta até ficar completamente ereto com ombros estáveis.',
+    excentrica: 'Desce flexionando o quadril e joelhos até os pesos tocarem o chão suavemente.',
     passos: [
-      'Posicione-se no centro exato da barra hexagonal.',
-      'Segure as pegadas laterais neutras.',
-      'Estufe o peito e empurre o chão com firmeza.',
-      'Fique ereto e controle a descida de volta ao piso.'
+      'Posiciona-te no centro exato da barra hexagonal.',
+      'Segura as pegadas laterais neutras.',
+      'Estufa o peito e empurra o chão com firmeza.',
+      'Fica ereto e controla a descida de volta ao piso.'
     ],
     checkpoints: [
       'Pegada neutra nas laterais alinhada com o centro de gravidade.',
       'Distribuição perfeita de carga entre quadríceps e cadeia posterior.',
       'Tensão lombar drasticamente reduzida.'
     ],
-    respiracao: 'Inspire no chão com brace; expire ao ficar ereto.',
+    respiracao: 'Inspira no chão com brace; expira ao ficar ereto.',
     erro_comum: 'Ficar muito à frente ou muito atrás do centro da barra, gerando inclinação.',
     beneficio: 'A biomecânica mais segura do levantamento terra para atletas, com o centro de massa alinhado ao corpo em vez de à frente das canelas.'
   },
@@ -836,17 +836,17 @@ export const BACK_BIOMECHANICS = {
     alvo: 'Romboides, Trapézio Médio e Grande Dorsal',
     sinergistas: 'Bíceps, Deltoide Posterior e Core',
     equipamento: 'Barra no Smith / Fita de Suspensão TRX',
-    posicao_inicial: 'Posicione a barra na altura da cintura. Deite sob a barra, segure com pegada pronada aberta, apoie os calcanhares no chão e mantenha o corpo em prancha rígida.',
-    concentrica: 'Puxe o peito em direção à barra até encostar, unindo as escápulas com vigor.',
-    excentrica: 'Desça o corpo em 2 a 3 segundos até a extensão completa dos braços.',
+    posicao_inicial: 'Posiciona a barra na altura da cintura. Deita sob a barra, segura com pegada pronada aberta, apoia os calcanhares no chão e mantém o corpo em prancha rígida.',
+    concentrica: 'Puxa o peito em direção à barra até encostar, unindo as escápulas com vigor.',
+    excentrica: 'Desce o corpo em 2 a 3 segundos até a extensão completa dos braços.',
     passos: [
-      'Segure a barra com braços estendidos e corpo em linha reta suspensa.',
-      'Trave os glúteos e o core.',
-      'Puxe o peito contra a barra conduzindo os cotovelos para trás.',
-      'Desça de maneira compassada.'
+      'Segura a barra com braços estendidos e corpo em linha reta suspensa.',
+      'Trava os glúteos e o core.',
+      'Puxa o peito contra a barra conduzindo os cotovelos para trás.',
+      'Desce de maneira compassada.'
     ],
     checkpoints: ['Corpo como uma tábua rígida', 'Peito toca na barra', 'Escápulas se fecham atrás'],
-    respiracao: 'Inspire na descida; expire ao puxar o corpo.',
+    respiracao: 'Inspira na descida; expira ao puxar o corpo.',
     erro_comum: 'Deixar o quadril ceder ou impulsionar com a pelve.',
     beneficio: 'Padrão fundamental de calistenia para espessura das costas e saúde dos ombros, ideal para todos os níveis.'
   },
@@ -859,16 +859,16 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Glúteo Máximo e Isquiotibiais',
     equipamento: 'Banco de Hiperextensão 45° + Anilha ou Halter no Peito',
     posicao_inicial: 'Apoiado no banco 45° com pés travados e anilha segurada firme contra o peito.',
-    concentrica: 'Eleve o tronco até alinhar com as pernas, mantendo a contração por 1 segundo.',
-    excentrica: 'Desça de forma suave em 3 segundos flexionando o quadril.',
+    concentrica: 'Eleva o tronco até alinhar com as pernas, mantendo a contração por 1 segundo.',
+    excentrica: 'Desce de forma suave em 3 segundos flexionando o quadril.',
     passos: [
-      'Acomode-se no banco 45° e segure a anilha no peito.',
-      'Desça o tronco em direção ao chão controlando o peso.',
-      'Suba estendendo a coluna e quadril até formar uma linha reta.',
-      'Mantenha 1 segundo no topo sem hiperestender.'
+      'Acomoda-te no banco 45° e segura a anilha no peito.',
+      'Desce o tronco em direção ao chão controlando o peso.',
+      'Sobe estendendo a coluna e quadril até formar uma linha reta.',
+      'Mantém 1 segundo no topo sem hiperestender.'
     ],
     checkpoints: ['Anilha colada no peito', 'Subida alinhada sem arco excessivo', 'Cadência de 3 segundos'],
-    respiracao: 'Inspire descendo; expire subindo.',
+    respiracao: 'Inspira descendo; expira subindo.',
     erro_comum: 'Usar carga pesada demais e quicar o tronco na subida.',
     beneficio: 'Sobrecarga progressiva para os eretores espinhais para suportar cargas brutas de agachamento e levantamento terra.'
   },
@@ -885,20 +885,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Deltoide Posterior e Bíceps Braquial',
     equipamento: 'Polia Baixa + Barra Reta Larga',
     posicao_inicial: 'Sentado com joelhos levemente flexionados, tronco ereto, barra segurada com pegada pronada mais larga que os ombros.',
-    concentrica: 'Puxe a barra em direção ao abdômen abrindo os cotovelos para os lados e aproximando as escápulas.',
-    excentrica: 'Estenda os braços em 2 a 3 segundos controlados até o alongamento total das costas.',
+    concentrica: 'Puxa a barra em direção ao abdómen abrindo os cotovelos para os lados e aproximando as escápulas.',
+    excentrica: 'Estende os braços em 2 a 3 segundos controlados até o alongamento total das costas.',
     passos: [
-      'Sente-se com os pés firmes e joelhos levemente flexionados.',
-      'Segure a barra com pegada pronada aberta.',
-      'Puxe a barra até o abdômen abrindo os cotovelos.',
-      'Estenda os braços controlado até o alongamento total.'
+      'Senta-te com os pés firmes e joelhos levemente flexionados.',
+      'Segura a barra com pegada pronada aberta.',
+      'Puxa a barra até o abdómen abrindo os cotovelos.',
+      'Estende os braços controlado até o alongamento total.'
     ],
     checkpoints: [
       'Tronco ereto sem balançar para trás a cada puxada',
       'Cotovelos abrem para os lados, não colam ao tronco',
       'Escápulas se aproximam no final da puxada'
     ],
-    respiracao: 'Expire puxando; inspire na extensão.',
+    respiracao: 'Expira puxando; inspira na extensão.',
     erro_comum: 'Usar o balanço do tronco para ajudar a puxar o peso, tirando a tensão do latíssimo.',
     beneficio: 'A pegada aberta recruta mais fibras do trapézio médio e romboides em comparação com a pegada fechada, somando espessura às costas.'
   },
@@ -911,20 +911,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps Braquial, Romboides e Deltoide Posterior',
     equipamento: 'Polia Baixa + Puxador em V',
     posicao_inicial: 'Sentado com tronco ereto, segurando o puxador em V com pegada neutra e braços estendidos à frente.',
-    concentrica: 'Puxe o puxador em direção ao abdômen superior mantendo os cotovelos próximos ao tronco.',
-    excentrica: 'Estenda os braços em 2 a 3 segundos controlados até a extensão total.',
+    concentrica: 'Puxa o puxador em direção ao abdómen superior mantendo os cotovelos próximos ao tronco.',
+    excentrica: 'Estende os braços em 2 a 3 segundos controlados até a extensão total.',
     passos: [
-      'Sente-se ereto segurando o puxador em V.',
-      'Mantenha o tronco fixo, sem balançar para trás.',
-      'Puxe o puxador até o abdômen superior.',
-      'Estenda controlado de volta à posição inicial.'
+      'Senta-te ereto segurando o puxador em V.',
+      'Mantém o tronco fixo, sem balançar para trás.',
+      'Puxa o puxador até o abdómen superior.',
+      'Estende controlado de volta à posição inicial.'
     ],
     checkpoints: [
       'Cotovelos permanecem próximos ao tronco durante a puxada',
       'Tronco ereto, sem usar impulso do quadril',
-      'Puxada termina na altura do abdômen superior, não do pescoço'
+      'Puxada termina na altura do abdómen superior, não do pescoço'
     ],
-    respiracao: 'Expire puxando; inspire estendendo.',
+    respiracao: 'Expira puxando; inspira estendendo.',
     erro_comum: 'Inclinar o tronco muito para trás para completar a amplitude com a lombar.',
     beneficio: 'A pegada neutra do puxador em V reduz o estresse no ombro e favorece uma contração mais completa do latíssimo na porção final do movimento.'
   },
@@ -937,20 +937,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Elevador da Escápula',
     equipamento: 'Máquina Articulada (Lever)',
     posicao_inicial: 'Em pé ou sentado segurando as alças da máquina com os braços estendidos ao lado do corpo.',
-    concentrica: 'Encolha os ombros verticalmente com força, segurando 1 a 2 segundos no topo.',
-    excentrica: 'Desça em 2 a 3 segundos permitindo o alongamento total do trapézio.',
+    concentrica: 'Encolhe os ombros verticalmente com força, segurando 1 a 2 segundos no topo.',
+    excentrica: 'Desce em 2 a 3 segundos permitindo o alongamento total do trapézio.',
     passos: [
-      'Posicione-se na máquina segurando as alças.',
-      'Mantenha os braços estendidos e relaxados.',
-      'Encolha os ombros diretamente para cima.',
-      'Desça controlado até o alongamento total.'
+      'Posiciona-te na máquina segurando as alças.',
+      'Mantém os braços estendidos e relaxados.',
+      'Encolhe os ombros diretamente para cima.',
+      'Desce controlado até o alongamento total.'
     ],
     checkpoints: [
       'Movimento puramente vertical, sem rotação dos ombros',
       'Cotovelos permanecem estendidos durante toda a repetição',
       'Pausa no topo antes de iniciar a descida'
     ],
-    respiracao: 'Expire subindo; inspire descendo.',
+    respiracao: 'Expira subindo; inspira descendo.',
     erro_comum: 'Rolar os ombros para frente ou para trás em vez de encolher em linha reta.',
     beneficio: 'A trajetória guiada da máquina permite focar inteiramente na contração do trapézio sem gastar energia estabilizando a carga livre.'
   },
@@ -963,20 +963,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps Braquial e Romboides',
     equipamento: 'Barra Fixa + Banco de Apoio',
     posicao_inicial: 'Pendurado na barra fixa com um banco posicionado abaixo para apoiar parte do peso corporal com as pernas.',
-    concentrica: 'Puxe o corpo para cima usando costas e braços, permitindo que as pernas assistam apenas o necessário.',
-    excentrica: 'Desça em 2 a 3 segundos controlados até os braços ficarem quase estendidos.',
+    concentrica: 'Puxa o corpo para cima usando costas e braços, permitindo que as pernas assistam apenas o necessário.',
+    excentrica: 'Desce em 2 a 3 segundos controlados até os braços ficarem quase estendidos.',
     passos: [
-      'Posicione o banco abaixo da barra fixa.',
-      'Segure a barra com pegada pronada na largura dos ombros.',
-      'Puxe o corpo para cima apoiando parcialmente as pernas no banco.',
-      'Desça controlado até a extensão quase completa dos braços.'
+      'Posiciona o banco abaixo da barra fixa.',
+      'Segura a barra com pegada pronada na largura dos ombros.',
+      'Puxa o corpo para cima apoiando parcialmente as pernas no banco.',
+      'Desce controlado até a extensão quase completa dos braços.'
     ],
     checkpoints: [
       'Pernas assistem só o mínimo necessário para completar a repetição',
       'Queixo ultrapassa a linha da barra no topo',
       'Descida controlada, sem soltar o peso de uma vez'
     ],
-    respiracao: 'Expire puxando para cima; inspire na descida.',
+    respiracao: 'Expira puxando para cima; inspira na descida.',
     erro_comum: 'Apoiar peso demais nas pernas, perdendo o estímulo real nas costas.',
     beneficio: 'Permite progredir tecnicamente rumo à barra fixa completa, mantendo o padrão de puxada vertical real com assistência regulável pelo próprio praticante.'
   },
@@ -989,20 +989,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Bíceps Braquial e Deltoide Posterior',
     equipamento: 'Argolas de Ginástica (Suspensão)',
     posicao_inicial: 'Segurando as argolas com os braços estendidos, corpo inclinado para trás formando uma linha reta dos calcanhares aos ombros.',
-    concentrica: 'Puxe o corpo em direção às argolas levando o peito ao encontro das mãos, abrindo os cotovelos para fora.',
-    excentrica: 'Estenda os braços em 2 a 3 segundos controlados retornando à inclinação inicial.',
+    concentrica: 'Puxa o corpo em direção às argolas levando o peito ao encontro das mãos, abrindo os cotovelos para fora.',
+    excentrica: 'Estende os braços em 2 a 3 segundos controlados retornando à inclinação inicial.',
     passos: [
-      'Segure as argolas e incline o corpo para trás em linha reta.',
-      'Trave o core para manter a postura rígida.',
-      'Puxe o peito em direção às mãos abrindo os cotovelos.',
-      'Estenda controlado de volta à posição inicial.'
+      'Segura as argolas e inclina o corpo para trás em linha reta.',
+      'Trava o core para manter a postura rígida.',
+      'Puxa o peito em direção às mãos abrindo os cotovelos.',
+      'Estende controlado de volta à posição inicial.'
     ],
     checkpoints: [
       'Corpo em linha reta dos calcanhares à cabeça durante toda a repetição',
       'Cotovelos abrem para fora na puxada, aproximando as escápulas',
       'Ângulo do corpo regula a dificuldade: quanto mais horizontal, mais difícil'
     ],
-    respiracao: 'Expire puxando; inspire estendendo.',
+    respiracao: 'Expira puxando; inspira estendendo.',
     erro_comum: 'Deixar o quadril cair, quebrando a linha reta do corpo e reduzindo o recrutamento das costas.',
     beneficio: 'A instabilidade das argolas exige maior ativação dos estabilizadores escapulares, somando controle neuromuscular ao estímulo de força nas costas.'
   },
@@ -1015,20 +1015,20 @@ export const BACK_BIOMECHANICS = {
     sinergistas: 'Romboides',
     equipamento: 'Banco Inclinado + Halteres',
     posicao_inicial: 'Deitado de bruços num banco inclinado a 45°, halteres pendurados sob os ombros com braços estendidos.',
-    concentrica: 'Encolha os ombros verticalmente em direção às orelhas, segurando 1 a 2 segundos no topo.',
-    excentrica: 'Desça em 2 a 3 segundos permitindo o alongamento total do trapézio.',
+    concentrica: 'Encolhe os ombros verticalmente em direção às orelhas, segurando 1 a 2 segundos no topo.',
+    excentrica: 'Desce em 2 a 3 segundos permitindo o alongamento total do trapézio.',
     passos: [
-      'Deite de bruços no banco inclinado com os halteres pendurados.',
-      'Mantenha os braços estendidos e relaxados.',
-      'Encolha os ombros diretamente para cima.',
-      'Desça controlado até o alongamento total.'
+      'Deita de bruços no banco inclinado com os halteres pendurados.',
+      'Mantém os braços estendidos e relaxados.',
+      'Encolhe os ombros diretamente para cima.',
+      'Desce controlado até o alongamento total.'
     ],
     checkpoints: [
       'Peito fixo no banco durante toda a repetição',
       'Movimento isolado nos ombros, sem flexionar os cotovelos',
       'Pausa no topo antes de descer'
     ],
-    respiracao: 'Expire subindo; inspire descendo.',
+    respiracao: 'Expira subindo; inspira descendo.',
     erro_comum: 'Flexionar os cotovelos para ajudar a elevar o peso, transformando em uma remada parcial.',
     beneficio: 'O apoio no banco inclinado isola o trapézio médio com um ângulo de tração diferente do encolhimento em pé, variando o estímulo entre as fibras superiores e médias.'
   }

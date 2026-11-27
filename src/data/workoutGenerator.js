@@ -1,6 +1,6 @@
 /**
  * AB FITNESS — MODELOS DE PLANO SEMANAL E BANCO DE EXERCÍCIOS DETALHADOS
- * Os modelos (3, 4, 5 e 6 dias) definem a escolha e a ordem dos exercícios de cada sessão.
+ * Os modelos (3, 4, 5 e 6 dias) definem a escolhe e a ordem dos exercícios de cada sessão.
  * Séries, repetições, descanso e RIR vêm do motor (src/engine/), e o plano final é ajustado e validado
  * em planFromProfile.js. Critérios e referências: docs/TRAINING_SCIENCE_AUDIT.md.
  */
@@ -26,15 +26,15 @@ export const EXERCISE_DATABASE = {
       'Pés completamente firmes e apoiados no chão',
       'Escápulas aduzidas (fechadas) e deprimidas coladas no banco',
       'Cotovelos a 45° a 60° em relação ao tronco (nunca abertos a 90°)',
-      'Leve curvatura natural lombar preservada (sem hiperlordose)'
+      'Leva curvatura natural lombar preservada (sem hiperlordose)'
     ],
     executionSteps: [
-      'Deite-se no banco com os halteres na linha do peitoral médio.',
-      'Inicie a descida (fase excêntrica) de forma controlada em 2 a 3 segundos até sentir um bom alongamento do peito.',
-      'Empurre os halteres para cima convergindo levemente no topo sem bater os pesos.',
-      'Mantenha a contração do peitoral no pico por 1 segundo antes de iniciar a próxima repetição.'
+      'Deita-te no banco com os halteres na linha do peitoral médio.',
+      'Inicia a descida (fase excêntrica) de forma controlada em 2 a 3 segundos até sentir um bom alongamento do peito.',
+      'Empurra os halteres para cima convergindo levemente no topo sem bater os pesos.',
+      'Mantém a contração do peitoral no pico por 1 segundo antes de iniciar a próxima repetição.'
     ],
-    breathing: 'Inspire controladamente na descida; expire com força na subida.',
+    breathing: 'Inspira controladamente na descida; expira com força na subida.',
     commonMistake: 'Abrir demais os cotovelos em cruz (90°), sobrecarregando a articulação do ombro e o manguito rotador.',
     evidenceTip: 'Os halteres permitem descer um pouco mais e ajustar a trajetória de cada braço, o que dá mais alongamento ao peitoral no fundo do movimento.'
   },
@@ -52,11 +52,11 @@ export const EXERCISE_DATABASE = {
       'Punhos alinhados sobre os antebraços'
     ],
     executionSteps: [
-      'Posicione os halteres acima do peitoral superior com pegada neutra ou pronada.',
-      'Desça os halteres suavemente abrindo o peito até a linha da clavícula.',
-      'Empurre em linha vertical em direção ao teto com aceleração controlada.'
+      'Posiciona os halteres acima do peitoral superior com pegada neutra ou pronada.',
+      'Desce os halteres suavemente abrindo o peito até a linha da clavícula.',
+      'Empurra em linha vertical em direção ao teto com aceleração controlada.'
     ],
-    breathing: 'Puxe o ar na descida profunda; solte o ar na extensão dos braços.',
+    breathing: 'Puxa o ar na descida profunda; solta o ar na extensão dos braços.',
     commonMistake: 'Inclinar o banco em 60°, transferindo quase todo o esforço para os deltoides anteriores.',
     evidenceTip: 'O banco inclinado desloca parte do trabalho para a porção clavicular do peitoral; inclinações moderadas, de cerca de 30° a 45°, são as mais usadas para isso.'
   },
@@ -70,15 +70,15 @@ export const EXERCISE_DATABASE = {
     diagramType: 'cable-fly',
     postureCheckpoints: [
       'Um pé à frente do outro para estabilidade do tronco',
-      'Leve flexão fixa dos cotovelos (15°) durante todo o trajeto',
-      'Tronco inclinado cerca de 15° à frente com abdômen contraído'
+      'Leva flexão fixa dos cotovelos (15°) durante todo o trajeto',
+      'Tronco inclinado cerca de 15° à frente com abdómen contraído'
     ],
     executionSteps: [
-      'Abra os braços controlando o peso até sentir o alongamento peitoral.',
-      'Traga os cabos à frente como se estivesse abraçando uma árvore larga.',
-      'Aperte o peito firmemente no ponto de encontro por 1 a 2 segundos.'
+      'Abre os braços controlando o peso até sentir o alongamento peitoral.',
+      'Traz os cabos à frente como se estivesse abraçando uma árvore larga.',
+      'Aperta o peito firmemente no ponto de encontro por 1 a 2 segundos.'
     ],
-    breathing: 'Inspire ao abrir os cabos; expire ao unir as mãos à frente.',
+    breathing: 'Inspira ao abrir os cabos; expira ao unir as mãos à frente.',
     commonMistake: 'Flexionar e estender os cotovelos como se fosse um supino, perdendo a tensão contínua do cabo.',
     evidenceTip: 'Os cabos mantêm tensão ao longo de todo o arco, incluindo no fecho, onde os halteres perdem quase toda a resistência.'
   },
@@ -99,12 +99,12 @@ export const EXERCISE_DATABASE = {
       'Peito estufado e olhar voltado ligeiramente para cima'
     ],
     executionSteps: [
-      'Inicie o movimento puxando pelas escápulas (depressão escapular).',
-      'Puxe a barra em direção ao peito superior (linha do esterno), levando os cotovelos para baixo e para trás.',
-      'Evite balançar a coluna; segure 1 segundo na contração máxima.',
-      'Retorne estendendo os braços e sentindo as dorsais alongarem completamente.'
+      'Inicia o movimento puxando pelas escápulas (depressão escapular).',
+      'Puxa a barra em direção ao peito superior (linha do esterno), levando os cotovelos para baixo e para trás.',
+      'Evita balançar a coluna; segura 1 segundo na contração máxima.',
+      'Regressa estendendo os braços e sentindo as dorsais alongarem completamente.'
     ],
-    breathing: 'Expire ao puxar a barra ao queixo/peito; inspire na subida controlada.',
+    breathing: 'Expira ao puxar a barra ao queixo/peito; inspira na subida controlada.',
     commonMistake: 'Puxar a barra por trás do pescoço (risco à coluna cervical) ou dar solavancos para trás com a lombar.',
     evidenceTip: 'A puxada pela frente dá boa amplitude aos ombros e é mais confortável para a articulação do que a puxada atrás da nuca.'
   },
@@ -122,12 +122,12 @@ export const EXERCISE_DATABASE = {
       'Quadril posicionado para trás para ancorar o centro de gravidade'
     ],
     executionSteps: [
-      'Segure os pesos com os braços estendidos abaixo do peito.',
-      'Puxe os halteres em direção ao umbigo / quadril, raspando os cotovelos perto das costelas.',
+      'Segura os pesos com os braços estendidos abaixo do peito.',
+      'Puxa os halteres em direção ao umbigo / quadril, raspando os cotovelos perto das costelas.',
       'Esmague as escápulas uma contra a outra no topo.',
-      'Desça com controle estendendo as dorsais.'
+      'Desce com controle estendendo as dorsais.'
     ],
-    breathing: 'Expire na subida da carga; inspire na descida.',
+    breathing: 'Expira na subida da carga; inspira na descida.',
     commonMistake: 'Arredondar a coluna toracolombar em arco, arriscando hérnias de disco.',
     evidenceTip: 'Com o tronco inclinado, a remada trabalha dorsais, romboides e trapézio médio, a base da espessura das costas.'
   },
@@ -145,11 +145,11 @@ export const EXERCISE_DATABASE = {
       'Ombros para baixo e peito aberto'
     ],
     executionSteps: [
-      'Puxe o triângulo em direção ao abdômen inferior.',
-      'Traga os cotovelos para trás o máximo possível sem tombar o tronco.',
-      'Segure 1 segundo no pico de contração e solte lentamente.'
+      'Puxa o triângulo em direção ao abdómen inferior.',
+      'Traz os cotovelos para trás o máximo possível sem tombar o tronco.',
+      'Segura 1 segundo no pico de contração e solta lentamente.'
     ],
-    breathing: 'Solte o ar ao puxar contra o tronco; puxe o ar ao estender os braços.',
+    breathing: 'Solta o ar ao puxar contra o tronco; puxa o ar ao estender os braços.',
     commonMistake: 'Jogar o corpo excessivamente para trás e para frente utilizando inércia em vez de força muscular.',
     evidenceTip: 'A pegada neutra em triângulo preserva os punhos e permite maior carga efetiva de trabalho nas costas.'
   },
@@ -170,11 +170,11 @@ export const EXERCISE_DATABASE = {
       'Coluna neutra e peito aberto'
     ],
     executionSteps: [
-      'Inicie flexionando os joelhos e o quadril simultaneamente como se fosse sentar num banco baixo.',
-      'Desça até as coxas ficarem paralelas ao chão (ou abaixo se tiver boa mobilidade).',
-      'Empurre o chão através dos calcanhares e do meio do pé com força explosiva para subir.'
+      'Inicia flexionando os joelhos e o quadril simultaneamente como se fosse sentar num banco baixo.',
+      'Desce até as coxas ficarem paralelas ao chão (ou abaixo se tiver boa mobilidade).',
+      'Empurra o chão através dos calcanhares e do meio do pé com força explosiva para subir.'
     ],
-    breathing: 'Inspire antes de descer travando o ar no abdômen (Manobra de Valsalva); expire ao passar do ponto crítico da subida.',
+    breathing: 'Inspira antes de descer travando o ar no abdómen (Manobra de Valsalva); expira ao passar do ponto crítico da subida.',
     commonMistake: 'Deixar os joelhos colapsarem para dentro (valgo dinâmico) ao fazer esforço na subida.',
     evidenceTip: 'Agachar com amplitude completa trabalha glúteos e adutores em comprimentos maiores do que o agachamento curto; num estudo de Kubo et al. (2019) isso deu mais hipertrofia nesses músculos.'
   },
@@ -192,11 +192,11 @@ export const EXERCISE_DATABASE = {
       'Joelho da frente alinhado com o segundo dedo do pé, sem ultrapassar muito a ponta'
     ],
     executionSteps: [
-      'Dê um passo à frente e desça o quadril até o joelho de trás quase encostar no chão.',
-      'Empurre pelo calcanhar da frente para avançar até a próxima passada.',
-      'Mantenha o tronco estável, sem balanço lateral entre um passo e outro.'
+      'Dê um passo à frente e desce o quadril até o joelho de trás quase encostar no chão.',
+      'Empurra pelo calcanhar da frente para avançar até a próxima passada.',
+      'Mantém o tronco estável, sem balanço lateral entre um passo e outro.'
     ],
-    breathing: 'Inspire na descida de cada passada; expire ao empurrar para a próxima.',
+    breathing: 'Inspira na descida de cada passada; expira ao empurrar para a próxima.',
     commonMistake: 'Dar um passo curto demais, jogando o peso para o joelho da frente em vez do glúteo.',
     evidenceTip: 'Exercício unilateral que corrige assimetrias entre pernas e soma componente de equilíbrio e deslocamento ao estímulo de força.'
   },
@@ -214,11 +214,11 @@ export const EXERCISE_DATABASE = {
       'Movimento focado em projetar o bumbum para a parede de trás (dobradiça de quadril)'
     ],
     executionSteps: [
-      'Mantenha as costas travadas e empurre o quadril para trás enquanto os halteres descem.',
-      'Desça até sentir um alongamento potente no posterior das coxas (geralmente abaixo do joelho).',
-      'Contraia os glúteos e empurre o quadril para frente para retornar à posição ereta.'
+      'Mantém as costas travadas e empurra o quadril para trás enquanto os halteres descem.',
+      'Desce até sentir um alongamento potente no posterior das coxas (geralmente abaixo do joelho).',
+      'Contrai os glúteos e empurra o quadril para frente para retornar à posição ereta.'
     ],
-    breathing: 'Inspire fundo no topo; desça segurando a postura; expire ao contrair os glúteos na subida.',
+    breathing: 'Inspira fundo no topo; desce segurando a postura; expira ao contrair os glúteos na subida.',
     commonMistake: 'Flexionar a coluna torácica para tentar alcançar o chão com os pesos.',
     evidenceTip: 'O RDL fortalece os posteriores em alongamento e treina a dobradiça do quadril. Para prevenir lesões dos posteriores, o exercício com melhor evidência é o nórdico.'
   },
@@ -232,15 +232,15 @@ export const EXERCISE_DATABASE = {
     diagramType: 'hip-thrust',
     postureCheckpoints: [
       'Escápulas apoiadas no banco na linha média das costas',
-      'Pés plantados no chão de forma que a canela fique vertical a 90° no topo',
+      'Pés plantados no chão de forma que a canela fica vertical a 90° no topo',
       'Queixo encaixado olhando para frente durante toda a subida'
     ],
     executionSteps: [
-      'Posicione o peso confortavelmente sobre a linha do quadril com almofada protetora.',
-      'Empurre pelos calcanhares e suba a pelve até alinhar coxa e tronco horizontalmente.',
+      'Posiciona o peso confortavelmente sobre a linha do quadril com almofada protetora.',
+      'Empurra pelos calcanhares e sobe a pelve até alinhar coxa e tronco horizontalmente.',
       'Esmague os glúteos no topo por 1.5 a 2 segundos antes de descer.'
     ],
-    breathing: 'Inspire na descida; expire com força máxima no topo da extensão pélvica.',
+    breathing: 'Inspira na descida; expira com força máxima no topo da extensão pélvica.',
     commonMistake: 'Hiperextender a lombar no topo em vez de contrair a bacia em retroversão pélvica.',
     evidenceTip: 'A elevação pélvica mostra mais atividade elétrica do glúteo máximo do que o agachamento (Contreras et al., 2015); atividade elétrica não é o mesmo que crescimento, por isso vale a pena usar os dois.'
   },
@@ -257,14 +257,14 @@ export const EXERCISE_DATABASE = {
     postureCheckpoints: [
       'Banco regulado a cerca de 75° (evita compressão na lombar)',
       'Cotovelos posicionados ligeiramente à frente do plano escapular (30° à frente)',
-      'Pés no chão e abdômen ativado'
+      'Pés no chão e abdómen ativado'
     ],
     executionSteps: [
-      'Erga os halteres até a linha das orelhas.',
-      'Empurre para cima em arco suave até quase estender os cotovelos.',
-      'Desça de maneira controlada em 2 segundos até a altura do queixo.'
+      'Ergue os halteres até a linha das orelhas.',
+      'Empurra para cima em arco suave até quase estender os cotovelos.',
+      'Desce de maneira controlada em 2 segundos até a altura do queixo.'
     ],
-    breathing: 'Expire na fase de empurrar para cima; inspire na descida controlada.',
+    breathing: 'Expira na fase de empurrar para cima; inspira na descida controlada.',
     commonMistake: 'Descer o peso rápido demais ou bater os halteres no alto.',
     evidenceTip: 'O plano escapular (cotovelos levemente à frente) protege a cabeça do úmero contra impacto com o acrômio.'
   },
@@ -282,11 +282,11 @@ export const EXERCISE_DATABASE = {
       'Polegares nivelados ou ligeiramente para baixo (sem girar os ombros)'
     ],
     executionSteps: [
-      'Erga os halteres lateralmente pelos cotovelos até a linha dos ombros.',
-      'Segure 1 segundo no ponto mais alto sem encolher o pescoço.',
-      'Desça devagar em 3 segundos sentindo o ombro segurar a gravidade.'
+      'Ergue os halteres lateralmente pelos cotovelos até a linha dos ombros.',
+      'Segura 1 segundo no ponto mais alto sem encolher o pescoço.',
+      'Desce devagar em 3 segundos sentindo o ombro segurar a gravidade.'
     ],
-    breathing: 'Expire ao subir os braços lateralmente; inspire na descida.',
+    breathing: 'Expira ao subir os braços lateralmente; inspira na descida.',
     commonMistake: 'Usar pesos excessivos e balançar o corpo com impulso das pernas.',
     evidenceTip: 'O deltoide lateral costuma responder bem a séries perto da falha em faixas de repetições médias a altas, com a descida controlada.'
   },
@@ -300,15 +300,15 @@ export const EXERCISE_DATABASE = {
     diagramType: 'face-pull',
     postureCheckpoints: [
       'Polia regulada na altura dos olhos ou ligeiramente acima',
-      'Pegada neutra com polegares voltados para você',
+      'Pegada neutra com polegares voltados para ti',
       'Cotovelos altos na linha das orelhas'
     ],
     executionSteps: [
-      'Puxe a corda em direção à testa/olhos, abrindo as duas pontas da corda para os lados.',
+      'Puxa a corda em direção à testa/olhos, abrindo as duas pontas da corda para os lados.',
       'Rotacione os ombros externamente no final, mostrando o peito.',
-      'Aperte a parte de trás dos ombros por 2 segundos antes de soltar.'
+      'Aperta a parte de trás dos ombros por 2 segundos antes de soltar.'
     ],
-    breathing: 'Expire ao puxar; inspire ao voltar.',
+    breathing: 'Expira ao puxar; inspira ao voltar.',
     commonMistake: 'Puxar para o queixo como remada alta, perdendo a rotação externa do ombro.',
     evidenceTip: 'Exercício primordial para longevidade articular e combate da postura curvada moderna de smartphone/computador.'
   },
@@ -328,11 +328,11 @@ export const EXERCISE_DATABASE = {
       'Rotação (supinação) do punho completa'
     ],
     executionSteps: [
-      'Inicie com os halteres neutros e rotacione as palmas para cima durante a subida.',
-      'Contraia o bíceps no topo sem avançar os cotovelos para frente.',
-      'Desça controladamente estendendo quase todo o braço.'
+      'Inicia com os halteres neutros e rotacione as palmas para cima durante a subida.',
+      'Contrai o bíceps no topo sem avançar os cotovelos para frente.',
+      'Desce controladamente estendendo quase todo o braço.'
     ],
-    breathing: 'Expire na subida; inspire na descida.',
+    breathing: 'Expira na subida; inspira na descida.',
     commonMistake: 'Jogar os cotovelos para frente no topo, transferindo a tensão para o deltoide anterior.',
     evidenceTip: 'A supinação do punho é a função anatômica de pico do bíceps além da flexão de cotovelo.'
   },
@@ -346,15 +346,15 @@ export const EXERCISE_DATABASE = {
     diagramType: 'tricep-rope',
     postureCheckpoints: [
       'Cotovelos colados nas costelas sem avançar',
-      'Leve inclinação do tronco para permitir que a corda abra no final',
+      'Leva inclinação do tronco para permitir que a corda abre no final',
       'Ombros para baixo e relaxados'
     ],
     executionSteps: [
-      'Empurre a corda para baixo estendendo os cotovelos.',
-      'No final do movimento, afaste as pontas da corda para fora para máxima contração.',
-      'Segure 1 segundo e retorne até o antebraço formar 90° com o braço.'
+      'Empurra a corda para baixo estendendo os cotovelos.',
+      'No final do movimento, afasta as pontas da corda para fora para máxima contração.',
+      'Segura 1 segundo e regressa até o antebraço formar 90° com o braço.'
     ],
-    breathing: 'Expire ao empurrar a corda; inspire na subida até 90°.',
+    breathing: 'Expira ao empurrar a corda; inspira na subida até 90°.',
     commonMistake: 'Deixar os cotovelos subirem junto com a corda, transformando em puxada.',
     evidenceTip: 'O tríceps é o maior músculo do braço; treiná-lo bem conta muito para o tamanho do braço.'
   },
@@ -364,23 +364,23 @@ export const EXERCISE_DATABASE = {
     id: 'prancha-frontal-ativa',
     name: 'Prancha Frontal com Contração Ativa',
     category: 'core',
-    target: 'Transverso do Abdômen & Reto Abdominal',
+    target: 'Transverso do Abdómen & Reto Abdominal',
     secondary: 'Glúteos & Ombros Estabilizadores',
     equipment: 'Colchonete',
     diagramType: 'plank',
     postureCheckpoints: [
       'Cotovelos alinhados diretamente sob os ombros',
       'Corpo em linha reta dos calcanhares à cabeça',
-      'Glúteos apertados com força e abdômen puxado para dentro'
+      'Glúteos apertados com força e abdómen puxado para dentro'
     ],
     executionSteps: [
-      'Posicione-se em prancha isométrica.',
-      'Imagine que quer puxar os cotovelos em direção aos pés com força (prancha RKC).',
-      'Mantenha respiração constante sem prender o ar por 30 a 45 segundos.'
+      'Posiciona-te em prancha isométrica.',
+      'Imagina que quer puxar os cotovelos em direção aos pés com força (prancha RKC).',
+      'Mantém respiração constante sem prender o ar por 30 a 45 segundos.'
     ],
     breathing: 'Respiração curta e ritmada pelo diafragma mantendo a parede abdominal rígida.',
     commonMistake: 'Deixar o quadril despencar em direção ao chão, sobrecarregando a coluna lombar.',
-    evidenceTip: 'Na prancha, contrair ativamente glúteos e abdômen torna o exercício mais exigente do que segurar a posição de forma passiva.'
+    evidenceTip: 'Na prancha, contrair ativamente glúteos e abdómen torna o exercício mais exigente do que segurar a posição de forma passiva.'
   }
 };
 
@@ -448,12 +448,12 @@ export function generatePersonalizedWorkoutPlan({
       target: `${found100.grupo} (${found100.mecanica})`,
       equipment: found100.mecanica,
       executionSteps: [
-        'Posicione-se com alinhamento articular adequado e máxima estabilidade postural.',
-        'Execute a fase excêntrica de forma controlada em 2 a 3 segundos.',
-        'Finalize a fase concêntrica com aceleração e contração no pico.'
+        'Posiciona-te com alinhamento articular adequado e máxima estabilidade postural.',
+        'Executa a fase excêntrica de forma controlada em 2 a 3 segundos.',
+        'Finaliza a fase concêntrica com aceleração e contração no pico.'
       ],
       postureCheckpoints: [
-        'Manter coluna vertebral neutra e abdômen ativado.',
+        'Manter coluna vertebral neutra e abdómen ativado.',
         'Controle articular completo sem impulsos.'
       ]
     } : null);
@@ -490,7 +490,7 @@ export function generatePersonalizedWorkoutPlan({
       intensity: 'Baixa',
       badge: 'Regeneração',
       color: 'from-emerald-400 to-teal-500',
-      description: 'O músculo cresce durante o descanso. Hidrate-se e faça uma caminhada leve.',
+      description: 'O músculo cresce durante o descanso. Hidrate-se e faz uma caminhada leve.',
       isRestDay: true,
       exercises: []
     });
@@ -580,7 +580,7 @@ export function generatePersonalizedWorkoutPlan({
         intensity: 'Baixa',
         badge: 'Regeneração',
         color: 'from-emerald-400 to-teal-500',
-        description: 'O músculo cresce durante o descanso. Hidrate-se e faça uma caminhada leve.',
+        description: 'O músculo cresce durante o descanso. Hidrate-se e faz uma caminhada leve.',
         isRestDay: true,
         exercises: []
       },
@@ -666,7 +666,7 @@ export function generatePersonalizedWorkoutPlan({
         intensity: 'Repouso',
         badge: 'Mentalidade Pro',
         color: 'from-slate-400 to-slate-500',
-        description: 'Organize suas refeições e prepare-se mentalmente para bater novos recordes na segunda.',
+        description: 'Organize suas refeições e prepara-te mentalmente para bater novos recordes na segunda.',
         isRestDay: true,
         exercises: []
       }
@@ -926,7 +926,7 @@ export function generatePersonalizedWorkoutPlan({
         name: 'Sábado',
         shortName: 'Sáb',
         title: 'Arnold C2: Cadeia Posterior, Glúteos & Core',
-        focus: 'Isquiotibiais, Glúteo Máximo & Abdômen',
+        focus: 'Isquiotibiais, Glúteo Máximo & Abdómen',
         duration: '50 min',
         intensity: goalParams.intensity,
         badge: 'Arnold Legs B',
@@ -1074,7 +1074,7 @@ export function generatePersonalizedWorkoutPlan({
         name: 'Sábado',
         shortName: 'Sáb',
         title: 'Legs B: Posterior, Glúteos & Core',
-        focus: 'Isquiotibiais, Glúteos & Abdômen',
+        focus: 'Isquiotibiais, Glúteos & Abdómen',
         duration: '50 min',
         intensity: goalParams.intensity,
         badge: 'Posterior & Glutes',
@@ -1205,7 +1205,7 @@ export function generatePersonalizedWorkoutPlan({
       intensity: goalParams.intensity,
       badge: 'Posterior & Power',
       color: 'from-zinc-400 to-zinc-500',
-      description: 'Finalize a semana com posterior blindado e glúteos ativos.',
+      description: 'Finaliza a semana com posterior blindado e glúteos ativos.',
       isRestDay: false,
       exercises: [
         getEx('ponte-gluteos-barra-glute-bridge'),

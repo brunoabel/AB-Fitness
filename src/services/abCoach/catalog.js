@@ -45,7 +45,7 @@ function normalizePorcao(alvo = '', grupo = '') {
   if (text.includes('antebraço')) return 'antebraço';
 
   // Core & Funcional
-  if (text.includes('abdômen') || text.includes('core') || text.includes('oblíquo')) return 'core / abdômen';
+  if (text.includes('abdómen') || text.includes('core') || text.includes('oblíquo')) return 'core / abdómen';
 
   return alvo || grupo;
 }

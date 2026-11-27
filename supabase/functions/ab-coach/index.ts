@@ -471,7 +471,7 @@ Deno.serve(async (req: Request) => {
     const perfil = sanitizePerfil(rawPerfil);
     const kind = body.kind === "narrative" ? "narrative" : "chat";
 
-    // 3b. Quota diária persistente (migration 20261136). Sem a RPC, segue só com o limite por hora.
+    // 3b. Quota diária persistente (migration 20261136). Se a RPC falhar, o pedido é recusado com 503.
     const quota = await callUserRpc(supabaseUrl, supabaseAnonKey, authHeader, "consume_ab_coach_quota", { p_kind: kind })
       .catch(() => ({ ok: false, status: 0, data: null }));
     if (quota.ok && Array.isArray(quota.data) && quota.data[0]) {
@@ -486,7 +486,13 @@ Deno.serve(async (req: Request) => {
         );
       }
     } else {
-      console.warn(`Quota do AB Coach indisponível (status ${quota.status}); pedido segue com o limite por hora.`);
+      // Fail-closed: sem quota não há limite diário (o limite por hora vive na memória de cada instância),
+      // por isso o pedido não segue para o modelo.
+      console.error(`Quota do AB Coach indisponível (status ${quota.status}); pedido recusado.`);
+      return new Response(
+        JSON.stringify({ error: "quota_unavailable", mensagem: "O AB Coach está indisponível por instantes. Tenta de novo daqui a pouco." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "30" } }
+      );
     }
 
     // 3c. Histórico de 8 semanas guardado na conta (só nas conversas; a análise pós-treino já traz os factos)

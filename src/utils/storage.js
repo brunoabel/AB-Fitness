@@ -269,7 +269,7 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
     badge: 'Push Hipertrofia',
     color: 'from-sky-500 to-blue-600',
     description: 'Divisão Push focada em desenvolvimento da cadeia anterior de empurrar. Combina sobrecarga progressiva com alta ativação do peitoral e ombros 3D.',
-    trainerNotes: 'Inicie com o supino inclinado aproveitando o sistema neuromuscular descansado para construir o peitoral superior.',
+    trainerNotes: 'Inicia com o supino inclinado aproveitando o sistema neuromuscular descansado para construir o peitoral superior.',
     isRestDay: false,
     createdAt: '2026-01-01T10:00:00.000Z',
     exercises: [
@@ -366,7 +366,7 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
     badge: 'Pull Hipertrofia',
     color: 'from-sky-500 to-indigo-600',
     description: 'Treino de tração completo para construção de costas em formato V, deltoides posteriores 3D e braços densos.',
-    trainerNotes: 'Puxe com os cotovelos e faça adução e depressão escapular consciente antes de dobrar os braços.',
+    trainerNotes: 'Puxa com os cotovelos e faz adução e depressão escapular consciente antes de dobrar os braços.',
     isRestDay: false,
     createdAt: '2026-01-01T10:00:00.000Z',
     exercises: [
@@ -560,7 +560,7 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
     badge: 'Glúteos & Posterior',
     color: 'from-amber-500 to-rose-600',
     description: 'Protocolo desenhado para maximizar a hipertrofia do glúteo máximo e cadeia posterior com Hip Thrust pesado, flexões de joelho e estabilização pélvica.',
-    trainerNotes: 'Aperte os glúteos conscientemente no topo do Hip Thrust e controle rigorosamente a descida do Stiff.',
+    trainerNotes: 'Aperta os glúteos conscientemente no topo do Hip Thrust e controle rigorosamente a descida do Stiff.',
     isRestDay: false,
     createdAt: '2026-01-01T10:00:00.000Z',
     exercises: [
@@ -672,7 +672,7 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
         defaultSets: 5,
         restTime: 120,
         badge: 'Força Pura',
-        notes: 'Respiração diafragmática e abdômen pressurizado.'
+        notes: 'Respiração diafragmática e abdómen pressurizado.'
       },
       {
         id: 'levantamento-terra',
@@ -727,8 +727,8 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
     intensity: 'Adaptação',
     badge: 'Full Body Base',
     color: 'from-emerald-500 to-teal-600',
-    description: 'Rotina completa para quem está iniciando ou possui pouco tempo na semana. Estimula todos os grandes grupos musculares com técnica impecável.',
-    trainerNotes: 'Mantenha cargas moderadas, priorize a técnica e descanse 60s entre as séries.',
+    description: 'Rotina completa para quem está a começar ou tem pouco tempo durante a semana. Estimula todos os grandes grupos musculares com técnica impecável.',
+    trainerNotes: 'Mantém cargas moderadas, dá prioridade à técnica e descansa 60 s entre séries.',
     isRestDay: false,
     createdAt: '2026-01-01T10:00:00.000Z',
     exercises: [
@@ -795,7 +795,7 @@ export const DEFAULT_CUSTOM_WORKOUTS = [
         defaultSets: 3,
         restTime: 45,
         badge: 'Core',
-        notes: 'Abdômen e glúteos contraídos sem descer a lombar.'
+        notes: 'Abdómen e glúteos contraídos sem descer a lombar.'
       }
     ]
   }
@@ -869,7 +869,7 @@ export const saveCustomWorkout = (workoutData) => {
         restTime: Number(ex.restTime) || 60,
         badge: ex.badge || 'Personal',
         notes: ex.notes || '',
-        steps: ex.steps || (ex.notes ? [ex.notes] : ['Execute com postura firme e cadência controlada.'])
+        steps: ex.steps || (ex.notes ? [ex.notes] : ['Executa com postura firme e cadência controlada.'])
       }))
     };
 

@@ -201,7 +201,7 @@ export default function useRunGpsWatch({
           );
         } else if (err.code === 3) {
           setGpsErrorCode('TIMEOUT');
-          setGpsError('A adquirir satélites GPS... Mantenha-se em local aberto.');
+          setGpsError('A procurar satélites GPS. Fica num local aberto.');
         } else {
           setGpsError('Sinal de GPS fraco ou permissão pendente.');
         }

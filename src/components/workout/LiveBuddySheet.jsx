@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { Users, Copy, Check, LogOut, X, Radio } from 'lucide-react';
 import { triggerHaptic } from '../../utils/audio';
-
-/** Código da sala: 8 caracteres aleatórios criptográficos (32^8 combinações), porque o canal Realtime é público. */
-function randomRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const bytes = new Uint8Array(8);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => chars[b % chars.length]).join('');
-}
+import { ROOM_CODE_LENGTH, cleanRoomCodeInput, isValidRoomCode, randomRoomCode } from '../../utils/roomCode.js';
 
 /**
  * Sheet de Sessão Partilhada em Tempo Real (Supabase Realtime Presence + Broadcast).
- * Permite criar ou entrar numa sala por código curto e ver séries concluídas em dupla ao vivo.
+ * Permite criar ou entrar numa sala por código de 8 caracteres e ver séries concluídas em dupla ao vivo.
  */
 export default function LiveBuddySheet({
   isOpen,
@@ -36,8 +29,8 @@ export default function LiveBuddySheet({
 
   const handleJoin = (e) => {
     e.preventDefault();
-    const cleaned = inputCode.trim().toUpperCase();
-    if (cleaned.length < 3) return;
+    const cleaned = cleanRoomCodeInput(inputCode);
+    if (!isValidRoomCode(cleaned)) return;
     triggerHaptic(12);
     onJoinRoom?.(cleaned);
     setInputCode('');
@@ -102,14 +95,17 @@ export default function LiveBuddySheet({
               <input
                 type="text"
                 value={inputCode}
-                onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                onChange={(e) => setInputCode(cleanRoomCodeInput(e.target.value))}
                 placeholder="Código (ex: K7P2QX9M)"
-                maxLength={12}
+                maxLength={ROOM_CODE_LENGTH}
+                autoCapitalize="characters"
+                autoComplete="off"
+                spellCheck={false}
                 className="flex-1 min-h-[44px] px-4 rounded-full bg-black border border-white/[0.12] text-sm font-mono uppercase tracking-wider text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent-hover"
               />
               <button
                 type="submit"
-                disabled={inputCode.trim().length < 3}
+                disabled={!isValidRoomCode(inputCode)}
                 className="min-h-[44px] px-4 rounded-full bg-accent border border-accent-hover text-xs font-semibold text-white disabled:opacity-40 cursor-pointer"
               >
                 Entrar

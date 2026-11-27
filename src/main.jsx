@@ -14,6 +14,18 @@ if (typeof document !== 'undefined') {
   document.addEventListener('gesturechange', preventPinch, { passive: false });
 }
 
+// Depois de um deploy, uma aba antiga pode pedir um chunk que já não existe: recarrega uma vez para a versão nova
+window.addEventListener('vite:preloadError', (event) => {
+  try {
+    const key = 'ab_chunk_reload_at';
+    const last = Number(sessionStorage.getItem(key)) || 0;
+    if (Date.now() - last < 60000) return; // já recarregou há pouco: evita ciclo
+    sessionStorage.setItem(key, String(Date.now()));
+    event.preventDefault();
+    window.location.reload();
+  } catch {}
+});
+
 // Páginas legais públicas (/termos, /privacidade, /aviso-medico): fora da app, sem login e sem puxar os textos legais para o bundle principal
 const legalPath = window.location.pathname.replace(/\/+$/, '') || '/';
 

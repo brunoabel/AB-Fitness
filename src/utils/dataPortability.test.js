@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  parseFlexibleDate,
   workoutsToCsv,
   runsToCsv,
   parseCompetitorWorkoutsCsv,
@@ -65,5 +66,37 @@ describe('dataPortability — Exportação & Importação CSV (Hevy / Strong / A
     ]);
     assert.ok(csv.includes('distance_km'));
     assert.ok(csv.includes('5.2'));
+  });
+
+  it('lê as datas da Strong, da Hevy e ISO sem depender do parser do browser', () => {
+    const strong = parseFlexibleDate('2025-11-25 18:30:00');
+    assert.equal(strong.getFullYear(), 2025);
+    assert.equal(strong.getMonth(), 10);
+    assert.equal(strong.getDate(), 25);
+    assert.equal(strong.getHours(), 18);
+
+    const hevy = parseFlexibleDate('25 Nov 2025, 18:30');
+    assert.equal(hevy.getMonth(), 10);
+    assert.equal(hevy.getMinutes(), 30);
+
+    assert.equal(parseFlexibleDate('3 dez 2025').getMonth(), 11);
+    assert.equal(parseFlexibleDate('2026-11-20T10:00:00Z').toISOString(), '2026-11-20T10:00:00.000Z');
+    assert.equal(parseFlexibleDate('20/11/2025 07:15').getDate(), 20);
+  });
+
+  it('data ilegível ignora a linha em vez de a pôr no dia de hoje', () => {
+    assert.equal(parseFlexibleDate(''), null);
+    assert.equal(parseFlexibleDate('ontem'), null);
+    assert.equal(parseFlexibleDate('2025-02-31'), null);
+
+    const csv = [
+      'title,start_time,end_time,exercise_title,set_index,set_type,weight_kg,reps,rpe',
+      '"Push A","???","","Bench Press (Barbell)",1,normal,80,8,',
+      '"Push A","25 Nov 2025, 18:30","","Bench Press (Barbell)",1,normal,80,8,'
+    ].join('\n');
+    const res = parseCompetitorWorkoutsCsv(csv, []);
+    assert.equal(res.skippedInvalid, 1);
+    assert.equal(res.workouts.length, 1);
+    assert.equal(new Date(res.workouts[0].completedAt).getDate(), 25);
   });
 });

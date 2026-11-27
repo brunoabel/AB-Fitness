@@ -4,6 +4,7 @@ import SetRow from '../SetRow';
 import { getBestHistorical1RM, getBestHistoricalDuration, isTimedExercise } from '../../utils/strengthMetrics';
 import { triggerHaptic } from '../../utils/audio';
 
+import { displayLabel } from '../../utils/displayLabel.js';
 /** Números das séries de trabalho; aquecimentos aparecem como "W". */
 export function workingSetLabels(sets) {
   let n = 0;
@@ -46,7 +47,7 @@ export default function ExerciseListView({
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-zinc-500">{exercise.target}</span>
+                    <span className="text-[11px] text-zinc-500">{displayLabel(exercise.target)}</span>
                     {exercise.supersetGroupId && (
                       <span className="px-1.5 py-0.5 rounded bg-accent/70 border border-accent-hover text-[9px] font-semibold uppercase tracking-wider text-white">
                         Bi-Set

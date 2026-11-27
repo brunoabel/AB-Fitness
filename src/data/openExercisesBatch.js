@@ -80,7 +80,7 @@ export const OPEN_EXERCISES_BATCH = [
   { slug: 'pernada-alternada-flutter-kick', nome: 'Pernada Alternada (Flutter Kick)', grupo: 'Abdômen', mec: 'I', env: 'home_no_equip', eq: 'bodyweight', anim: 'flutter-kick', tipo: 'isometria',
     sin: 'Flexores do Quadril, Oblíquos', cps: ['Lombar colada ao chão', 'Pernas esticadas', 'Movimentos curtos'] },
   { slug: 'prancha-sobe-desce', nome: 'Prancha Sobe e Desce (Plank Up-Down)', grupo: 'Abdômen', mec: 'C', env: 'home_no_equip', eq: 'bodyweight', anim: 'plank-up-down', tipo: 'forca',
-    sin: 'Tríceps Braquial, Deltoide Anterior, Oblíquos', cps: ['Quadril parado', 'Pés afastados para equilíbrio', 'Abdômen contraído'] },
+    sin: 'Tríceps Braquial, Deltoide Anterior, Oblíquos', cps: ['Quadril parado', 'Pés afastados para equilíbrio', 'Abdómen contraído'] },
   { slug: 'caminhada-do-urso', nome: 'Caminhada do Urso (Bear Crawl)', grupo: 'Funcional & Cardio', mec: 'C', env: 'home_no_equip', eq: 'bodyweight', anim: 'bear-crawl', tipo: 'cardio',
     sin: 'Deltoide Anterior, Quadríceps, Tríceps Braquial', cps: ['Joelhos baixos', 'Costas direitas', 'Passos curtos'] },
   { slug: 'prancha-invertida', nome: 'Prancha Invertida (Reverse Plank)', grupo: 'Glúteos', mec: 'C', env: 'home_no_equip', eq: 'bodyweight', anim: 'reverse-plank', tipo: 'isometria',

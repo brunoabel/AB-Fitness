@@ -1,4 +1,8 @@
-const CACHE_NAME = 'ab-fitness-v28'; // v28: Onda 1 + Onda 2 (ACWR, Readiness, Smart Swap, Crash Recovery, Realtime, Portabilidade)
+const CACHE_NAME = 'ab-fitness-v29'; // v29: bundles /assets passam para ASSET_CACHE com limite
+// Bundles com hash (/assets): cache próprio com limite. Os de builds antigos saem primeiro (ordem de inserção),
+// por isso o cache deixa de crescer a cada deploy sem apagar de uma vez os chunks de uma aba ainda aberta.
+const ASSET_CACHE = 'ab-fitness-assets-v1';
+const ASSET_MAX_ENTRIES = 400;
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const VIDEO_CACHE = 'ab-fitness-video-v1';
@@ -33,10 +37,29 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+/** Copia os bundles /assets de um cache antigo para ASSET_CACHE antes de o apagar (abas abertas continuam a funcionar). */
+async function migrateAssets(fromCacheName) {
+  const from = await caches.open(fromCacheName);
+  const to = await caches.open(ASSET_CACHE);
+  for (const req of await from.keys()) {
+    if (new URL(req.url).pathname.startsWith('/assets/') && !(await to.match(req))) {
+      const res = await from.match(req);
+      if (res) await to.put(req, res);
+    }
+  }
+}
+
 self.addEventListener('activate', (event) => {
-  const keep = [CACHE_NAME, MEDIA_CACHE, VIDEO_CACHE];
+  const keep = [CACHE_NAME, ASSET_CACHE, MEDIA_CACHE, VIDEO_CACHE];
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => !keep.includes(k)).map((k) => caches.delete(k))))
+    caches.keys().then(async (keys) => {
+      const stale = keys.filter((k) => !keep.includes(k));
+      for (const k of stale) {
+        if (k.startsWith('ab-fitness-v')) await migrateAssets(k).catch(() => {});
+        await caches.delete(k);
+      }
+      await trimCache(ASSET_CACHE, ASSET_MAX_ENTRIES).catch(() => {});
+    })
   );
   self.clients.claim();
 });
@@ -112,6 +135,7 @@ async function cacheFirst(request, cacheName) {
   const res = await fetch(request);
   putInCache(cacheName, request, res);
   if (cacheName === MEDIA_CACHE) trimCache(MEDIA_CACHE, MEDIA_MAX_ENTRIES);
+  if (cacheName === ASSET_CACHE) trimCache(ASSET_CACHE, ASSET_MAX_ENTRIES);
   return res;
 }
 
@@ -221,7 +245,7 @@ self.addEventListener('fetch', (event) => {
 
   // Bundles de produção com hash no nome: nunca mudam
   if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
-    event.respondWith(cacheFirst(request, CACHE_NAME));
+    event.respondWith(cacheFirst(request, ASSET_CACHE));
     return;
   }
 

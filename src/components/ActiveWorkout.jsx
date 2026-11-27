@@ -155,6 +155,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       onEvent: (ev) => setLiveEvents((prev) => [ev, ...prev].slice(0, 20))
     });
     liveChannelRef.current = ch;
+    if (!ch) return; // código inválido (menos de 8 caracteres) ou sem Supabase
     setLiveRoomCode(code);
     setLiveEvents([]);
   };
@@ -224,7 +225,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
     isFocusMode,
     isExpressMode,
     restTimerState,
-    workoutSnapshot: workout?.assignedProgramId ? workout : undefined,
+    workoutSnapshot: workout || undefined,
     computeElapsed,
     timerRef,
     finishingRef
@@ -499,7 +500,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       startDateIso: new Date(Date.now() - finalSeconds * 1000).toISOString(),
       elapsedSeconds: finalSeconds,
       description: `${completedWorkingSetsCount} séries · ${Math.round(totalVolumeKg)} kg — AB Fitness`
-    }).catch(() => {});
+    }, user?.id).catch(() => {});
   };
 
   const handlePauseAndExit = () => {
@@ -516,7 +517,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       isFocusMode,
       isExpressMode,
       restTimerState,
-      workoutSnapshot: workout?.assignedProgramId ? workout : undefined
+      workoutSnapshot: workout || undefined
     });
     triggerHaptic(15);
     onBackToDashboard();

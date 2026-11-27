@@ -98,7 +98,7 @@ export async function sendMessageToCoach(messages, perfil = null) {
   // 1. Obter sessão ativa para garantir que há um token válido
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   if (sessionError || !session || !session.access_token) {
-    throw new Error('Você precisa estar conectado à sua conta para conversar com o AB Coach.');
+    throw new Error('Tens de iniciar sessão na tua conta para falar com o AB Coach.');
   }
 
   const enrichedPerfil = await getAthleteContextSummary(perfil);
