@@ -196,7 +196,7 @@ export default function WeeklyDashboard({
   const isToday = currentJsDay === selectedDayId;
 
   return (
-    <div data-boot-stagger className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-14 space-y-7">
+    <div data-boot-stagger className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-5 pb-14 space-y-8">
       {/* 1. SELETOR DE 7 DIAS — ABERTO SOBRE PRETO PURO */}
       <section aria-label="Seletor Semanal de Treino">
         <div className="grid grid-cols-7 gap-1">

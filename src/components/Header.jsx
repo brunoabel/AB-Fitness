@@ -116,21 +116,18 @@ export default function Header({
     });
   }, [identity.firstName, streak, week, schedule, completedDays, now]);
   const largeTitle = isHome ? greetingText : TAB_TITLES[tabKey] || 'AB Fitness';
-  const compactTitle = isHome ? 'Treino' : TAB_TITLES[tabKey] || 'AB Fitness';
   // Corrida e Amigos já têm cabeçalho editorial dedicado — evita repetir o título no topo
   const hasOwnHeader = tabKey === 'running' || tabKey === 'social';
 
-  // Só transform/opacity: o fundo e o título compacto aparecem com o scroll
+  // Só opacity: o fundo translúcido aparece suavemente ao descer, sem repetir títulos no topo
   const { scrollY } = useScroll();
   const barOpacity = useTransform(scrollY, [8, 56], [0, 1]);
-  const compactOpacity = useTransform(scrollY, [36, 64], [0, 1]);
-  const compactY = useTransform(scrollY, [36, 64], [6, 0]);
 
   return (
     <>
       <header className="sticky top-0 z-20 pt-[env(safe-area-inset-top,0px)]">
         <motion.div aria-hidden style={{ opacity: barOpacity }} className="absolute inset-0 bg-black/80 backdrop-blur-2xl border-b border-white/[0.06]" />
-        <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
+        <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
           <motion.button
             type="button"
             whileTap={{ scale: 0.96 }}
@@ -139,15 +136,11 @@ export default function Header({
               onOpenSidebar?.();
             }}
             aria-label="Abrir menu do atleta"
-            className="flex items-center gap-2 min-h-[44px] min-w-[44px] pl-1 pr-2.5 -ml-1 rounded-full cursor-pointer touch-manipulation shrink-0"
+            className="flex items-center gap-2.5 min-h-[44px] min-w-[44px] pl-1 pr-2.5 -ml-1 rounded-full cursor-pointer touch-manipulation shrink-0"
           >
             <Menu className="w-[22px] h-[22px] text-white" strokeWidth={1.9} />
             <Avatar url={identity.avatar} name={identity.fullName || user?.email} size={28} />
           </motion.button>
-
-          <motion.span style={{ opacity: compactOpacity, y: compactY }} className="flex-1 min-w-0 font-heading text-[17px] font-semibold text-white truncate" aria-hidden>
-            {compactTitle}
-          </motion.span>
 
           <div className="flex items-center gap-2 shrink-0">
             {onOpenAICoach && (
@@ -210,7 +203,7 @@ export default function Header({
               exit={{ opacity: 0, y: -6, scale: 0.96 }}
               transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="fixed top-[calc(env(safe-area-inset-top,0px)+54px)] right-4 sm:right-6 w-[280px] rounded-2xl bg-surface/95 backdrop-blur-2xl border border-white/[0.12] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.75)] space-y-2.5"
+              className="fixed top-[calc(env(safe-area-inset-top,0px)+60px)] right-4 sm:right-6 w-[280px] rounded-2xl bg-surface/95 backdrop-blur-2xl border border-white/[0.12] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.75)] space-y-2.5"
             >
               <div className="flex items-center gap-2.5">
                 <span
@@ -264,13 +257,12 @@ export default function Header({
         )}
       </AnimatePresence>
 
-      {/* Título grande: rola com a página e dá lugar ao título compacto — omitido quando a
-          própria view já tem cabeçalho editorial dedicado (ex. Corrida), para nunca duplicar */}
+      {/* Título grande: omitido quando a própria view já tem cabeçalho editorial dedicado (ex. Corrida, Amigos) */}
       {!hasOwnHeader && (
-        <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-1 pb-3">
-          <h1 className="font-heading text-[30px] leading-[1.1] font-bold tracking-tight text-white">{largeTitle}</h1>
+        <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-4 pb-5">
+          <h1 className="font-heading text-[30px] leading-[1.12] font-bold tracking-tight text-white">{largeTitle}</h1>
           {isHome && (
-            <p className="mt-1 text-body text-zinc-400 tabular-nums">
+            <p className="mt-1.5 text-body text-zinc-400 tabular-nums">
               {week.done === 0
                 ? `Esta semana · Meta de ${week.target} treinos`
                 : week.done >= week.target

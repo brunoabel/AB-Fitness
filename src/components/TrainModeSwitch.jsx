@@ -15,7 +15,7 @@ export default function TrainModeSwitch({ mode, onChange }) {
       <div
         role="tablist"
         aria-label="Modo de treino"
-        className="flex items-center gap-6 border-b border-white/[0.08]"
+        className="grid grid-cols-2 border-b border-white/[0.08]"
       >
         {MODES.map(({ id, label, icon: Icon }) => {
           const on = mode === id;
@@ -31,7 +31,7 @@ export default function TrainModeSwitch({ mode, onChange }) {
                 onChange(id);
                 window.scrollTo({ top: 0 });
               }}
-              className={`relative min-h-[44px] pb-3 pt-1.5 text-sm font-semibold inline-flex items-center gap-2 cursor-pointer touch-manipulation transition-colors ${
+              className={`relative w-full min-h-[44px] pb-3 pt-2 text-sm font-semibold inline-flex items-center justify-center gap-2 cursor-pointer touch-manipulation transition-colors ${
                 on ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'
               }`}
             >
