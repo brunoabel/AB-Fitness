@@ -17,9 +17,9 @@ export const SIGNAL_LABEL = {
 };
 
 const workingSets = (sets) => (Array.isArray(sets) ? sets.filter((s) => (s.done || s.completed) && s.type !== 'W' && Number(s.weight) > 0 && Number(s.reps) > 0) : []);
-const rirOf = (s) => (s.rpe !== null && s.rpe !== undefined && s.rpe !== '' ? Math.max(0, 10 - Number(s.rpe)) : s.type === 'F' ? 0 : null);
-const bestE1RM = (sets) => Math.max(0, ...workingSets(sets).map((s) => e1RM(Number(s.weight), Number(s.reps), rirOf(s) || 0) || 0));
-const timeOf = (session) => Number(session?.timestamp) || Date.parse(session?.completedAt || '') || 0;
+export const rirOf = (s) => (s.rpe !== null && s.rpe !== undefined && s.rpe !== '' ? Math.max(0, 10 - Number(s.rpe)) : s.type === 'F' ? 0 : null);
+export const bestE1RM = (sets) => Math.max(0, ...workingSets(sets).map((s) => e1RM(Number(s.weight), Number(s.reps), rirOf(s) || 0) || 0));
+export const timeOf = (session) => Number(session?.timestamp) || Date.parse(session?.completedAt || '') || 0;
 
 /**
  * @param {{ history?: Array<object>, checkins?: Array<object>, readiness?: Array<{ date: string, score: number }>, profile?: object, now?: number }} input

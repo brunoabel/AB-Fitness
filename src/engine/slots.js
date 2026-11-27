@@ -31,17 +31,25 @@ export function isAllowed(meta, ctx) {
 
 const primaryMuscle = (meta) => Object.keys(meta?.muscles || {}).find((k) => meta.muscles[k] === 1) || null;
 
+/** Peso da ênfase em alongamento por objetivo: maior em hipertrofia, menor em força (especificidade). [parâmetro] */
+const LENGTHENED_WEIGHT = { hypertrophy: 3, strength: 1, fat_loss: 2, conditioning: 2 };
+/** Preferências do utilizador: favorito ganha à semente; a evitar perde para qualquer equivalente sem cautela. */
+const FAVORITE_BONUS = 110;
+const AVOID_PENALTY = 120;
+
 /**
- * Pontuação de um candidato para um slot: sem cautela para a lesão > semente > mesma classe > ênfase em alongamento
- * > carga externa (progride melhor que peso corporal e elástico) > nível técnico igual ao do utilizador.
- * Desempate estável pela ordem da biblioteca.
+ * Pontuação de um candidato para um slot: sem cautela para a lesão > preferências > semente > mesma classe
+ * > ênfase em alongamento > carga externa (progride melhor que peso corporal e elástico) > nível técnico igual
+ * ao do utilizador. Desempate estável pela ordem da biblioteca.
  */
 function score(id, meta, slot, ctx) {
   let s = 0;
   if (id === slot.seed) s += 100;
+  if (ctx.favorite?.has(id)) s += FAVORITE_BONUS;
+  if (ctx.avoid?.has(id)) s -= AVOID_PENALTY;
   if (meta.repClass === slot.repClass) s += 10;
   else if ((meta.repClass === 'heavy' && slot.repClass === 'compound') || (meta.repClass === 'compound' && slot.repClass === 'heavy')) s += 6;
-  s += meta.lengthened * 2;
+  s += meta.lengthened * (LENGTHENED_WEIGHT[ctx.goal] ?? 2);
   // Cautela para a lesão do utilizador pesa mais que a semente: se houver equivalente sem cautela, ganha ele
   if ((ctx.injuries || []).some((joint) => meta.contra?.[joint] === 'caution')) s -= 150;
   if (meta.loadType !== 'bodyweight' && meta.loadType !== 'bands') s += 2;
@@ -81,15 +89,15 @@ export function candidatesFor(slot, ctx, exclude = new Set()) {
 
 /**
  * Melhor exercício para dar volume direto a um músculo (usado quando falta volume e não há onde somar séries).
- * Prefere isoladores com ênfase em alongamento; evita repetir exercícios da sessão.
+ * Prefere favoritos e isoladores com ênfase em alongamento; ignora os exercícios a evitar e os já usados na sessão.
  */
 export function suggestForMuscle(muscle, ctx, exclude = new Set()) {
   let best = null;
   for (const id of ALL_IDS) {
-    if (exclude.has(id)) continue;
+    if (exclude.has(id) || ctx.avoid?.has(id)) continue;
     const meta = getExerciseMeta(id);
     if (!meta || meta.muscles?.[muscle] !== 1 || meta.repClass === 'timed' || !isAllowed(meta, ctx)) continue;
-    const s = (meta.repClass === 'isolation' ? 10 : 0) + meta.lengthened * 2 + (meta.axial <= 2 ? 3 : 0) + (meta.loadType !== 'bodyweight' ? 1 : 0);
+    const s = (ctx.favorite?.has(id) ? 20 : 0) + (meta.repClass === 'isolation' ? 10 : 0) + meta.lengthened * (LENGTHENED_WEIGHT[ctx.goal] ?? 2) + (meta.axial <= 2 ? 3 : 0) + (meta.loadType !== 'bodyweight' ? 1 : 0);
     if (!best || s > best.s) best = { id, s };
   }
   return best?.id || null;

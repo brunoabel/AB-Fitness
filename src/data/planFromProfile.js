@@ -10,6 +10,7 @@ import { DRILLS, REGION_PLANS } from './recoveryProtocols.js';
 import { mesoWeekParams, mesoSetCount } from '../utils/mesocycleWeek.js';
 import { getExerciseMeta, prescribe, buildContext, balancePlan, validatePlan, MUSCLE_LABEL } from '../engine/index.js';
 import { slotFromExercise, candidatesFor, suggestForMuscle, inventoryFor } from '../engine/slots.js';
+import { runningLoad, concurrentAdjustments } from '../engine/concurrent.js';
 
 
 const PRIORITY_GROUPS = {
@@ -53,22 +54,27 @@ function daysUntilNextSport(from, sportDaySet) {
   return 7;
 }
 
-/**
- * Regra anti-fadiga de membros inferiores: em desportos de alto impacto (Futebol, Corrida, Padel, Basquete)
- * com intensidade Moderate/Competitive, proíbe pernas pesadas na véspera e no dia do desporto, e tenta
- * mover esse treino para um dia com pelo menos 48h de recuperação até à próxima partida.
- */
-function applyLegFatigueProtection(remappedPlan, profile, notes) {
-  const sportDaySet = new Set(profile.sportDays || []);
+/** Dias de desporto de alto impacto (Moderate/Competitive) em que as pernas pesadas são proibidas: o próprio dia e a véspera. */
+function sportLegRisk(profile) {
+  const blocked = new Set();
+  const eventDays = new Set();
   const highImpact = (profile.sports || []).some((s) => HIGH_IMPACT_LEG_SPORTS.includes(s));
   const risky = profile.sportIntensity === 'moderate' || profile.sportIntensity === 'competitive';
-  if (!sportDaySet.size || !highImpact || !risky) return remappedPlan;
-
-  const blocked = new Set();
-  sportDaySet.forEach((s) => {
+  if (!highImpact || !risky) return { blocked, eventDays };
+  (profile.sportDays || []).forEach((s) => {
     blocked.add(s);
     blocked.add((s + 6) % 7); // véspera
+    eventDays.add(s);
   });
+  return { blocked, eventDays };
+}
+
+/**
+ * Regra anti-fadiga de membros inferiores: proíbe pernas pesadas nos dias bloqueados (desporto de impacto e
+ * corridas de qualidade/longas) e tenta mover esse treino para um dia com pelo menos 48h até ao próximo evento.
+ */
+function applyLegFatigueProtection(remappedPlan, blocked, sportDaySet, notes, where = 'do desporto') {
+  if (!blocked.size) return remappedPlan;
 
   const dayStats = remappedPlan.map((day, idx) => {
     const legShare = groupShareOf(day, LEG_GROUPS);
@@ -128,8 +134,8 @@ function applyLegFatigueProtection(remappedPlan, profile, notes) {
     }
   });
 
-  if (swapped) notes.push(`Movi ${swapped} treino${swapped > 1 ? 's' : ''} de pernas para longe do desporto, com pelo menos 48h de recuperação até à próxima partida.`);
-  if (capped) notes.push('Reduzi o volume de pernas nos dias sem alternativa segura de troca, perto do teu desporto.');
+  if (swapped) notes.push(`Movi ${swapped} treino${swapped > 1 ? 's' : ''} de pernas para longe ${where}, com pelo menos 48h de recuperação.`);
+  if (capped) notes.push(`Reduzi o volume de pernas nos dias perto ${where} sem alternativa segura de troca.`);
   return remappedPlan;
 }
 
@@ -197,12 +203,15 @@ function toPlanExercise(ex100, template) {
   };
 }
 
-/** Contexto do utilizador para a escolha de exercícios: equipamento disponível, lesões e nível. */
-function selectionContext(profile) {
+/** Contexto do utilizador para a escolha de exercícios: equipamento, lesões, nível, objetivo e preferências. */
+function selectionContext(profile, preferences = null) {
   return {
     inventory: inventoryFor(profile.trainingLocation, profile.equipment),
     injuries: profile.injuries || [],
-    experience: profile.experienceLevel || 'beginner'
+    experience: profile.experienceLevel || 'beginner',
+    goal: profile.primaryGoal || 'hypertrophy',
+    favorite: new Set(preferences?.favorite || []),
+    avoid: new Set(preferences?.avoid || [])
   };
 }
 
@@ -272,9 +281,12 @@ function lockedDays(profile) {
 
 /**
  * @param {import('../components/onboarding/profileSchema').FitnessProfile} profile
- * @returns {{ plan: Array, notes: string[], appliedSplit: string }}
+ * @param {{ runs?: Array<object>, preferences?: { favorite?: string[], avoid?: string[] }, calibration?: Record<string, { start?: number, cap?: number }>, now?: number }} [extras]
+ *   runs: corridas registadas (treino concorrente); preferences: exercícios favoritos/a evitar;
+ *   calibration: desvios individuais do orçamento de volume (src/engine/muscleVolume.js).
+ * @returns {{ plan: Array, notes: string[], appliedSplit: string, validation: Array, running: object|null }}
  */
-export function buildPlanFromProfile(profile) {
+export function buildPlanFromProfile(profile, extras = {}) {
   const notes = [];
   const defaultSplit = SPLIT_BY_DAYS[profile.daysPerWeek];
   const appliedSplit =
@@ -364,10 +376,19 @@ export function buildPlanFromProfile(profile) {
     };
   });
 
-  applyLegFatigueProtection(remappedPlan, profile, notes);
+  const running = Array.isArray(extras.runs) && extras.runs.length ? runningLoad(extras.runs, extras.now) : null;
+  const concurrent = concurrentAdjustments(running);
+  const sport = sportLegRisk(profile);
+  const blocked = new Set([...sport.blocked, ...concurrent.blocked]);
+  const eventDays = new Set([...sport.eventDays, ...concurrent.eventDays]);
+  const where = sport.blocked.size && concurrent.blocked.size
+    ? 'do desporto e das corridas fortes'
+    : concurrent.blocked.size ? 'das tuas corridas de qualidade e longas' : 'do desporto';
+  applyLegFatigueProtection(remappedPlan, blocked, eventDays, notes, where);
+  if (running?.highVolume) notes.push(`Com ${running.weeklyKm} km por semana de corrida, baixei 20% o volume semanal de quadríceps e posteriores.`);
 
   const priorityGroups = new Set((profile.priorityMuscles || []).flatMap((m) => PRIORITY_GROUPS[m] || []));
-  const sel = selectionContext(profile);
+  const sel = selectionContext(profile, extras.preferences);
   let swapped = 0;
   let removed = 0;
   let doubleSession = false;
@@ -394,6 +415,7 @@ export function buildPlanFromProfile(profile) {
     location: profile.trainingLocation || 'gym',
     injuries: profile.injuries || [],
     inventory: sel.inventory,
+    budgetAdjust: { scale: concurrent.budgetScale, calibration: extras.calibration || {} },
     // Quando falta volume e já não há onde somar séries: acessório novo para o músculo
     suggest: (muscle, exclude) => {
       const id = suggestForMuscle(muscle, sel, exclude);
@@ -425,16 +447,16 @@ export function buildPlanFromProfile(profile) {
   if (doubleSession) notes.push('Nos dias de sessão dupla, reduzi o volume acessório e removi exercícios de alta fadiga lombar.');
   if (sportDrills.length) notes.push('Adicionei mobilidade e prevenção específicas para a tua modalidade nos dias de desporto.');
 
-  return { plan: adapted, notes, appliedSplit, validation };
+  return { plan: adapted, notes, appliedSplit, validation, running };
 }
 
 /**
  * Gera um Mesociclo periodizado (4 a 6 semanas) com sobrecarga progressiva (volume/RIR)
  * nas semanas de acumulação e semana final de Deload automático (-40% séries, -10% carga).
  */
-export function generateMesocyclePlan(profile = {}, weeks = 5) {
+export function generateMesocyclePlan(profile = {}, weeks = 5, extras = {}) {
   const totalWeeks = Math.max(4, Math.min(6, Number(weeks) || 5));
-  const base = buildPlanFromProfile(profile);
+  const base = buildPlanFromProfile(profile, extras);
 
   const mesocycleWeeks = [];
 

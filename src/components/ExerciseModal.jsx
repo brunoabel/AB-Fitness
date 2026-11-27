@@ -11,7 +11,9 @@ import {
   Award,
   Layers,
   ArrowRight,
-  Clock
+  Clock,
+  Heart,
+  Ban
 } from 'lucide-react';
 
 import { findExerciseIn100 } from '../data/exercises100';
@@ -19,9 +21,19 @@ import { getBiomechanicsForExercise } from '../data/exerciseBiomechanics';
 import { hasExerciseVideo } from '../data/exerciseMedia';
 import ExerciseVideoPlayer from './video/ExerciseVideoPlayer';
 import { getExerciseVisual } from '../data/exerciseVisuals';
+import { exercisePreferenceOf, setExercisePreference } from '../utils/exercisePreferences';
+
+const prefIdOf = (exercise) => findExerciseIn100(exercise?.id || exercise?.name || exercise?.nome)?.slug || exercise?.id;
 
 export default function ExerciseModal({ exercise, onClose }) {
   const [activeTab, setActiveTab] = useState('biomechanics'); // 'biomechanics' | 'steps' | 'safety'
+  // Favorito / a evitar: pesos na escolha de exercícios do próximo plano (src/engine/slots.js)
+  const [preference, setPreference] = useState(() => (exercise ? exercisePreferenceOf(prefIdOf(exercise)) : null));
+  const togglePreference = (value) => {
+    const next = preference === value ? null : value;
+    setExercisePreference(prefIdOf(exercise), next);
+    setPreference(next);
+  };
 
   if (!exercise) return null;
 
@@ -305,7 +317,31 @@ export default function ExerciseModal({ exercise, onClose }) {
         </div>
 
         {/* Rodapé com Botão de Ação */}
-        <div className="p-4 border-t border-white/[0.06] bg-app">
+        <div className="p-4 border-t border-white/[0.06] bg-app space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 'favorite', label: 'Favorito', Icon: Heart },
+              { value: 'avoid', label: 'Evitar no plano', Icon: Ban }
+            ].map(({ value, label, Icon }) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={preference === value}
+                onClick={() => togglePreference(value)}
+                className={`min-h-[44px] rounded-full border text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                  preference === value ? 'bg-accent/70 text-white border-accent-hover' : 'border-white/[0.08] text-zinc-300 hover:text-white'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+          {preference && (
+            <p className="text-[11px] text-zinc-500 text-center">
+              {preference === 'favorite' ? 'O plano passa a preferir este exercício.' : 'O plano troca este exercício por um equivalente.'} Vale na próxima atualização do plano.
+            </p>
+          )}
           <button
             onClick={onClose}
             className="w-full min-h-[48px] py-3.5 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm transition-colors active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
