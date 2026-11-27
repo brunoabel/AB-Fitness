@@ -109,11 +109,65 @@ export const BADGES_CATALOG = [
   {
     id: 'tonnage_titan',
     title: 'Titã do Volume',
-    desc: 'Moveu mais de 5.000 kg em volume total em uma única sessão.',
+    desc: 'Moveu mais de 5.000 kg em volume total numa única sessão.',
     icon: 'Weight',
     category: 'gym',
     tier: 'silver',
     color: '#a855f7'
+  },
+  {
+    id: 'rel_bench_1x',
+    title: 'Supino 1× Peso Corporal',
+    desc: 'Ergueste no Supino pelo menos 1,0× o teu peso corporal.',
+    icon: 'Target',
+    category: 'gym',
+    tier: 'silver',
+    color: '#dce3f0'
+  },
+  {
+    id: 'rel_squat_1_5x',
+    title: 'Agachamento 1,5× Peso Corporal',
+    desc: 'Executaste Agachamento com pelo menos 1,5× o teu peso corporal.',
+    icon: 'Shield',
+    category: 'gym',
+    tier: 'gold',
+    color: '#eab308'
+  },
+  {
+    id: 'rel_deadlift_2x',
+    title: 'Terra 2× Peso Corporal',
+    desc: 'Ergueste no Levantamento Terra pelo menos 2,0× o teu peso corporal.',
+    icon: 'Activity',
+    category: 'gym',
+    tier: 'gold',
+    color: '#f59e0b'
+  },
+  {
+    id: 'lifetime_50t',
+    title: '50 Toneladas Acumuladas',
+    desc: 'Acumulaste 50.000 kg de carga total levantada no teu histórico.',
+    icon: 'Dumbbell',
+    category: 'gym',
+    tier: 'silver',
+    color: '#dce3f0'
+  },
+  {
+    id: 'lifetime_100t',
+    title: '100 Toneladas Acumuladas',
+    desc: 'Superaste 100.000 kg de tonelagem vitalícia em treinos de força.',
+    icon: 'Trophy',
+    category: 'gym',
+    tier: 'gold',
+    color: '#eab308'
+  },
+  {
+    id: 'lifetime_500t',
+    title: '500 Toneladas Acumuladas',
+    desc: 'Marco de elite: meio milhão de quilos acumulados na tua carreira.',
+    icon: 'Crown',
+    category: 'gym',
+    tier: 'gold',
+    color: '#f59e0b'
   },
 
   // 3. CONSTÂNCIA & DISCIPLINA

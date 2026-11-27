@@ -142,7 +142,7 @@ export default function OnboardingCoach({ userId, userName, onComplete, onClose 
                 onClick={next}
                 disabled={!valid}
                 whileTap={valid ? { scale: 0.98 } : undefined}
-                className="max-w-md mx-auto w-full min-h-[56px] rounded-2xl bg-primary hover:bg-primary-hover text-app font-bold text-body flex items-center justify-center transition-colors cursor-pointer disabled:bg-surface-2 disabled:text-zinc-500 disabled:cursor-not-allowed"
+                className="max-w-md mx-auto w-full min-h-[56px] rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-body flex items-center justify-center transition-colors cursor-pointer disabled:bg-surface-2 disabled:text-zinc-500 disabled:cursor-not-allowed"
               >
                 {isLast ? 'Gerar protocolo' : valid ? 'Continuar' : 'Escolhe uma opção'}
               </motion.button>

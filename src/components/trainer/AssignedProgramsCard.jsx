@@ -37,10 +37,10 @@ export default function AssignedProgramsCard({ onStartWorkout }) {
   if (!programs.length) return null;
 
   return (
-    <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 -mt-1">
-      <div className="rounded-2xl bg-surface-2 border border-accent-hover/50 overflow-hidden">
+    <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-1 pb-2">
+      <div className="rounded-3xl bg-gradient-to-b from-surface-2/85 to-surface-2/25 border border-accent-hover/70 overflow-hidden">
         <div className="px-4 pt-3.5 pb-1 flex items-center gap-2">
-          <ClipboardList className="w-4 h-4 text-white" strokeWidth={1.75} />
+          <ClipboardList className="w-4 h-4 text-zinc-300" strokeWidth={1.75} />
           <span className="text-micro uppercase tracking-wider text-zinc-400">
             Prescrito por {trainer?.full_name || 'o teu PT'}
           </span>
@@ -71,9 +71,9 @@ export default function AssignedProgramsCard({ onStartWorkout }) {
                   triggerHaptic(10);
                   onStartWorkout(assignedProgramToWorkout(p, trainer?.full_name, { isBeginner: isSimple }));
                 }}
-                className="min-h-[40px] px-3.5 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="min-h-[40px] px-4 rounded-full bg-primary hover:bg-zinc-200 text-app font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer shrink-0 transition-colors"
               >
-                <Play className="w-3.5 h-3.5" strokeWidth={2.5} />
+                <Play className="w-3.5 h-3.5 fill-current" strokeWidth={2} />
                 Começar
               </motion.button>
             </div>

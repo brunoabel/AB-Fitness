@@ -220,24 +220,28 @@ export default function RunningShareModal({
   // Render via React Portal diretamente no document.body para garantir isolamento total de z-index
   return createPortal(
     <ModalBackdrop className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-xl overflow-y-auto">
-      <ModalPanel className="w-full max-w-sm sm:max-w-md bg-surface border border-white/[0.06] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
+      <ModalPanel
+        onClose={onClose}
+        ariaLabel="Partilhar Corrida"
+        className="w-full max-w-sm sm:max-w-md bg-app border border-white/[0.08] rounded-t-3xl sm:rounded-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden"
+      >
         
         {/* Toast Notificação de Feedback */}
         {toastMessage && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-black px-4 py-1.5 rounded-full text-xs font-semibold shadow-xl animate-scaleUp flex items-center gap-1.5 pointer-events-none">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-black px-4 py-1.5 rounded-full text-xs font-semibold animate-scaleUp flex items-center gap-1.5 pointer-events-none">
             <Check className="w-4 h-4" />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Cabeçalho Sticky do Modal */}
-        <div className="shrink-0 flex items-center justify-between p-3.5 border-b border-white/[0.06] bg-zinc-950/95 backdrop-blur-md">
+        <div className="shrink-0 flex items-center justify-between p-3.5 border-b border-white/[0.06] bg-app">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="p-2 rounded-full bg-accent/60 text-white border border-accent-hover">
               <Sparkles className="w-4 h-4" />
             </span>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-tight">Compartilhar Corrida</h2>
+              <h2 className="text-sm font-bold text-white tracking-tight">Partilhar Corrida</h2>
               <p className="text-[11px] text-zinc-400">Card executivo para Instagram Stories e Feed</p>
             </div>
           </div>
@@ -251,7 +255,7 @@ export default function RunningShareModal({
         </div>
 
         {/* Corpo Scrollável do Modal */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-2.5 min-h-0">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-2.5 min-h-0">
           
           <ShareTitleEditor {...{ isEditingTitle, sessionTitle, setIsEditingTitle, setSessionTitle }} />
           <ShareThemePicker {...{ aspectRatio, bgMode, fileInputRef, handlePhotoUpload, setAspectRatio, setBgMode, setThemeId, themeId }} />
@@ -259,7 +263,7 @@ export default function RunningShareModal({
           <div className="flex items-center justify-center p-2 bg-black/50 rounded-2xl border border-white/[0.06] overflow-hidden">
             <div 
               ref={cardPreviewRef}
-              className={`relative rounded-2xl overflow-hidden border border-white/[0.06] shadow-2xl flex flex-col justify-between select-none transition-all ${
+              className={`relative rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col justify-between select-none transition-colors ${
                 aspectRatio === 'story' 
                   ? 'w-[230px] h-[375px]' 
                   : 'w-[230px] h-[230px]'
@@ -306,7 +310,7 @@ export default function RunningShareModal({
               {/* Título: Sessão de Treino de Hoje */}
               <div className="relative z-10 px-2.5 -mt-1">
                 <span className="text-[6.5px] uppercase font-semibold text-zinc-400 block tracking-wider">
-                  Atividade Registrada
+                  Atividade Registada
                 </span>
                 <h3 className="text-[11px] font-bold text-white tracking-tight truncate leading-tight">
                   {sessionTitle}
@@ -383,12 +387,12 @@ export default function RunningShareModal({
         </div>
 
         {/* Rodapé Sticky com Botões de Ação */}
-        <div className="shrink-0 p-3 bg-zinc-950/95 backdrop-blur-md border-t border-white/[0.06] flex flex-col gap-2">
+        <div className="shrink-0 p-3 bg-app border-t border-white/[0.06] flex flex-col gap-2">
           {/* Botão Primário: Partilhar Cartão */}
           <button
             onClick={handleShare}
             disabled={isExporting}
-            className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+            className="w-full min-h-[44px] py-3 px-4 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-98 transition-colors cursor-pointer disabled:opacity-50"
           >
             <Share2 className="w-4 h-4" />
             <span>{isExporting ? 'A Gerar Imagem HD...' : 'Partilhar Cartão (Instagram / Redes)'}</span>
@@ -398,7 +402,7 @@ export default function RunningShareModal({
           <div className="grid grid-cols-3 gap-1.5">
             <button
               onClick={handleWhatsAppShare}
-              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-xs"
+              className="min-h-[40px] py-2 px-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-colors active:scale-95 cursor-pointer"
               title="Partilhar no WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -408,7 +412,7 @@ export default function RunningShareModal({
             <button
               onClick={handleDownload}
               disabled={isExporting}
-              className="min-h-[40px] py-2 px-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer"
+              className="min-h-[40px] py-2 px-2 rounded-full bg-surface hover:bg-surface-2 border border-white/[0.08] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-colors active:scale-95 cursor-pointer"
               title="Descarregar Imagem HD"
             >
               <Download className="w-3.5 h-3.5" />

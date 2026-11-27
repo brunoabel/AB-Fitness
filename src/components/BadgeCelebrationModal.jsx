@@ -73,7 +73,9 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
   return (
     <ModalBackdrop className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
       <ModalPanel
-        className="w-full max-w-sm bg-zinc-950 rounded-2xl shadow-2xl overflow-hidden border border-white/10 flex flex-col transition-colors"
+        onClose={onClose}
+        ariaLabel={badge.title || 'Conquista Desbloqueada'}
+        className="w-full max-w-sm bg-app rounded-t-3xl sm:rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Medalhão em destaque com halo especular na cor do tier */}
@@ -84,7 +86,7 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
             style={{ background: `radial-gradient(circle at 50% 10%, ${color}33, transparent 70%)` }}
           />
           <div
-            className="relative w-28 h-28 rounded-full flex items-center justify-center border-2 shadow-[0_0_40px_rgba(255,255,255,0.08)]"
+            className="relative w-28 h-28 rounded-full flex items-center justify-center border-2"
             style={{ borderColor: color, background: 'rgba(255,255,255,0.03)' }}
           >
             <div className="absolute inset-[6px] rounded-full border border-white/10" aria-hidden />
@@ -118,7 +120,7 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
         <div className="p-5 pt-3 space-y-2">
           <button
             onClick={onClose}
-            className="w-full min-h-[48px] py-3.5 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+            className="w-full min-h-[48px] py-3.5 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm transition-colors flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
           >
             <span>Continuar</span>
             <ArrowRight className="w-4 h-4" />
@@ -127,7 +129,7 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
           <button
             onClick={handleShare}
             disabled={isSharing}
-            className="w-full min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
+            className="w-full min-h-[44px] py-2.5 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 hover:text-white font-semibold text-xs border border-white/[0.08] transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
           >
             {copied ? (
               <>

@@ -6,6 +6,7 @@ import VerifiedBadge from '../ui/VerifiedBadge';
 import { SkeletonList } from '../ui/Skeleton';
 import { isAthleteVerified, isAthleteCeo } from '../../utils/userVerification';
 import { listDirectMessages, sendDirectMessage } from '../../services/socialService';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { triggerHaptic } from '../../utils/audio';
 
 const QUICK_REACTIONS = ['Bom treino!', 'Bora treinar?', 'Novo PR!', 'Foco total'];
@@ -25,6 +26,8 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
   const messagesEndRef = useRef(null);
 
   const friendId = friend?.friend_id || friend?.id;
@@ -50,40 +53,86 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
       }
     });
 
-    const interval = setInterval(() => {
+    const syncMessages = () => {
       listDirectMessages(currentUserId, friendId).then(({ data }) => {
-        if (!alive || !data) return;
+        if (!alive || !Array.isArray(data)) return;
         setMessages((prev) => {
-          if (data.length > prev.length) {
-            setTimeout(() => scrollToBottom(true), 30);
-            return data;
+          const pending = prev.filter((m) => String(m.id || '').startsWith('temp_'));
+          const next = pending.length ? [...data, ...pending] : data;
+          const prevLast = prev[prev.length - 1]?.id;
+          const nextLast = next[next.length - 1]?.id;
+          if (next.length !== prev.length || nextLast !== prevLast) {
+            if (next.length > prev.length) setTimeout(() => scrollToBottom(true), 30);
+            return next;
           }
           return prev;
         });
       });
-    }, 4000);
+    };
+
+    // Subscrição Supabase Realtime para mensagens instantâneas (com fallback leve de 30s)
+    let realtimeChannel = null;
+    if (isSupabaseConfigured() && supabase) {
+      const pairKey = [currentUserId, friendId].sort().join(':');
+      realtimeChannel = supabase
+        .channel(`dm:${pairKey}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'friend_messages',
+            filter: `receiver_id=eq.${currentUserId}`
+          },
+          (payload) => {
+            const msg = payload?.new;
+            if (!alive || !msg || msg.sender_id !== friendId) return;
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === msg.id)) return prev;
+              setTimeout(() => scrollToBottom(true), 30);
+              return [...prev, msg];
+            });
+          }
+        )
+        .subscribe();
+    }
+
+    const interval = setInterval(syncMessages, 30000);
 
     return () => {
       alive = false;
       clearInterval(interval);
+      if (realtimeChannel && supabase) {
+        try { supabase.removeChannel(realtimeChannel); } catch {}
+      }
     };
   }, [friendId, currentUserId]);
 
   const handleSend = async (textToSend) => {
     const text = (textToSend || inputText).trim();
-    if (!text || !currentUserId || !friendId) return;
+    if (!text || !currentUserId || !friendId || sending) return;
 
     triggerHaptic(10);
-    setInputText('');
+    setSending(true);
+    setSendError('');
+    if (!textToSend) setInputText('');
 
     const optimisticMsg = createOptimisticDm(currentUserId, friendId, text);
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setTimeout(() => scrollToBottom(true), 30);
 
-    const { data } = await sendDirectMessage(currentUserId, friendId, text, currentUserProfile);
-    if (data) {
+    try {
+      const { data, error } = await sendDirectMessage(currentUserId, friendId, text, currentUserProfile);
+      if (error || !data) {
+        setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
+        if (!textToSend) setInputText(text);
+        setSendError(error || 'Não foi possível enviar a mensagem.');
+        return;
+      }
       setMessages((prev) => prev.map((m) => (m.id === optimisticMsg.id ? data : m)));
+    } finally {
+      setSending(false);
     }
   };
 
@@ -114,7 +163,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
       />
 
       <motion.div
-        className="relative w-full max-w-lg h-[85dvh] rounded-t-[28px] bg-surface border border-white/[0.08] border-b-0 shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-lg h-[85dvh] rounded-t-[28px] bg-app border border-white/[0.08] border-b-0 flex flex-col overflow-hidden"
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
@@ -124,7 +173,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
         <span className="block mx-auto mt-2 w-9 h-1 rounded-full bg-white/15" aria-hidden />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.08] bg-surface-2/40">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] bg-app">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar url={friend.avatar_url} name={friendName} size={42} />
             <div className="min-w-0">
@@ -132,8 +181,8 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
                 <h3 className="font-heading text-body font-bold text-white truncate">{friendName}</h3>
                 {isVerified && <VerifiedBadge size={14} />}
                 {isCeo && (
-                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-bold uppercase">
-                    <Crown className="w-2.5 h-2.5 text-amber-400" />
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[9px] font-bold uppercase">
+                    <Crown className="w-2.5 h-2.5 text-white" />
                     CEO
                   </span>
                 )}
@@ -199,13 +248,20 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
             <button
               key={phrase}
               type="button"
+              disabled={sending}
               onClick={() => handleSend(phrase)}
-              className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[12px] font-medium text-zinc-200 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer active:scale-95 shrink-0"
+              className="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[12px] font-medium text-zinc-200 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer active:scale-95 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {phrase}
             </button>
           ))}
         </div>
+
+        {sendError && (
+          <p role="alert" className="px-4 py-1.5 text-[12px] text-rose-400 bg-rose-500/10 border-t border-rose-500/20">
+            {sendError}
+          </p>
+        )}
 
         {/* Input Bar */}
         <div className="p-3 bg-surface-2/60 border-t border-white/[0.08] flex items-center gap-2 pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
@@ -221,7 +277,7 @@ export default function DirectMessageSheet({ friend, currentUserId, currentUserP
             type="button"
             whileTap={TAP}
             onClick={() => handleSend()}
-            disabled={!inputText.trim()}
+            disabled={!inputText.trim() || sending}
             className="w-12 h-[46px] rounded-2xl bg-primary text-app flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0 font-bold"
             aria-label="Enviar mensagem"
           >

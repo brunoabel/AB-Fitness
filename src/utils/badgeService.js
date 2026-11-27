@@ -6,8 +6,13 @@ import {
   getRunsHistory,
   getWorkoutHistory,
   getSavedWeights,
-  getCompletedDays
+  getCompletedDays,
+  getSavedUserProfile
 } from './storage';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
+import { getLocalCustomPlan } from '../services/workoutService';
+import { WEEKLY_SCHEDULE } from '../data/workouts';
+import { computeStreak } from './streak';
 import { computeNewlyUnlockedBadges } from './badgeRules.js';
 
 export { computeNewlyUnlockedBadges };
@@ -41,12 +46,22 @@ export const saveUnlockedBadges = (badgesMap) => {
  */
 export const evaluateAndUnlockBadges = (scope) => {
   const currentUnlocked = getUnlockedBadges();
+  const runs = getRunsHistory() || [];
+  const workouts = getWorkoutHistory() || [];
+  const completedDays = getCompletedDays() || [];
+  const fitnessProfile = getLocalFitnessProfile();
+  const legacyProfile = getSavedUserProfile();
+  const bodyWeightKg = Number(fitnessProfile?.weightKg || legacyProfile?.weightKg || 0) || null;
+  const activeSchedule = getLocalCustomPlan() || WEEKLY_SCHEDULE;
+  const currentStreak = computeStreak(completedDays, activeSchedule, runs);
 
   const newlyUnlocked = computeNewlyUnlockedBadges({
-    runs: getRunsHistory() || [],
-    workouts: getWorkoutHistory() || [],
+    runs,
+    workouts,
     savedWeights: getSavedWeights() || {},
-    completedDays: getCompletedDays() || []
+    completedDays,
+    bodyWeightKg,
+    currentStreak
   }, currentUnlocked, scope);
 
   if (newlyUnlocked.length > 0) {

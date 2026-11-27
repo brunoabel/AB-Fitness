@@ -658,7 +658,7 @@ function RunningMapComponent({
       className={`relative rounded-3xl overflow-hidden border border-white/10 shadow-xl transition-all duration-300 ${
         isExpanded ? 'fixed inset-3 z-50 h-auto' : ''
       }`}
-      style={{ height: isExpanded ? 'calc(100vh - 24px)' : height }}
+      style={{ height: isExpanded ? 'calc(100dvh - 24px)' : height }}
     >
       {/* Container Leaflet */}
       <div ref={mapContainerRef} className="w-full h-full z-0 bg-zinc-950" />

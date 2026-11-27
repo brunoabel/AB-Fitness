@@ -112,11 +112,15 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
     <AnimatePresence>
       {isOpen && (
         <ModalBackdrop key="modal" className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-          <ModalPanel className="w-full max-w-xl bg-app rounded-t-2xl sm:rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden transition-colors">
-            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-surface">
+          <ModalPanel
+            onClose={onClose}
+            ariaLabel={workoutToEdit ? 'Editar Treino Personalizado' : 'Criar Treino Personalizado'}
+            className="w-full max-w-xl bg-app rounded-t-3xl sm:rounded-2xl border border-white/[0.08] flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden"
+          >
+            <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-center justify-between shrink-0 bg-app">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-white text-zinc-950 flex items-center justify-center font-bold">
-                  <Dumbbell className="w-4 h-4 text-zinc-950" />
+                <div className="w-9 h-9 rounded-full bg-accent/60 border border-accent-hover text-white flex items-center justify-center font-bold">
+                  <Dumbbell className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-white leading-tight">
@@ -138,7 +142,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
               </button>
             </div>
 
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1 divide-y divide-zinc-800/80">
+            <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-5 flex-1 divide-y divide-zinc-800/80">
               {validationError && (
                 <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-900 text-rose-300 text-xs font-semibold flex items-center gap-2">
                   <Info className="w-4 h-4 shrink-0" />
@@ -166,7 +170,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
                       setIsPickerOpen(true);
                       triggerHaptic(15);
                     }}
-                    className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold bg-primary text-app hover:bg-primary-hover px-3.5 py-2 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
+                    className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold bg-primary text-app hover:bg-primary-hover px-4 py-2 rounded-full active:scale-95 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Adicionar</span>
@@ -222,11 +226,11 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
               </div>
             </div>
 
-            <div className="p-4 sm:p-5 border-t border-white/10 bg-surface flex items-center gap-3 shrink-0">
+            <div className="p-4 sm:p-5 border-t border-white/[0.06] bg-app flex items-center gap-3 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 min-h-[48px] py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 font-bold text-xs border border-white/[0.08] transition-colors cursor-pointer active:scale-95"
+                className="flex-1 min-h-[48px] py-3 rounded-full bg-surface hover:bg-surface-2 text-zinc-200 font-bold text-xs border border-white/[0.08] transition-colors cursor-pointer active:scale-95"
               >
                 Cancelar
               </button>
@@ -234,7 +238,7 @@ export default function CustomWorkoutModal({ isOpen, workoutToEdit, onClose, onS
               <button
                 type="button"
                 onClick={handleSaveWorkout}
-                className="flex-2 min-h-[48px] py-3 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
+                className="flex-2 min-h-[48px] py-3 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
               >
                 <Check className="w-4 h-4 stroke-[2.5]" />
                 <span>Guardar Treino</span>

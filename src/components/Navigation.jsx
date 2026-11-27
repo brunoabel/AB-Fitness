@@ -19,7 +19,7 @@ export default function Navigation({ activeTab, onTabChange }) {
       aria-label="Navegação principal"
       className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] max-w-[390px] mx-auto z-40 lg:hidden"
     >
-      <div className="relative flex items-stretch justify-around h-[60px] rounded-full backdrop-blur-2xl backdrop-saturate-[190%] bg-app/60 sm:bg-surface/65 border border-white/[0.14] shadow-[0_12px_36px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.22)] px-2">
+      <div className="relative flex items-stretch justify-around h-[62px] rounded-full backdrop-blur-2xl backdrop-saturate-[190%] bg-black/80 border border-white/[0.1] px-1.5">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -33,26 +33,28 @@ export default function Navigation({ activeTab, onTabChange }) {
                 onTabChange(tab.id);
                 triggerHaptic(10);
               }}
-              className="relative flex flex-1 items-center justify-center min-h-[52px] min-w-[48px] cursor-pointer select-none"
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 min-h-[52px] min-w-[48px] cursor-pointer select-none"
             >
               {isActive && (
                 <motion.span
                   layoutId="liquid-tab-pill"
-                  className="absolute inset-1 rounded-full bg-white/[0.12] border border-white/[0.16] shadow-[0_2px_10px_rgba(255,255,255,0.06)]"
-                  transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 30 }}
+                  className="absolute inset-1 rounded-full bg-accent border border-accent-hover"
+                  transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32 }}
                 />
               )}
               <motion.span
-                animate={{ scale: isActive && !reducedMotion ? 1.08 : 1 }}
-                transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 30 }}
-                className="relative z-10"
+                animate={{ scale: isActive && !reducedMotion ? 1.04 : 1 }}
+                transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32 }}
+                className="relative z-10 flex flex-col items-center gap-0.5"
               >
                 <Icon
-                  className={`w-[22px] h-[22px] ${isActive ? 'text-white' : 'text-zinc-500'}`}
+                  className={`w-[20px] h-[20px] ${isActive ? 'text-white' : 'text-zinc-500'}`}
                   strokeWidth={1.75}
                 />
+                <span className={`text-[10px] font-medium leading-none tracking-tight ${isActive ? 'text-white' : 'text-zinc-500'}`}>
+                  {tab.label}
+                </span>
               </motion.span>
-              <span className="sr-only">{tab.label}</span>
             </button>
           );
         })}

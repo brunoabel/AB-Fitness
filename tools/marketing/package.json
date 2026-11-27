@@ -1,0 +1,19 @@
+{
+  "name": "ab-fitness-marketing-tooling",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Tooling isolado do /marketing-man (render de carrosséis, capturas de UI e vídeo). Fora do build do app.",
+  "scripts": {
+    "render:slides": "node render-slides.mjs",
+    "capture:ui": "node capture-ui.mjs"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.545",
+    "@tailwindcss/cli": "4.3.3",
+    "playwright": "1.65.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.545"
+  }
+}

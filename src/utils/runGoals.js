@@ -13,6 +13,20 @@ export const RUN_TARGETS = [
   { id: '20min', label: '20 min', type: 'time', value: 20 * 60 }
 ];
 
+export const RUN_SESSION_TYPES = [
+  { id: 'z2_easy', label: 'Z2 Regenerativa', interference: 'low', desc: 'Ritmo conversacional, compatível com dias de pernas.' },
+  { id: 'tempo', label: 'Limiar / Tempo', interference: 'medium', desc: 'Esforço sustentado; evitar logo após pernas pesadas.' },
+  { id: 'intervals', label: 'Intervalados / Tiros', interference: 'high', desc: 'Alta intensidade neuromuscular; exige ≥48h de pernas frescas.' },
+  { id: 'long_run', label: 'Longão', interference: 'high', desc: 'Alto volume excêntrico; afastar de treinos pesados de inferiores.' }
+];
+
+/** Recomenda a sessão de corrida compatível com a fadiga atual de membros inferiores. */
+export function recommendRunSessionType({ legFatiguePct = 0, isLegDayToday = false } = {}) {
+  if (isLegDayToday || legFatiguePct >= 65) return RUN_SESSION_TYPES[0]; // Z2 Regenerativa
+  if (legFatiguePct >= 40) return RUN_SESSION_TYPES[1]; // Limiar / Tempo
+  return RUN_SESSION_TYPES[2]; // Intervalados / Tiros
+}
+
 export const WEEKLY_GOAL_OPTIONS = [5, 10, 15, 21, 30, 42];
 
 export function getRunTargetById(targetId) {

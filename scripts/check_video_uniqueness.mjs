@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-/** Verifica a regra dos vídeos: cada vídeo pertence a um único exercício (catálogo + ids antigos dos planos). Sai com erro se houver conflito. */
+/** Verifica a regra dos vídeos: cada vídeo pertence a um único exercício (catálogo + ids antigos dos planos), salvo variantes declaradas em SHARED_ANIMATIONS. Sai com erro se houver conflito. */
 import { createServer } from 'vite';
 const vite = await createServer({ root: process.cwd(), logLevel: 'error', server: { middlewareMode: true }, appType: 'custom' });
 const { getExerciseMedia } = await vite.ssrLoadModule('/src/data/exerciseMedia.js');
+const { SHARED_ANIMATIONS } = await vite.ssrLoadModule('/src/data/exerciseAnimations.js');
+const shared = new Set(SHARED_ANIMATIONS.map((id) => `${id}.mp4`));
 const { EXERCISES_100 } = await vite.ssrLoadModule('/src/data/exercises100.js');
 const { WEEKLY_SCHEDULE } = await vite.ssrLoadModule('/src/data/workouts.js');
 const gen = await vite.ssrLoadModule('/src/data/workoutGenerator.js');
@@ -13,7 +15,7 @@ const owner = new Map(); const clashes = [];
 const all = [...EXERCISES_100.map((e) => ({ id: e.slug, name: e.nome })), ...planEx.map((e) => ({ id: e.id, name: e.name }))];
 const seen = new Set();
 for (const e of all) {
-  const m = getExerciseMedia(e); const k = key(m.videoMale); if (!k) continue;
+  const m = getExerciseMedia(e); const k = key(m.video); if (!k || shared.has(k)) continue;
   const who = m.entry?.id || e.id;
   // o mesmo exercício pode aparecer com id antigo e slug novo: conta como o mesmo dono se o catálogo resolver igual
   const sig = who + '|' + k; if (seen.has(sig)) continue; seen.add(sig);

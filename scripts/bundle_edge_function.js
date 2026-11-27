@@ -450,7 +450,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite";
+    const model = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite";
     const systemInstructionText = buildCoachSystemInstruction(perfil);
 
     const geminiPayload = {

@@ -167,6 +167,7 @@ export function validateAndSanitizeCoachResponse(parsed) {
       series,
       reps,
       descanso_seg,
+      ...(Number.isInteger(rawEx.rir_alvo) && rawEx.rir_alvo >= 0 && rawEx.rir_alvo <= 4 ? { rir_alvo: rawEx.rir_alvo } : {}),
       cadencia: rawEx.cadencia ? String(rawEx.cadencia).trim() : '2-3s excêntrica',
       dica: rawEx.dica ? String(rawEx.dica).trim() : ''
     });

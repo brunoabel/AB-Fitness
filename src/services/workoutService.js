@@ -5,6 +5,7 @@ import {
   addWorkoutToHistory 
 } from '../utils/storage';
 import { isPermanentSyncError } from '../utils/syncErrors.js';
+import { enqueueJob, flushQueue } from '../utils/syncQueue';
 
 /**
  * Serviço Modular de Treinos e Banco de Dados (Supabase PostgreSQL & Fallback Local)
@@ -485,9 +486,10 @@ export function flushWorkoutSyncQueue(userId) {
 }
 
 const STORAGE_CUSTOM_PLAN_KEY = 'ab_fitness_custom_plan_v1';
+const PLAN_SYNC_QUEUE_KEY = 'ab_fitness_plan_sync_queue_v1';
 
-// Salva plano personalizado no Supabase e LocalStorage
-export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitness — Plano Personalizado') {
+// Salva plano personalizado no Supabase e LocalStorage (com fila offline para reconexão)
+export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitness — Plano Personalizado', { _fromQueue = false } = {}) {
   // Salvar no LocalStorage para resposta imediata
   try {
     localStorage.setItem(STORAGE_CUSTOM_PLAN_KEY, JSON.stringify(planDays));
@@ -579,15 +581,34 @@ export async function saveCustomUserPlan(userId, planDays, planTitle = 'AB Fitne
         if (delErr) console.warn('Plano novo gravado, mas os dias antigos não foram removidos:', delErr.message);
       }
     } catch (err) {
-      console.warn('Erro ao salvar plano personalizado no Supabase (plano anterior mantido):', err?.message || err);
+      console.warn('Erro ao salvar plano personalizado no Supabase (plano enfileirado para sync):', err?.message || err);
       // Desfaz o que tiver sido inserido; os exercícios caem em cascata com os dias
       if (newDayIds.length > 0) {
         await supabase.from('workout_days').delete().in('id', newDayIds).then(() => {}, () => {});
       }
+      if (_fromQueue) throw err;
+      enqueueJob(PLAN_SYNC_QUEUE_KEY, {
+        key: `plan:${userId}`,
+        userId,
+        planDays,
+        planTitle
+      });
     }
   }
 
   return planDays;
+}
+
+/** Reenvia alterações de plano semanal guardadas offline assim que a rede regressar. */
+export async function flushPlanSyncQueue(userId) {
+  if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
+    return 0;
+  }
+  return flushQueue(PLAN_SYNC_QUEUE_KEY, async (job) => {
+    if (job.userId !== userId) return false;
+    await saveCustomUserPlan(userId, job.planDays, job.planTitle, { _fromQueue: true });
+    return true;
+  });
 }
 
 // Recupera plano salvo localmente se existir e tiver exercícios válidos
@@ -640,33 +661,37 @@ export async function fetchAdminAthletesData() {
     console.warn('RPCs do painel admin indisponíveis, a usar o caminho antigo:', err);
   }
 
-  // Fallback sem a migration: lê as tabelas inteiras (só viável com poucos dados)
+  // Fallback sem a migration: lê até um teto seguro em vez de tabelas inteiras
   try {
-    // 1. Buscar todos os perfis cadastrados
+    // 1. Buscar perfis cadastrados (limitado para evitar sobrecarga)
     const { data: athletes, error: athError } = await supabase
       .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, email, full_name, avatar_url, role, created_at, is_verified, is_pro, is_premium')
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (athError) {
       console.error('Erro ao buscar perfis de atletas:', athError);
       return { athletes: [], sessions: [], totalLogsCount: 0, totalVolumeKg: 0 };
     }
 
-    // 2. Buscar todas as sessões de treino concluídas
+    // 2. Buscar sessões recentes concluídas (limitado)
     const { data: sessions, error: sessError } = await supabase
       .from('workout_sessions')
-      .select('*')
-      .order('completed_at', { ascending: false });
+      .select('id, user_id, workout_day_name, workout_title, duration_seconds, completed_at')
+      .order('completed_at', { ascending: false })
+      .limit(200);
 
     if (sessError) {
       console.warn('Erro ao carregar sessões:', sessError.message);
     }
 
-    // 3. Buscar logs de exercícios para volume total
+    // 3. Buscar logs recentes de exercícios para volume
     const { data: logs } = await supabase
       .from('exercise_logs')
-      .select('weight_kg, reps_completed, completed');
+      .select('weight_kg, reps_completed, completed')
+      .order('created_at', { ascending: false })
+      .limit(2000);
 
     const totalVolumeKg = (logs || []).reduce(
       (acc, curr) => acc + (Number(curr.weight_kg) * Number(curr.reps_completed) || 0),
@@ -693,20 +718,23 @@ export async function fetchAthleteDetails(athleteId) {
   try {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, email, full_name, avatar_url, role, athlete_type, created_at, is_verified, is_pro, is_premium, trial_ends_at, timezone')
       .eq('id', athleteId)
-      .single();
+      .maybeSingle();
 
     const { data: sessions } = await supabase
       .from('workout_sessions')
-      .select('*')
+      .select('id, user_id, workout_day_name, workout_title, duration_seconds, completed_at, actual_rpe, pain_flag, athlete_feedback')
       .eq('user_id', athleteId)
-      .order('completed_at', { ascending: false });
+      .order('completed_at', { ascending: false })
+      .limit(50);
 
     const { data: plans } = await supabase
       .from('workout_plans')
-      .select('*')
-      .eq('user_id', athleteId);
+      .select('id, user_id, title, description, is_active, created_at, updated_at')
+      .eq('user_id', athleteId)
+      .order('created_at', { ascending: false })
+      .limit(10);
 
     return {
       profile,

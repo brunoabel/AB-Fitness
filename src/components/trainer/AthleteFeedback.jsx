@@ -12,13 +12,13 @@ const timeAgo = (iso) => {
 const rpeBadgeClass = (rpe) => {
   if (rpe == null) return 'text-zinc-400';
   if (rpe >= 9.5) return 'text-rose-400';
-  if (rpe >= 8) return 'text-amber-300';
+  if (rpe >= 8) return 'text-white';
   return 'text-emerald-400';
 };
 
 const barColorClass = (s) => {
   if (s.pain_flag) return 'bg-rose-400';
-  if (s.actual_rpe != null && Number(s.actual_rpe) >= 9.5) return 'bg-amber-400';
+  if (s.actual_rpe != null && Number(s.actual_rpe) >= 9.5) return 'bg-accent-hover';
   return 'bg-white/25';
 };
 

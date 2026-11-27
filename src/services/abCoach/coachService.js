@@ -8,6 +8,20 @@ import { getCheckinContext } from '../../utils/sessionCheckin';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { validateAndSanitizeCoachResponse } from './schema';
 import { getSavedWeights, getWorkoutHistory } from '../../utils/storage';
+import { getLocalFitnessProfile } from '../fitnessProfileService';
+
+/** Perfil estruturado para o motor de prescrição da função ab-coach (supabase/functions/ab-coach/engine.ts). */
+function motorContext() {
+  const p = getLocalFitnessProfile();
+  if (!p) return null;
+  return {
+    experience: p.experienceLevel,
+    goal: p.primaryGoal,
+    location: p.trainingLocation,
+    equipment: Array.isArray(p.equipment) ? p.equipment : [],
+    injuries: Array.isArray(p.injuries) ? p.injuries : []
+  };
+}
 
 /**
  * Monta o contexto biométrico do atleta (cargas e histórico recente) para o AB Coach.
@@ -50,7 +64,8 @@ export async function getAthleteContextSummary(perfil = null) {
       recentWorkouts,
       // Check-ins pós-treino (carga percebida, desconforto, o que mudar)
       recentCheckins: getCheckinContext(3),
-      fadigaMuscular
+      fadigaMuscular,
+      motor: motorContext()
     };
   } catch (err) {
     console.warn('Erro ao montar contexto do atleta para o coach:', err);

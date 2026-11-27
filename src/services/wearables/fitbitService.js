@@ -3,6 +3,9 @@
  * Suporta OAuth 2.0 e modo Simulador de Atleta para demonstrações.
  */
 
+import { localDateKey } from '../../utils/dateKey.js';
+import { buildWearableTokenHeaders } from './wearableAuthHeader.js';
+
 const FITBIT_AUTH_URL = 'https://www.fitbit.com/oauth2/authorize';
 const FITBIT_API_BASE = 'https://api.fitbit.com';
 
@@ -52,9 +55,10 @@ export function buildFitbitAuthUrl(redirectUri) {
  * Troca o código de autorização pelo token de acesso via endpoint serverless seguro.
  */
 export async function exchangeFitbitCodeForToken(code, redirectUri) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/fitbit-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ code, redirectUri })
   });
 
@@ -70,9 +74,10 @@ export async function exchangeFitbitCodeForToken(code, redirectUri) {
  * Renova o access_token da Fitbit usando o refresh_token.
  */
 export async function refreshFitbitToken(refreshToken) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/fitbit-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ refreshToken })
   });
 
@@ -129,7 +134,7 @@ export async function fetchLiveFitbitBiometrics(accessToken, dateIso = 'today') 
 /**
  * Gera dados simulados da Fitbit para o atleta.
  */
-export function generateSimulatedFitbitData(dateIso = new Date().toISOString().slice(0, 10)) {
+export function generateSimulatedFitbitData(dateIso = localDateKey()) {
   const seed = dateIso.split('-').reduce((acc, part) => acc + Number(part), 0);
   const restingHr = 51 + (seed % 5);
   const sleepEfficiency = 84 + (seed % 10);

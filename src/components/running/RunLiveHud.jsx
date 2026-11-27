@@ -70,10 +70,10 @@ function RunLiveHudComponent({
         {/* Topo de controlo rápido */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+            <span className={`px-2.5 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-wider ${
               sessionStatus === 'running' && !isAutoPaused
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                : 'bg-accent/60 text-white border-accent-hover'
             }`}>
               {sessionStatus === 'paused' ? 'Pausado' : isAutoPaused ? 'Auto-Pausa' : 'Em corrida'}
             </span>
@@ -93,12 +93,12 @@ function RunLiveHudComponent({
               }}
               className={`md:hidden min-h-[38px] px-3 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 border transition-colors cursor-pointer ${
                 showMobileMap
-                  ? 'bg-white text-black border-white'
-                  : 'bg-white/[0.05] text-zinc-300 border-white/[0.08]'
+                  ? 'bg-accent text-white border-accent-hover'
+                  : 'bg-transparent text-zinc-300 border-white/[0.1]'
               }`}
             >
               <MapIcon className="w-3.5 h-3.5" />
-              <span>{showMobileMap ? 'Mapa' : 'Mapa'}</span>
+              <span>Mapa</span>
             </button>
 
             <button
@@ -111,8 +111,8 @@ function RunLiveHudComponent({
               }}
               className={`min-h-[38px] min-w-[38px] px-2.5 rounded-full border inline-flex items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer ${
                 voiceEnabled
-                  ? 'bg-white text-black border-white'
-                  : 'bg-white/[0.05] text-zinc-400 border-white/[0.08]'
+                  ? 'bg-accent text-white border-accent-hover'
+                  : 'bg-transparent text-zinc-400 border-white/[0.1]'
               }`}
               title="Voz nos fones"
               aria-label="Alternar voz nos fones"
@@ -133,8 +133,8 @@ function RunLiveHudComponent({
               }}
               className={`min-h-[38px] px-3 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
                 autoPauseEnabled
-                  ? 'bg-white/[0.12] text-white border-white/25'
-                  : 'bg-white/[0.04] text-zinc-500 border-white/[0.08]'
+                  ? 'bg-accent/60 text-white border-accent-hover'
+                  : 'bg-transparent text-zinc-500 border-white/[0.08]'
               }`}
               title="Pausar automaticamente ao parar"
             >
@@ -208,14 +208,14 @@ function RunLiveHudComponent({
           )}
         </div>
 
-        {/* 4 Métricas de leitura imediata ao correr (ergonomia de HUD desportivo) */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
+        {/* Grelha aberta 2×2 sobre preto puro OLED (sem cartões empilhados) */}
+        <div className="grid grid-cols-2 border-y border-white/[0.08] divide-y divide-white/[0.06]">
+          <div className="py-4 pr-4 border-r border-white/[0.06]">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-              <Zap className="w-3.5 h-3.5 text-white" />
+              <Zap className="w-3.5 h-3.5 text-zinc-300" strokeWidth={1.75} />
               <span>Ritmo</span>
             </div>
-            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
+            <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
               {sessionStatus === 'paused' || isAutoPaused
                 ? (livePaceSeconds > 0 ? formatPace(livePaceSeconds) : '--:--')
                 : formatPace(currentPaceSeconds || avgPaceSeconds)}
@@ -225,12 +225,12 @@ function RunLiveHudComponent({
             </span>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
+          <div className="py-4 pl-4">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-              <Timer className="w-3.5 h-3.5 text-white" />
+              <Timer className="w-3.5 h-3.5 text-zinc-300" strokeWidth={1.75} />
               <span>Tempo</span>
             </div>
-            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
+            <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-white tabular-nums block">
               {formatDuration(elapsedSeconds)}
             </span>
             <span className="text-[11px] text-zinc-400 block mt-0.5 font-display tabular-nums">
@@ -238,58 +238,58 @@ function RunLiveHudComponent({
             </span>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
+          <div className="py-4 pr-4 border-r border-white/[0.06]">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
+              <Flame className="w-3.5 h-3.5 text-zinc-300" strokeWidth={1.75} />
               <span>Calorias</span>
             </div>
-            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums">
+            <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-white tabular-nums">
               {calories} <span className="text-xs font-medium text-zinc-400">kcal</span>
             </span>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.07] p-4 rounded-2xl">
+          <div className="py-4 pl-4">
             <div className="flex items-center gap-1.5 text-zinc-400 text-xs mb-1">
-              <Navigation2 className="w-3.5 h-3.5 text-emerald-400" />
+              <Navigation2 className="w-3.5 h-3.5 text-emerald-400" strokeWidth={1.75} />
               <span>Subida</span>
             </div>
-            <span className="font-display text-2xl font-semibold tracking-[-0.02em] text-white tabular-nums">
+            <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-white tabular-nums">
               +{elevationGainM} <span className="text-xs font-medium text-zinc-400">m</span>
             </span>
           </div>
         </div>
 
-        {/* Parciais por km (limpo, sem texto técnico) */}
+        {/* Parciais por km */}
         {splits.length > 0 && (() => {
           const minSec = Math.min(...splits.map((s) => Number(s.durationSeconds) || 999999));
           const maxSec = Math.max(...splits.map((s) => Number(s.durationSeconds) || 1));
           return (
-            <div className="pt-2 space-y-2 border-t border-white/[0.08]">
-              <span className="text-xs font-semibold text-zinc-400 block">
+            <div className="pt-2 space-y-2">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500 block">
                 Parciais por km
               </span>
-              <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+              <div className="divide-y divide-white/[0.06] border-t border-white/[0.06] max-h-36 overflow-y-auto pr-1">
                 {splits.map((s) => {
                   const isFastest = (Number(s.durationSeconds) || 0) === minSec && splits.length > 1;
                   const barPct = maxSec > 0 ? Math.max(15, Math.min(100, (minSec / (Number(s.durationSeconds) || minSec)) * 100)) : 100;
                   return (
                     <div
                       key={s.km}
-                      className="relative overflow-hidden py-1.5 px-3 rounded-xl bg-white/[0.03] text-xs tabular-nums"
+                      className="relative overflow-hidden py-2 px-2 text-xs tabular-nums"
                     >
                       <div
-                        className={`absolute left-0 top-0 bottom-0 pointer-events-none ${isFastest ? 'bg-emerald-400/20' : 'bg-white/[0.06]'}`}
+                        className={`absolute left-0 top-0 bottom-0 pointer-events-none ${isFastest ? 'bg-emerald-400/15' : 'bg-accent/30'}`}
                         style={{ width: `${barPct}%` }}
                       />
                       <div className="relative z-10 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">KM {s.km}</span>
+                          <span className="font-semibold text-white">KM {s.km}</span>
                           {isFastest && (
-                            <span className="text-[10px] font-sans font-bold text-emerald-300">Mais rápido</span>
+                            <span className="text-[10px] font-sans font-semibold text-emerald-300">Mais rápido</span>
                           )}
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="font-bold text-white">{s.paceStr || s.pace}</span>
+                          <span className="font-semibold text-white">{s.paceStr || s.pace}</span>
                           <span className="text-zinc-500">{formatDuration(s.durationSeconds)}</span>
                         </div>
                       </div>
@@ -301,7 +301,7 @@ function RunLiveHudComponent({
           );
         })()}
 
-        {/* Controlos principais táteis (min-h 56px, anti-toque acidental no Fim) */}
+        {/* Controlos principais táteis */}
         <div className="pt-2 space-y-2.5">
           <div className="flex items-center gap-3">
             {sessionStatus === 'running' ? (
@@ -311,7 +311,7 @@ function RunLiveHudComponent({
                   setConfirmFinish(false);
                   handlePause();
                 }}
-                className="flex-1 min-h-[56px] px-5 rounded-full bg-white/[0.1] hover:bg-white/[0.16] text-white border border-white/[0.16] font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                className="flex-1 min-h-[56px] px-5 rounded-full bg-accent/60 hover:bg-accent text-white border border-accent-hover font-semibold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
               >
                 <Pause className="w-5 h-5 fill-current" />
                 <span>Pausar</span>
@@ -324,7 +324,7 @@ function RunLiveHudComponent({
                     setConfirmFinish(false);
                     handleResume();
                   }}
-                  className="flex-1 min-h-[56px] px-5 rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex-1 min-h-[56px] px-5 rounded-full bg-primary hover:bg-zinc-200 text-app font-semibold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
                 >
                   <Play className="w-5 h-5 fill-current" />
                   <span>Retomar</span>
@@ -341,10 +341,10 @@ function RunLiveHudComponent({
                     setConfirmFinish(false);
                     handleFinishRun();
                   }}
-                  className={`min-h-[56px] px-6 rounded-full font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer ${
+                  className={`min-h-[56px] px-6 rounded-full font-semibold text-base border flex items-center justify-center gap-2 active:scale-[0.98] transition-[background-color,border-color,transform] duration-150 ease-out cursor-pointer ${
                     confirmFinish
-                      ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-lg'
-                      : 'bg-white/[0.08] hover:bg-rose-600 text-white'
+                      ? 'bg-red-500 hover:bg-red-400 border-red-400 text-white'
+                      : 'bg-transparent hover:bg-red-500/20 border-white/[0.14] hover:border-red-400/50 text-white'
                   }`}
                 >
                   <Square className="w-4 h-4 fill-current" />

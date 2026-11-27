@@ -62,3 +62,22 @@ export function regionsForExercise(entry) {
   }
   return [...out].map(([region, weight]) => ({ region, weight }));
 }
+
+const normalizeText = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+/** Verifica se um exercício recruta uma determinada região muscular (ID de MUSCLE_REGIONS). */
+export function exerciseTargetsRegion(ex, regionId) {
+  if (!ex || !regionId) return false;
+  const targetId = String(regionId).toLowerCase().trim();
+  if (ex.primary_muscle || Array.isArray(ex.secondary_muscles)) {
+    const regs = regionsForExercise(ex);
+    if (regs.some((r) => r.region === targetId)) return true;
+  }
+  const rawFields = [ex.target, ex.secondary, ex.primary_muscle, ...(ex.secondary_muscles || [])]
+    .filter(Boolean)
+    .join(',');
+  if (!rawFields) return false;
+  const tokens = rawFields.split(/[,/+·()]+/).map((t) => t.trim()).filter(Boolean);
+  if (tokens.some((tok) => regionOf(tok) === targetId)) return true;
+  return normalizeText(rawFields).includes(normalizeText(targetId));
+}

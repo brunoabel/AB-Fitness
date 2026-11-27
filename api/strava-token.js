@@ -3,6 +3,8 @@
  * Mantém o Client Secret protegido no lado do servidor.
  */
 
+import { requireSupabaseUser } from './_auth.js';
+
 const ALLOWED_REDIRECT_URI_PATTERNS = [
   /^https:\/\/(www\.)?abfitness\.app\/auth\/callback\/wearable$/,
   /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/auth\/callback\/wearable$/
@@ -14,11 +16,18 @@ function isAllowedRedirectUri(uri) {
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
+  }
+
+  const { user, error: authError } = await requireSupabaseUser(req);
+  if (authError || !user) {
+    return res.status(401).json({ error: authError || 'Autenticação necessária' });
   }
 
   let body = {};

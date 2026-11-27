@@ -138,32 +138,58 @@ export function formatCatalogForPrompt() {
   ).join('\n');
 }
 
+const MOVEMENT_PATTERNS = [
+  ['fly', /crucifix|voador|peck[\s-]*deck|cross[\s-]*over|abertura|fly/i],
+  ['press', /supino|press|desenvolvimento|flex[aã]o de bra[çc]o|mergulho|paralelas|dip/i],
+  ['pull_vert', /puxada|pulldown|barra fixa|pull[\s-]*up|chin[\s-]*up/i],
+  ['pull_row', /remada|row|serrote|pullover|face[\s-]*pull/i],
+  ['hinge', /terra|deadlift|stiff|bom[\s-]*dia|good[\s-]*morning|eleva[çc][aã]o p[ée]lvica|hip[\s-]*thrust|flexora|mesa flexora|cadeira flexora/i],
+  ['squat', /agachamento|squat|leg[\s-]*press|hack|afundo|passada|b[úu]lgar|extensora|cadeira extensora/i],
+  ['curl', /rosca|curl|b[íi]ceps/i],
+  ['extension', /tr[íi]ceps|testa|franc[eê]s|corda|coice|extens[aã]o/i],
+  ['raise', /eleva[çc][aã]o|abdu[çc][aã]o|adutor|abdutor|encolhimento/i],
+  ['calf', /panturrilha|g[êe]meo|s[óo]leo|calf/i],
+  ['core', /abdom|prancha|plank|crunch|infra|obl[íi]quo|roda/i]
+];
+
+export function inferMovementPattern(nome = '') {
+  const n = String(nome || '');
+  const hit = MOVEMENT_PATTERNS.find(([, re]) => re.test(n));
+  return hit ? hit[0] : null;
+}
+
 /**
- * Retorna uma lista de exercícios equivalentes para substituição biomecânica rápida (swap)
- * Prioriza mesma porção anatômica e mesmo grupo, com equipamento alternativo.
+ * Retorna uma lista de exercícios equivalentes para substituição biomecânica rápida (swap).
+ * Pontua mesma porção (+4), mesmo tipo composto/isolador (+3), equipamento alternativo (+2)
+ * e mesmo padrão de movimento inferido (+2), excluindo exercícios já presentes na sessão.
  */
 export function getBiomechanicalSubstitutes(exerciseIdentifier, excludeIds = new Set()) {
   const current = findExerciseInCatalog(exerciseIdentifier);
   if (!current) return [];
 
+  const excluded = excludeIds instanceof Set ? excludeIds : new Set(excludeIds || []);
   const currentId = current.id;
   const currentGroup = (current.grupo || '').toLowerCase();
   const currentPorcao = (current.porcao || '').toLowerCase();
+  const currentTipo = (current.tipo || '').toLowerCase();
+  const currentEquip = (current.equipamento || '').toLowerCase();
+  const currentPattern = inferMovementPattern(current.nome);
 
-  const exactMatches = EXERCISE_CATALOG.filter(
-    (e) => e.id !== currentId && !excludeIds.has(e.id) &&
-           (e.grupo || '').toLowerCase() === currentGroup &&
-           (e.porcao || '').toLowerCase() === currentPorcao
+  const candidates = EXERCISE_CATALOG.filter(
+    (e) => e.id !== currentId && !excluded.has(e.id) && (e.grupo || '').toLowerCase() === currentGroup
   );
 
-  if (exactMatches.length >= 3) return exactMatches.slice(0, 5);
-
-  const groupMatches = EXERCISE_CATALOG.filter(
-    (e) => e.id !== currentId && !excludeIds.has(e.id) &&
-           (e.grupo || '').toLowerCase() === currentGroup &&
-           !exactMatches.some((m) => m.id === e.id)
-  );
-
-  return [...exactMatches, ...groupMatches].slice(0, 5);
+  return candidates
+    .map((e) => {
+      let score = 0;
+      if ((e.porcao || '').toLowerCase() === currentPorcao) score += 4;
+      if (currentTipo && (e.tipo || '').toLowerCase() === currentTipo) score += 3;
+      if (currentEquip && (e.equipamento || '').toLowerCase() !== currentEquip) score += 2;
+      if (currentPattern && inferMovementPattern(e.nome) === currentPattern) score += 2;
+      return { item: e, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map((entry) => entry.item);
 }
 

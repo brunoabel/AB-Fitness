@@ -1,34 +1,16 @@
 /**
  * Converte o perfil do Onboarding do AB Coach num plano semanal.
- * Usa o gerador científico existente e depois adapta: local de treino, lesões, músculos prioritários e condicionamento.
+ * Os modelos de plano dão os slots (padrão de movimento + músculo + exercício-semente); o motor (src/engine/) escolhe
+ * o exercício de cada slot para o equipamento, lesões e nível do utilizador, ajusta séries e valida o resultado.
  */
 import { generatePersonalizedWorkoutPlan } from './workoutGenerator.js';
-import { EXERCISES_100, findExerciseIn100 } from './exercises100.js';
+import { findExerciseIn100 } from './exercises100.js';
 import { SPLIT_BY_DAYS, TRAINING_DAYS, WEEK_DAYS, HIGH_IMPACT_LEG_SPORTS, SPORT_PREVENTION_REGIONS } from '../components/onboarding/profileSchema.js';
 import { DRILLS, REGION_PLANS } from './recoveryProtocols.js';
 import { mesoWeekParams, mesoSetCount } from '../utils/mesocycleWeek.js';
+import { getExerciseMeta, prescribe, buildContext, balancePlan, validatePlan, MUSCLE_LABEL } from '../engine/index.js';
+import { slotFromExercise, candidatesFor, suggestForMuscle, inventoryFor } from '../engine/slots.js';
 
-const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[-_]+/g, ' ');
-
-const GYM_EQUIPMENT = ['maquina', 'polia', 'cabo', 'corda', 'face pull', 'crossover', 'smith', 'leg press', 'cadeira', 'mesa', 'hack', 'pec deck', 'voador', 'graviton', 'puxada', 'pulldown', 'scott', 'landmine'];
-// Exercícios que na prática exigem barra olímpica mesmo sem "barra" no nome
-const BARBELL_IMPLIED = ['militar', 'levantamento terra', 'deadlift', 'good morning', 'arremesso', 'arranco', 'clean'];
-const FREE_WEIGHTS = ['halter', 'serrote', 'kettlebell', 'anilha', 'elastico'];
-const hasBarbell = (n) => (/\bbarra\b/.test(n) && !n.includes('barra fixa')) || BARBELL_IMPLIED.some((k) => n.includes(k));
-
-const LOCATION_BLOCK = {
-  gym: () => false,
-  home_gym: (n) => hasBarbell(n) || GYM_EQUIPMENT.some((k) => n.includes(k)),
-  bodyweight: (n) => hasBarbell(n) || [...GYM_EQUIPMENT, ...FREE_WEIGHTS].some((k) => n.includes(k))
-};
-
-const INJURY_BLOCK = {
-  shoulder: ['desenvolvimento', 'militar', 'arnold', 'mergulho', 'paralelas', 'remada alta', 'push press', 'arranco'],
-  lower_back: ['levantamento terra', 'terra ', 'stiff', 'good morning', 'bom dia', 'remada curvada', 'agachamento livre', 'agachamento com barra', 'arremesso'],
-  knee: ['agachamento', 'afundo', 'avanco', 'passada', 'bulgaro', 'leg press', 'extensora', 'salto', 'pistol', 'sissy'],
-  wrist_elbow: ['scott', 'testa', 'frances', 'skull', 'punho', 'supino fechado', 'mergulho'],
-  hip: ['afundo', 'bulgaro', 'passada', 'sumo', 'abdutora', 'adutora', 'stiff', 'terra ']
-};
 
 const PRIORITY_GROUPS = {
   upper_chest: ['Peito'],
@@ -46,15 +28,16 @@ const FOCUS_BY_PRIORITY = {
 
 const GOAL_MAP = { hypertrophy: 'hypertrophy', fat_loss: 'fat_loss', strength: 'strength', conditioning: 'fat_loss' };
 const DURATION_MAP = { 45: 'express', 60: 'standard', 75: 'high_volume' };
-// Descanso máximo por meta (s): densidade maior para definição e condicionamento
-const REST_CAP = { fat_loss: 75, conditioning: 60 };
 const SPLIT_LABEL = { ppl: 'Push/Pull/Legs', upper_lower: 'Upper/Lower', full_body: 'Full Body', arnold: 'Arnold Split' };
 
 // Motor biomecânico do atleta híbrido: protege a cadeia inferior nos dias de desporto de alto impacto.
 const LEG_GROUPS = new Set(['Quadríceps', 'Posteriores', 'Glúteos']);
 const UPPER_GROUPS = new Set(['Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps']);
-// Exercícios de alta fadiga lombar/SNC a remover em dias de sessão dupla (ginásio + desporto no mesmo dia)
-const HIGH_CNS_LUMBAR = ['levantamento terra', 'terra ', 'stiff', 'good morning', 'bom dia', 'arremesso', 'arranco', 'clean'];
+/** Alta fadiga lombar/SNC (carga axial alta ou levantamentos de potência): sai nos dias de sessão dupla. */
+const isHighCnsLumbar = (ex) => {
+  const meta = getExerciseMeta(ex);
+  return Boolean(meta && (meta.axial >= 4 || meta.pattern === 'power' || meta.pattern === 'hip_hinge'));
+};
 
 function groupShareOf(day, groups) {
   if (!Array.isArray(day.exercises) || day.exercises.length === 0) return 0;
@@ -87,18 +70,34 @@ function applyLegFatigueProtection(remappedPlan, profile, notes) {
     blocked.add((s + 6) % 7); // véspera
   });
 
-  const dayStats = remappedPlan.map((day, idx) => ({
-    idx,
-    isTraining: !day.isRestDay && Array.isArray(day.exercises) && day.exercises.length > 0,
-    isLegHeavy: groupShareOf(day, LEG_GROUPS) >= 0.5,
-    isUpperHeavy: groupShareOf(day, UPPER_GROUPS) >= 0.5
-  }));
+  const dayStats = remappedPlan.map((day, idx) => {
+    const legShare = groupShareOf(day, LEG_GROUPS);
+    return {
+      idx,
+      isTraining: !day.isRestDay && Array.isArray(day.exercises) && day.exercises.length > 0,
+      legShare,
+      isLegHeavy: legShare >= 0.5,
+      isUpperHeavy: groupShareOf(day, UPPER_GROUPS) >= 0.5
+    };
+  });
 
   let swapped = 0;
   let capped = 0;
   blocked.forEach((b) => {
     const stat = dayStats[b];
-    if (!stat.isTraining || !stat.isLegHeavy) return;
+    if (!stat.isTraining) return;
+
+    // Splits Full Body (legShare entre 0.2 e 0.5): não troca o dia inteiro, mas protege o volume de pernas
+    if (!stat.isLegHeavy) {
+      if (stat.legShare >= 0.2) {
+        remappedPlan[b].exercises = remappedPlan[b].exercises.map((ex) => {
+          if (!LEG_GROUPS.has(findExerciseIn100(ex.id)?.grupo)) return ex;
+          return { ...ex, defaultSets: Math.max(2, (Number(ex.defaultSets) || 3) - 1) };
+        });
+        capped += 1;
+      }
+      return;
+    }
 
     const candidates = dayStats.filter((c) => c.isTraining && !blocked.has(c.idx) && !c.isLegHeavy && daysUntilNextSport(c.idx, sportDaySet) >= 2);
     const target = candidates.find((c) => c.isUpperHeavy) || candidates[0];
@@ -134,24 +133,40 @@ function applyLegFatigueProtection(remappedPlan, profile, notes) {
   return remappedPlan;
 }
 
-/** Sessão dupla (ginásio + desporto no mesmo dia): corta ~25% do volume acessório e remove exercícios de alta fadiga lombar/SNC. */
+/**
+ * Sessão dupla (ginásio + desporto no mesmo dia): corta ~25% do volume acessório, remove exercícios
+ * de alta fadiga lombar/SNC e adapta o volume de pernas consoante `profile.sessionOrder`
+ * (`gym_first` preserva pernas para o desporto seguinte; `sport_first` reduz compostos de pernas fadigadas).
+ */
 function applyDoubleSessionLoad(exercises, profile, dayIdx) {
   const sportDaySet = new Set(profile.sportDays || []);
   if (!sportDaySet.has(dayIdx)) return { exercises, touched: false };
 
+  const order = profile.sessionOrder || 'split_hours';
   let removed = 0;
   let reduced = 0;
   const next = exercises
     .filter((ex) => {
-      const n = ` ${norm(`${ex.id} ${ex.name}`)} `;
-      const block = HIGH_CNS_LUMBAR.some((k) => n.includes(k));
+      const block = isHighCnsLumbar(ex);
       if (block) removed += 1;
       return !block;
     })
     .map((ex) => {
       const meta = findExerciseIn100(ex.id);
-      if (meta?.mecanica !== 'Isolado') return ex;
+      const isLeg = LEG_GROUPS.has(meta?.grupo);
       const sets = Number(ex.defaultSets) || 3;
+
+      if (order === 'sport_first' && isLeg) {
+        const cut = Math.max(2, sets - 1);
+        if (cut < sets) reduced += 1;
+        return { ...ex, defaultSets: cut };
+      }
+      if (order === 'gym_first' && isLeg) {
+        const cut = Math.max(2, sets - 1);
+        if (cut < sets) reduced += 1;
+        return { ...ex, defaultSets: cut };
+      }
+      if (meta?.mecanica !== 'Isolado') return ex;
       const cut = Math.max(2, Math.round(sets * 0.75));
       if (cut < sets) reduced += 1;
       return { ...ex, defaultSets: cut };
@@ -167,12 +182,6 @@ function sportPreventionDrills(profile) {
   return ids.slice(0, 4).map((id) => ({ id, ...DRILLS[id] }));
 }
 
-function isBlocked(nameOrId, profile) {
-  const n = ` ${norm(nameOrId)} `;
-  if (LOCATION_BLOCK[profile.trainingLocation]?.(n)) return true;
-  return profile.injuries.some((inj) => (INJURY_BLOCK[inj] || []).some((k) => n.includes(k)));
-}
-
 function toPlanExercise(ex100, template) {
   return {
     id: ex100.slug,
@@ -184,19 +193,81 @@ function toPlanExercise(ex100, template) {
     suggestedReps: template.suggestedReps,
     defaultSets: template.defaultSets,
     restTime: template.restTime,
-    suggestedWeight: template.suggestedWeight,
     substitutedFrom: template.name
   };
 }
 
-function adaptExercise(ex, profile, usedIds) {
-  const meta = findExerciseIn100(ex.id);
-  if (!isBlocked(`${ex.id} ${ex.name} ${ex.equipment || ''}`, profile)) return { ...ex, _group: meta?.grupo };
-  const candidates = EXERCISES_100.filter(
-    (c) => c.grupo === meta?.grupo && !usedIds.has(c.slug) && !usedIds.has(norm(c.nome)) && !isBlocked(`${c.slug} ${c.nome}`, profile)
-  );
-  const pick = candidates.find((c) => c.mecanica === meta?.mecanica) || candidates[0];
-  return pick ? { ...toPlanExercise(pick, ex), _group: pick.grupo } : null;
+/** Contexto do utilizador para a escolha de exercícios: equipamento disponível, lesões e nível. */
+function selectionContext(profile) {
+  return {
+    inventory: inventoryFor(profile.trainingLocation, profile.equipment),
+    injuries: profile.injuries || [],
+    experience: profile.experienceLevel || 'beginner'
+  };
+}
+
+/**
+ * Escolhe o exercício de cada slot da sessão. Mantém a semente quando serve; senão, o melhor equivalente do slot.
+ * Limita a carga axial: no máximo um exercício com carga axial 5 e soma até 8 por sessão.
+ */
+function fillSessionSlots(exercises, sel) {
+  const used = new Set();
+  let axialSum = 0;
+  let heavyAxial = false;
+  const out = [];
+  let swapped = 0;
+  let removed = 0;
+  for (const ex of exercises) {
+    const slot = slotFromExercise(ex);
+    if (!slot.pattern) {
+      out.push(ex);
+      continue;
+    }
+    slot.axialBudget = heavyAxial ? 4 : Math.min(5, 8 - axialSum);
+    const pick = candidatesFor(slot, sel, used)[0];
+    if (!pick) {
+      removed += 1;
+      continue;
+    }
+    used.add(pick.id);
+    axialSum += pick.meta.axial;
+    if (pick.meta.axial >= 5) heavyAxial = true;
+    if (pick.id === slot.seed) out.push(ex);
+    else {
+      swapped += 1;
+      out.push(toPlanExercise(findExerciseIn100(pick.id), ex));
+    }
+  }
+  return { exercises: out, swapped, removed };
+}
+
+/** Reps, descanso, RIR e incremento pelo motor, com o objetivo real do perfil. As séries ficam para o balanceamento. */
+function prescribeForProfile(ex, profile) {
+  const meta = getExerciseMeta(ex);
+  const p = prescribe(meta, {
+    goal: profile.primaryGoal || 'hypertrophy',
+    experience: profile.experienceLevel || 'beginner',
+    timedReps: meta?.repClass === 'timed' ? ex.suggestedReps : undefined
+  });
+  return {
+    ...ex,
+    suggestedReps: p.reps,
+    restTime: p.restTime,
+    repRange: p.repRange,
+    targetRir: p.targetRir,
+    rirFloor: p.rirFloor,
+    progressionIncrement: p.increment,
+    repClass: p.repClass
+  };
+}
+
+/** Dias em que o motor não pode somar séries: dias de desporto e, em desporto de impacto, as vésperas. */
+function lockedDays(profile) {
+  const out = new Set(profile.sportDays || []);
+  const highImpact = (profile.sports || []).some((s) => HIGH_IMPACT_LEG_SPORTS.includes(s));
+  const risky = profile.sportIntensity === 'moderate' || profile.sportIntensity === 'competitive';
+  if (highImpact && risky) (profile.sportDays || []).forEach((d) => out.add((d + 6) % 7));
+  return out;
 }
 
 /**
@@ -296,40 +367,49 @@ export function buildPlanFromProfile(profile) {
   applyLegFatigueProtection(remappedPlan, profile, notes);
 
   const priorityGroups = new Set((profile.priorityMuscles || []).flatMap((m) => PRIORITY_GROUPS[m] || []));
+  const sel = selectionContext(profile);
   let swapped = 0;
   let removed = 0;
   let doubleSession = false;
 
   const adapted = remappedPlan.map((day, dayIdx) => {
     if (!Array.isArray(day.exercises) || day.exercises.length === 0) return day;
-    const usedIds = new Set(day.exercises.flatMap((e) => [e.id, norm(e.name)]));
-    const exercises = day.exercises
-      .map((ex) => {
-        const out = adaptExercise(ex, profile, usedIds);
-        if (!out) removed += 1;
-        else if (out.substitutedFrom) {
-          swapped += 1;
-          usedIds.add(out.id);
-          usedIds.add(norm(out.name));
-        }
-        return out;
-      })
-      .filter(Boolean)
-      .map(({ _group, ...ex }) => {
-        const next = { ...ex };
-        if (priorityGroups.has(_group)) next.defaultSets = Math.min(5, (Number(ex.defaultSets) || 3) + 1);
-        const restCap = REST_CAP[profile.primaryGoal];
-        if (restCap) next.restTime = Math.min(Number(next.restTime) || restCap, restCap);
-        if (profile.primaryGoal === 'conditioning') next.suggestedReps = '12-15';
-        if (profile.sessionMinutes === 45) next.defaultSets = Math.min(Number(next.defaultSets) || 3, 3);
-        return next;
-      });
+    const filled = fillSessionSlots(day.exercises, sel);
+    swapped += filled.swapped;
+    removed += filled.removed;
+    const exercises = filled.exercises.map((ex) => prescribeForProfile(ex, profile));
 
     const doubled = applyDoubleSessionLoad(exercises, profile, dayIdx);
     if (doubled.touched) doubleSession = true;
 
     return { ...day, exercises: doubled.exercises, badge: profile.primaryGoal === 'conditioning' ? 'Condicionamento & Resistência' : day.badge };
   });
+
+  // Motor de volume: ajusta séries ao orçamento semanal, ao teto por sessão e à duração; depois valida
+  const ctx = buildContext({
+    experience: profile.experienceLevel || 'beginner',
+    sessionMinutes: Number(profile.sessionMinutes) || 60,
+    priorityMuscles: profile.priorityMuscles || [],
+    noAddDays: lockedDays(profile),
+    location: profile.trainingLocation || 'gym',
+    injuries: profile.injuries || [],
+    inventory: sel.inventory,
+    // Quando falta volume e já não há onde somar séries: acessório novo para o músculo
+    suggest: (muscle, exclude) => {
+      const id = suggestForMuscle(muscle, sel, exclude);
+      if (!id) return null;
+      const lib = findExerciseIn100(id);
+      return lib ? { ...prescribeForProfile({ ...toPlanExercise(lib, { suggestedReps: lib.reps, restTime: lib.descanso_seg }), substitutedFrom: undefined }, profile), defaultSets: 2 } : null;
+    }
+  });
+  const balanced = balancePlan(adapted, ctx);
+  balanced.days.forEach((day, idx) => { adapted[idx] = day; });
+  const validation = validatePlan(adapted, { ...ctx, insertions: balanced.insertions });
+  if (balanced.removed.length) notes.push(`Para caber em ${ctx.sessionMinutes} min, tirei ${balanced.removed.join(', ')}.`);
+  if (balanced.added.length) notes.push(`Acrescentei ${balanced.added.join(', ')} para chegar ao volume semanal mínimo.`);
+  if (balanced.trimmed.length) notes.push(`Tirei ${balanced.trimmed.join(', ')} para o volume semanal não passar do recomendado para o teu nível.`);
+  const timeBound = validation.filter((i) => i.code === 'VOL_LOW' && i.reason === 'time').map((i) => MUSCLE_LABEL[i.muscle]);
+  if (timeBound.length) notes.push(`Com ${ctx.sessionMinutes} min por sessão não cabe o volume mínimo para ${timeBound.join(', ')}. Mais tempo ou mais dias de treino resolvem isto.`);
 
   const sportDrills = profile.hasSport ? sportPreventionDrills(profile) : [];
   if (sportDrills.length) {
@@ -341,11 +421,11 @@ export function buildPlanFromProfile(profile) {
 
   if (swapped) notes.push(`Troquei ${swapped} exercício${swapped > 1 ? 's' : ''} por alternativas seguras para o teu equipamento e articulações.`);
   if (removed) notes.push(removed > 1 ? `${removed} exercícios sem alternativa segura ficaram de fora.` : '1 exercício sem alternativa segura ficou de fora.');
-  if (priorityGroups.size && profile.sessionMinutes !== 45) notes.push('Acrescentei uma série nos músculos prioritários.');
+  if (priorityGroups.size) notes.push('Dei mais volume semanal aos músculos prioritários.');
   if (doubleSession) notes.push('Nos dias de sessão dupla, reduzi o volume acessório e removi exercícios de alta fadiga lombar.');
   if (sportDrills.length) notes.push('Adicionei mobilidade e prevenção específicas para a tua modalidade nos dias de desporto.');
 
-  return { plan: adapted, notes, appliedSplit };
+  return { plan: adapted, notes, appliedSplit, validation };
 }
 
 /**
@@ -379,7 +459,8 @@ export function generateMesocyclePlan(profile = {}, weeks = 5) {
         return {
           ...ex,
           defaultSets: sets,
-          targetRir,
+          // RIR da semana com piso por exercício: compostos nunca a 0, iniciantes nunca abaixo de 2
+          targetRir: isDeload ? targetRir : Math.max(Number(ex.rirFloor) || 0, targetRir),
           loadMultiplier,
           isDeload,
           supersetGroupId: ex.supersetGroupId || (shouldSuperset ? `bi-${day.dayId}` : null)

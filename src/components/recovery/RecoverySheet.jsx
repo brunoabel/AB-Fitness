@@ -3,7 +3,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Play, Clock3 } from 'lucide-react';
 import { Sheet } from '../social/ui';
 import VideoSurface from '../video/VideoSurface';
-import { getExerciseMedia } from '../../data/exerciseMedia';
+import AnimationCredit from '../video/AnimationCredit';
+import { getDrillMedia } from '../../data/exerciseMedia';
 import { KIND_LABEL, planFor } from '../../data/recoveryProtocols';
 import { HEAT_GRADIENT, STATUS_LABEL, sinceLabel } from './heat';
 import { triggerHaptic } from '../../utils/audio';
@@ -15,8 +16,8 @@ const ADVICE = {
 };
 
 function Drill({ drill, open, onToggle }) {
-  const media = drill.catalogId ? getExerciseMedia(drill.catalogId) : null;
-  const hasVideo = Boolean(media?.videoMale);
+  const media = getDrillMedia(drill);
+  const hasVideo = Boolean(media.video);
 
   return (
     <li className="rounded-2xl bg-surface-2 border border-white/[0.08] overflow-hidden">
@@ -28,7 +29,7 @@ function Drill({ drill, open, onToggle }) {
         className="w-full flex items-start gap-3 p-3 text-left enabled:cursor-pointer"
       >
         <span className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-surface-3 border border-white/[0.06] flex items-center justify-center">
-          {media?.poster && <img src={media.poster} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-80" />}
+          {media.poster && <img src={media.poster} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-80" />}
           {hasVideo ? <Play className="relative w-4 h-4 text-white" strokeWidth={2} fill="currentColor" /> : <Clock3 className="w-4 h-4 text-zinc-500" strokeWidth={1.75} />}
         </span>
         <span className="flex-1 min-w-0">
@@ -44,7 +45,8 @@ function Drill({ drill, open, onToggle }) {
       <AnimatePresence initial={false}>
         {open && hasVideo && (
           <motion.div key="v" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} className="px-3 pb-3">
-            <VideoSurface src={media.videoMale} poster={media.poster} className="aspect-video rounded-xl" />
+            <VideoSurface src={media.video} poster={media.poster} className="aspect-[4/3] rounded-xl" />
+            <AnimationCredit className="mt-1.5 px-1" />
           </motion.div>
         )}
       </AnimatePresence>

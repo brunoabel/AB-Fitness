@@ -24,6 +24,7 @@ import { useAuth } from '../context';
 import ABLogo from './ABLogo';
 import { getLocalWaitlist, fetchWaitlistLeads, exportWaitlistCsv } from '../services/waitlistService';
 import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
+import { localDateKey } from '../utils/dateKey';
 
 export default function AdminDashboard({ onBackToWorkout }) {
   const { isCeo } = useAuth();
@@ -178,24 +179,25 @@ export default function AdminDashboard({ onBackToWorkout }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `ab_fitness_waitlist_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `ab_fitness_waitlist_${localDateKey()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
     triggerHaptic([10, 30, 10]);
   };
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col justify-between transition-colors animate-fadeIn">
-      <div className="w-full max-w-5xl mx-auto min-h-screen bg-zinc-950 shadow-2xl relative flex flex-col justify-between border-x border-white/10">
+      <div className="w-full max-w-5xl mx-auto min-h-screen bg-app relative flex flex-col justify-between border-x border-white/[0.08]">
         
         {/* Top Header do Painel de Admin */}
-        <header className="sticky top-0 z-20 w-full bg-zinc-950/95 backdrop-blur-md border-b border-white/10 transition-colors pt-[max(env(safe-area-inset-top,0px),12px)]">
+        <header className="sticky top-0 z-20 w-full bg-app/95 backdrop-blur-md border-b border-white/[0.08] transition-colors pt-[max(env(safe-area-inset-top,0px),12px)]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-2.5 pb-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 onClick={onBackToWorkout}
-                className="w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-zinc-700"
+                className="w-11 h-11 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center border border-white/[0.08]"
                 title="Voltar aos Treinos"
                 aria-label="Voltar aos Treinos"
               >
@@ -209,12 +211,12 @@ export default function AdminDashboard({ onBackToWorkout }) {
                       {isCeo ? 'Painel Executivo CEO' : 'Painel do Treinador'}
                     </h1>
                     {isCeo ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider leading-none">
-                        <Crown className="w-3 h-3 text-amber-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider leading-none">
+                        <Crown className="w-3 h-3 text-white" />
                         CEO & FUNDADOR
                       </span>
                     ) : (
-                      <span className="px-1.5 py-0.5 rounded-md bg-primary text-app text-[11px] font-bold uppercase tracking-wider leading-none">
+                      <span className="px-2 py-0.5 rounded-full bg-primary text-app text-[11px] font-bold uppercase tracking-wider leading-none">
                         ADMIN
                       </span>
                     )}
@@ -290,14 +292,13 @@ export default function AdminDashboard({ onBackToWorkout }) {
           </div>
 
           {/* Banner de Status: Modo Lançamento Privado / Fechado para Marketing */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-surface-2/80 border border-accent-hover/60 flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-hover"></span>
               </span>
               <div className="min-w-0">
-                <p className="font-bold text-amber-300 truncate">
+                <p className="font-bold text-white truncate">
                   {PRIVATE_LAUNCH_MODE ? 'App Fechada para Marketing (Lançamento VIP Ativo)' : 'App Aberta ao Público'}
                 </p>
                 <p className="text-[11px] text-zinc-400 truncate">
@@ -306,7 +307,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] uppercase font-bold tracking-wider">
+              <span className="px-2.5 py-1 rounded-full bg-accent/60 border border-accent-hover text-white text-[10px] uppercase font-bold tracking-wider">
                 {PRIVATE_LAUNCH_MODE ? 'Privado' : 'Aberto'}
               </span>
             </div>
@@ -409,8 +410,8 @@ export default function AdminDashboard({ onBackToWorkout }) {
                                 {ath.full_name || ath.email.split('@')[0]}
                               </h4>
                               {isAthCeo ? (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider">
-                                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider">
+                                  <Crown className="w-2.5 h-2.5 text-white" />
                                   CEO
                                 </span>
                               ) : isCurrentAdmin ? (
@@ -512,7 +513,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-zinc-900 border border-white/10">
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-4 h-4 text-zinc-300" />
                     Leads Capturados no Lançamento Privado
                   </h3>
                   <p className="text-[11px] text-zinc-400 mt-0.5 tabular-nums">
@@ -548,7 +549,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
 
               {waitlistLeads.length === 0 ? (
                 <div className="p-10 rounded-2xl border border-dashed border-white/10 text-center space-y-2.5">
-                  <Sparkles className="w-7 h-7 text-amber-400/60 mx-auto" />
+                  <Sparkles className="w-7 h-7 text-zinc-500 mx-auto" />
                   <h4 className="text-xs font-bold text-zinc-300">
                     Ainda não foram registados leads na lista
                   </h4>
@@ -602,7 +603,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
         {selectedAthlete && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 animate-fadeIn">
             <div 
-              className="w-full sm:max-w-lg bg-zinc-950 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-white/10 flex flex-col max-h-[85vh] animate-slideUp"
+              className="w-full sm:max-w-lg bg-app rounded-t-3xl sm:rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col max-h-[85vh] animate-slideUp"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header do Modal */}

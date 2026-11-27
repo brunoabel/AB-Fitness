@@ -18,10 +18,15 @@ page.then((element) => {
   createRoot(document.getElementById('root')).render(<StrictMode>{element}</StrictMode>);
 });
 
-// Service Worker (PWA e offline). O host de média próprio (VITE_MEDIA_BASE_URL) vai no URL de registo,
-// para o SW também guardar e servir vídeos desse domínio.
+// Service Worker apenas em produção; em dev limpa registos antigos para evitar cache desatualizada no localhost.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    if (!import.meta.env.PROD) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((reg) => reg.unregister());
+      }).catch(() => {});
+      return;
+    }
     let mediaHost = '';
     try {
       mediaHost = import.meta.env.VITE_MEDIA_BASE_URL ? new URL(import.meta.env.VITE_MEDIA_BASE_URL).host : '';

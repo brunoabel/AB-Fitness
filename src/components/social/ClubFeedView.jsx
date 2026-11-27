@@ -23,10 +23,10 @@ function RespectActionBar({ count, respected, athleteName, onRespect, reducedMot
         aria-pressed={respected}
         aria-label={`Dar respect a ${athleteName}`}
         onClick={onRespect}
-        className={`min-h-[44px] px-4 rounded-full inline-flex items-center gap-2 text-[13px] font-bold tabular-nums cursor-pointer touch-manipulation transition-colors ${
+        className={`min-h-[44px] px-4 rounded-full inline-flex items-center gap-2 text-[13px] font-bold tabular-nums cursor-pointer touch-manipulation transition-colors border ${
           respected
-            ? 'bg-white text-black shadow-[0_6px_20px_rgba(255,255,255,0.16)]'
-            : 'bg-white/[0.06] hover:bg-white/[0.11] text-zinc-200 border border-white/[0.08]'
+            ? 'bg-accent border-accent-hover text-white'
+            : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border-white/[0.08]'
         }`}
       >
         <HandMetal className="w-4 h-4" strokeWidth={respected ? 2.1 : 1.75} />
@@ -51,8 +51,8 @@ function FeedPhotoEntry({ item, onRespect, onOpenChat, reducedMotion }) {
               <span className="font-semibold truncate">{name}</span>
               {isAthleteVerified(item) && <VerifiedBadge size={14} />}
               {ceo && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[9px] font-bold uppercase tracking-wider">
-                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[9px] font-bold uppercase tracking-wider">
+                  <Crown className="w-2.5 h-2.5 text-white" />
                   CEO
                 </span>
               )}

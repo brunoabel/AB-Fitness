@@ -23,7 +23,7 @@ export default function RunSummary({
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Mapa do Percurso em Hero */}
-      <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl">
+      <div className="relative rounded-3xl overflow-hidden border border-white/[0.08]">
         <Suspense fallback={<div className="h-[280px] w-full bg-surface-2 animate-pulse" />}>
           <RunningMap
             coordinates={lastCompletedRun.coordinates}
@@ -41,8 +41,8 @@ export default function RunSummary({
       {/* Conquista + Distância Herói sobre OLED preto */}
       <div className="space-y-2">
         {achievement.badgeLabel && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold">
-            <Award className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/60 border border-accent-hover text-white text-xs font-semibold">
+            <Award className="w-3.5 h-3.5" strokeWidth={1.75} />
             {achievement.badgeLabel}
           </span>
         )}
@@ -124,9 +124,9 @@ export default function RunSummary({
             setSelectedRunForShare(lastCompletedRun);
             triggerHaptic(15);
           }}
-          className="w-full min-h-[54px] px-5 rounded-full bg-white text-black hover:bg-zinc-100 font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer shadow-lg"
+          className="w-full min-h-[54px] px-5 rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
         >
-          <Share2 className="w-4 h-4" />
+          <Share2 className="w-4 h-4" strokeWidth={1.75} />
           <span>Partilhar Corrida</span>
         </button>
 
@@ -134,9 +134,9 @@ export default function RunSummary({
           <button
             type="button"
             onClick={handleResetSession}
-            className="min-h-[48px] px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+            className="min-h-[48px] px-4 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-[border-color,transform] duration-150 ease-out cursor-pointer"
           >
-            <RotateCcw className="w-4 h-4 text-zinc-400" />
+            <RotateCcw className="w-4 h-4 text-zinc-400" strokeWidth={1.75} />
             <span>Nova Corrida</span>
           </button>
 
@@ -147,16 +147,16 @@ export default function RunSummary({
                 triggerHaptic(15);
                 downloadGPX(lastCompletedRun.coordinates, `corrida_${lastCompletedRun.date?.split('T')[0] || 'ab_fitness'}`);
               }}
-              className="min-h-[48px] px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300 hover:text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+              className="min-h-[48px] px-4 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-zinc-200 hover:text-white font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-[border-color,color,transform] duration-150 ease-out cursor-pointer"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-4 h-4" strokeWidth={1.75} />
               <span>Exportar GPX</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={handleResetSession}
-              className="min-h-[48px] px-4 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-sm cursor-pointer"
+              className="min-h-[48px] px-4 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-zinc-200 font-semibold text-sm cursor-pointer"
             >
               Concluir
             </button>

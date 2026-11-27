@@ -37,3 +37,10 @@ media/
 # Marketing (/marketing-man): renders, previews e histórico locais
 tmp/marketing/
 tools/marketing/.cache/
+
+# Skills instaladas por `npx skills` (Higgsfield): só locais
+/.agents/
+/skills/
+/skills-lock.json
+# Links para .agents/skills/, ficariam quebrados num clone
+.claude/skills/higgsfield-*

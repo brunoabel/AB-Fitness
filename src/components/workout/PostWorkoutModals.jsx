@@ -26,12 +26,15 @@ export default function PostWorkoutModals({
   onCloseSwap,
   onDoneCheckin,
   onSelectSubstitute,
+  pastWeights,
   plateCalcWeight,
+  prevIndex,
   selectedExerciseForModal,
   sessionFacts,
   sessionNewPRs,
   showCelebration,
   streakInfo,
+  swapExcludeIds,
   swappingExercise,
   totalVolumeKg,
   workout
@@ -48,6 +51,9 @@ export default function PostWorkoutModals({
           <Suspense key="swap-exercise-modal" fallback={null}>
             <SwapExerciseModal
               exercise={swappingExercise}
+              excludeIds={swapExcludeIds}
+              prevIndex={prevIndex}
+              pastWeights={pastWeights}
               onSelectSubstitute={onSelectSubstitute}
               onClose={onCloseSwap}
             />

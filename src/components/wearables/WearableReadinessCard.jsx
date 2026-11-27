@@ -38,7 +38,7 @@ function readLocalWearableSnapshot() {
   };
 }
 
-export default function WearableReadinessCard({ onOpenWearables }) {
+export default function WearableReadinessCard({ onOpenWearables, compact = false }) {
   const [snapshot, setSnapshot] = useState(() => readLocalWearableSnapshot());
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -62,13 +62,49 @@ export default function WearableReadinessCard({ onOpenWearables }) {
     }
   };
 
+  if (compact) {
+    const scoreText =
+      !hasConnection || !readiness
+        ? 'Ligar'
+        : readiness.isStale || readiness.score == null
+          ? '--'
+          : `${readiness.score}%`;
+    const subText = !hasConnection || !readiness ? 'Wearables' : formatProviderName(readiness.providerUsed);
+
+    return (
+      <>
+        <button
+          type="button"
+          onClick={handleClick}
+          className="w-full py-1 px-2 text-center cursor-pointer group select-none"
+        >
+          <span className="block text-[11px] font-medium text-zinc-400">Sensores</span>
+          <span
+            className="block font-display font-semibold text-xl tabular-nums text-white mt-0.5"
+            style={hasConnection && readiness?.color ? { color: readiness.color } : undefined}
+          >
+            {scoreText}
+          </span>
+          <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-300 truncate transition-colors">
+            {subText}
+          </span>
+        </button>
+        {modalOpen && (
+          <Suspense fallback={null}>
+            <WearablesModal isOpen={modalOpen} onClose={() => { setModalOpen(false); refresh(); }} />
+          </Suspense>
+        )}
+      </>
+    );
+  }
+
   if (!hasConnection) {
     return (
       <>
         <button
           type="button"
           onClick={handleClick}
-          className="w-full py-3 px-2 min-h-[56px] rounded-xl hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors flex items-center justify-between gap-3 cursor-pointer text-left group select-none"
+          className="w-full py-3.5 px-4 min-h-[56px] hover:bg-white/[0.02] active:bg-white/[0.04] transition-colors flex items-center justify-between gap-3 cursor-pointer text-left group select-none"
         >
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-1 shrink-0">
@@ -104,7 +140,7 @@ export default function WearableReadinessCard({ onOpenWearables }) {
       <button
         type="button"
         onClick={handleClick}
-        className="w-full py-3 px-2 rounded-xl hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer text-left group select-none"
+        className="w-full py-3.5 px-4 min-h-[56px] hover:bg-white/[0.02] active:bg-white/[0.04] transition-colors cursor-pointer text-left group select-none"
       >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -120,7 +156,7 @@ export default function WearableReadinessCard({ onOpenWearables }) {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
-                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${readiness.isStale ? '' : 'animate-pulse'}`}
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
                   style={{ backgroundColor: readiness.color }}
                 />
                 <span className="text-[12px] font-semibold text-white uppercase tracking-wider">

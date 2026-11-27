@@ -3,8 +3,11 @@
  * para o SQL e o cálculo local usarem o mesmo mapeamento.  Uso: node scripts/build_muscle_targets_sql.mjs
  */
 import { writeFileSync } from 'node:fs';
-import { EXERCISE_CATALOG } from '../src/data/exerciseCatalog.js';
+import { EXERCISE_CATALOG as GENERATED_CATALOG } from '../src/data/exerciseCatalog.js';
+import { OPEN_CATALOG } from '../src/data/openExercisesBatch.js';
 import { MUSCLE_REGIONS, regionsForExercise } from '../src/data/muscleRegions.js';
+
+const EXERCISE_CATALOG = { ...GENERATED_CATALOG, ...OPEN_CATALOG };
 
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
 

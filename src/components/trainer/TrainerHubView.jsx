@@ -85,7 +85,7 @@ export default function TrainerHubView({ onBack }) {
                   onBack();
                 }
               }}
-              className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center md:hidden shrink-0"
+              className="w-11 h-11 rounded-full bg-surface border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center md:hidden shrink-0"
               aria-label={selectedAthleteId ? 'Voltar à lista' : 'Voltar'}
             >
               <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
@@ -93,7 +93,7 @@ export default function TrainerHubView({ onBack }) {
             <button
               type="button"
               onClick={onBack}
-              className="hidden md:flex w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 items-center justify-center shrink-0"
+              className="hidden md:flex w-11 h-11 rounded-full bg-surface border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 items-center justify-center shrink-0"
               aria-label="Voltar"
             >
               <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
@@ -115,7 +115,7 @@ export default function TrainerHubView({ onBack }) {
             <button
               type="button"
               onClick={() => { triggerHaptic(10); setTemplatesOpen(true); }}
-              className="min-h-[44px] px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white font-semibold text-[13px] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="min-h-[44px] px-4 rounded-full bg-surface hover:bg-surface-2 border border-white/[0.08] text-white font-semibold text-[13px] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               <Layers className="w-4 h-4 text-zinc-300" strokeWidth={1.75} />
               <span>Modelos</span>
@@ -123,7 +123,7 @@ export default function TrainerHubView({ onBack }) {
             <button
               type="button"
               onClick={() => { triggerHaptic(10); setInvitingOpen(true); }}
-              className="min-h-[44px] px-3.5 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[44px] px-4 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               <Ticket className="w-4 h-4" strokeWidth={2} />
               <span>Convidar</span>
@@ -132,7 +132,7 @@ export default function TrainerHubView({ onBack }) {
               type="button"
               onClick={() => { setRefreshing(true); triggerHaptic(10); load(); }}
               disabled={refreshing}
-              className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center disabled:opacity-50"
+              className="w-11 h-11 rounded-full bg-surface border border-white/[0.08] text-zinc-300 hover:text-white transition-colors cursor-pointer active:scale-95 flex items-center justify-center disabled:opacity-50"
               aria-label="Atualizar"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} strokeWidth={1.75} />

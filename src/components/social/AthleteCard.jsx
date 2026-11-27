@@ -16,7 +16,7 @@ const statValue = (id, stats) => {
 };
 
 const RANK_TONES = {
-  gold: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+  gold: 'bg-accent/60 text-white border-accent-hover',
   platinum: 'bg-white/10 text-zinc-100 border-white/25',
   emerald: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
   neutral: 'bg-white/[0.06] text-zinc-300 border-white/[0.1]'
@@ -104,7 +104,7 @@ export default function AthleteCard({
         onPointerUp={tiltEnabled ? resetTilt : undefined}
         onPointerCancel={tiltEnabled ? resetTilt : undefined}
         style={{ rotateX: tiltEnabled ? rotateX : 0, rotateY: tiltEnabled ? rotateY : 0, scaleX: flipScale }}
-        className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl p-5 sm:p-6 transition-shadow`}
+        className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} backdrop-blur-xl p-5 sm:p-6 transition-colors`}
       >
         {/* Brilho especular: segue o oposto do ponteiro, só visível durante a interação */}
         {tiltEnabled && (
@@ -127,7 +127,7 @@ export default function AthleteCard({
         <div className="relative">
           {avatarPreview || profile?.avatar_url ? (
             <div
-              className={`relative overflow-hidden rounded-2xl ring-1 ${isCeo ? 'ring-amber-500/40' : 'ring-white/15'}`}
+              className={`relative overflow-hidden rounded-2xl ring-1 ${isCeo ? 'ring-accent-hover' : 'ring-white/15'}`}
               style={{ width: compact ? 60 : 72, height: compact ? 60 : 72 }}
             >
               <img
@@ -151,7 +151,7 @@ export default function AthleteCard({
             </div>
           )}
           {isCeo && (
-            <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center shadow-lg border-2 border-black" title="Fundador / CEO">
+            <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center border-2 border-black" title="Fundador / CEO">
               <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
             </span>
           )}
@@ -176,7 +176,7 @@ export default function AthleteCard({
           </h2>
           {isVerified && <VerifiedBadge size={compact ? 16 : 20} />}
           {isCeo ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider">
               CEO & Founder
             </span>
           ) : isPro ? (
@@ -223,13 +223,7 @@ export default function AthleteCard({
       {!compact && (
         <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2 relative z-10 text-[11px]">
           <span className="font-medium text-zinc-400 truncate">
-            {cleanUsername ? (
-              <>
-                <strong className="text-white font-semibold">@{cleanUsername}</strong> · abfitness.app
-              </>
-            ) : (
-              'AB Fitness · abfitness.app'
-            )}
+            AB Fitness · abfitness.app
           </span>
 
           <div className="flex items-center gap-1.5 shrink-0">

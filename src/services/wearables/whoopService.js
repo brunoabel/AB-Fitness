@@ -3,6 +3,9 @@
  * Suporta OAuth 2.0 PKCE e modo Simulador de Atleta para demonstrações.
  */
 
+import { localDateKey } from '../../utils/dateKey.js';
+import { buildWearableTokenHeaders } from './wearableAuthHeader.js';
+
 const WHOOP_AUTH_URL = 'https://api.prod.whoop.com/oauth/oauth2/auth';
 const WHOOP_API_BASE = 'https://api.prod.whoop.com/developer/v1';
 
@@ -54,9 +57,10 @@ export function buildWhoopAuthUrl(redirectUri) {
  * Troca o código de autorização pelo token de acesso.
  */
 export async function exchangeWhoopCodeForToken(code, redirectUri) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/whoop-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ code, redirectUri })
   });
 
@@ -72,9 +76,10 @@ export async function exchangeWhoopCodeForToken(code, redirectUri) {
  * Renova o access_token da WHOOP usando o refresh_token.
  */
 export async function refreshWhoopToken(refreshToken) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/whoop-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ refreshToken })
   });
 
@@ -138,7 +143,7 @@ export async function fetchLiveWhoopBiometrics(accessToken) {
  * Gera métricas biométricas simuladas de alta fidelidade para testes e preview.
  * Modela um atleta de alto rendimento descansado.
  */
-export function generateSimulatedWhoopData(dateIso = new Date().toISOString().slice(0, 10)) {
+export function generateSimulatedWhoopData(dateIso = localDateKey()) {
   // Determinístico baseado no dia para manter consistência nas visualizações
   const seed = dateIso.split('-').reduce((acc, part) => acc + Number(part), 0);
   const recoveryScore = 82 + (seed % 15); // Entre 82% e 96% (Verde atlético)

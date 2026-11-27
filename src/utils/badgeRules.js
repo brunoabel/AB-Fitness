@@ -14,15 +14,53 @@ const SCOPE_CATEGORIES = {
   workout: ['gym', 'consistency']
 };
 
+function maxLiftWeight(savedWeights, workouts, matcher) {
+  let maxKg = 0;
+  for (const [code, sets] of Object.entries(savedWeights || {})) {
+    if (!matcher(code.toLowerCase()) || !Array.isArray(sets)) continue;
+    for (const s of sets) {
+      const w = Number(s?.weight) || 0;
+      if (w > maxKg) maxKg = w;
+    }
+  }
+  for (const w of workouts || []) {
+    for (const [code, sets] of Object.entries(w?.exercisesData || {})) {
+      if (!matcher(code.toLowerCase()) || !Array.isArray(sets)) continue;
+      for (const s of sets) {
+        if (s?.completed === false && s?.done === false) continue;
+        const kg = Number(s?.weight) || 0;
+        if (kg > maxKg) maxKg = kg;
+      }
+    }
+  }
+  return maxKg;
+}
+
+const isBenchCode = (c) => c.includes('supino') || c.includes('bench');
+const isSquatCode = (c) => c.includes('agachamento') || c.includes('squat');
+const isDeadliftCode = (c) => c.includes('terra') || c.includes('deadlift');
+
 /**
  * Lógica pura de avaliação: dado o estado (histórico + badges já desbloqueadas) e o escopo
  * da ação que acabou de ocorrer ('run' | 'workout' | undefined para avaliar tudo, ex. no
  * arranque da app), devolve a lista de badges do catálogo recém-merecidas.
  */
-export function computeNewlyUnlockedBadges({ runs = [], workouts = [], savedWeights = {}, completedDays = [] } = {}, currentUnlocked = {}, scope) {
+export function computeNewlyUnlockedBadges({
+  runs = [],
+  workouts = [],
+  savedWeights = {},
+  completedDays = [],
+  bodyWeightKg = null,
+  currentStreak = null
+} = {}, currentUnlocked = {}, scope) {
   const newlyUnlocked = [];
   const allowedCategories = scope ? SCOPE_CATEGORIES[scope] : null;
   const totalRunKm = runs.reduce((acc, r) => acc + (Number(r.distanceKm) || 0), 0);
+  const lifetimeVolumeKg = workouts.reduce((acc, w) => acc + (Number(w.totalVolumeKg) || 0), 0);
+  const bw = Number(bodyWeightKg) > 25 ? Number(bodyWeightKg) : null;
+  const maxBenchKg = maxLiftWeight(savedWeights, workouts, isBenchCode);
+  const maxSquatKg = maxLiftWeight(savedWeights, workouts, isSquatCode);
+  const maxDeadliftKg = maxLiftWeight(savedWeights, workouts, isDeadliftCode);
 
   BADGES_CATALOG.forEach((badge) => {
     // Se já foi desbloqueada antes, pula
@@ -71,44 +109,57 @@ export function computeNewlyUnlockedBadges({ runs = [], workouts = [], savedWeig
         unlocked = workouts.length >= 1 || completedDays.length >= 1;
         break;
 
-      case 'club_100kg_bench': {
-        const isBench100 = Object.entries(savedWeights).some(([code, sets]) => {
-          const isBench = code.toLowerCase().includes('supino') || code.toLowerCase().includes('bench');
-          return isBench && sets.some((s) => Number(s.weight) >= 100);
-        });
-        unlocked = isBench100;
+      case 'club_100kg_bench':
+        unlocked = maxBenchKg >= 100;
         break;
-      }
 
-      case 'club_100kg_squat': {
-        const isSquat100 = Object.entries(savedWeights).some(([code, sets]) => {
-          const isSquat = code.toLowerCase().includes('agachamento') || code.toLowerCase().includes('squat');
-          return isSquat && sets.some((s) => Number(s.weight) >= 100);
-        });
-        unlocked = isSquat100;
+      case 'club_100kg_squat':
+        unlocked = maxSquatKg >= 100;
         break;
-      }
 
-      case 'club_100kg_deadlift': {
-        const isDeadlift100 = Object.entries(savedWeights).some(([code, sets]) => {
-          const isDeadlift = code.toLowerCase().includes('terra') || code.toLowerCase().includes('deadlift');
-          return isDeadlift && sets.some((s) => Number(s.weight) >= 100);
-        });
-        unlocked = isDeadlift100;
+      case 'club_100kg_deadlift':
+        unlocked = maxDeadliftKg >= 100;
         break;
-      }
 
       case 'tonnage_titan':
         unlocked = workouts.some((w) => (Number(w.totalVolumeKg) || 0) >= 5000);
         break;
 
+      case 'rel_bench_1x':
+        unlocked = Boolean(bw && maxBenchKg >= bw * 1.0);
+        break;
+
+      case 'rel_squat_1_5x':
+        unlocked = Boolean(bw && maxSquatKg >= bw * 1.5);
+        break;
+
+      case 'rel_deadlift_2x':
+        unlocked = Boolean(bw && maxDeadliftKg >= bw * 2.0);
+        break;
+
+      case 'lifetime_50t':
+        unlocked = lifetimeVolumeKg >= 50000;
+        break;
+
+      case 'lifetime_100t':
+        unlocked = lifetimeVolumeKg >= 100000;
+        break;
+
+      case 'lifetime_500t':
+        unlocked = lifetimeVolumeKg >= 500000;
+        break;
+
       // 3. CONSTÂNCIA
       case 'streak_iron_week':
-        unlocked = completedDays.length >= 7 || workouts.length >= 7;
+        unlocked = typeof currentStreak === 'number'
+          ? currentStreak >= 7
+          : (completedDays.length >= 7 || workouts.length >= 7);
         break;
 
       case 'streak_3_days':
-        unlocked = completedDays.length >= 3 || workouts.length >= 3;
+        unlocked = typeof currentStreak === 'number'
+          ? currentStreak >= 3
+          : (completedDays.length >= 3 || workouts.length >= 3);
         break;
 
       case 'early_bird': {

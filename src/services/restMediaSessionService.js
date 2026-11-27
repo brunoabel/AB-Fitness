@@ -9,6 +9,26 @@
 const SILENT_WAV_DATA_URI =
   'data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
 
+const LOCKSCREEN_MEDIA_KEY = 'ab_fitness_lockscreen_media_v1';
+
+/** Opt-in explícito: desativado por omissão para não pausar Spotify/Apple Music no descanso. */
+export function isLockScreenMediaEnabled() {
+  try {
+    return localStorage.getItem(LOCKSCREEN_MEDIA_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function setLockScreenMediaEnabled(enabled) {
+  try {
+    localStorage.setItem(LOCKSCREEN_MEDIA_KEY, String(Boolean(enabled)));
+  } catch {}
+  if (!enabled) {
+    restMediaSessionService.clearRestSession();
+  }
+}
+
 function formatTime(secs) {
   const s = Math.max(0, Math.round(secs || 0));
   const m = Math.floor(s / 60);
@@ -41,6 +61,7 @@ class RestMediaSessionService {
   }
 
   primeAudio() {
+    if (!isLockScreenMediaEnabled()) return;
     const el = this.ensureAudio();
     if (!el) return;
     if (el.paused) {
@@ -49,7 +70,7 @@ class RestMediaSessionService {
   }
 
   setActionHandlers({ onSkipRest, onAddRest, onTogglePause } = {}) {
-    if (!this.supported) return;
+    if (!this.supported || !isLockScreenMediaEnabled()) return;
     const set = (action, handler) => {
       try {
         navigator.mediaSession.setActionHandler(action, handler || null);
@@ -65,7 +86,7 @@ class RestMediaSessionService {
 
   // Chamado a cada segundo (ou ao pausar/retomar) com o estado atual do descanso
   updateRestSession({ timeLeft, totalSeconds, exerciseName, nextSetInfo, paused = false } = {}) {
-    if (!this.supported) return;
+    if (!this.supported || !isLockScreenMediaEnabled()) return;
     this.primeAudio();
     try {
       const title = `${formatTime(timeLeft)} · ${paused ? 'Descanso em pausa' : 'Descanso'}${exerciseName ? ` (${exerciseName})` : ''}`;
@@ -93,7 +114,7 @@ class RestMediaSessionService {
 
   // Descanso terminou: título de celebração no ecrã de bloqueio
   markFinished({ exerciseName } = {}) {
-    if (!this.supported) return;
+    if (!this.supported || !isLockScreenMediaEnabled()) return;
     try {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: 'Descanso concluído! Inicia a próxima série',

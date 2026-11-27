@@ -418,7 +418,8 @@ export async function listAthletePosts(targetUserId) {
         .from('athlete_posts')
         .select('*')
         .eq('user_id', targetUserId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
       if (!error && data) posts = data;
     } catch {}
   }
@@ -435,23 +436,23 @@ export async function listAthletePosts(targetUserId) {
 export async function listFeedPosts() {
   const local = getLocalPosts();
   let serverPosts = [];
-  try {
-    const { data } = await supabase
-      .from('athlete_posts')
-      .select('*, profiles:user_id(username, full_name, avatar_url, is_verified, role)')
-      .order('created_at', { ascending: false })
-      .limit(30);
-    if (data) {
-      serverPosts = data.map((sp) => ({
-        ...sp,
-        username: sp.profiles?.username,
-        full_name: sp.profiles?.full_name,
-        avatar_url: sp.profiles?.avatar_url,
-        is_verified: sp.profiles?.is_verified,
-        is_ceo: sp.profiles?.role === 'ceo'
-      }));
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('get_friend_posts', { max_items: 30 });
+      if (!rpcErr && Array.isArray(rpcData)) {
+        serverPosts = rpcData;
+      } else {
+        const { data } = await supabase
+          .from('athlete_posts')
+          .select('id, user_id, image_url, caption, respect_count, created_at')
+          .order('created_at', { ascending: false })
+          .limit(30);
+        if (data) serverPosts = data;
+      }
+    } catch (err) {
+      console.warn('Falha ao listar posts do feed:', err);
     }
-  } catch {}
+  }
 
   const mergedMap = new Map();
   [...serverPosts, ...local].forEach((p) => {
@@ -505,55 +506,77 @@ export async function listDirectMessages(currentUserId, friendId) {
     try {
       const { data, error } = await supabase
         .from('friend_messages')
-        .select('*')
+        .select('id, sender_id, receiver_id, content, created_at, read_at')
         .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUserId})`)
         // As 100 mais recentes (desc + limit); a ordem cronológica é reposta no sort abaixo.
         .order('created_at', { ascending: false })
         .limit(100);
-      if (!error && data && data.length > 0) {
-        const map = new Map();
-        [...localMsgs, ...data].forEach((m) => map.set(m.id, m));
-        const combined = Array.from(map.values()).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        localStorage.setItem(key, JSON.stringify(combined));
-        return { data: combined, error: null };
+      if (!error && Array.isArray(data)) {
+        // Servidor é fonte de verdade: limpa eventuais IDs locais temporários (msg_*) para não duplicar mensagens
+        const sorted = [...data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        try {
+          localStorage.setItem(key, JSON.stringify(sorted));
+        } catch {}
+        return { data: sorted, error: null };
       }
-    } catch {}
+      if (error) return { data: localMsgs, error: error.message };
+    } catch (err) {
+      return { data: localMsgs, error: err?.message || 'Falha ao carregar mensagens.' };
+    }
   }
 
   return { data: localMsgs, error: null };
 }
 
 export async function sendDirectMessage(currentUserId, friendId, content, senderProfile = null) {
-  if (!content || !content.trim()) return { data: null, error: 'Mensagem vazia' };
+  const trimmed = (content || '').trim();
+  if (!trimmed) return { data: null, error: 'Mensagem vazia' };
   const key = getDmKey(currentUserId, friendId);
-  const newMsg = {
-    id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-    sender_id: currentUserId,
-    receiver_id: friendId,
-    content: content.trim(),
-    created_at: new Date().toISOString(),
-    sender_name: senderProfile?.full_name || 'Eu'
-  };
-
-  try {
-    const raw = localStorage.getItem(key);
-    const msgs = raw ? JSON.parse(raw) : [];
-    msgs.push(newMsg);
-    localStorage.setItem(key, JSON.stringify(msgs));
-  } catch {}
 
   if (canUseSocial(currentUserId)) {
     try {
-      const { data, error } = await supabase.from('friend_messages').insert({
-        sender_id: currentUserId,
-        receiver_id: friendId,
-        content: content.trim()
-      }).select().maybeSingle();
-      if (!error && data) {
-        newMsg.id = data.id;
+      const { data, error } = await supabase
+        .from('friend_messages')
+        .insert({
+          sender_id: currentUserId,
+          receiver_id: friendId,
+          content: trimmed
+        })
+        .select('id, sender_id, receiver_id, content, created_at, read_at')
+        .single();
+      if (error || !data) {
+        return { data: null, error: error?.message || 'Não foi possível enviar a mensagem.' };
       }
-    } catch {}
+      const savedMsg = {
+        ...data,
+        sender_name: senderProfile?.full_name || 'Eu'
+      };
+      try {
+        const raw = localStorage.getItem(key);
+        const msgs = raw ? JSON.parse(raw) : [];
+        const deduped = msgs.filter((m) => m.id !== savedMsg.id && !String(m.id || '').startsWith('msg_'));
+        deduped.push(savedMsg);
+        localStorage.setItem(key, JSON.stringify(deduped));
+      } catch {}
+      return { data: savedMsg, error: null };
+    } catch (err) {
+      return { data: null, error: err?.message || 'Erro de ligação ao enviar mensagem.' };
+    }
   }
 
-  return { data: newMsg, error: null };
+  const localMsg = {
+    id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    sender_id: currentUserId,
+    receiver_id: friendId,
+    content: trimmed,
+    created_at: new Date().toISOString(),
+    sender_name: senderProfile?.full_name || 'Eu'
+  };
+  try {
+    const raw = localStorage.getItem(key);
+    const msgs = raw ? JSON.parse(raw) : [];
+    msgs.push(localMsg);
+    localStorage.setItem(key, JSON.stringify(msgs));
+  } catch {}
+  return { data: localMsg, error: null };
 }

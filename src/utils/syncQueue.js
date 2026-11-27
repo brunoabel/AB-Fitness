@@ -15,7 +15,7 @@ export function removeJobByKey(list, key) {
   return (Array.isArray(list) ? list : []).filter((j) => j.key !== key);
 }
 
-function readQueue(storageKey) {
+export function readQueue(storageKey) {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(storageKey);

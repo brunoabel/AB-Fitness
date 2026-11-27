@@ -37,14 +37,14 @@ export default function CoachChatMessage({
 
       <div className={`max-w-[85%] sm:max-w-[78%] space-y-2.5 ${isUser ? 'items-end' : 'items-start'}`}>
         <div
-          className={`p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+          className={`p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
             isUser
-              ? 'bg-accent/70 text-white font-medium'
+              ? 'bg-accent border border-accent-hover text-white font-medium'
               : msg.isQuotaError
                 ? 'bg-surface-2 text-zinc-100 border-l-2 border-accent-hover'
                 : msg.isError
                 ? 'bg-rose-950/40 text-rose-300 border border-rose-800/60'
-                : 'bg-surface-2 text-zinc-100 border border-white/10'
+                : 'bg-surface text-zinc-100 border border-white/[0.08]'
           }`}
         >
           {msg.content}
@@ -57,7 +57,7 @@ export default function CoachChatMessage({
                   if (onOpenAuth) onOpenAuth();
                   onClose();
                 }}
-                className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-colors cursor-pointer"
               >
                 <LogIn className="w-4 h-4 stroke-[2]" />
                 <span>Iniciar Sessão no AB Fitness</span>
@@ -70,7 +70,7 @@ export default function CoachChatMessage({
               <button
                 type="button"
                 onClick={onUpgrade}
-                className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-colors cursor-pointer"
               >
                 Ver o AB Fitness PRO
               </button>
@@ -83,7 +83,7 @@ export default function CoachChatMessage({
                 type="button"
                 onClick={onRetry}
                 disabled={isLoading}
-                className="w-full py-2 px-3 rounded-lg bg-primary text-app font-semibold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 px-4 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-colors cursor-pointer disabled:opacity-50"
               >
                 <RotateCcw className="w-3.5 h-3.5 stroke-[2]" />
                 <span>Tentar Novamente</span>

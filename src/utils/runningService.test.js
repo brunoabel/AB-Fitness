@@ -206,6 +206,25 @@ describe('AB Running Club — Motor GPS, Filtro de Ruído, Distância e Pace', (
       assert.ok(typeof splits[0].lat === 'number' && typeof splits[0].lng === 'number');
       assert.ok(partial.meters >= 195 && partial.meters <= 205);
     });
+
+    it('deve descontar intervalos de pausa do tempo dos splits (computeSplits com pausedIntervals)', () => {
+      const t0 = 1700000000000;
+      const dLat500m = 500 / 111195;
+      const dLat600m = 600 / 111195;
+      // 500m em 150s, pausa de 60s parado, +600m em 180s -> marca de 1.000m aos 360s corridos menos 60s de pausa = 300s (5'00"/km)
+      const pts = [
+        { lat: 38.7000, lng: -9.1500, timestamp: t0 },
+        { lat: 38.7000 + dLat500m, lng: -9.1500, timestamp: t0 + 150000 },
+        { lat: 38.7000 + dLat500m, lng: -9.1500, timestamp: t0 + 210000 },
+        { lat: 38.7000 + dLat500m + dLat600m, lng: -9.1500, timestamp: t0 + 390000 }
+      ];
+      const pausedIntervals = [{ start: t0 + 150000, end: t0 + 210000 }];
+
+      const { splits } = computeSplits(pts, pausedIntervals);
+      assert.equal(splits.length, 1);
+      assert.ok(Math.abs(splits[0].durationSeconds - 300) <= 2, `Esperado ~300s líquidos, obtido ${splits[0].durationSeconds}s`);
+      assert.equal(splits[0].pace, `5'00" /km`);
+    });
   });
 
   describe('6. Simplificação de Rota Ramer-Douglas-Peucker (simplifyRoute)', () => {

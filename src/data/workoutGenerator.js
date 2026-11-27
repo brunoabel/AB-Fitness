@@ -1,14 +1,13 @@
 /**
- * AB FITNESS — GERADOR CIENTÍFICO DE TREINOS & BANCO DE DADOS ANATÔMICO
- * Baseado na literatura de ponta em fisiologia do exercício:
- * - Brad Schoenfeld, PhD (Science and Development of Muscle Hypertrophy)
- * - Dr. Mike Israetel / Renaissance Periodization (Volume Landmarks - MEV / MAV / MRV)
- * - Eric Helms, PhD (The Muscle and Strength Pyramids)
- * - Menno Henselmans (Scientific Bodybuilding & Optimal Rest Intervals)
- * - NSCA (National Strength and Conditioning Association)
+ * AB FITNESS — MODELOS DE PLANO SEMANAL E BANCO DE EXERCÍCIOS DETALHADOS
+ * Os modelos (3, 4, 5 e 6 dias) definem a escolha e a ordem dos exercícios de cada sessão.
+ * Séries, repetições, descanso e RIR vêm do motor (src/engine/), e o plano final é ajustado e validado
+ * em planFromProfile.js. Critérios e referências: docs/TRAINING_SCIENCE_AUDIT.md.
  */
 
 import { findExerciseIn100 } from './exercises100.js';
+import { getExerciseMeta } from '../engine/exerciseMeta.js';
+import { prescribe } from '../engine/prescription.js';
 
 // ==============================================================================
 // 1. BANCO DE DADOS MESTRE DE EXERCÍCIOS (ANATOMIA, EXECUÇÃO E SEGURANÇA)
@@ -37,7 +36,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Inspire controladamente na descida; expire com força na subida.',
     commonMistake: 'Abrir demais os cotovelos em cruz (90°), sobrecarregando a articulação do ombro e o manguito rotador.',
-    evidenceTip: 'O uso de halteres permite maior amplitude de alongamento do que a barra fixa, recrutando até 14% mais fibras do peitoral no ponto inferior (Schoenfeld, 2020).'
+    evidenceTip: 'Os halteres permitem descer um pouco mais e ajustar a trajetória de cada braço, o que dá mais alongamento ao peitoral no fundo do movimento.'
   },
   'supino-inclinado-halteres': {
     id: 'supino-inclinado-halteres',
@@ -59,7 +58,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Puxe o ar na descida profunda; solte o ar na extensão dos braços.',
     commonMistake: 'Inclinar o banco em 60°, transferindo quase todo o esforço para os deltoides anteriores.',
-    evidenceTip: 'Estudos eletromiográficos comprovam que 30° de inclinação é o ponto ótimo de ativação da cabeça clavicular sem fadiga excessiva do deltoide.'
+    evidenceTip: 'O banco inclinado desloca parte do trabalho para a porção clavicular do peitoral; inclinações moderadas, de cerca de 30° a 45°, são as mais usadas para isso.'
   },
   'crucifixo-reto-cabos': {
     id: 'crucifixo-reto-cabos',
@@ -81,7 +80,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Inspire ao abrir os cabos; expire ao unir as mãos à frente.',
     commonMistake: 'Flexionar e estender os cotovelos como se fosse um supino, perdendo a tensão contínua do cabo.',
-    evidenceTip: 'Os cabos mantêm tensão mecânica constante mesmo no pico de contração, ao contrário dos halteres livres onde a gravidade zera a tensão no topo.'
+    evidenceTip: 'Os cabos mantêm tensão ao longo de todo o arco, incluindo no fecho, onde os halteres perdem quase toda a resistência.'
   },
 
   // --- DORSAL & COSTAS ---
@@ -107,7 +106,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Expire ao puxar a barra ao queixo/peito; inspire na subida controlada.',
     commonMistake: 'Puxar a barra por trás do pescoço (risco à coluna cervical) ou dar solavancos para trás com a lombar.',
-    evidenceTip: 'A puxada pela frente ativa 20% mais o grande dorsal com segurança anatômica articular total.'
+    evidenceTip: 'A puxada pela frente dá boa amplitude aos ombros e é mais confortável para a articulação do que a puxada atrás da nuca.'
   },
   'remada-curvada-halteres': {
     id: 'remada-curvada-halteres',
@@ -130,7 +129,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Expire na subida da carga; inspire na descida.',
     commonMistake: 'Arredondar a coluna toracolombar em arco, arriscando hérnias de disco.',
-    evidenceTip: 'A remada com tronco a 45° é a melhor construtora de densidade muscular e espessura escapular.'
+    evidenceTip: 'Com o tronco inclinado, a remada trabalha dorsais, romboides e trapézio médio, a base da espessura das costas.'
   },
   'remada-baixa-triangulo': {
     id: 'remada-baixa-triangulo',
@@ -177,7 +176,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Inspire antes de descer travando o ar no abdômen (Manobra de Valsalva); expire ao passar do ponto crítico da subida.',
     commonMistake: 'Deixar os joelhos colapsarem para dentro (valgo dinâmico) ao fazer esforço na subida.',
-    evidenceTip: 'O agachamento profundo estimula até 3x mais os glúteos e quadríceps do que o agachamento curto (Hartmann et al., 2013).'
+    evidenceTip: 'Agachar com amplitude completa trabalha glúteos e adutores em comprimentos maiores do que o agachamento curto; num estudo de Kubo et al. (2019) isso deu mais hipertrofia nesses músculos.'
   },
   'passada-walking-lunges': {
     id: 'passada-walking-lunges',
@@ -221,7 +220,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Inspire fundo no topo; desça segurando a postura; expire ao contrair os glúteos na subida.',
     commonMistake: 'Flexionar a coluna torácica para tentar alcançar o chão com os pesos.',
-    evidenceTip: 'O RDL com foco excêntrico lento reduz em até 65% a incidência de estiramentos nos isquiotibiais.'
+    evidenceTip: 'O RDL fortalece os posteriores em alongamento e treina a dobradiça do quadril. Para prevenir lesões dos posteriores, o exercício com melhor evidência é o nórdico.'
   },
   'elevacao-pelvica-quadril': {
     id: 'elevacao-pelvica-quadril',
@@ -243,7 +242,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Inspire na descida; expire com força máxima no topo da extensão pélvica.',
     commonMistake: 'Hiperextender a lombar no topo em vez de contrair a bacia em retroversão pélvica.',
-    evidenceTip: 'Estudos de Contreras et al. mostram que a elevação pélvica gera a maior ativação eletromiográfica de glúteo de todo o treinamento resistido.'
+    evidenceTip: 'A elevação pélvica mostra mais atividade elétrica do glúteo máximo do que o agachamento (Contreras et al., 2015); atividade elétrica não é o mesmo que crescimento, por isso vale a pena usar os dois.'
   },
 
   // --- OMBROS & DELTOIDES ---
@@ -289,7 +288,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Expire ao subir os braços lateralmente; inspire na descida.',
     commonMistake: 'Usar pesos excessivos e balançar o corpo com impulso das pernas.',
-    evidenceTip: 'O deltoide lateral responde melhor a cadências controladas e repetições mais altas (12 a 18 reps).'
+    evidenceTip: 'O deltoide lateral costuma responder bem a séries perto da falha em faixas de repetições médias a altas, com a descida controlada.'
   },
   'face-pull-corda': {
     id: 'face-pull-corda',
@@ -357,7 +356,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Expire ao empurrar a corda; inspire na subida até 90°.',
     commonMistake: 'Deixar os cotovelos subirem junto com a corda, transformando em puxada.',
-    evidenceTip: 'O tríceps compõe 60% do volume total do braço; treiná-lo com boa técnica é o segredo para braços fortes.'
+    evidenceTip: 'O tríceps é o maior músculo do braço; treiná-lo bem conta muito para o tamanho do braço.'
   },
 
   // --- ABDÔMEN & CORE ---
@@ -381,7 +380,7 @@ export const EXERCISE_DATABASE = {
     ],
     breathing: 'Respiração curta e ritmada pelo diafragma mantendo a parede abdominal rígida.',
     commonMistake: 'Deixar o quadril despencar em direção ao chão, sobrecarregando a coluna lombar.',
-    evidenceTip: 'A prancha com contração ativa gera até 4x mais recrutamento de fibras do core profundo do que pranchas passivas longas.'
+    evidenceTip: 'Na prancha, contrair ativamente glúteos e abdômen torna o exercício mais exigente do que segurar a posição de forma passiva.'
   }
 };
 
@@ -392,63 +391,41 @@ export const EXERCISE_DATABASE = {
 export function generatePersonalizedWorkoutPlan({
   goal = 'hypertrophy', // 'hypertrophy' | 'fat_loss' | 'strength' | 'athlete' | 'health'
   experience = 'beginner', // 'beginner' | 'intermediate' | 'advanced'
-  frequencyDays = 4, // 3 | 4 | 5 | 6
+  frequencyDays = 4, // 2 | 3 | 4 | 5 | 6
   focusMuscle = 'balanced', // 'balanced' | 'arms_chest' | 'legs_glutes' | 'back_posture'
-  duration = 'standard', // 'express' (30-40) | 'standard' (45-60) | 'high_volume' (60-75)
+  // A duração da sessão é aplicada pelo balanceamento de volume em planFromProfile (src/engine/balancer.js)
   splitPreference = 'auto' // 'auto' | 'ppl' | 'upper_lower' | 'arnold' | 'full_body'
 }) {
-  // Ajuste de parâmetros científicos por objetivo
+  // Textos por objetivo. Séries, reps, descanso e RIR vêm do motor (src/engine/prescription.js)
   const goalParams = {
     hypertrophy: {
-      reps: experience === 'beginner' ? 10 : 8,
-      sets: experience === 'advanced' ? 4 : 3,
-      rest: 90,
       intensity: 'Volume Alto & Tensão Mecânica',
       quote: 'Foco na contração muscular e progressão contínua de cargas.',
       badge: 'Hipertrofia Padrão Ouro'
     },
     fat_loss: {
-      reps: 12,
-      sets: 3,
-      rest: 60,
       intensity: 'Alta Densidade & Gasto Calórico',
       quote: 'Preservação de massa magra com alta queima metabólica.',
       badge: 'Definição & Queima'
     },
     strength: {
-      reps: 5,
-      sets: experience === 'beginner' ? 3 : 5,
-      rest: 150,
       intensity: 'Carga Máxima & Recrutamento Neural',
       quote: 'Força nos movimentos básicos constrói a base de tudo.',
       badge: 'Força Pura'
     },
     athlete: {
-      reps: 8,
-      sets: 3,
-      rest: 90,
       intensity: 'Potência, Agilidade & Prevenção',
       quote: 'Equilíbrio unilateral e explosão para performance máxima.',
       badge: 'Performance de Atleta'
     },
     health: {
-      reps: 12,
-      sets: 3,
-      rest: 60,
       intensity: 'Postura, Equilíbrio & Longevidade',
       quote: 'Corpo funcional, articulações saudáveis e energia diária.',
       badge: 'Saúde & Longevidade'
     }
   }[goal] || {
-    reps: 10, sets: 3, rest: 90, intensity: 'Equilibrada', quote: 'Constância diária.', badge: 'Fitness'
+    intensity: 'Equilibrada', quote: 'Constância diária.', badge: 'Fitness'
   };
-
-  // Ajuste por duração da sessão
-  if (duration === 'express') {
-    goalParams.sets = Math.max(2, goalParams.sets - 1);
-  } else if (duration === 'high_volume') {
-    goalParams.sets = goalParams.sets + 1;
-  }
 
   // Identificação do foco muscular
   const focusLabels = {
@@ -482,18 +459,94 @@ export function generatePersonalizedWorkoutPlan({
     } : null);
 
     if (!base) return null;
+    // Prescrição pelo motor: classe do exercício x objetivo x nível. Sem carga inicial inventada: a 1.ª sessão define-a.
+    const p = prescribe(getExerciseMeta(found100?.slug || key), { goal, experience, timedReps: found100?.reps });
     return {
       ...base,
-      suggestedReps: customReps || found100?.reps || goalParams.reps,
-      defaultSets: customSets || found100?.series || goalParams.sets,
-      restTime: customRest || found100?.descanso_seg || goalParams.rest,
-      suggestedWeight: experience === 'advanced' ? 16 : experience === 'intermediate' ? 12 : 8
+      suggestedReps: customReps || p.reps,
+      defaultSets: customSets || p.sets,
+      restTime: customRest || p.restTime,
+      repRange: p.repRange,
+      targetRir: p.targetRir,
+      rirFloor: p.rirFloor,
+      progressionIncrement: p.increment,
+      repClass: p.repClass
     };
   };
 
   // -------------------------------------------------------------
   // DIVISÃO DE 3 DIAS NA SEMANA (FULL BODY A / B / C CIENTÍFICO)
   // -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // DIVISÃO DE 2 DIAS NA SEMANA (FULL BODY A / B)
+  // Cada sessão cobre os 6 padrões principais; o motor ajusta as séries ao tempo e ao nível.
+  // -------------------------------------------------------------
+  if (frequencyDays === 2) {
+    const rest = (dayId, name, shortName) => ({
+      dayId, name, shortName,
+      title: 'Recuperação Ativa & Mobilidade',
+      focus: 'Regeneração Muscular & Descanso',
+      duration: '20 min',
+      intensity: 'Baixa',
+      badge: 'Regeneração',
+      color: 'from-emerald-400 to-teal-500',
+      description: 'O músculo cresce durante o descanso. Hidrate-se e faça uma caminhada leve.',
+      isRestDay: true,
+      exercises: []
+    });
+    return [
+      {
+        dayId: 1,
+        name: 'Segunda-feira',
+        shortName: 'Seg',
+        title: 'Full Body A: Agachamento & Empurrar',
+        focus: 'Quadríceps, Peitoral, Dorsais & Core',
+        duration: '60 min',
+        intensity: goalParams.intensity,
+        badge: goalParams.badge,
+        color: 'from-sky-400 to-sky-500',
+        description: 'Primeira sessão de corpo inteiro: agachamento, supino e puxada como base.',
+        isRestDay: false,
+        exercises: [
+          getEx('agachamento-livre-barra'),
+          getEx('supino-reto-barra'),
+          getEx('puxada-frontal-aberta'),
+          getEx('cadeira-flexora'),
+          getEx('elevacao-lateral-halteres'),
+          getEx('rosca-direta-barra'),
+          getEx('prancha-abdominal-frontal')
+        ].filter(Boolean)
+      },
+      rest(2, 'Terça-feira', 'Ter'),
+      rest(3, 'Quarta-feira', 'Qua'),
+      {
+        dayId: 4,
+        name: 'Quinta-feira',
+        shortName: 'Qui',
+        title: 'Full Body B: Dobradiça & Puxar',
+        focus: 'Posteriores, Costas, Ombros & Tríceps',
+        duration: '60 min',
+        intensity: goalParams.intensity,
+        badge: goalParams.badge,
+        color: 'from-sky-400 to-sky-500',
+        description: 'Segunda sessão de corpo inteiro: stiff, remada e desenvolvimento como base.',
+        isRestDay: false,
+        exercises: [
+          getEx('stiff-com-barra'),
+          getEx('leg-press-45'),
+          getEx('supino-inclinado-halteres'),
+          getEx('remada-baixa-cabo'),
+          getEx('desenvolvimento-com-halteres'),
+          getEx('triceps-corda'),
+          getEx('panturrilha-em-pe-maquina')
+        ].filter(Boolean)
+      },
+      rest(5, 'Sexta-feira', 'Sex'),
+      rest(6, 'Sábado', 'Sáb'),
+      rest(0, 'Domingo', 'Dom')
+    ];
+  }
+
   if (frequencyDays === 3) {
     return [
       {
@@ -513,7 +566,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('agachamento-livre-barra'),
           getEx('puxada-frontal-aberta'),
           getEx('desenvolvimento-militar'),
-          getEx('cadeira-extensora'),
+          getEx('cadeira-flexora'),
           getEx('prancha-abdominal-frontal')
         ].filter(Boolean)
       },
@@ -545,6 +598,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-barra'),
+          getEx('leg-press-45'),
           getEx('remada-curvada-barra'),
           getEx('supino-inclinado-halteres'),
           getEx('elevacao-lateral-halteres'),
@@ -583,7 +637,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('crossover-polia-alta'),
           getEx('remada-unilateral-serrote'),
-          getEx('face-pull'),
+          getEx('elevacao-lateral-polia'),
           getEx('rosca-martelo-cruzada-cross-body'),
           getEx('triceps-corda')
         ].filter(Boolean)
@@ -641,6 +695,7 @@ export function generatePersonalizedWorkoutPlan({
           getEx('puxada-frontal-aberta'),
           getEx('desenvolvimento-militar'),
           getEx('remada-baixa-cabo'),
+          getEx('elevacao-lateral-halteres'),
           getEx('triceps-corda'),
           getEx('rosca-direta-barra')
         ].filter(Boolean)
@@ -660,8 +715,9 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('passada-walking-lunges'),
+          getEx('cadeira-flexora'),
           getEx('cadeira-extensora'),
+          getEx('cadeira-abdutora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('prancha-abdominal-frontal')
         ].filter(Boolean)
@@ -694,6 +750,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('supino-inclinado-halteres'),
+          getEx('puxada-com-triangulo'),
           getEx('remada-curvada-barra'),
           getEx('crucifixo-inclinado-halteres'),
           getEx('elevacao-lateral-polia'),
@@ -715,7 +772,7 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-barra'),
-          getEx('stiff-com-halteres'),
+          getEx('agachamento-bulgaro'),
           getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
           getEx('panturrilha-sentado-gemeos'),
@@ -816,7 +873,7 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('passada-walking-lunges'),
+          getEx('cadeira-flexora'),
           getEx('cadeira-extensora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('abdominal-polia-rope-crunch')
@@ -878,9 +935,9 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-halteres'),
+          getEx('agachamento-bulgaro'),
           getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
-          getEx('cadeira-abdutora'),
           getEx('panturrilha-sentado-gemeos'),
           getEx('prancha-abdominal-frontal')
         ].filter(Boolean)
@@ -964,7 +1021,7 @@ export function generatePersonalizedWorkoutPlan({
         exercises: [
           getEx('agachamento-livre-barra'),
           getEx('leg-press-45'),
-          getEx('passada-walking-lunges'),
+          getEx('cadeira-flexora'),
           getEx('cadeira-extensora'),
           getEx('panturrilha-em-pe-maquina'),
           getEx('abdominal-polia-rope-crunch')
@@ -1026,11 +1083,11 @@ export function generatePersonalizedWorkoutPlan({
         isRestDay: false,
         exercises: [
           getEx('stiff-com-halteres'),
+          getEx('agachamento-bulgaro'),
           getEx('ponte-gluteos-barra-glute-bridge'),
           getEx('mesa-flexora'),
           getEx('cadeira-abdutora'),
-          getEx('panturrilha-sentado-gemeos'),
-          getEx('prancha-abdominal-frontal')
+          getEx('panturrilha-sentado-gemeos')
         ].filter(Boolean)
       },
       {
@@ -1132,6 +1189,7 @@ export function generatePersonalizedWorkoutPlan({
       exercises: [
         getEx('crucifixo-inclinado-halteres'),
         getEx('puxada-com-triangulo'),
+        getEx('remada-baixa-cabo'),
         getEx('elevacao-lateral-polia'),
         getEx('rosca-scott-maquina'),
         getEx('triceps-pulley-barra-reta')

@@ -28,13 +28,13 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
       <div 
-        className="w-full max-w-md bg-surface rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col animate-scaleUp"
+        className="w-full max-w-md bg-app rounded-t-3xl sm:rounded-2xl border border-white/[0.08] overflow-hidden flex flex-col animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-accent/70 text-white flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-full bg-accent/60 border border-accent-hover text-white flex items-center justify-center font-bold">
               <Dumbbell className="w-4 h-4 stroke-[2.2]" />
             </div>
             <div>
@@ -76,10 +76,10 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                     setBarWeight(b.weight);
                     triggerHaptic(10);
                   }}
-                  className={`py-2 px-2 rounded-xl text-xs font-bold transition-all border cursor-pointer text-center ${
+                  className={`py-2 px-2 rounded-full text-xs font-bold transition-colors border cursor-pointer text-center ${
                     barWeight === b.weight
-                      ? 'bg-accent text-white border-accent shadow-xs'
-                      : 'bg-white/[0.03] text-zinc-300 border-white/[0.06]'
+                      ? 'bg-accent text-white border-accent-hover'
+                      : 'bg-surface text-zinc-300 border-white/[0.08] hover:border-white/20'
                   }`}
                 >
                   {b.label}
@@ -216,7 +216,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
                     ))}
                   </div>
                   {calc.remainder > 0 && (
-                    <p className="text-[11px] text-amber-500 font-semibold mt-1">
+                    <p className="text-[11px] text-zinc-300 font-semibold mt-1">
                       Aviso: sobram {calc.remainder} kg não atingíveis com o escalonamento padrão.
                     </p>
                   )}
@@ -232,7 +232,7 @@ export default function PlateCalculatorModal({ initialWeight = 60, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-white text-zinc-950 font-bold text-sm cursor-pointer"
+            className="w-full min-h-[48px] py-3 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-sm transition-colors cursor-pointer"
           >
             Entendido
           </button>

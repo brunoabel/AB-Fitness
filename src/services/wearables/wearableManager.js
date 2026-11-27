@@ -18,7 +18,9 @@ import {
 import {
   generateSimulatedStravaData,
   fetchLiveStravaBiometrics,
-  refreshStravaToken
+  refreshStravaToken,
+  pushActivityToStrava,
+  deduplicateWearableActivities
 } from './stravaService.js';
 import {
   generateSimulatedGarminData,
@@ -26,6 +28,7 @@ import {
   refreshGarminToken
 } from './garminService.js';
 import { enqueueJob, flushQueue } from '../../utils/syncQueue.js';
+import { localDateKey } from '../../utils/dateKey.js';
 
 const STORAGE_KEY_CONNECTIONS = 'ab_wearable_connections_v1';
 const STORAGE_KEY_BIOMETRICS = 'ab_wearable_biometrics_v1';
@@ -239,7 +242,7 @@ async function pushBiometricsToCloud(job) {
  * - Só usa gerador simulado quando a conexão está em modo 'simulated'.
  */
 export async function syncWearableData(userId, provider, options = {}) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateKey();
   const currentConns = getLocalConnections();
   const conn = options.connectionOverride || currentConns[provider] || null;
   let bioData = null;
@@ -309,14 +312,31 @@ export async function syncWearableData(userId, provider, options = {}) {
         last_synced_at: new Date().toISOString()
       };
     }
-  } else if (provider === 'whoop') {
-    bioData = generateSimulatedWhoopData(today);
-  } else if (provider === 'fitbit') {
-    bioData = generateSimulatedFitbitData(today);
-  } else if (provider === 'strava') {
-    bioData = generateSimulatedStravaData(today);
-  } else if (provider === 'garmin') {
-    bioData = generateSimulatedGarminData(today);
+  } else if (conn?.status === 'simulated') {
+    if (provider === 'whoop') {
+      bioData = generateSimulatedWhoopData(today);
+    } else if (provider === 'fitbit') {
+      bioData = generateSimulatedFitbitData(today);
+    } else if (provider === 'strava') {
+      bioData = generateSimulatedStravaData(today);
+    } else if (provider === 'garmin') {
+      bioData = generateSimulatedGarminData(today);
+    }
+  } else {
+    bioData = {
+      is_stale: true,
+      provider,
+      date: today,
+      recovery_score: null,
+      hrv_ms: null,
+      resting_hr_bpm: null,
+      sleep_score: null,
+      sleep_duration_seconds: null,
+      day_strain: null,
+      calories_burned: null,
+      is_simulated: false,
+      last_synced_at: new Date().toISOString()
+    };
   }
 
   if (!bioData) return null;
@@ -459,4 +479,36 @@ export function computeReadinessIndex(biometrics = {}) {
       (fitbitValid ? fitbit?.sleep_score : null) ??
       null
   };
+}
+
+export { deduplicateWearableActivities };
+
+/**
+ * Envia uma atividade concluída na AB Fitness (treino de força ou corrida) para wearables
+ * conectados com suporte a escrita (atualmente Strava `activity:write`). Falha silenciosa.
+ */
+export async function pushWorkoutToConnectedWearables(activity) {
+  const conns = getLocalConnections();
+  const strava = conns?.strava;
+  if (!strava || strava.mode === 'simulated' || !strava.access_token) {
+    return { pushed: false, reason: 'no_live_provider' };
+  }
+
+  try {
+    let res = await pushActivityToStrava(strava.access_token, activity);
+    if (!res.pushed && res.status === 401 && strava.refresh_token) {
+      const refreshed = await refreshStravaToken(strava.refresh_token);
+      if (refreshed?.access_token) {
+        conns.strava = { ...strava, access_token: refreshed.access_token, refresh_token: refreshed.refresh_token || strava.refresh_token };
+        try {
+          localStorage.setItem('ab_wearable_connections_v1', JSON.stringify(conns));
+        } catch {}
+        res = await pushActivityToStrava(refreshed.access_token, activity);
+      }
+    }
+    return res;
+  } catch (err) {
+    console.warn('Write-back Strava ignorado:', err?.message || err);
+    return { pushed: false, error: err?.message || 'network_error' };
+  }
 }

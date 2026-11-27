@@ -10,7 +10,7 @@ const LONG_PRESS_MS = 500;
  * `.focus()` por ref para fluxos de validação forçarem a edição.
  */
 const NumberField = forwardRef(function NumberField(
-  { value, placeholder, disabled, invalid, onCommit, inputMode = 'decimal', step, ariaLabel, className = '' },
+  { value, placeholder, disabled, invalid, onCommit, inputMode = 'decimal', step, min = 0, max = 999, ariaLabel, className = '' },
   ref
 ) {
   const [editing, setEditing] = useState(false);
@@ -46,6 +46,8 @@ const NumberField = forwardRef(function NumberField(
         ref={inputRef}
         type="number"
         inputMode={inputMode}
+        min={min}
+        max={max}
         step={step}
         value={value ?? ''}
         placeholder={placeholder}

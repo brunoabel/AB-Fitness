@@ -48,7 +48,7 @@ export function InvitePassBanner({
           whileTap={TAP}
           transition={SPRING}
           onClick={() => onRespond(existing, true)}
-          className="w-full min-h-[48px] rounded-full bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
+          className="w-full min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
         >
           <Check className="w-4 h-4" /> Aceitar convite de @{invitePass.username}
         </motion.button>
@@ -62,7 +62,7 @@ export function InvitePassBanner({
           whileTap={TAP}
           transition={SPRING}
           onClick={onSendInvite}
-          className="w-full min-h-[48px] rounded-full bg-white text-black font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_8px_24px_rgba(255,255,255,0.16)]"
+          className="w-full min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
         >
           <UserPlus className="w-4 h-4" strokeWidth={2.2} />
           Seguir &amp; Treinar Junto
@@ -97,7 +97,7 @@ export function PendingRequestsSection({
         className="w-full min-h-[48px] py-2.5 flex items-center justify-between gap-3 text-left cursor-pointer touch-manipulation"
       >
         <div className="flex items-center gap-2.5">
-          <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+          <span className="w-2 h-2 rounded-full bg-accent-hover shrink-0" />
           <span className="text-[13px] font-semibold text-white">
             {incoming.length > 0
               ? `${incoming.length} ${incoming.length === 1 ? 'pedido de amizade' : 'pedidos de amizade'}`

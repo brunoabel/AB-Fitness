@@ -6,7 +6,8 @@ import {
   getDefaultDurationSeconds,
   formatDurationSeconds,
   getBestHistoricalDuration,
-  calculateNextSessionPrescription
+  calculateNextSessionPrescription,
+  loadIncrement
 } from './strengthMetrics.js';
 
 describe('StrengthMetrics — Exercícios Isométricos e Temporizados', () => {
@@ -138,3 +139,27 @@ describe('StrengthMetrics — Autorregulação da Prescrição por Prontidão We
   });
 });
 
+describe('StrengthMetrics — Dupla progressão com RIR real e incremento relativo', () => {
+  const repRange = [8, 12];
+
+  it('sem RIR registado não assume nada: topo da faixa sobe carga, abaixo do topo soma reps', () => {
+    const top = calculateNextSessionPrescription([{ weight: 60, reps: 12, completed: true }, { weight: 60, reps: 12, completed: true }], { repRange });
+    assert.equal(top.type, 'OVERLOAD');
+    const mid = calculateNextSessionPrescription([{ weight: 60, reps: 10, completed: true }], { repRange });
+    assert.equal(mid.type, 'REP_BUMP');
+  });
+
+  it('topo da faixa mas abaixo da reserva alvo: não sobe carga', () => {
+    const hint = calculateNextSessionPrescription([{ weight: 60, reps: 12, rpe: 10, completed: true }], { repRange, targetRir: 2 });
+    assert.notEqual(hint.type, 'OVERLOAD');
+  });
+
+  it('incremento relativo: passo mínimo do equipamento ou percentagem da carga', () => {
+    assert.equal(loadIncrement(100, { step: 2.5, pct: 0.025 }), 2.5);
+    assert.equal(loadIncrement(200, { step: 2.5, pct: 0.025 }), 5);
+    assert.equal(loadIncrement(8, { step: 2, pct: 0.05 }), 2);
+    assert.equal(loadIncrement(50, { step: 0, pct: 0 }), 0);
+    const hint = calculateNextSessionPrescription([{ weight: 200, reps: 6, completed: true }], { repRange: [5, 6], increment: { step: 2.5, pct: 0.025 } });
+    assert.equal(hint.suggestedWeight, 205);
+  });
+});

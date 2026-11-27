@@ -190,7 +190,7 @@ export default function AthleteManualModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-0 sm:p-4 animate-fadeIn">
       <div 
-        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-surface text-zinc-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/[0.06] animate-slideUp transition-all select-none"
+        className="w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-app text-zinc-100 sm:rounded-2xl flex flex-col overflow-hidden border border-white/[0.08] animate-slideUp select-none"
         onClick={(e) => e.stopPropagation()}
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -200,11 +200,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* CABEÇALHO SUPERIOR FIXO: Voltar, Paginação & Todos os Manuais */}
         {/* ========================================================= */}
-        <div className="p-3.5 sm:p-4 border-b border-white/[0.06] bg-surface flex items-center justify-between gap-2 shrink-0">
+        <div className="p-3.5 sm:p-4 border-b border-white/[0.06] bg-app flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="h-9 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
+              className="h-9 px-3 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold active:scale-95 transition-colors cursor-pointer border border-white/[0.08]"
               title="Voltar"
               aria-label="Voltar para a aplicação"
             >
@@ -213,7 +213,7 @@ export default function AthleteManualModal({ onClose }) {
             </button>
 
             <div className="flex items-center gap-2 pl-1">
-              <span className="px-2 py-0.5 rounded-md bg-accent/70 text-white text-[11px] font-bold uppercase tracking-wider border border-accent-hover">
+              <span className="px-2.5 py-0.5 rounded-full bg-accent/70 text-white text-[11px] font-bold uppercase tracking-wider border border-accent-hover">
                 {currentIndex + 1} de {tabOptions.length}
               </span>
               <span className="font-bold text-xs text-zinc-200 hidden sm:inline truncate max-w-[200px]">
@@ -229,7 +229,7 @@ export default function AthleteManualModal({ onClose }) {
                 setShowIndexSheet(true);
                 triggerHaptic(10);
               }}
-              className="h-9 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.08] text-zinc-200 hover:text-white flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
+              className="h-9 px-3.5 rounded-full bg-surface hover:bg-surface-2 text-zinc-200 hover:text-white flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-colors cursor-pointer border border-white/[0.08]"
               title="Ver Todos os Manuais"
             >
               <ListFilter className="w-3.5 h-3.5 text-white" />
@@ -238,7 +238,7 @@ export default function AthleteManualModal({ onClose }) {
 
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.08] text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer border border-white/[0.08]"
+              className="w-9 h-9 rounded-full bg-surface hover:bg-surface-2 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 transition-colors cursor-pointer border border-white/[0.08]"
               title="Fechar"
               aria-label="Fechar"
             >
@@ -250,11 +250,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* CARROSSEL DE SELEÇÃO RÁPIDA DE MANUAIS (Setas + Tabs) */}
         {/* ========================================================= */}
-        <div className="px-2 py-2 bg-surface-2 border-b border-white/[0.06] flex items-center gap-1.5 shrink-0">
+        <div className="px-2 py-2 bg-app border-b border-white/[0.06] flex items-center gap-1.5 shrink-0">
           <button
             onClick={goToPrevManual}
             disabled={currentIndex === 0}
-            className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-colors cursor-pointer"
             title="Manual Anterior"
             aria-label="Manual Anterior"
           >
@@ -276,17 +276,17 @@ export default function AthleteManualModal({ onClose }) {
                   key={tab.key}
                   ref={(el) => (tabButtonRefs.current[tab.key] = el)}
                   onClick={() => switchManual(tab.key)}
-                  className={`min-h-[44px] py-1.5 px-3 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 active:scale-95 cursor-pointer border ${
+                  className={`min-h-[40px] py-1.5 px-3.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors shrink-0 active:scale-95 cursor-pointer border ${
                     isSelected
-                      ? 'bg-accent text-white border-accent shadow-sm'
-                      : 'bg-surface/80 hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 border-white/[0.06]'
+                      ? 'bg-accent text-white border-accent-hover'
+                      : 'bg-surface hover:bg-surface-2 text-zinc-400 hover:text-zinc-200 border-white/[0.08]'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-zinc-950' : 'text-zinc-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-zinc-400'}`} />
                   <span>{tab.shortLabel}</span>
                   {isUserCurrentGoal && (
                     <span 
-                      className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-zinc-950' : 'bg-emerald-400'}`} 
+                      className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-emerald-400'}`} 
                       title="O Seu Perfil Atual"
                     />
                   )}
@@ -298,7 +298,7 @@ export default function AthleteManualModal({ onClose }) {
           <button
             onClick={goToNextManual}
             disabled={currentIndex === tabOptions.length - 1}
-            className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
+            className="tap-44 w-8 h-8 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center shrink-0 active:scale-95 transition-colors cursor-pointer"
             title="Próximo Manual"
             aria-label="Próximo Manual"
           >
@@ -309,7 +309,7 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* PÍLULAS DE NAVEGAÇÃO INTERNA RÁPIDA (Saltar Secções) */}
         {/* ========================================================= */}
-        <div className="px-3 py-1.5 bg-surface border-b border-white/[0.06] overflow-x-auto flex gap-1.5 scrollbar-none text-[11px] font-semibold text-zinc-400 shrink-0">
+        <div className="px-3 py-1.5 bg-app border-b border-white/[0.06] overflow-x-auto flex gap-1.5 scrollbar-none text-[11px] font-semibold text-zinc-400 shrink-0">
           <button 
             onClick={() => scrollToSection('sec-philosophy')}
             className="px-2 py-0.5 rounded-md hover:bg-white/[0.08] hover:text-zinc-200 shrink-0 transition-colors cursor-pointer"
@@ -354,16 +354,16 @@ export default function AthleteManualModal({ onClose }) {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-200"
+          className="flex-1 p-4 sm:p-6 overflow-y-auto divide-y divide-white/[0.06] text-zinc-200"
         >
           {/* Banner do Manual Atual */}
-          <div id="sec-philosophy" className="p-4 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-white/[0.06] space-y-2 shadow-sm">
+          <div id="sec-philosophy" className="pb-5 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/[0.04] text-zinc-200 border border-white/[0.08]">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-surface text-zinc-200 border border-white/[0.08]">
                 {manual.tag}
               </span>
               {isCurrentGoal && (
-                <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
                   <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                   O Seu Perfil Atual
                 </span>
@@ -377,16 +377,15 @@ export default function AthleteManualModal({ onClose }) {
             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
               {manual.philosophy}
             </p>
-          </div>
 
-          {/* Dica de Swipe no Telemóvel */}
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 px-1">
-            <span>Dica: Deslize para a esquerda ou direita para alternar manuais</span>
-            <span className="font-mono">{currentIndex + 1}/{tabOptions.length}</span>
+            <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
+              <span>Dica: Deslize para a esquerda ou direita para alternar manuais</span>
+              <span className="font-mono">{currentIndex + 1}/{tabOptions.length}</span>
+            </div>
           </div>
 
           {/* Calculadora Interativa de Proteína & Hidratação */}
-          <div id="sec-calc" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-3 shadow-xs">
+          <div id="sec-calc" className="py-5 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
                 <Calculator className="w-4 h-4 text-white" />
@@ -400,33 +399,33 @@ export default function AthleteManualModal({ onClose }) {
                   max="160"
                   value={calcWeight}
                   onChange={(e) => setCalcWeight(Number(e.target.value) || 60)}
-                  className="w-16 text-center font-bold text-xs py-1.5 px-2 rounded-lg bg-surface border border-white/[0.08] text-white font-mono tabular-nums focus:border-accent focus:outline-none"
+                  className="w-16 text-center font-bold text-xs py-1.5 px-2 rounded-xl bg-surface border border-white/[0.08] text-white font-mono tabular-nums focus:border-accent-hover focus:outline-none"
                 />
                 <span className="text-xs text-zinc-400 font-semibold font-sans">kg</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-center text-xs">
-              <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
+            <div className="grid grid-cols-2 divide-x divide-white/[0.08] border-y border-white/[0.08] py-3 text-center text-xs">
+              <div className="px-3">
                 <span className="text-[11px] text-zinc-400 font-semibold uppercase block">
                   Proteína Recomendada
                 </span>
                 <span className="font-display text-lg font-semibold text-white block mt-0.5 tabular-nums tracking-[-0.02em]">
                   {getProteinTarget()} <span className="text-xs font-medium text-zinc-400">g/dia</span>
                 </span>
-                <span className="text-[11px] text-zinc-400 mt-0.5 block">
+                <span className="text-[11px] text-zinc-500 mt-0.5 block">
                   Para reconstrução muscular
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-surface/90 border border-white/[0.06]">
+              <div className="px-3">
                 <span className="text-[11px] text-zinc-400 font-semibold uppercase block">
                   Hidratação Mínima
                 </span>
                 <span className="font-display text-lg font-semibold text-accent-hover block mt-0.5 tabular-nums tracking-[-0.02em]">
                   {getWaterTarget()} <span className="text-xs font-medium text-zinc-400">L/dia</span>
                 </span>
-                <span className="text-[11px] text-zinc-400 mt-0.5 block">
+                <span className="text-[11px] text-zinc-500 mt-0.5 block">
                   Água para células e tendões
                 </span>
               </div>
@@ -434,18 +433,18 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Estrutura & Divisão do Treino */}
-          <div id="sec-split" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-3 shadow-xs">
+          <div id="sec-split" className="py-5 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <Layers className="w-4 h-4 text-white" />
               <span>Diretrizes de Volume & Carga</span>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="divide-y divide-white/[0.06] text-xs">
               {manual.weeklySplit.map((split, i) => (
-                <div key={i} className="p-3 rounded-xl bg-surface/80 border border-white/[0.06]">
+                <div key={i} className="py-2.5 first:pt-0 last:pb-0">
                   <div className="flex items-center justify-between mb-1">
                     <strong className="text-white font-bold">{split.day}</strong>
-                    <span className="text-[11px] font-bold text-white">{split.focus}</span>
+                    <span className="text-[11px] font-bold text-zinc-300">{split.focus}</span>
                   </div>
                   <p className="text-zinc-400 leading-relaxed text-[11px]">
                     {split.detail}
@@ -456,29 +455,29 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Estratégia Nutricional */}
-          <div id="sec-nutrition" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2.5 shadow-xs">
+          <div id="sec-nutrition" className="py-5 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <Droplets className="w-4 h-4 text-accent-hover" />
               <span>Plano Nutricional & Hidratação</span>
             </div>
 
-            <div className="space-y-2 text-xs text-zinc-300">
-              <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
+            <div className="divide-y divide-white/[0.06] text-xs text-zinc-300">
+              <div className="py-2.5 first:pt-0">
                 <strong className="text-white block font-semibold mb-0.5">Energia & Calorias:</strong>
                 <span className="text-zinc-400">{manual.nutritionStrategy.calories}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
+              <div className="py-2.5">
                 <strong className="text-white block font-semibold mb-0.5">Proteínas & Aminoácidos:</strong>
                 <span className="text-zinc-400">{manual.nutritionStrategy.protein}</span>
               </div>
               {manual.nutritionStrategy.carbs && (
-                <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
+                <div className="py-2.5">
                   <strong className="text-white block font-semibold mb-0.5">Hidratos de Carbono & Glicogénio:</strong>
                   <span className="text-zinc-400">{manual.nutritionStrategy.carbs}</span>
                 </div>
               )}
               {manual.nutritionStrategy.matchMeal && (
-                <div className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
+                <div className="py-2.5 last:pb-0">
                   <strong className="text-white block font-semibold mb-0.5">Refeição Pré-Partida (Matchday):</strong>
                   <span className="text-zinc-400">{manual.nutritionStrategy.matchMeal}</span>
                 </div>
@@ -487,15 +486,15 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Prevenção de Lesões & Saúde Articular */}
-          <div id="sec-injuries" className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2.5 shadow-xs">
+          <div id="sec-injuries" className="py-5 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
               <HeartPulse className="w-4 h-4 text-rose-500" />
               <span>Prevenção de Lesões & Blindagem Articular</span>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="divide-y divide-white/[0.06] text-xs">
               {manual.injuryPrevention.map((item, idx) => (
-                <div key={idx} className="p-2.5 rounded-xl bg-surface/60 border border-white/[0.06]">
+                <div key={idx} className="py-2.5 first:pt-0 last:pb-0">
                   <strong className="text-white font-bold block mb-0.5">{item.name}</strong>
                   <span className="text-zinc-400 leading-relaxed block">{item.solution}</span>
                 </div>
@@ -504,16 +503,16 @@ export default function AthleteManualModal({ onClose }) {
           </div>
 
           {/* Rotina de Recuperação & Sono */}
-          <div className="p-4 rounded-2xl bg-surface border border-white/[0.06] space-y-2">
+          <div className="pt-5 space-y-2.5">
             <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-              <Moon className="w-4 h-4 text-amber-400" />
+              <Moon className="w-4 h-4 text-zinc-300" />
               <span>Regeneração & Sono</span>
             </div>
 
             <ul className="space-y-1.5 text-xs text-zinc-300">
               {manual.recoveryRoutine.map((rec, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-hover mt-1.5 shrink-0" />
                   <span className="text-zinc-400">{rec}</span>
                 </li>
               ))}
@@ -524,11 +523,11 @@ export default function AthleteManualModal({ onClose }) {
         {/* ========================================================= */}
         {/* RODAPÉ DOCK FIXO: Anterior, Adotar Objetivo & Próximo */}
         {/* ========================================================= */}
-        <div className="p-3 sm:p-4 border-t border-white/[0.06] bg-surface flex items-center justify-between gap-2 shrink-0">
+        <div className="p-3 sm:p-4 border-t border-white/[0.06] bg-app flex items-center justify-between gap-2 shrink-0">
           <button
             onClick={goToPrevManual}
             disabled={currentIndex === 0}
-            className="py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-white/[0.08] shrink-0"
+            className="py-2.5 px-3.5 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-colors border border-white/[0.08] shrink-0"
             title="Manual Anterior"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -537,10 +536,10 @@ export default function AthleteManualModal({ onClose }) {
 
           <button
             onClick={handleAdoptGoal}
-            className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer border ${
+            className={`flex-1 py-2.5 px-4 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer border ${
               isCurrentGoal || justSavedGoal
-                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-xs' 
-                : 'bg-accent text-white hover:bg-accent-hover border-accent shadow-sm font-bold'
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                : 'bg-accent text-white hover:bg-accent-hover border-accent-hover font-bold'
             }`}
           >
             {isCurrentGoal || justSavedGoal ? (
@@ -559,7 +558,7 @@ export default function AthleteManualModal({ onClose }) {
           <button
             onClick={goToNextManual}
             disabled={currentIndex === tabOptions.length - 1}
-            className="py-2.5 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-all border border-white/[0.08] shrink-0"
+            className="py-2.5 px-3.5 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none flex items-center gap-1.5 text-xs font-semibold cursor-pointer active:scale-95 transition-colors border border-white/[0.08] shrink-0"
             title="Próximo Manual"
           >
             <span className="hidden xs:inline">Próximo</span>
@@ -573,10 +572,10 @@ export default function AthleteManualModal({ onClose }) {
         {showIndexSheet && (
           <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col justify-end sm:justify-center p-0 sm:p-6 animate-fadeIn">
             <div 
-              className="bg-surface text-zinc-100 rounded-t-2xl sm:rounded-2xl border border-white/[0.06] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp shadow-2xl"
+              className="bg-app text-zinc-100 rounded-t-3xl sm:rounded-2xl border border-white/[0.08] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-2">
+              <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-app">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-white" />
                   <h4 className="font-bold text-sm text-white">
@@ -585,7 +584,7 @@ export default function AthleteManualModal({ onClose }) {
                 </div>
                 <button
                   onClick={() => setShowIndexSheet(false)}
-                  className="tap-44 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
+                  className="tap-44 w-8 h-8 rounded-full bg-surface hover:bg-surface-2 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -605,13 +604,13 @@ export default function AthleteManualModal({ onClose }) {
                         switchManual(opt.key);
                         setShowIndexSheet(false);
                       }}
-                      className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer active:scale-[0.99] ${
+                      className={`w-full p-3 rounded-2xl border text-left flex items-start gap-3 transition-colors cursor-pointer active:scale-[0.99] ${
                         isSelected
-                          ? 'bg-accent/70 border-accent text-white'
-                          : 'bg-surface/60 hover:bg-white/[0.08] border-white/[0.06] text-zinc-300'
+                          ? 'bg-accent/70 border-accent-hover text-white'
+                          : 'bg-surface hover:bg-surface-2 border-white/[0.08] text-zinc-300'
                       }`}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
                         isSelected ? 'bg-accent text-white' : 'bg-white/[0.04] text-zinc-400'
                       }`}>
                         <Icon className="w-4 h-4 stroke-[2]" />

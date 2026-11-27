@@ -165,20 +165,16 @@ export default function SidebarDrawer({
           />
 
           <motion.aside
-            className="relative h-full w-[88%] max-w-[368px] overflow-y-auto overscroll-contain bg-surface/95 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] shadow-[16px_0_48px_rgba(0,0,0,0.85)] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),20px)] will-change-transform select-none"
+            className="relative h-full w-[88%] max-w-[368px] overflow-y-auto overscroll-contain bg-app/95 backdrop-blur-2xl backdrop-saturate-[180%] border-r border-white/[0.08] pt-[max(env(safe-area-inset-top,0px),16px)] pb-[max(env(safe-area-inset-bottom,0px),20px)] will-change-transform select-none"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={reducedMotion ? { duration: 0 } : SPRING}
           >
-            {/* Halo sutil de fundo no topo do passaporte */}
+            {/* Gradiente Midnight Navy sutil no topo do passaporte */}
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute top-0 inset-x-0 h-44 blur-2xl opacity-60 ${
-                ceo
-                  ? 'bg-gradient-to-b from-amber-500/[0.12] via-amber-500/[0.03] to-transparent'
-                  : 'bg-gradient-to-b from-white/[0.06] to-transparent'
-              }`}
+              className="pointer-events-none absolute top-0 inset-x-0 h-44 bg-gradient-to-b from-accent/25 via-accent/[0.04] to-transparent"
             />
 
             {/* Hero: Cabeçalho de Dossiê Atlético */}
@@ -204,8 +200,8 @@ export default function SidebarDrawer({
                     <span className="text-[12px] text-zinc-400 truncate">@{username}</span>
                   )}
                   {ceo && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/35 text-[10px] font-bold uppercase tracking-wider">
-                      <Crown className="w-2.5 h-2.5 text-amber-400" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider">
+                      <Crown className="w-2.5 h-2.5 text-white" />
                       CEO
                     </span>
                   )}
@@ -215,8 +211,8 @@ export default function SidebarDrawer({
                     </span>
                   )}
                   {streak > 0 && (
-                    <span className="inline-flex items-center gap-1 font-display tabular-nums text-[12px] font-bold text-amber-300">
-                      <Flame className="w-3 h-3 text-amber-400" strokeWidth={2} />
+                    <span className="inline-flex items-center gap-1 font-display tabular-nums text-[12px] font-bold text-white">
+                      <Flame className="w-3 h-3 text-zinc-300" strokeWidth={2} />
                       {streak}d
                     </span>
                   )}
@@ -250,12 +246,8 @@ export default function SidebarDrawer({
                 type="button"
                 whileTap={reducedMotion ? undefined : { scale: 0.985 }}
                 onClick={run(onOpenAICoach)}
-                className="group relative w-full min-h-[56px] px-4 py-3 rounded-2xl overflow-hidden bg-gradient-to-r from-accent/35 via-white/[0.05] to-white/[0.02] hover:from-accent/45 hover:via-white/[0.08] border border-white/[0.12] flex items-center gap-3 text-left cursor-pointer touch-manipulation transition-colors"
+                className="group relative w-full min-h-[56px] px-4 py-3 rounded-2xl overflow-hidden bg-gradient-to-r from-accent/45 to-surface-2 hover:from-accent/60 border border-accent-hover flex items-center gap-3 text-left cursor-pointer touch-manipulation transition-colors"
               >
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                />
                 <span className="shrink-0 rounded-full p-0.5 ring-1 ring-white/[0.18]">
                   <CoachAvatar size={36} alt="" />
                 </span>
@@ -351,7 +343,7 @@ export default function SidebarDrawer({
                       aria-hidden="true"
                     >
                       <motion.span
-                        className="absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full bg-white shadow-xs"
+                        className="absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full bg-white"
                         animate={{ x: soundEnabled ? 18 : 0 }}
                         transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 40 }}
                       />
@@ -391,14 +383,14 @@ export default function SidebarDrawer({
                           triggerHaptic(8);
                           setConfirmingLogout(false);
                         }}
-                        className="flex-1 min-h-[44px] rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white text-[13px] font-semibold cursor-pointer touch-manipulation transition-colors"
+                        className="flex-1 min-h-[44px] rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white text-[13px] font-semibold cursor-pointer touch-manipulation transition-colors"
                       >
                         Cancelar
                       </button>
                       <button
                         type="button"
                         onClick={run(signOut)}
-                        className="flex-1 min-h-[44px] rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/35 text-rose-300 text-[13px] font-bold cursor-pointer touch-manipulation transition-colors"
+                        className="flex-1 min-h-[44px] rounded-full bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/35 text-rose-300 text-[13px] font-bold cursor-pointer touch-manipulation transition-colors"
                       >
                         Confirmar
                       </button>

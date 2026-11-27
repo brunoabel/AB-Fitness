@@ -64,6 +64,7 @@ export async function fetchFitnessProfile(userId) {
     primaryGoal: data.primary_goal,
     experienceLevel: data.experience_level,
     trainingLocation: data.training_location,
+    equipment: data.equipment || [],
     daysPerWeek: data.days_per_week,
     sessionMinutes: data.session_minutes,
     splitPreference: data.split_preference,

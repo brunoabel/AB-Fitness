@@ -265,16 +265,18 @@ export default function AICoachModal({
       {isOpen && (
         <ModalBackdrop key="modal" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4">
           <ModalPanel
-            className="w-full sm:max-w-2xl bg-surface rounded-t-xl sm:rounded-xl shadow-xl overflow-hidden border border-white/10 flex flex-col h-[94vh] sm:h-[86vh] transition-colors"
+            onClose={onClose}
+            ariaLabel="AB Coach IA"
+            className="w-full sm:max-w-2xl bg-app rounded-t-3xl sm:rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col h-[94vh] sm:h-[86vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 bg-surface-2 border-b border-white/10 flex items-center justify-between">
+            <div className="p-4 bg-app border-b border-white/[0.06] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <CoachAvatar size={40} alt="" />
                 <div>
                   <h2 className="text-sm font-bold tracking-tight text-zinc-50 flex items-center gap-1.5">
                     AB Coach
-                    <span className="text-[11px] font-semibold px-1.5 py-0.2 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover">
                       IA
                     </span>
                   </h2>
@@ -290,7 +292,7 @@ export default function AICoachModal({
                     type="button"
                     onClick={handleClearHistory}
                     title="Limpar conversa"
-                    className={`tap-44 p-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    className={`tap-44 p-2 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                       confirmClearChat
                         ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
                         : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]'
@@ -308,7 +310,7 @@ export default function AICoachModal({
                   }}
                   title="Fechar"
                   aria-label="Fechar"
-                  className="tap-44 p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                  className="tap-44 p-2 rounded-full text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5 stroke-[1.8]" />
                 </button>
@@ -316,12 +318,12 @@ export default function AICoachModal({
             </div>
 
             {toastMessage && (
-              <div className="p-2 text-center text-xs font-semibold bg-accent text-white border-b border-white/10 animate-fadeIn">
+              <div className="p-2 text-center text-xs font-semibold bg-surface-2 text-white border-b border-accent-hover/60 animate-fadeIn">
                 {toastMessage}
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4">
               <CoachIntro {...{ handleSend, messages }} />
 
               {messages.map((msg, idx) => (
@@ -356,9 +358,9 @@ export default function AICoachModal({
               {isLoading && (
                 <div className="flex gap-2.5 items-center text-zinc-500 text-xs py-2 animate-fadeIn">
                   <img src="/coach/ab-coach-thinking-128.jpg" alt="" width={28} height={28} className="w-7 h-7 rounded-full object-cover border border-white/[0.08] shrink-0" />
-                  <div className="bg-surface-2 px-3.5 py-2 rounded-xl border border-white/10 shadow-sm flex items-center gap-2">
+                  <div className="bg-surface-2 px-3.5 py-2 rounded-2xl border border-accent-hover/50 flex items-center gap-2">
                     <div className="flex gap-1 items-center">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-hover animate-pulse" />
                       <span className="w-1.5 h-1.5 rounded-full bg-white" />
                     </div>
                     <span className="text-zinc-200 font-medium tracking-tight">
@@ -373,9 +375,9 @@ export default function AICoachModal({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 bg-surface-2 border-t border-white/10">
+            <div className="p-3 bg-app border-t border-white/[0.06]">
               {(!user || isGuest) && (
-                <div className="mb-2 p-2 px-3 rounded-lg bg-surface/90 border border-white/[0.08] flex items-center justify-between gap-2 text-xs">
+                <div className="mb-2.5 p-2.5 px-3.5 rounded-2xl bg-surface border border-white/[0.08] flex items-center justify-between gap-2 text-xs">
                   <span className="text-zinc-300">
                     Inicia sessão para consultares o AB Coach com IA.
                   </span>
@@ -385,7 +387,7 @@ export default function AICoachModal({
                       if (onOpenAuth) onOpenAuth();
                       onClose();
                     }}
-                    className="px-2.5 py-1 rounded bg-primary text-app font-semibold text-[11px] shrink-0 hover:opacity-90 transition-opacity cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-[11px] shrink-0 transition-colors cursor-pointer"
                   >
                     Entrar
                   </button>
@@ -405,17 +407,17 @@ export default function AICoachModal({
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Pede um treino específico (ex.: peitoral inferior, 35 min, dor no ombro)..."
                   disabled={isLoading}
-                  className="flex-1 bg-surface border border-white/[0.08] focus:border-white/30 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
+                  className="flex-1 bg-surface border border-white/[0.08] focus:border-accent-hover rounded-full px-4 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-400 outline-none transition-colors min-h-[44px]"
                 />
 
                 <button
                   type="submit"
                   disabled={!inputText.trim() || isLoading}
                   aria-label="Enviar mensagem"
-                  className={`p-2.5 rounded-lg font-semibold flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
+                  className={`p-2.5 rounded-full font-semibold flex items-center justify-center transition-colors border min-h-[44px] min-w-[44px] ${
                     inputText.trim() && !isLoading
-                      ? 'bg-accent/70 text-white hover:opacity-90 active:scale-95 cursor-pointer shadow-xs'
-                      : 'bg-white/[0.04] text-zinc-500 cursor-not-allowed border border-white/[0.06]'
+                      ? 'bg-accent border-accent-hover text-white hover:bg-accent-hover active:scale-95 cursor-pointer'
+                      : 'bg-white/[0.04] text-zinc-500 cursor-not-allowed border-white/[0.06]'
                   }`}
                 >
                   <Send className="w-4 h-4 stroke-[2]" />

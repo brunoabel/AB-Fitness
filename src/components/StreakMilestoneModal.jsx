@@ -180,7 +180,7 @@ export default function StreakMilestoneModal({ streakInfo, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="w-full min-h-[48px] py-3.5 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+              className="w-full min-h-[48px] py-3.5 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm transition-colors flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
             >
               <span>Continuar</span>
               <ArrowRight className="w-4 h-4" />
@@ -190,7 +190,7 @@ export default function StreakMilestoneModal({ streakInfo, onClose }) {
               type="button"
               onClick={handleShare}
               disabled={isSharing}
-              className="w-full min-h-[40px] py-2 rounded-xl text-zinc-400 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+              className="w-full min-h-[40px] py-2 rounded-full text-zinc-400 hover:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>{isSharing ? 'A gerar…' : 'Partilhar sequência'}</span>

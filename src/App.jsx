@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react';
+import { Play, X } from 'lucide-react';
 import { Skeleton, SkeletonList } from './components/ui/Skeleton';
 import { AnimatePresence } from 'motion/react';
 import Header from './components/Header';
@@ -9,11 +10,11 @@ import InstallPrompt from './components/InstallPrompt';
 import { PRIVATE_LAUNCH_MODE } from './config/launchMode';
 import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
 import BootSequence, { BOOT_SEEN_KEY } from './components/boot/BootSequence';
-import CoachAvatar from './components/coach/CoachAvatar';
 import TrainModeSwitch from './components/TrainModeSwitch';
 import { animate, stagger } from 'motion';
 import { AuthProvider, useAuth } from './context';
-import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue } from './services/workoutService';
+import { fetchUserSchedule, saveCustomUserPlan, getLocalCustomPlan, flushWorkoutSyncQueue, flushPlanSyncQueue } from './services/workoutService';
+import { flushRunsSyncQueue } from './services/runningSyncService';
 import { flushWearableSyncQueue } from './services/wearables/wearableManager';
 import { hydrateWorkoutHistory } from './services/historySyncService';
 import { captureAttribution } from './utils/attribution';
@@ -36,6 +37,7 @@ import {
   getSoundPreference, 
   saveSoundPreference,
   getActiveDraft,
+  saveActiveDraft,
   getSavedUserProfile,
   getCustomWorkouts
 } from './utils/storage';
@@ -87,6 +89,23 @@ const ProfileView = lazy(lazyImports.profile);
 const ActiveWorkout = lazy(lazyImports.workout);
 const ExerciseModal = lazy(lazyImports.exerciseModal);
 const SidebarDrawer = lazy(lazyImports.sidebarDrawer);
+
+function resolveDraftWorkout(draft, currentSchedule) {
+  if (!draft || draft.workoutDayId === undefined) return null;
+  const planWorkout = (currentSchedule || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId);
+  if (planWorkout) return planWorkout;
+  const customList = getCustomWorkouts();
+  const customWorkout = customList.find((w) => w.id === draft.workoutDayId || w.dayId === draft.workoutDayId);
+  if (customWorkout) return customWorkout;
+  return draft.workoutSnapshot || null;
+}
+
+function formatDraftElapsed(seconds) {
+  const s = Math.max(0, Math.round(seconds || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+}
 
 function TabFallback() {
   return (
@@ -176,16 +195,9 @@ function AppContent() {
   useEffect(() => {
     if (hasActiveTrainer && trainerCodeFromUrl) queueMicrotask(clearPendingTrainerCode);
   }, [hasActiveTrainer, trainerCodeFromUrl]);
-  const [activeWorkout, setActiveWorkout] = useState(() => {
-    const draft = getActiveDraft();
-    if (draft && draft.workoutDayId !== undefined) {
-      const planWorkout = (getLocalCustomPlan() || WEEKLY_SCHEDULE).find((w) => w.dayId === draft.workoutDayId);
-      if (planWorkout) return planWorkout;
-      const customList = getCustomWorkouts();
-      return customList.find((w) => w.id === draft.workoutDayId || w.dayId === draft.workoutDayId) || null;
-    }
-    return null;
-  });
+  const [resumableDraft, setResumableDraft] = useState(() => getActiveDraft());
+  const [activeWorkout, setActiveWorkout] = useState(() => resolveDraftWorkout(getActiveDraft(), getLocalCustomPlan() || WEEKLY_SCHEDULE));
+  const resumableWorkout = resumableDraft ? resolveDraftWorkout(resumableDraft, schedule) : null;
   const [completedDays, setCompletedDays] = useState(() => getCompletedDays());
   const [selectedExerciseForModal, setSelectedExerciseForModal] = useState(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
@@ -213,11 +225,14 @@ function AppContent() {
     return () => clearTimeout(t);
   }, []);
 
-  // Trata o retorno do fluxo OAuth de wearables (ex.: Whoop ou Fitbit)
+  const wearableCallbackHandledRef = useRef(false);
+
+  // Trata o retorno do fluxo OAuth de wearables (ex.: Whoop, Fitbit, Strava ou Garmin)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || loading || wearableCallbackHandledRef.current) return;
     const path = window.location.pathname;
     if (path.includes('/auth/callback/wearable')) {
+      wearableCallbackHandledRef.current = true;
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
       const returnedState = params.get('state');
@@ -266,7 +281,7 @@ function AppContent() {
           });
       }
     }
-  }, [user?.id]);
+  }, [loading, user?.id]);
   const [soundEnabled, setSoundEnabled] = useState(() => getSoundPreference());
   // App exclusivamente escuro (design system AB Fitness): a classe .dark é fixa no <html>
   const isDark = true;
@@ -299,6 +314,8 @@ function AppContent() {
         })
         .catch(() => {});
       flushWearableSyncQueue(user.id).catch(() => {});
+      flushRunsSyncQueue(user.id).catch(() => {});
+      flushPlanSyncQueue(user.id).catch(() => {});
     };
     flushUserQueues();
     window.addEventListener('online', flushUserQueues);
@@ -351,6 +368,7 @@ function AppContent() {
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
     setActiveWorkout(null);
+    setResumableDraft(getActiveDraft());
     setCompletedDays(getCompletedDays());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -504,7 +522,7 @@ function AppContent() {
         schedule={schedule}
       />
       {/* Contentor Principal Adaptativo (Mobile até Desktop) */}
-      <div className={`w-full min-h-screen bg-surface relative flex flex-col justify-between transition-colors duration-200 lg:flex-1 lg:min-w-0 ${isFullScreenView ? '' : 'max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto sm:border-x border-zinc-800/80'}`}>
+      <div className={`w-full min-h-screen bg-app relative flex flex-col justify-between transition-colors duration-200 lg:flex-1 lg:min-w-0 ${isFullScreenView ? '' : 'max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto sm:border-x border-white/[0.06]'}`}>
 
         {/* Visualização de Treino Ativo */}
         {currentView === 'active-workout' && activeWorkout ? (
@@ -549,6 +567,10 @@ function AppContent() {
                 completedDays={completedDays}
                 schedule={schedule}
                 onOpenSidebar={() => setIsSidebarOpen(true)}
+                onOpenAICoach={() => {
+                  sound.playTick();
+                  setShowAICoachModal(true);
+                }}
               />
 
               <InstallPrompt />
@@ -566,6 +588,44 @@ function AppContent() {
                     <button type="button" onClick={() => setCheckoutNotice(null)} className="shrink-0 text-xs font-medium text-zinc-400 hover:text-white">
                       Fechar
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'dashboard' && resumableWorkout && (
+                <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto w-full px-4 sm:px-6 mt-3">
+                  <div className="bg-surface border border-accent-hover rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                        Treino em curso · {formatDraftElapsed(resumableDraft?.elapsedSeconds)}
+                      </p>
+                      <p className="text-sm font-semibold text-white truncate">
+                        {resumableWorkout.title || resumableWorkout.name}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleStartWorkout(resumableWorkout)}
+                        className="min-h-[44px] px-4 rounded-full bg-primary text-app text-xs font-semibold hover:bg-zinc-200 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Retomar</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          saveActiveDraft(null);
+                          setResumableDraft(null);
+                        }}
+                        aria-label="Descartar treino em curso"
+                        title="Descartar"
+                        className="min-h-[44px] px-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-400 hover:text-white text-xs font-medium inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Descartar</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -615,24 +675,6 @@ function AppContent() {
               activeTab={activeTab}
               onTabChange={handleTabChange}
             />
-
-            {/* Botão Flutuante do AB Coach (Sóbrio & Técnico) */}
-            <button
-              onClick={() => {
-                sound.playTick();
-                setShowAICoachModal(true);
-              }}
-              className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 pl-1.5 pr-3.5 min-h-[44px] rounded-full bg-surface/80 backdrop-blur-md text-zinc-100 font-semibold text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:bg-surface-2/90 active:scale-95 transition-all cursor-pointer border border-white/10 select-none lg:hidden"
-              aria-label="Abrir AB Coach IA"
-            >
-              <span className="relative flex">
-                <CoachAvatar size={32} alt="" />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-surface" />
-              </span>
-              <span className="tracking-tight text-xs font-semibold">
-                AB Coach
-              </span>
-            </button>
           </>
         )}
 

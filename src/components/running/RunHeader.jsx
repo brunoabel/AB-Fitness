@@ -19,9 +19,9 @@ export default function RunHeader({
   const gpsReady = isGpsWarmedUp || (gpsAccuracy !== null && gpsAccuracy <= 25);
 
   const statusDot = isSimulation
-    ? 'bg-amber-400'
+    ? 'bg-accent-hover'
     : gpsBlocked
-      ? 'bg-rose-500'
+      ? 'bg-red-500'
       : gpsReady
         ? 'bg-emerald-400'
         : 'bg-zinc-500';
@@ -66,15 +66,15 @@ export default function RunHeader({
             saveVoiceCuesPreference(next);
             triggerHaptic(10);
           }}
-          className={`min-h-[44px] min-w-[44px] rounded-full border transition-all flex items-center justify-center cursor-pointer active:scale-95 ${
+          className={`min-h-[44px] min-w-[44px] rounded-full border transition-[background-color,border-color,color,transform] duration-150 ease-out flex items-center justify-center cursor-pointer active:scale-95 ${
             voiceEnabled
-              ? 'bg-white text-black border-white'
-              : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
+              ? 'bg-accent text-white border-accent-hover'
+              : 'bg-transparent text-zinc-400 hover:text-white border-white/[0.08]'
           }`}
           aria-label={voiceEnabled ? 'Desativar voz do treinador' : 'Ativar voz do treinador'}
           title={voiceEnabled ? 'Voz nos fones ligada' : 'Voz nos fones desligada'}
         >
-          {voiceEnabled ? <Volume2 className="w-4 h-4 stroke-[2.2]" /> : <VolumeX className="w-4 h-4 stroke-[2]" />}
+          {voiceEnabled ? <Volume2 className="w-4 h-4 stroke-[2]" /> : <VolumeX className="w-4 h-4 stroke-[1.75]" />}
         </button>
       </div>
     </header>

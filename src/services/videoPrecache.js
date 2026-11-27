@@ -2,7 +2,7 @@
  * Pré-cache dos vídeos 3D do treino do dia: o service worker descarrega-os em segundo plano
  * para tocarem sem rede no ginásio. Só em Wi-Fi/cabo, nunca com poupança de dados ativa.
  */
-const PRECACHE_DAY_KEY = 'ab_fitness_video_precache_v1';
+const PRECACHE_DAY_KEY = 'ab_fitness_video_precache_v2';
 const MAX_VIDEOS = 12;
 
 /**
@@ -16,11 +16,12 @@ export function shouldPrecacheVideos(connection = typeof navigator !== 'undefine
   return connection.effectiveType === '4g';
 }
 
-/** URLs únicas dos vídeos (versão masculina, a que o leitor abre por omissão). */
-export function collectVideoUrls(exercises = [], getMedia) {
+/** URLs únicas e absolutas dos vídeos (os do próprio app vêm como caminho relativo). */
+export function collectVideoUrls(exercises = [], getMedia, origin = typeof location !== 'undefined' ? location.origin : 'http://localhost') {
   const urls = [];
   for (const ex of exercises) {
-    const url = getMedia(ex)?.videoMale;
+    const path = getMedia(ex)?.video;
+    const url = path ? new URL(path, origin).href : null;
     if (url && !urls.includes(url)) urls.push(url);
     if (urls.length >= MAX_VIDEOS) break;
   }

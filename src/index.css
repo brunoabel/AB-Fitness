@@ -79,11 +79,11 @@
   /* Picos e recordes pessoais */
   --color-pr: #ffffff;
 
-  /* Rampa térmica do mapa de recuperação: marinho frio (fresco) a branco gelo (fadigado) */
-  --color-heat-0: #121c33;
-  --color-heat-1: #2b4a7a;
-  --color-heat-2: #8ea6d6;
-  --color-heat-3: #f4f7ff;
+  /* Rampa térmica biomecânica: pronto (verde) -> em recuperação (âmbar) -> crítico (vermelho) */
+  --color-heat-0: #10b981;
+  --color-heat-1: #84cc16;
+  --color-heat-2: #f59e0b;
+  --color-heat-3: #ef4444;
 
   /* Neutros cinza frio (texto secundário zinc-400 #8E929F, 6.6:1 sobre preto) */
   --color-zinc-50: #fafafb;
@@ -194,6 +194,7 @@
     height: 100%;
     height: 100dvh;
     overflow-x: clip;
+    overscroll-behavior: none;
     /* manipulation: permite zoom com pinça (acessibilidade) e evita o zoom por duplo toque */
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
@@ -215,9 +216,6 @@
     overscroll-behavior-x: none;
     /* manipulation: permite zoom com pinça (acessibilidade) e evita o zoom por duplo toque */
     touch-action: manipulation;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -240,8 +238,15 @@
     touch-action: manipulation !important;
   }
 
-  button, a, select {
+  button, a, select, [role="button"], .drag-handle {
     touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  .drag-handle {
+    touch-action: pan-x;
   }
 
   /* Telemetria Suíça: Plus Jakarta Sans + tabular-nums + tracking ótico */

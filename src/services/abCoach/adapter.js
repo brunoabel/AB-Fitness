@@ -35,6 +35,8 @@ export function toAppWorkout(treinoIA) {
     const defaultSets = Math.max(1, Math.min(6, Number(ex.series) || 3));
     const restTime = Math.max(20, Math.min(240, Number(ex.descanso_seg) || 60));
     const suggestedReps = ex.reps ? String(ex.reps).trim() : '8-12';
+    const range = suggestedReps.match(/^(\d+)\s*-\s*(\d+)$/);
+    const repRange = range && Number(range[1]) < Number(range[2]) ? [Number(range[1]), Number(range[2])] : null;
 
     // Monta notas técnicas combinando cadência, dica da IA e benefício biomecânico
     const notesParts = [];
@@ -53,8 +55,10 @@ export function toAppWorkout(treinoIA) {
       target: catalogItem.porcao || catalogItem.grupo || 'Geral',
       secondary: bio.sinergistas || '',
       equipment: catalogItem.equipamento || bio.equipamento || 'Equipamento livre / máquina',
-      suggestedWeight: 0,
+      // Sem carga inventada: o treino ativo usa o histórico ou firstSessionWeight
       suggestedReps,
+      ...(repRange ? { repRange } : {}),
+      ...(Number.isInteger(ex.rir_alvo) ? { targetRir: ex.rir_alvo } : {}),
       defaultSets,
       restTime,
       badge: (catalogItem.tipo === 'composto' || bio.tipo === 'composto') ? 'Composto' : 'Isolado',

@@ -3,10 +3,13 @@
  * Suporta OAuth 2.0, extração de Carga Relativa (Suffer Score / TRIMP) e modo Simulador.
  */
 
+import { localDateKey } from '../../utils/dateKey.js';
+import { buildWearableTokenHeaders } from './wearableAuthHeader.js';
+
 const STRAVA_AUTH_URL = 'https://www.strava.com/oauth/authorize';
 const STRAVA_API_BASE = 'https://www.strava.com/api/v3';
 
-const SCOPES = 'read,activity:read_all,profile:read_all';
+const SCOPES = 'read,activity:read_all,activity:write,profile:read_all';
 
 export function getStravaClientId() {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
@@ -39,9 +42,10 @@ export function buildStravaAuthUrl(redirectUri) {
 }
 
 export async function exchangeStravaCodeForToken(code, redirectUri) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/strava-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ code, redirectUri })
   });
 
@@ -54,9 +58,10 @@ export async function exchangeStravaCodeForToken(code, redirectUri) {
 }
 
 export async function refreshStravaToken(refreshToken) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/strava-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ refreshToken })
   });
 
@@ -139,7 +144,64 @@ export async function fetchLiveStravaBiometrics(accessToken) {
   };
 }
 
-export function generateSimulatedStravaData(dateIso = new Date().toISOString().slice(0, 10)) {
+/**
+ * Envia um treino de força ou corrida concluído na AB Fitness para a Strava (sincronização bidirecional).
+ */
+export async function pushActivityToStrava(accessToken, {
+  name,
+  sportType = 'WeightTraining',
+  startDateIso,
+  elapsedSeconds,
+  distanceMeters = 0,
+  description = ''
+} = {}) {
+  if (!accessToken || !name || !elapsedSeconds) return { pushed: false, reason: 'missing_params' };
+
+  const res = await fetch(`${STRAVA_API_BASE}/activities`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      sport_type: sportType,
+      start_date_local: startDateIso || new Date().toISOString(),
+      elapsed_time: Math.max(60, Math.round(elapsedSeconds)),
+      distance: Math.max(0, Math.round(distanceMeters)),
+      description: description || 'Registado com AB Fitness'
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    return { pushed: false, status: res.status, error: err?.message || `HTTP ${res.status}` };
+  }
+
+  const created = await res.json().catch(() => null);
+  return { pushed: true, activityId: created?.id || null };
+}
+
+/**
+ * Remove atividades externas (wearables) que se sobrepõem a sessões locais na mesma janela temporal,
+ * evitando duplicação de calorias e carga interna entre AB Fitness e Strava/Garmin/WHOOP.
+ */
+export function deduplicateWearableActivities(externalActivities = [], localSessions = [], windowMinutes = 25) {
+  const windowMs = Math.max(5, Number(windowMinutes) || 25) * 60 * 1000;
+  const localTimes = (localSessions || [])
+    .map((s) => Number(s?.timestamp) || new Date(s?.completedAt || s?.date || 0).getTime() || 0)
+    .filter((t) => t > 0);
+
+  if (localTimes.length === 0) return Array.isArray(externalActivities) ? externalActivities : [];
+
+  return (externalActivities || []).filter((act) => {
+    const actTs = new Date(act?.start_date || act?.start_date_local || act?.timestamp || 0).getTime();
+    if (!actTs) return true;
+    return !localTimes.some((lt) => Math.abs(lt - actTs) <= windowMs);
+  });
+}
+
+export function generateSimulatedStravaData(dateIso = localDateKey()) {
   const seed = dateIso.split('-').reduce((acc, part) => acc + Number(part), 0);
   const strain = Number((11.2 + (seed % 6) * 0.8).toFixed(1));
   const recovery = Math.max(40, Math.min(95, Math.round(92 - strain * 2.5)));

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import {
   Trophy,
   Dumbbell,
@@ -55,37 +56,46 @@ export default function HistoryView() {
 
   return (
     <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-10 space-y-6 animate-fadeIn">
-      {/* Navegação por segmentos (pílulas limpas sobre OLED preto) */}
-      <div className="p-1 rounded-full bg-white/[0.04] border border-white/[0.07]">
-        <div className="grid grid-cols-4 gap-1">
-          {[
-            { id: 'history', label: `Sessões (${totalWorkouts})`, icon: Trophy },
-            { id: 'charts', label: 'Evolução', icon: TrendingUp },
-            { id: 'badges', label: `Medalhas (${unlockedCount})`, icon: Award },
-            { id: 'body', label: 'Corpo', icon: Scale }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const active = subTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  setSubTab(tab.id);
-                  triggerHaptic(10);
-                }}
-                className={`min-h-[40px] px-1.5 sm:px-3 rounded-full transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none text-xs font-bold tabular-nums ${
-                  active
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5 stroke-[2] shrink-0" />
-                <span className="truncate">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Abas editoriais abertas diretamente sobre OLED preto */}
+      <div
+        role="tablist"
+        aria-label="Secções do perfil"
+        className="flex items-center gap-5 overflow-x-auto no-scrollbar border-b border-white/[0.08]"
+      >
+        {[
+          { id: 'history', label: `Sessões (${totalWorkouts})`, icon: Trophy },
+          { id: 'charts', label: 'Evolução', icon: TrendingUp },
+          { id: 'badges', label: `Medalhas (${unlockedCount})`, icon: Award },
+          { id: 'body', label: 'Corpo', icon: Scale }
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const active = subTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => {
+                setSubTab(tab.id);
+                triggerHaptic(10);
+              }}
+              className={`relative shrink-0 pb-3 pt-1.5 transition-colors cursor-pointer flex items-center gap-1.5 select-none text-xs sm:text-sm font-semibold tabular-nums ${
+                active ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5 stroke-[1.75] shrink-0" />
+              <span>{tab.label}</span>
+              {active && (
+                <motion.span
+                  layoutId="history-tab-underline"
+                  className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-accent-hover"
+                  transition={{ type: 'spring', stiffness: 460, damping: 36 }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {subTab === 'body' && <BodyPortfolio />}
@@ -94,18 +104,16 @@ export default function HistoryView() {
 
       {subTab === 'history' && (
         <div className="space-y-6 animate-fadeIn">
-          {/* Resumo acumulado editorial diretamente sobre o preto */}
-          <div className="flex items-center justify-between gap-4 py-2">
-            <div>
+          {/* Resumo acumulado aberto em 3 colunas */}
+          <div className="grid grid-cols-3 divide-x divide-white/[0.08] py-3 border-b border-white/[0.06]">
+            <div className="pr-3">
               <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
                 {totalWorkouts}
               </span>
               <span className="text-xs text-zinc-400">Treinos</span>
             </div>
 
-            <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
-
-            <div>
+            <div className="px-3">
               <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
                 {volumeNumber}
                 <span className="text-sm font-medium text-zinc-400 ml-1">{volumeUnit}</span>
@@ -113,9 +121,7 @@ export default function HistoryView() {
               <span className="text-xs text-zinc-400">{isSimpleMode ? 'Carga total' : 'Volume total'}</span>
             </div>
 
-            <div className="w-px h-9 bg-white/[0.08]" aria-hidden />
-
-            <div>
+            <div className="pl-3">
               <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
                 {totalMinutes}
                 <span className="text-sm font-medium text-zinc-400 ml-1">min</span>
@@ -124,10 +130,10 @@ export default function HistoryView() {
             </div>
           </div>
 
-          {/* Lista editorial de sessões concluídas (sem grelha de caixas cinzentas) */}
+          {/* Lista editorial de sessões concluídas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-heading text-base font-bold text-white tracking-tight">
+              <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
                 Histórico de sessões
               </h3>
               {pendingSyncCount > 0 && (
@@ -146,7 +152,7 @@ export default function HistoryView() {
                 <button
                   type="button"
                   onClick={() => retryFailedSyncJob(job.sessionId, user?.id).finally(refreshSync)}
-                  className="shrink-0 text-xs font-semibold text-white px-2.5 py-1.5 rounded-lg border border-white/[0.08] hover:bg-white/[0.06]"
+                  className="shrink-0 text-xs font-semibold text-white px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.06] cursor-pointer"
                 >
                   Tentar de novo
                 </button>
@@ -156,7 +162,7 @@ export default function HistoryView() {
                     discardFailedSyncJob(job.sessionId);
                     refreshSync();
                   }}
-                  className="shrink-0 text-xs font-medium text-zinc-400 px-2 py-1.5 hover:text-white"
+                  className="shrink-0 text-xs font-medium text-zinc-400 px-2 py-1.5 hover:text-white cursor-pointer"
                 >
                   Descartar
                 </button>

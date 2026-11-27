@@ -3,6 +3,9 @@
  * Suporta OAuth 2.0, Body Battery, HRV Status, Sono e modo Simulador.
  */
 
+import { localDateKey } from '../../utils/dateKey.js';
+import { buildWearableTokenHeaders } from './wearableAuthHeader.js';
+
 const GARMIN_AUTH_URL = 'https://connect.garmin.com/oauthConfirm';
 const GARMIN_API_BASE = 'https://apis.garmin.com/wellness-api/rest';
 
@@ -35,9 +38,10 @@ export function buildGarminAuthUrl(redirectUri) {
 }
 
 export async function exchangeGarminCodeForToken(code, redirectUri) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/garmin-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ code, redirectUri })
   });
 
@@ -50,9 +54,10 @@ export async function exchangeGarminCodeForToken(code, redirectUri) {
 }
 
 export async function refreshGarminToken(refreshToken) {
+  const headers = await buildWearableTokenHeaders();
   const res = await fetch('/api/garmin-token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ refreshToken })
   });
 
@@ -119,7 +124,7 @@ export async function fetchLiveGarminBiometrics(accessToken) {
   };
 }
 
-export function generateSimulatedGarminData(dateIso = new Date().toISOString().slice(0, 10)) {
+export function generateSimulatedGarminData(dateIso = localDateKey()) {
   const seed = dateIso.split('-').reduce((acc, part) => acc + Number(part), 0);
   const bodyBattery = 78 + (seed % 18);
   const sleepScore = 82 + (seed % 12);

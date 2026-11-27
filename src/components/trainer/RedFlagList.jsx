@@ -7,8 +7,15 @@ export const alertDetails = (ath) => {
   if (ath.last_pain_flag) {
     return { label: 'Dor reportada', barClass: 'bg-rose-400', textClass: 'text-rose-400' };
   }
+  if (Number(ath.acwr_ratio) > 1.5 || Number(ath.workouts_7d) >= 7) {
+    return {
+      label: Number(ath.acwr_ratio) > 1.5 ? `ACWR ${Number(ath.acwr_ratio).toFixed(2)}×` : `${ath.workouts_7d} treinos/7d (pico)`,
+      barClass: 'bg-amber-400',
+      textClass: 'text-amber-300'
+    };
+  }
   if (Number(ath.last_actual_rpe) >= 9.5) {
-    return { label: `RPE ${ath.last_actual_rpe}`, barClass: 'bg-amber-400', textClass: 'text-amber-300' };
+    return { label: `RPE ${ath.last_actual_rpe}`, barClass: 'bg-accent-hover', textClass: 'text-white' };
   }
   if (isStale(ath.last_session_at)) {
     return { label: 'Sem treinar há +4d', barClass: 'bg-zinc-500', textClass: 'text-zinc-400' };

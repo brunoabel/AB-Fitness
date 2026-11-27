@@ -1,21 +1,25 @@
 /**
  * Resolvedor único de mídia e metadados de exercício.
- * Ordem: vídeo auditado (exerciseVideos) → catálogo gerado (exerciseCatalog) → sem vídeo (diagrama + dicas).
+ * Vídeo: animação do Open Exercises Dataset (exerciseAnimations), servida pelo próprio app em /exercise-videos.
+ * Sem animação fiel: o app mostra só as dicas.
  *
- * VITE_MEDIA_BASE_URL permite servir os vídeos a partir do teu próprio bucket R2 (ver scripts/mirror_exercise_media.mjs)
- * sem alterar nenhuma URL nos dados.
+ * VITE_MEDIA_BASE_URL (opcional) serve os mesmos caminhos a partir de outro domínio, por exemplo um CDN.
  */
-import { EXERCISE_CATALOG } from './exerciseCatalog.js';
+import { EXERCISE_CATALOG as GENERATED_CATALOG } from './exerciseCatalog.js';
 import { getVerifiedExerciseVideo } from './exerciseVideos.js';
 import { findExerciseIn100 } from './exercises100.js';
+import { EXERCISE_ANIMATIONS, DRILL_ANIMATIONS } from './exerciseAnimations.js';
+import { OPEN_CATALOG } from './openExercisesBatch.js';
 
-const SOURCE_HOST = 'https://pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev';
+/** Catálogo completo: o gerado por scripts/build_exercise_catalog.mjs + o lote de animações. */
+export const EXERCISE_CATALOG = { ...GENERATED_CATALOG, ...OPEN_CATALOG };
+
 const MEDIA_BASE = (import.meta.env?.VITE_MEDIA_BASE_URL || '').replace(/\/+$/, '');
 
-/** Normaliza qualquer URL do bucket de origem para o host configurado. */
-export function normalizeMediaUrl(url) {
-  if (!url) return null;
-  return MEDIA_BASE && url.startsWith(SOURCE_HOST) ? MEDIA_BASE + url.slice(SOURCE_HOST.length) : url;
+/** Vídeo e capa de uma animação do dataset. */
+export function animationMedia(animationId, base = MEDIA_BASE) {
+  if (!animationId) return { video: null, poster: null };
+  return { video: `${base}/exercise-videos/${animationId}.mp4`, poster: `${base}/exercise-posters/${animationId}.jpg` };
 }
 
 /** Entrada do catálogo para um exercício (id, slug ou nome). */
@@ -30,23 +34,26 @@ export function getCatalogEntry(exercise) {
 }
 
 /**
- * @returns {{ videoMale: string|null, videoFemale: string|null, poster: string|null, cues: string[], source: 'verified'|'dataset'|null, entry: object|null }}
+ * @returns {{ video: string|null, poster: string|null, cues: string[], entry: object|null }}
  */
 export function getExerciseMedia(exercise) {
   const entry = getCatalogEntry(exercise);
   const verified = getVerifiedExerciseVideo(exercise);
-  const videoMale = verified?.videoMale || entry?.video_url || null;
   return {
-    videoMale: normalizeMediaUrl(videoMale),
-    videoFemale: normalizeMediaUrl(verified?.videoFemale || entry?.video_url_female || videoMale),
-    poster: normalizeMediaUrl(verified?.poster || entry?.poster_url || null),
+    ...animationMedia(entry ? EXERCISE_ANIMATIONS[entry.id] : null),
     cues: entry?.form_cues?.length ? entry.form_cues : (verified?.keyCues || []).slice(0, 3),
-    source: verified ? 'verified' : entry?.video_url ? entry.video_source : null,
     entry
   };
 }
 
-export const hasExerciseVideo = (exercise) => Boolean(getExerciseMedia(exercise).videoMale);
+export const hasExerciseVideo = (exercise) => Boolean(getExerciseMedia(exercise).video);
+
+/** Exercício de recuperação: animação própria do drill ou, na falta, a do exercício do catálogo ligado. */
+export function getDrillMedia(drill) {
+  const own = drill?.id ? DRILL_ANIMATIONS[drill.id] : null;
+  if (own) return animationMedia(own);
+  return drill?.catalogId ? animationMedia(EXERCISE_ANIMATIONS[getCatalogEntry(drill.catalogId)?.id]) : animationMedia(null);
+}
 
 /** Carga inicial na troca: peso corporal/elástico = 0; barra ou máquina → halter por mão (~40%, múltiplos de 2 kg). */
 function homeWeight(fromEquipment, toEquipment, weight) {

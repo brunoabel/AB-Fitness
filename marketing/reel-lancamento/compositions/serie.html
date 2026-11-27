@@ -1,0 +1,94 @@
+<template>
+  <style>
+    @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500 800; src: url('assets/fonts/plus-jakarta-sans-latin.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400 700; src: url('assets/fonts/inter-latin.woff2') format('woff2'); }
+    #root { position: absolute; inset: 0; font-family: 'Inter', sans-serif; color: #fff; }
+    #se-card { position: absolute; left: 90px; top: 400px; width: 900px; border-radius: 58px; border: 2px solid rgba(255,255,255,0.08); background: #070709; }
+    #se-head { padding: 38px 38px 34px; border-bottom: 2px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+    .se-meta { font-size: 29px; font-weight: 500; color: #a1a1aa; }
+    .se-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 50px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-top: 8px; }
+    .se-pr { font-size: 29px; color: #a1a1aa; margin-top: 10px; font-weight: 500; }
+    .se-pr strong { color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+    .se-guia { flex-shrink: 0; height: 106px; padding: 0 29px; border-radius: 29px; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; font-size: 29px; font-weight: 600; }
+    #se-hint { margin: 34px 38px 0; padding: 26px 29px; border-radius: 48px; border: 2px solid rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); color: #6ee7b7; display: flex; align-items: center; justify-content: space-between; }
+    .se-hint-label { font-size: 30px; font-weight: 700; letter-spacing: 0.01em; }
+    #se-aplicar { padding: 16px 30px; border-radius: 29px; background: #fff; color: #000; font-size: 28px; font-weight: 700; }
+    #se-row { margin: 34px 38px 38px; padding: 22px 22px 10px; border-radius: 29px; border: 2px solid rgba(255,255,255,0.10); background: #070709; }
+    .se-grid { display: grid; grid-template-columns: 110px 1fr 1fr 134px; gap: 18px; align-items: center; }
+    .se-col { display: flex; flex-direction: column; align-items: center; }
+    .se-idx { width: 86px; height: 86px; border-radius: 19px; border: 2px solid rgba(255,255,255,0.08); color: #a1a1aa; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 29px; }
+    .se-lab { font-size: 28px; font-weight: 600; color: #71717a; text-transform: uppercase; margin-top: 4px; letter-spacing: -0.02em; }
+    .se-input { position: relative; width: 100%; height: 106px; border-radius: 19px; background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 50px; font-weight: 700; }
+    .se-unit { position: absolute; right: 16px; top: 36px; font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 600; color: #71717a; }
+    .se-steps { display: flex; width: 100%; margin-top: 6px; }
+    .se-steps span { flex: 1; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 29px; font-weight: 700; color: #a1a1aa; }
+    #se-check { width: 134px; height: 134px; border-radius: 29px; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; }
+    #se-check-bg { position: absolute; inset: 0; border-radius: 29px; background: #1d3557; opacity: 0; }
+    #se-check svg { position: relative; width: 58px; height: 58px; }
+    .se-bar { display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 14px 4px 6px; border-top: 2px solid rgba(255,255,255,0.06); font-size: 28px; color: #a1a1aa; }
+    .se-bar b { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+    .se-bar strong { color: #e4e4e7; font-weight: 600; }
+    #se-w-old, #se-w-new { position: absolute; left: 0; right: 0; text-align: center; }
+    #se-rowbg { position: absolute; inset: 0; border-radius: 29px; background: rgba(29,53,87,0.07); opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="serie" data-width="1080" data-height="1920">
+    <div id="se-card" data-layout-allow-overflow>
+      <div id="se-head">
+        <div>
+          <div class="se-meta">Exercício 1 de 5 · Peito</div>
+          <div class="se-title">Supino Reto com Halteres</div>
+          <div class="se-pr">Recorde pessoal: <strong>30 kg</strong></div>
+        </div>
+        <div class="se-guia">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Guia</span>
+        </div>
+      </div>
+      <div id="se-hint">
+        <span class="se-hint-label">Meta de hoje: Subir carga</span>
+        <span id="se-aplicar">Aplicar</span>
+      </div>
+      <div id="se-row" style="position:relative">
+        <div id="se-rowbg"></div>
+        <div class="se-grid" style="position:relative">
+          <div class="se-col"><div class="se-idx">1</div><div class="se-lab">Série</div></div>
+          <div class="se-col">
+            <div class="se-input"><span id="se-w-old">30</span><span id="se-w-new" style="opacity:0">32,5</span><span class="se-unit">kg</span></div>
+            <div class="se-steps" id="se-wsteps"><span>−2,5</span><span>+2,5</span></div>
+          </div>
+          <div class="se-col">
+            <div class="se-input">8<span class="se-unit">reps</span></div>
+            <div class="se-steps" id="se-rsteps"><span>−1</span><span>+1</span></div>
+          </div>
+          <div class="se-col"><div id="se-check" style="position:relative"><div id="se-check-bg"></div>
+            <svg id="se-check-ico" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div></div>
+        </div>
+        <div class="se-bar"><b>Ant.</b><strong>30 kg × 8</strong></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      // t local = t vídeo - 2,188 (drop). O card sai do preto do vão do B.
+      tl.fromTo("#se-card", { scale: 1.14, filter: "blur(12px)" }, { scale: 1, filter: "blur(0px)", duration: 0.34, ease: "expo.out" }, 0);
+      // 3,438: toque em Aplicar, carga 30 -> 32,5 trava no kick
+      tl.fromTo("#se-aplicar", { scale: 1 }, { scale: 0.9, duration: 0.06, ease: "power2.out" }, 1.19);
+      tl.to("#se-aplicar", { scale: 1, duration: 0.16, ease: "power2.out" }, 1.25);
+      tl.fromTo("#se-w-old", { opacity: 1, y: 0, filter: "blur(0px)" }, { opacity: 0, y: -24, filter: "blur(6px)", duration: 0.08, ease: "power3.in" }, 1.20);
+      tl.fromTo("#se-w-new", { opacity: 0, y: 24, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.14, ease: "expo.out" }, 1.25);
+      // 4,063: toque no check, afunda e assume o estado concluído real (marinho)
+      tl.fromTo("#se-check", { scale: 1 }, { scale: 0.9, duration: 0.06, ease: "power2.out" }, 1.815);
+      tl.to("#se-check", { scale: 1, duration: 0.14, ease: "power2.out" }, 1.875);
+      tl.fromTo("#se-check", { borderColor: "#ffffff", backgroundColor: "#ffffff" }, { borderColor: "#1d3557", backgroundColor: "#1d3557", duration: 0.06 }, 1.875);
+      tl.fromTo("#se-check-bg", { opacity: 0 }, { opacity: 1, duration: 0.06 }, 1.875);
+      tl.fromTo("#se-check-ico", { stroke: "#000000" }, { stroke: "#ffffff", duration: 0.06 }, 1.875);
+      tl.fromTo("#se-rowbg", { opacity: 0 }, { opacity: 1, duration: 0.1 }, 1.875);
+      tl.fromTo("#se-row", { borderColor: "rgba(255,255,255,0.10)" }, { borderColor: "#2b4a7a", duration: 0.1 }, 1.875);
+      tl.fromTo(["#se-wsteps", "#se-rsteps"], { opacity: 1 }, { opacity: 0, duration: 0.1 }, 1.875);
+      // 4,688: corte seco na batida para o clipe da anilha (sem crescimento de botão)
+      window.__timelines["serie"] = tl;
+    })();
+  </script>
+</template>

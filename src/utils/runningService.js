@@ -367,11 +367,25 @@ export function calculateRollingPace({
   return candidatePace;
 }
 
+/** Soma o total de ms de pausa que intersecta o intervalo [fromMs, toMs]. */
+export function computePausedOverlapMs(fromMs, toMs, pausedIntervals = []) {
+  if (!Array.isArray(pausedIntervals) || pausedIntervals.length === 0 || toMs <= fromMs) return 0;
+  let total = 0;
+  for (const iv of pausedIntervals) {
+    if (!iv) continue;
+    const start = Math.max(fromMs, Number(iv.start) || 0);
+    const end = Math.min(toMs, Number(iv.end) || 0);
+    if (end > start) total += end - start;
+  }
+  return total;
+}
+
 /**
  * Interpolação precisa de Splits (parciais) por quilómetro, incluindo a coordenada exata (lat, lng)
  * onde cada quilómetro foi concluído para posicionamento fiel dos marcadores no mapa.
+ * Desconta eventuais intervalos em pausa para que o pace dos splits reflita tempo em movimento.
  */
-export function computeSplits(points) {
+export function computeSplits(points, pausedIntervals = []) {
   if (!points || points.length < 2) {
     return { splits: [], partial: { meters: 0, ms: 0 } };
   }
@@ -398,7 +412,8 @@ export function computeSplits(points) {
       const t = p0.t + f * (p1.t - p0.t);
       const lat = p0.lat + f * (p1.lat - p0.lat);
       const lng = p0.lng + f * (p1.lng - p0.lng);
-      const splitMs = Math.max(1000, Math.round(t - lastT));
+      const pausedMs = computePausedOverlapMs(lastT, t, pausedIntervals);
+      const splitMs = Math.max(1000, Math.round((t - lastT) - pausedMs));
       const splitSec = Math.round(splitMs / 1000);
       const paceFormatted = formatPace(splitSec);
 
@@ -418,11 +433,12 @@ export function computeSplits(points) {
   }
 
   const lastPoint = normalized[normalized.length - 1];
+  const partialPausedMs = computePausedOverlapMs(lastT, lastPoint.t, pausedIntervals);
   return {
     splits,
     partial: {
       meters: Math.max(0, Math.round(dist - (nextKm - 1000))),
-      ms: Math.max(0, lastPoint.t - lastT)
+      ms: Math.max(0, Math.round((lastPoint.t - lastT) - partialPausedMs))
     }
   };
 }

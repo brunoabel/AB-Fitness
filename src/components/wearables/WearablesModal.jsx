@@ -167,7 +167,7 @@ export default function WearablesModal({ isOpen, onClose }) {
 
           {/* Modal Container */}
           <motion.div
-            className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto overscroll-contain bg-surface border border-white/[0.12] rounded-t-[32px] sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-5 sm:p-6 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] will-change-transform text-white"
+            className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto overscroll-contain bg-app border border-white/[0.08] rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] will-change-transform text-white"
             initial={{ y: '100%', opacity: 0.5 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
@@ -337,7 +337,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                         type="button"
                         onClick={() => handleConnectOfficial('whoop')}
                         disabled={!getWhoopClientId()}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        className="w-full min-h-[44px] px-4 rounded-full bg-primary text-app text-[13px] font-semibold hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-default"
                         title={getWhoopClientId() ? undefined : 'Requer Client ID WHOOP'}
                       >
                         <Link2 className="w-4 h-4" />
@@ -445,7 +445,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                         type="button"
                         onClick={() => handleConnectOfficial('fitbit')}
                         disabled={!getFitbitClientId()}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        className="w-full min-h-[44px] px-4 rounded-full bg-primary text-app text-[13px] font-semibold hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-default"
                         title={getFitbitClientId() ? undefined : 'Requer Client ID Fitbit'}
                       >
                         <Link2 className="w-4 h-4" />
@@ -550,7 +550,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                         type="button"
                         onClick={() => handleConnectOfficial('garmin')}
                         disabled={!getGarminClientId()}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        className="w-full min-h-[44px] px-4 rounded-full bg-primary text-app text-[13px] font-semibold hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-default"
                         title={getGarminClientId() ? undefined : 'Requer Client ID Garmin'}
                       >
                         <Link2 className="w-4 h-4" />
@@ -649,7 +649,7 @@ export default function WearablesModal({ isOpen, onClose }) {
                         type="button"
                         onClick={() => handleConnectOfficial('strava')}
                         disabled={!getStravaClientId()}
-                        className="w-full min-h-[44px] px-3 rounded-xl bg-primary text-app text-[13px] font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-default"
+                        className="w-full min-h-[44px] px-4 rounded-full bg-primary text-app text-[13px] font-semibold hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-default"
                         title={getStravaClientId() ? undefined : 'Requer Client ID Strava'}
                       >
                         <Link2 className="w-4 h-4" />

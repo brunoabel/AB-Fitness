@@ -43,4 +43,35 @@ describe('BadgeService — Escopo por Ação (run vs workout)', () => {
     const unlocked = computeNewlyUnlockedBadges(state, alreadyUnlocked, 'run');
     assert.ok(!unlocked.some((b) => b.id === 'first_run'));
   });
+
+  it('desbloqueia marcos de força relativa (× BW) e tonelagem vitalícia', () => {
+    const state = {
+      bodyWeightKg: 80,
+      savedWeights: {
+        'supino-reto-barra': [{ weight: 80, reps: 5 }],
+        'agachamento-livre': [{ weight: 120, reps: 5 }],
+        'levantamento-terra': [{ weight: 160, reps: 3 }]
+      },
+      workouts: [
+        { totalVolumeKg: 30000 },
+        { totalVolumeKg: 25000 }
+      ]
+    };
+    const unlocked = computeNewlyUnlockedBadges(state, {}, 'workout');
+    const ids = unlocked.map((b) => b.id);
+    assert.ok(ids.includes('rel_bench_1x'));
+    assert.ok(ids.includes('rel_squat_1_5x'));
+    assert.ok(ids.includes('rel_deadlift_2x'));
+    assert.ok(ids.includes('lifetime_50t'));
+    assert.ok(!ids.includes('lifetime_100t'));
+  });
+
+  it('usa currentStreak real quando fornecido para badges de constância', () => {
+    const unlockedLow = computeNewlyUnlockedBadges({ completedDays: ['d1', 'd2', 'd3', 'd4'], currentStreak: 2 }, {}, 'workout');
+    assert.ok(!unlockedLow.some((b) => b.id === 'streak_3_days'));
+
+    const unlockedHigh = computeNewlyUnlockedBadges({ completedDays: ['d1'], currentStreak: 7 }, {}, 'workout');
+    assert.ok(unlockedHigh.some((b) => b.id === 'streak_3_days'));
+    assert.ok(unlockedHigh.some((b) => b.id === 'streak_iron_week'));
+  });
 });

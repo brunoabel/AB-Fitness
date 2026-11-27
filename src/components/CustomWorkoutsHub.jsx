@@ -136,10 +136,10 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                 onOpenAICoach();
                 triggerHaptic(12);
               }}
-              className="min-h-[42px] px-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-100 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="min-h-[42px] px-3.5 rounded-full bg-accent/40 hover:bg-accent/60 border border-accent-hover text-white text-xs font-semibold inline-flex items-center gap-1.5 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
               title="Criar ou adaptar plano com o AB Coach"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <Sparkles className="w-3.5 h-3.5 text-zinc-200" strokeWidth={1.75} />
               <span>Pedir ao Coach</span>
             </button>
           )}
@@ -147,24 +147,24 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="min-h-[42px] px-4 rounded-full bg-white hover:bg-zinc-100 text-black text-xs font-bold inline-flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-sm"
+            className="min-h-[42px] px-4 rounded-full bg-primary hover:bg-zinc-200 text-app text-xs font-semibold inline-flex items-center gap-1.5 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
           >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.25]" />
             <span>Novo</span>
           </button>
         </div>
       </header>
 
-      {/* Pesquisa + Filtros em pílulas leves */}
+      {/* Pesquisa + Filtros em pílulas com seleção em Azul Marinho */}
       <div className="space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 stroke-[1.8]" />
+          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 stroke-[1.75]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Procurar treino ou exercício..."
-            className="w-full min-h-[46px] pl-10 pr-4 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/25 transition-colors"
+            className="w-full min-h-[46px] pl-10 pr-4 rounded-full bg-surface border border-white/[0.08] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent-hover transition-colors"
           />
         </div>
 
@@ -184,14 +184,14 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
                   setSelectedLevel(tab.id);
                   triggerHaptic(10);
                 }}
-                className={`min-h-[38px] px-4 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                className={`min-h-[38px] px-4 rounded-full border text-xs font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-150 cursor-pointer inline-flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-white text-black'
-                    : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
+                    ? 'bg-accent border-accent-hover text-white'
+                    : 'bg-transparent border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.16]'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`tabular-nums ${isSelected ? 'text-black/60' : 'text-zinc-500'}`}>
+                <span className={`tabular-nums ${isSelected ? 'text-zinc-200' : 'text-zinc-500'}`}>
                   {tab.count}
                 </span>
               </button>
@@ -200,12 +200,12 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
         </div>
       </div>
 
-      {/* Listagem de Planos */}
+      {/* Lista aberta diretamente no preto OLED (sem caixas empilhadas) */}
       {filteredWorkouts.length === 0 ? (
         <div className="py-12 text-center border-t border-white/[0.06] space-y-4">
           <Dumbbell className="w-7 h-7 text-zinc-500 mx-auto stroke-[1.6]" />
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-white">
+            <h3 className="text-sm font-semibold text-white">
               Nenhum treino encontrado
             </h3>
             <p className="text-xs text-zinc-400 max-w-sm mx-auto">
@@ -219,17 +219,17 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
             <button
               type="button"
               onClick={handleOpenCreateModal}
-              className="min-h-[42px] px-5 rounded-full bg-white text-black text-xs font-bold active:scale-95 transition-all cursor-pointer"
+              className="min-h-[42px] px-5 rounded-full bg-primary text-app hover:bg-zinc-200 text-xs font-semibold active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
             >
               Criar Treino
             </button>
             <button
               type="button"
               onClick={handleResetTemplates}
-              className={`min-h-[42px] px-4 rounded-full text-xs font-semibold active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+              className={`min-h-[42px] px-4 rounded-full border text-xs font-semibold active:scale-[0.97] transition-[background-color,border-color,color,transform] duration-150 ease-out cursor-pointer inline-flex items-center gap-1.5 ${
                 confirmResetTpl
-                  ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300'
-                  : 'bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300'
+                  ? 'bg-accent/60 border-accent-hover text-white'
+                  : 'bg-transparent border-white/[0.1] hover:border-white/[0.2] text-zinc-300'
               }`}
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -238,129 +238,123 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]">
           {filteredWorkouts.map((workout) => {
             const isExpanded = !!expandedCardIds[workout.id];
 
             return (
-              <article
-                key={workout.id}
-                className="rounded-3xl bg-white/[0.03] border border-white/[0.08] p-5 flex flex-col justify-between gap-4 hover:border-white/[0.14] transition-colors"
-              >
-                <div className="space-y-3">
-                  {/* Metadados + Ações discretas */}
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-zinc-400 tabular-nums">
-                      {workout.level} · {workout.duration}
+              <article key={workout.id} className="py-5 space-y-3">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 space-y-1">
+                    <span className="text-[11px] font-medium text-zinc-400 tabular-nums block">
+                      {workout.level} · {workout.duration} · {workout.exercises?.length || 0} exercícios
                     </span>
-
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        type="button"
-                        onClick={(e) => handleOpenEditModal(workout, e)}
-                        className="min-h-[38px] min-w-[38px] rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center justify-center"
-                        title="Editar plano"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={(e) => handleDuplicate(workout.id, e)}
-                        className="min-h-[38px] min-w-[38px] rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center justify-center"
-                        title="Duplicar plano"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={(e) => handleDeleteWorkout(workout.id, workout.title, e)}
-                        className={`min-h-[38px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center ${
-                          confirmDeleteId === workout.id
-                            ? 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
-                            : 'min-w-[38px] text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10'
-                        }`}
-                        title="Eliminar plano"
-                      >
-                        {confirmDeleteId === workout.id ? 'Confirmar' : <Trash2 className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Título e Foco */}
-                  <div>
-                    <h2 className="font-heading text-lg font-bold text-white tracking-tight leading-snug">
+                    <h2 className="font-heading text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
                       {workout.title}
                     </h2>
                     {workout.focus && (
-                      <p className="text-xs text-zinc-400 mt-0.5">
-                        {workout.focus}
-                      </p>
+                      <p className="text-xs text-zinc-400">{workout.focus}</p>
                     )}
                     {workout.trainerNotes && (
-                      <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
+                      <p className="text-xs text-zinc-500 pt-0.5 leading-relaxed">
                         {workout.trainerNotes}
                       </p>
                     )}
                   </div>
 
-                  {/* Lista limpa com divisórias finas (sem caixas aninhadas) */}
-                  <div className="pt-2 border-t border-white/[0.06] space-y-1">
-                    <div className="flex items-center justify-between text-xs text-zinc-500 pb-1 tabular-nums">
-                      <span>{workout.exercises?.length || 0} exercícios</span>
-                      {workout.exercises?.length > 3 && (
-                        <button
-                          type="button"
-                          onClick={() => handleToggleExpand(workout.id)}
-                          className="text-zinc-300 hover:text-white inline-flex items-center gap-1 cursor-pointer font-medium"
-                        >
-                          <span>{isExpanded ? 'Ver menos' : 'Ver todos'}</span>
-                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        </button>
-                      )}
-                    </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic(20);
+                      onStartWorkout(workout);
+                    }}
+                    className="shrink-0 min-h-[42px] px-4 rounded-full bg-primary hover:bg-zinc-200 text-app font-semibold text-xs flex items-center gap-1.5 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Iniciar</span>
+                  </button>
+                </div>
 
-                    <ul className="divide-y divide-white/[0.05]">
-                      {(isExpanded ? workout.exercises : workout.exercises.slice(0, 3)).map((ex, idx) => (
-                        <li
-                          key={ex.id || idx}
-                          onClick={() => onViewExercise && onViewExercise(ex)}
-                          className="py-2 flex items-center justify-between gap-3 cursor-pointer group"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-zinc-200 group-hover:text-white truncate transition-colors">
-                              <span className="text-zinc-500 mr-2 tabular-nums">{idx + 1}.</span>
-                              {ex.name}
-                            </p>
-                            {ex.suggestedWeight > 0 && (
-                              <span className="text-[11px] text-zinc-500 pl-5 tabular-nums">
-                                Sugestão: {ex.suggestedWeight} kg
-                              </span>
-                            )}
-                          </div>
+                {/* Ações discretas + toggle da sequência de exercícios */}
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  {workout.exercises?.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleExpand(workout.id)}
+                      className="text-xs text-zinc-300 hover:text-white inline-flex items-center gap-1 cursor-pointer font-medium min-h-[36px]"
+                    >
+                      <span>{isExpanded ? 'Ocultar exercícios' : 'Ver exercícios'}</span>
+                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
 
-                          <span className="text-xs font-display font-semibold text-zinc-400 tabular-nums shrink-0">
-                            {ex.defaultSets}×{ex.suggestedReps}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenEditModal(workout, e)}
+                      className="min-h-[36px] min-w-[36px] rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center justify-center"
+                      title="Editar plano"
+                      aria-label={`Editar ${workout.title}`}
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => handleDuplicate(workout.id, e)}
+                      className="min-h-[36px] min-w-[36px] rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center justify-center"
+                      title="Duplicar plano"
+                      aria-label={`Duplicar ${workout.title}`}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteWorkout(workout.id, workout.title, e)}
+                      className={`min-h-[36px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center ${
+                        confirmDeleteId === workout.id
+                          ? 'bg-red-500/20 border border-red-400/40 text-red-300'
+                          : 'min-w-[36px] text-zinc-500 hover:text-red-400 hover:bg-red-500/10'
+                      }`}
+                      title="Eliminar plano"
+                      aria-label={`Eliminar ${workout.title}`}
+                    >
+                      {confirmDeleteId === workout.id ? 'Confirmar' : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 </div>
 
-                {/* Botão Iniciar Treino */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic(20);
-                    onStartWorkout(workout);
-                  }}
-                  className="w-full min-h-[48px] rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Iniciar Treino</span>
-                </button>
+                {/* Lista de exercícios expandida sem caixas */}
+                {isExpanded && workout.exercises?.length > 0 && (
+                  <ul className="divide-y divide-white/[0.05] pl-3 border-l-2 border-accent-hover/70">
+                    {workout.exercises.map((ex, idx) => (
+                      <li
+                        key={ex.id || idx}
+                        onClick={() => onViewExercise && onViewExercise(ex)}
+                        className="py-2 flex items-center justify-between gap-3 cursor-pointer group"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-zinc-200 group-hover:text-white truncate transition-colors">
+                            <span className="text-zinc-500 mr-2 tabular-nums">{idx + 1}.</span>
+                            {ex.name}
+                          </p>
+                          {ex.suggestedWeight > 0 && (
+                            <span className="text-[11px] text-zinc-500 pl-5 tabular-nums">
+                              Sugestão: {ex.suggestedWeight} kg
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="text-xs font-display font-semibold text-zinc-400 tabular-nums shrink-0">
+                          {ex.defaultSets}×{ex.suggestedReps}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </article>
             );
           })}

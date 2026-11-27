@@ -190,7 +190,7 @@ export default function NewPostModal({ isOpen, onClose, userId, profile, onPostC
       />
 
       <motion.div
-        className="relative w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] bg-app border-t sm:border border-white/[0.1] shadow-[0_-24px_80px_rgba(0,0,0,0.92)] overflow-hidden flex flex-col max-h-[94dvh] will-change-transform"
+        className="relative w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] bg-app border-t sm:border border-white/[0.08] overflow-hidden flex flex-col max-h-[94dvh] will-change-transform"
         initial={reducedMotion ? { opacity: 0 } : { y: '100%' }}
         animate={reducedMotion ? { opacity: 1 } : { y: 0 }}
         exit={reducedMotion ? { opacity: 0 } : { y: '100%' }}
@@ -334,7 +334,7 @@ export default function NewPostModal({ isOpen, onClose, userId, profile, onPostC
                   whileTap={reducedMotion ? undefined : { scale: 0.96 }}
                   transition={SPRING}
                   onClick={() => galleryInputRef.current?.click()}
-                  className="min-h-[48px] px-6 rounded-full bg-white text-black hover:bg-zinc-200 font-heading font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer touch-manipulation transition-colors shadow-[0_8px_28px_rgba(255,255,255,0.12)]"
+                  className="min-h-[48px] px-6 rounded-full bg-primary text-app hover:bg-primary-hover font-heading font-bold text-[14px] inline-flex items-center justify-center gap-2 cursor-pointer touch-manipulation transition-colors"
                 >
                   <ImageIcon className="w-4 h-4" strokeWidth={2.1} />
                   <span>Escolher da Galeria</span>
@@ -403,9 +403,9 @@ export default function NewPostModal({ isOpen, onClose, userId, profile, onPostC
             transition={SPRING}
             onClick={handlePost}
             disabled={!canPublish}
-            className={`w-full min-h-[52px] rounded-full font-heading font-bold text-[15px] tracking-tight flex items-center justify-center gap-2 transition-all touch-manipulation ${
+            className={`w-full min-h-[52px] rounded-full font-heading font-bold text-[15px] tracking-tight flex items-center justify-center gap-2 transition-colors touch-manipulation ${
               canPublish
-                ? 'bg-white text-black hover:bg-zinc-200 cursor-pointer shadow-[0_8px_32px_rgba(255,255,255,0.14)]'
+                ? 'bg-primary text-app hover:bg-primary-hover cursor-pointer'
                 : 'bg-white/[0.07] text-zinc-500 cursor-not-allowed'
             }`}
           >

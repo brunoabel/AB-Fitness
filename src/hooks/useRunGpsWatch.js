@@ -33,6 +33,11 @@ export default function useRunGpsWatch({
   const simStepRef = useRef(0);
   const consecutiveRejectionsRef = useRef(0);
   const lastEmittedFixRef = useRef(null);
+  const currentFixRef = useRef(null);
+
+  useEffect(() => {
+    currentFixRef.current = currentFix;
+  }, [currentFix]);
 
   const stopSensors = useCallback(() => {
     if (simIntervalRef.current) {
@@ -223,12 +228,13 @@ export default function useRunGpsWatch({
     }
 
     if (!lastCoordRef.current) {
-      const startCoord = generateSimulatedStep(0, null, currentFix, simulationMode);
+      const startCoord = generateSimulatedStep(0, null, currentFixRef.current, simulationMode);
       const smoothedStart = kalmanFilterRef.current.process(startCoord);
       lastCoordRef.current = smoothedStart;
       coordinatesRef.current = [smoothedStart];
       setCoordinates([smoothedStart]);
       setCurrentFix(smoothedStart);
+      currentFixRef.current = smoothedStart;
       setGpsAccuracy(4);
     }
 
@@ -254,7 +260,7 @@ export default function useRunGpsWatch({
         simIntervalRef.current = null;
       }
     };
-  }, [sessionStatus, isSimulation, simulationMode, currentFix, onAcceptedPoint, lastCoordRef, coordinatesRef, kalmanFilterRef, setCoordinates]);
+  }, [sessionStatus, isSimulation, simulationMode, onAcceptedPoint, lastCoordRef, coordinatesRef, kalmanFilterRef, setCoordinates]);
 
   const handlePrewarmGps = useCallback(() => {
     if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {

@@ -1,0 +1,73 @@
+<template>
+  <style>
+    @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500 800; src: url('assets/fonts/plus-jakarta-sans-latin.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400 700; src: url('assets/fonts/inter-latin.woff2') format('woff2'); }
+    #root { position: absolute; inset: 0; font-family: 'Inter', sans-serif; color: #fff; background: #000; }
+    #rn-ui { position: absolute; inset: 0; }
+    #rn-pill { position: absolute; left: 0; right: 0; top: 330px; text-align: center; }
+    #rn-pill span { display: inline-block; padding: 10px 26px; border-radius: 999px; font-size: 28px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; background: rgba(16,185,129,0.2); color: #6ee7b7; border: 2px solid rgba(16,185,129,0.3); }
+    #rn-map { position: absolute; left: 190px; top: 420px; width: 700px; height: 330px; overflow: visible; }
+    #rn-dlab { position: absolute; left: 0; right: 0; top: 790px; text-align: center; font-size: 29px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #a1a1aa; }
+    #rn-dist { position: absolute; left: 0; right: 0; top: 840px; height: 150px; display: flex; justify-content: center; align-items: baseline; gap: 16px; }
+    .rn-big { position: relative; width: 340px; height: 150px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 150px; line-height: 1; letter-spacing: -0.03em; }
+    .rn-big span { position: absolute; right: 0; top: 0; }
+    .rn-km { font-size: 48px; font-weight: 500; color: #a1a1aa; }
+    .rn-tiles { position: absolute; left: 90px; right: 90px; top: 1030px; display: grid; grid-template-columns: 1fr 1fr; gap: 29px; }
+    .rn-tile { background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.07); padding: 38px; border-radius: 48px; }
+    .rn-tl { display: flex; align-items: center; gap: 10px; font-size: 29px; color: #a1a1aa; margin-bottom: 6px; }
+    .rn-tv { position: relative; height: 70px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 62px; letter-spacing: -0.02em; line-height: 70px; }
+    .rn-tv span { position: absolute; left: 0; top: 0; }
+    .rn-ts { font-size: 28px; color: #a1a1aa; margin-top: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+  <div id="root" data-composition-id="corrida" data-width="1080" data-height="1920">
+    <div id="rn-ui" data-layout-allow-overflow>
+      <div id="rn-pill"><span>Em corrida</span></div>
+      <svg id="rn-map" viewBox="0 0 700 330">
+        <path d="M40 290 C 120 310, 160 205, 235 215 S 335 305, 405 245 S 455 95, 540 85 S 690 150, 660 40" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="8" stroke-linecap="round"/>
+        <path id="rn-route" d="M40 290 C 120 310, 160 205, 235 215 S 335 305, 405 245 S 455 95, 540 85 S 690 150, 660 40" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+        <path id="rn-head" d="M40 290 C 120 310, 160 205, 235 215 S 335 305, 405 245 S 455 95, 540 85 S 690 150, 660 40" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"/>
+        <defs><filter id="rn-glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="9"/></filter></defs>
+        <circle cx="40" cy="290" r="10" fill="#0a1128" stroke="#fff" stroke-width="4"/>
+        <path id="rn-headglow" d="M40 290 C 120 310, 160 205, 235 215 S 335 305, 405 245 S 455 95, 540 85 S 690 150, 660 40" fill="none" stroke="#dbe6ff" stroke-width="44" stroke-linecap="round" filter="url(#rn-glow)" opacity="0.85"/>
+      </svg>
+      <div id="rn-dlab">Distância</div>
+      <div id="rn-dist"><span class="rn-big"><span id="rn-d0">4.78</span><span id="rn-d1" style="opacity:0">4.79</span><span id="rn-d2" style="opacity:0">4.80</span><span id="rn-d3" style="opacity:0">4.81</span><span id="rn-d4" style="opacity:0">4.82</span><span id="rn-d5" style="opacity:0">4.83</span><span id="rn-d6" style="opacity:0">4.84</span><span id="rn-d7" style="opacity:0">4.85</span></span><span class="rn-km">km</span></div>
+      <div class="rn-tiles">
+        <div class="rn-tile">
+          <div class="rn-tl"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg><span>Ritmo</span></div>
+          <div class="rn-tv"><span>4:52/km</span></div>
+          <div class="rn-ts">Médio 4:58/km</div>
+        </div>
+        <div class="rn-tile">
+          <div class="rn-tl"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>Tempo</span></div>
+          <div class="rn-tv"><span id="rn-t0">23:28</span><span id="rn-t1" style="opacity:0">23:29</span><span id="rn-t2" style="opacity:0">23:30</span></div>
+          <div class="rn-ts">12.3 <span style="color:#71717a">km/h</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      // t local = t vídeo - 10,625. HUD curto (1,5625 s): rota rápida com ponta luminosa, distância rolando, 4.85 trava no golpe de 11,561
+      const L = document.querySelector("#rn-route").getTotalLength();
+      gsap.set("#rn-route", { attr: { "stroke-dasharray": L + " " + L } });
+      gsap.set(["#rn-head", "#rn-headglow"], { attr: { "stroke-dasharray": "0.01 " + (2 * L) } });
+      tl.fromTo("#rn-ui", { scale: 1.05, filter: "blur(8px)" }, { scale: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, 0);
+      tl.fromTo("#rn-route", { attr: { "stroke-dashoffset": L * 0.92 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.936, ease: "power1.inOut" }, 0);
+      tl.fromTo(["#rn-head", "#rn-headglow"], { attr: { "stroke-dashoffset": -L * 0.08 } }, { attr: { "stroke-dashoffset": -L * 0.999 }, duration: 0.936, ease: "power1.inOut" }, 0);
+      const ids = ["#rn-d0", "#rn-d1", "#rn-d2", "#rn-d3", "#rn-d4", "#rn-d5", "#rn-d6", "#rn-d7"];
+      const at = [0, 0.10, 0.22, 0.34, 0.46, 0.58, 0.70, 0.936];
+      for (let i = 1; i < ids.length; i++) {
+        tl.set(ids[i - 1], { opacity: 0 }, at[i]);
+        tl.set(ids[i], { opacity: 1 }, at[i]);
+      }
+      tl.fromTo("#rn-d7", { filter: "blur(6px)" }, { filter: "blur(0px)", duration: 0.14, ease: "expo.out", immediateRender: false }, 0.936);
+      tl.fromTo("#rn-t0", { opacity: 1 }, { opacity: 0, duration: 0.05, immediateRender: false }, 0.936);
+      tl.fromTo("#rn-t1", { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.936);
+      // 12,188: corte seco na batida para o Trainer Hub
+      window.__timelines["corrida"] = tl;
+    })();
+  </script>
+
+</template>

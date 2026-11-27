@@ -6,8 +6,10 @@ import {
   GpsKalmanFilter2D,
   calculateRollingPace,
   computeSplits,
+  haversine,
   simplifyRoute
 } from '../utils/runningService';
+import { getLocalCustomPlan } from '../services/workoutService';
 import {
   getRunsHistory,
   saveRunRecord,
@@ -30,6 +32,7 @@ import {
   unlockSpeechIOS
 } from '../utils/speech';
 import { syncRunToSupabase } from '../services/runningSyncService';
+import { pushWorkoutToConnectedWearables } from '../services/wearables/wearableManager';
 import { evaluateAndUnlockBadges } from '../utils/badgeService';
 import { useAuth } from '../context';
 import { useWakeLock } from '../hooks/useWakeLock';
@@ -118,6 +121,9 @@ export default function RunningHub({ isDark = true }) {
   const startTimestampRef = useRef(null);
   const accumulatedPausedMsRef = useRef(0);
   const pauseStartedAtRef = useRef(null);
+  const pausedIntervalsRef = useRef(Array.isArray(initialDraft?.pausedIntervals) ? initialDraft.pausedIntervals : []);
+  const lowSpeedSinceRef = useRef(null);
+  const latestDraftPayloadRef = useRef(null);
   const elapsedSecondsRef = useRef(initialDraft?.elapsedSeconds ?? 0);
   const currentPaceRef = useRef(0);
   const lastDraftSaveTimeRef = useRef(0);
@@ -129,10 +135,37 @@ export default function RunningHub({ isDark = true }) {
 
   const processAcceptedPoint = useCallback((rawPoint, gnssSpeedMs = null) => {
     const now = rawPoint.timestamp || Date.now();
-    lastValidMoveTimestampRef.current = now;
+    let instSpeedMs = gnssSpeedMs !== null && gnssSpeedMs !== undefined && gnssSpeedMs >= 0 ? gnssSpeedMs : null;
+    if (instSpeedMs === null && lastCoordRef.current && now > (lastCoordRef.current.timestamp || 0)) {
+      const dtSec = (now - lastCoordRef.current.timestamp) / 1000;
+      if (dtSec > 0) instSpeedMs = haversine(lastCoordRef.current, rawPoint) / dtSec;
+    }
+
+    if (autoPauseEnabled && !isSimulation && distanceKmRef.current >= 0.02 && instSpeedMs !== null) {
+      if (instSpeedMs < DEFAULT_TRACKING_CONFIG.autoPauseSpeedMs) {
+        if (!lowSpeedSinceRef.current) lowSpeedSinceRef.current = now;
+        if (!isAutoPausedRef.current && now - lowSpeedSinceRef.current >= DEFAULT_TRACKING_CONFIG.autoPauseDelayMs) {
+          isAutoPausedRef.current = true;
+          setIsAutoPaused(true);
+          pauseStartedAtRef.current = now;
+          setSpeedKmh(0);
+          setCurrentPaceSeconds(0);
+          currentPaceRef.current = 0;
+          return;
+        }
+        if (isAutoPausedRef.current) return;
+      } else if (instSpeedMs >= DEFAULT_TRACKING_CONFIG.autoPauseSpeedMs + 0.3) {
+        lowSpeedSinceRef.current = null;
+        lastValidMoveTimestampRef.current = now;
+      }
+    } else {
+      lowSpeedSinceRef.current = null;
+      lastValidMoveTimestampRef.current = now;
+    }
 
     if (isAutoPausedRef.current) {
       if (pauseStartedAtRef.current) {
+        pausedIntervalsRef.current = [...pausedIntervalsRef.current, { start: pauseStartedAtRef.current, end: now }];
         accumulatedPausedMsRef.current += Math.max(0, now - pauseStartedAtRef.current);
         pauseStartedAtRef.current = null;
       }
@@ -178,7 +211,7 @@ export default function RunningHub({ isDark = true }) {
     coordinatesRef.current = updatedCoords;
     setCoordinates(updatedCoords);
 
-    const { splits: calculatedSplits } = computeSplits(updatedCoords);
+    const { splits: calculatedSplits } = computeSplits(updatedCoords, pausedIntervalsRef.current);
     if (calculatedSplits.length > splitsRef.current.length) {
       const latestSplit = calculatedSplits[calculatedSplits.length - 1];
       const prevSplit = calculatedSplits.length >= 2 ? calculatedSplits[calculatedSplits.length - 2] : null;
@@ -263,6 +296,8 @@ export default function RunningHub({ isDark = true }) {
     startTimestampRef.current = now - restoredElapsed * 1000;
     accumulatedPausedMsRef.current = 0;
     pauseStartedAtRef.current = now;
+    pausedIntervalsRef.current = Array.isArray(draft.pausedIntervals) ? draft.pausedIntervals : [];
+    lowSpeedSinceRef.current = null;
 
     setAvgPaceSeconds(draft.avgPaceSeconds ?? 0);
     setCalories(draft.calories ?? 0);
@@ -346,7 +381,9 @@ export default function RunningHub({ isDark = true }) {
         startTimestampRef.current = Date.now() - elapsedSecondsRef.current * 1000;
       }
       if (pauseStartedAtRef.current && !isAutoPausedRef.current) {
-        accumulatedPausedMsRef.current += Math.max(0, Date.now() - pauseStartedAtRef.current);
+        const now = Date.now();
+        pausedIntervalsRef.current = [...pausedIntervalsRef.current, { start: pauseStartedAtRef.current, end: now }];
+        accumulatedPausedMsRef.current += Math.max(0, now - pauseStartedAtRef.current);
         pauseStartedAtRef.current = null;
       }
       timerIntervalRef.current = setInterval(syncElapsedTime, 1000);
@@ -392,24 +429,46 @@ export default function RunningHub({ isDark = true }) {
   useEffect(() => {
     if (sessionStatus === 'running' || sessionStatus === 'paused') {
       const now = Date.now();
+      const payload = {
+        sessionStatus,
+        distanceKm,
+        elapsedSeconds,
+        avgPaceSeconds: livePaceSeconds,
+        calories,
+        elevationGainM,
+        coordinates,
+        splits,
+        pausedIntervals: pausedIntervalsRef.current,
+        isSimulation,
+        timestamp: now
+      };
+      latestDraftPayloadRef.current = payload;
       const isStateTransition = sessionStatus === 'paused' || coordinates.length <= 2;
       if (isStateTransition || now - lastDraftSaveTimeRef.current >= 5000) {
         lastDraftSaveTimeRef.current = now;
-        saveActiveRunDraft({
-          sessionStatus,
-          distanceKm,
-          elapsedSeconds,
-          avgPaceSeconds: livePaceSeconds,
-          calories,
-          elevationGainM,
-          coordinates,
-          splits,
-          isSimulation,
-          timestamp: now
-        });
+        saveActiveRunDraft(payload);
       }
+    } else {
+      latestDraftPayloadRef.current = null;
     }
   }, [sessionStatus, distanceKm, elapsedSeconds, livePaceSeconds, calories, elevationGainM, coordinates, splits, isSimulation]);
+
+  useEffect(() => {
+    const flushRunDraft = () => {
+      if (latestDraftPayloadRef.current) {
+        saveActiveRunDraft({ ...latestDraftPayloadRef.current, timestamp: Date.now() });
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') flushRunDraft();
+    };
+    window.addEventListener('pagehide', flushRunDraft);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('pagehide', flushRunDraft);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
   const resetMetricsState = useCallback(() => {
     targetReachedNotifiedRef.current = false;
@@ -438,6 +497,9 @@ export default function RunningHub({ isDark = true }) {
     startTimestampRef.current = null;
     accumulatedPausedMsRef.current = 0;
     pauseStartedAtRef.current = null;
+    pausedIntervalsRef.current = [];
+    lowSpeedSinceRef.current = null;
+    latestDraftPayloadRef.current = null;
   }, [resetCounters]);
 
   const handleStartCountdown = useCallback(() => {
@@ -524,9 +586,12 @@ export default function RunningHub({ isDark = true }) {
 
   const handleResume = useCallback(() => {
     if (pauseStartedAtRef.current) {
-      accumulatedPausedMsRef.current += Math.max(0, Date.now() - pauseStartedAtRef.current);
+      const now = Date.now();
+      pausedIntervalsRef.current = [...pausedIntervalsRef.current, { start: pauseStartedAtRef.current, end: now }];
+      accumulatedPausedMsRef.current += Math.max(0, now - pauseStartedAtRef.current);
       pauseStartedAtRef.current = null;
     }
+    lowSpeedSinceRef.current = null;
     lastValidMoveTimestampRef.current = Date.now();
     isAutoPausedRef.current = false;
     setIsAutoPaused(false);
@@ -577,12 +642,13 @@ export default function RunningHub({ isDark = true }) {
     });
 
     const completedDaysForStreak = getCompletedDays();
-    const prevStreak = computeStreak(completedDaysForStreak, WEEKLY_SCHEDULE, getRunsHistory());
+    const activeSchedule = getLocalCustomPlan() || WEEKLY_SCHEDULE;
+    const prevStreak = computeStreak(completedDaysForStreak, activeSchedule, getRunsHistory());
 
     saveRunRecord(runRecord);
     reloadHistory();
 
-    const nextStreak = computeStreak(completedDaysForStreak, WEEKLY_SCHEDULE, getRunsHistory());
+    const nextStreak = computeStreak(completedDaysForStreak, activeSchedule, getRunsHistory());
     const streakInfoResult = getStreakMilestoneInfo(nextStreak, prevStreak);
     if (streakInfoResult.advanced && shouldShowStreakCelebration(nextStreak)) {
       setStreakInfo(streakInfoResult);
@@ -593,6 +659,17 @@ export default function RunningHub({ isDark = true }) {
       syncRunToSupabase(runRecord, userId).catch((err) => {
         console.warn('Erro ao guardar corrida na nuvem:', err);
       });
+    }
+
+    if (!isSimulation && finalDistance >= 0.2) {
+      pushWorkoutToConnectedWearables({
+        name: `Corrida AB Fitness · ${finalDistance.toFixed(2)} km`,
+        sportType: 'Run',
+        startDateIso: new Date(Date.now() - finalSeconds * 1000).toISOString(),
+        elapsedSeconds: finalSeconds,
+        distanceMeters: Math.round(finalDistance * 1000),
+        description: `Pace médio ${runRecord.avgPace} · +${Math.round(elevationRef.current)} m — AB Fitness`
+      }).catch(() => {});
     }
 
     try {

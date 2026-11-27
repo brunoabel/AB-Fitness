@@ -30,7 +30,7 @@ export default function CoachIntro({ handleSend, messages }) {
                 <button
                   key={chip.id}
                   onClick={() => handleSend(chip.prompt)}
-                  className="p-3 rounded-lg text-left bg-surface-2 hover:bg-surface-3 border border-white/10 text-xs text-zinc-200 transition-all active:scale-[0.98] cursor-pointer"
+                  className="p-3.5 rounded-2xl text-left bg-surface hover:bg-surface-2 border border-white/[0.08] hover:border-accent-hover text-xs text-zinc-200 transition-colors active:scale-[0.98] cursor-pointer"
                 >
                   <span className="font-semibold block text-zinc-100">
                     {chip.label}

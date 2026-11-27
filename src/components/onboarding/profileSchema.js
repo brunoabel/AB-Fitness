@@ -61,7 +61,7 @@ export const LOCATIONS = [
 ];
 
 /** Dias de treino por frequência, segundo o gerador (0 = segunda … 6 = domingo). */
-export const TRAINING_DAYS = { 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 3, 4, 5] };
+export const TRAINING_DAYS = { 2: [0, 3], 3: [0, 2, 4], 4: [0, 1, 3, 4], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 3, 4, 5] };
 
 /** Metadados dos 7 dias da semana (0 = segunda ... 6 = domingo; dayId espelha Date.getDay()). */
 export const WEEK_DAYS = [
@@ -84,6 +84,7 @@ export const formatTrainingDays = (days) => {
 };
 
 export const SPLIT_SUMMARY = {
+  2: 'Full Body A / B',
   3: 'Full Body A / B / C',
   4: 'Upper / Lower · Upper / Lower',
   5: 'Push / Pull / Legs / Upper / Lower',
@@ -92,17 +93,37 @@ export const SPLIT_SUMMARY = {
 
 /** Mesma divisão que SPLIT_SUMMARY, em português simples — usada para quem é iniciante. */
 export const SPLIT_SUMMARY_SIMPLE = {
+  2: 'Corpo inteiro, 2 treinos diferentes',
   3: 'Corpo inteiro, 3 treinos diferentes',
   4: 'Metade de cima e metade de baixo do corpo, 2 vezes por semana',
   5: 'Empurrar, puxar e pernas, mais um dia de cima e um de baixo',
   6: 'Empurrar, puxar e pernas, 2 vezes por semana'
 };
 
-export const DAYS = [3, 4, 5, 6];
+export const DAYS = [2, 3, 4, 5, 6];
 export const MINUTES = [45, 60, 75];
 
 /** Split que o gerador aplica para cada frequência semanal. */
-export const SPLIT_BY_DAYS = { 3: 'full_body', 4: 'upper_lower', 5: 'ppl', 6: 'ppl' };
+export const SPLIT_BY_DAYS = { 2: 'full_body', 3: 'full_body', 4: 'upper_lower', 5: 'ppl', 6: 'ppl' };
+
+/** Equipamento em casa (ids iguais aos de src/engine/exerciseMeta.js EQUIPMENT_ITEMS). */
+export const HOME_EQUIPMENT = [
+  { id: 'dumbbell', label: 'Halteres' },
+  { id: 'bench', label: 'Banco' },
+  { id: 'pull_up_bar', label: 'Barra fixa' },
+  { id: 'bands', label: 'Elásticos' },
+  { id: 'kettlebell', label: 'Kettlebell' },
+  { id: 'barbell', label: 'Barra e anilhas' },
+  { id: 'box', label: 'Caixa ou degrau' },
+  { id: 'stability_ball', label: 'Bola suíça' },
+  { id: 'medicine_ball', label: 'Bola medicinal' },
+  { id: 'foam_roller', label: 'Rolo de espuma' },
+  { id: 'rings', label: 'Argolas' },
+  { id: 'ab_wheel', label: 'Roda abdominal' },
+  { id: 'jump_rope', label: 'Corda de saltar' }
+];
+/** Pré-seleção ao escolher "Casa com equipamento" (o utilizador ajusta). */
+export const DEFAULT_HOME_EQUIPMENT = ['dumbbell', 'bench', 'pull_up_bar', 'bands'];
 
 export const INJURIES = [
   { id: 'shoulder', label: 'Ombro' },
@@ -198,6 +219,7 @@ export const DEFAULT_PROFILE = {
   primaryGoal: null,
   experienceLevel: null,
   trainingLocation: null,
+  equipment: [],
   daysPerWeek: null,
   trainingDays: null,
   sessionMinutes: null,
@@ -232,6 +254,7 @@ export function toRow(userId, p) {
     primary_goal: p.primaryGoal,
     experience_level: p.experienceLevel,
     training_location: p.trainingLocation,
+    equipment: p.trainingLocation === 'gym' ? [] : p.equipment || [],
     days_per_week: p.daysPerWeek,
     session_minutes: p.sessionMinutes,
     split_preference: p.splitPreference,

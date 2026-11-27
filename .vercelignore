@@ -1,0 +1,16 @@
+/node_modules
+/dist
+/.git
+.env
+.env.*
+/.vercel
+/media
+/tools
+/marketing
+/tmp
+/video
+/.agents
+/.claude
+/skills
+/skills-lock.json
+/promo_video.html

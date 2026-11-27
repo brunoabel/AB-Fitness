@@ -8,9 +8,40 @@ import { saveActiveDraft } from '../utils/storage';
  * - não grava depois de o treino ser concluído (`finishingRef`).
  * Devolve `dataRef`, sempre com as séries e trocas mais recentes (útil fora dos updaters de estado).
  */
-export default function useWorkoutDraft({ workoutDayId, exercisesData, homeSwaps, computeElapsed, timerRef, finishingRef }) {
-  const dataRef = useRef({ exercisesData, homeSwaps });
-  dataRef.current = { exercisesData, homeSwaps };
+export default function useWorkoutDraft({
+  workoutDayId,
+  exercisesData,
+  homeSwaps,
+  liveSwaps,
+  focusedExerciseId,
+  isFocusMode,
+  isExpressMode,
+  restTimerState,
+  workoutSnapshot,
+  computeElapsed,
+  timerRef,
+  finishingRef
+}) {
+  const dataRef = useRef({
+    exercisesData,
+    homeSwaps,
+    liveSwaps,
+    focusedExerciseId,
+    isFocusMode,
+    isExpressMode,
+    restTimerState,
+    workoutSnapshot
+  });
+  dataRef.current = {
+    exercisesData,
+    homeSwaps,
+    liveSwaps,
+    focusedExerciseId,
+    isFocusMode,
+    isExpressMode,
+    restTimerState,
+    workoutSnapshot
+  };
 
   const snapshot = () => ({
     workoutDayId,
@@ -26,7 +57,7 @@ export default function useWorkoutDraft({ workoutDayId, exercisesData, homeSwaps
     }, 500);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workoutDayId, exercisesData, homeSwaps]);
+  }, [workoutDayId, exercisesData, homeSwaps, liveSwaps, focusedExerciseId, isFocusMode, isExpressMode, restTimerState]);
 
   useEffect(() => {
     const flush = () => {

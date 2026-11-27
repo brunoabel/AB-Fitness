@@ -8,10 +8,11 @@ import { triggerHaptic } from '../utils/audio';
 import { getLocalFitnessProfile } from '../services/fitnessProfileService';
 import { isBeginnerProfile } from './onboarding/profileSchema';
 import { e1RM } from '../utils/strengthMetrics';
-import { getWorkoutHistory } from '../utils/storage';
+import { getWorkoutHistory, getRunsHistory } from '../utils/storage';
 import { getCatalogEntry } from '../data/exerciseMedia';
 import { regionsForExercise, MUSCLE_REGIONS } from '../data/muscleRegions';
 import { parseSessionTime } from '../utils/muscleFatigue';
+import { computeWorkloadACWR } from '../utils/workloadAcwr';
 
 /**
  * Constrói histórico real de progressão por exercício a partir das sessões gravadas.
@@ -121,8 +122,10 @@ export function computeWeeklyVolumeByMuscle(history = []) {
 export default function ProgressionCharts() {
   const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
   const history = useMemo(() => getWorkoutHistory(), []);
+  const runsHistory = useMemo(() => getRunsHistory(), []);
   const progressionData = useMemo(() => buildRealProgression(history), [history]);
   const weeklyVolume = useMemo(() => computeWeeklyVolumeByMuscle(history), [history]);
+  const acwr = useMemo(() => computeWorkloadACWR({ workouts: history, runs: runsHistory }), [history, runsHistory]);
 
   const exerciseKeys = useMemo(() => Object.keys(progressionData), [progressionData]);
   const defaultExKey = useMemo(
@@ -184,9 +187,9 @@ export default function ProgressionCharts() {
   }, [weeklyVolume]);
 
   return (
-    <div className="space-y-4 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn">
       {/* 1. VISUALIZAÇÃO DE SOBRECARGA PROGRESSIVA POR EXERCÍCIO */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/[0.08] shadow-sm space-y-4 transition-colors">
+      <div className="pt-1 space-y-4">
         
         {/* Cabeçalho e Seletor */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
@@ -208,7 +211,7 @@ export default function ProgressionCharts() {
                 setHoveredPoint(null);
                 triggerHaptic(10);
               }}
-              className="min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-white/[0.04] text-zinc-100 text-xs font-semibold border border-white/[0.08] outline-none cursor-pointer max-w-xs truncate"
+              className="min-h-[44px] sm:min-h-[38px] px-4 py-2 sm:py-1.5 rounded-full bg-surface text-zinc-100 text-xs font-semibold border border-white/[0.1] focus:border-accent-hover outline-none cursor-pointer max-w-xs truncate transition-colors"
             >
               {exerciseKeys.map((key) => (
                 <option key={key} value={key} className="bg-zinc-950 text-white">
@@ -255,8 +258,8 @@ export default function ProgressionCharts() {
               >
                 <defs>
                   <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="currentColor" className="text-zinc-600" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="#2B4A7A" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#2B4A7A" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -284,7 +287,7 @@ export default function ProgressionCharts() {
                         cx={pt.x}
                         cy={pt.y}
                         r={isHovered ? 5.5 : 3.5}
-                        className="fill-zinc-950 stroke-white cursor-pointer transition-all duration-150"
+                        className="fill-app stroke-white cursor-pointer transition-[r,stroke-width] duration-150"
                         strokeWidth={isHovered ? 2.5 : 2}
                         onMouseEnter={() => setHoveredPoint(i)}
                         onTouchStart={() => setHoveredPoint(i)}
@@ -304,20 +307,20 @@ export default function ProgressionCharts() {
 
               {hoveredPoint !== null && points[hoveredPoint] && (
                 <div 
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-100 text-zinc-900 px-3 py-1.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-zinc-300 animate-fadeIn"
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 bg-surface-2 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 border border-accent-hover animate-fadeIn whitespace-nowrap"
                 >
-                  <span className="tabular-nums">{points[hoveredPoint].date}:</span>
+                  <span className="tabular-nums text-zinc-300">{points[hoveredPoint].date}:</span>
                   <span className="font-bold font-display tabular-nums">
                     {points[hoveredPoint].weight} kg
                   </span>
-                  <span className="text-[11px] opacity-80 tabular-nums">
+                  <span className="text-[11px] text-zinc-300 tabular-nums">
                     ({points[hoveredPoint].reps} reps{!isSimpleMode ? ` · 1RM ~${points[hoveredPoint].estimated1RM} kg` : ''})
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/[0.08]">
+            <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-white/[0.06]">
               <span className="flex items-center gap-1 font-medium">
                 {isSimpleMode ? (
                   <>
@@ -340,8 +343,8 @@ export default function ProgressionCharts() {
           </>
         ) : (
           /* Estado Vazio Elegante (<2 sessões) */
-          <div className="py-10 text-center space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto text-zinc-400">
+          <div className="py-10 text-center space-y-3 border-t border-white/[0.06]">
+            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto text-zinc-400">
               <Dumbbell className="w-5 h-5 stroke-[1.75]" />
             </div>
             <div className="space-y-1">
@@ -362,7 +365,7 @@ export default function ProgressionCharts() {
       </div>
 
       {/* 2. VOLUME SEMANAL REAL POR GRUPO MUSCULAR */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-white/[0.08] shadow-sm space-y-3.5">
+      <div className="pt-6 border-t border-white/[0.06] space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-zinc-400" />
@@ -372,12 +375,12 @@ export default function ProgressionCharts() {
         </div>
 
         {activeVolumeRegions.length > 0 ? (
-          <div className="space-y-2.5 pt-1">
-            {activeVolumeRegions.map(reg => {
+          <div className="space-y-3 pt-1">
+            {activeVolumeRegions.map((reg, index) => {
               const maxDisplay = 20; // Alvo ótimo de 10-20 séries/semana
               const pct = Math.min(100, Math.round((reg.sets / maxDisplay) * 100));
               return (
-                <div key={reg.id} className="space-y-1">
+                <div key={reg.id} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-zinc-300 font-medium">{reg.label}</span>
                     <span className="tabular-nums font-semibold text-white">
@@ -386,7 +389,9 @@ export default function ProgressionCharts() {
                   </div>
                   <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-white rounded-full transition-all duration-300"
+                      className={`h-full rounded-full transition-[width] duration-300 ${
+                        index === 0 ? 'bg-white' : 'bg-accent-hover'
+                      }`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -398,6 +403,63 @@ export default function ProgressionCharts() {
           <div className="py-4 text-center text-xs text-zinc-500">
             Nenhuma série efetiva registada nos últimos 7 dias.
           </div>
+        )}
+      </div>
+
+      {/* 3. GUARDRAIL DE CARGA AGUDA VS. CRÓNICA (ACWR) */}
+      <div className="pt-6 border-t border-white/[0.06] space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h4 className="text-sm font-semibold text-white">Carga Aguda vs. Crónica (ACWR)</h4>
+            <p className="text-[11px] text-zinc-400">Prevenção de sobrecarga (7d vs média 28d · força + corrida)</p>
+          </div>
+          {acwr.ready ? (
+            <span
+              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tabular-nums border ${
+                acwr.status === 'high_risk'
+                  ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+                  : acwr.status === 'caution'
+                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                    : acwr.status === 'sweet_spot'
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                      : 'bg-white/[0.05] border-white/[0.1] text-zinc-300'
+              }`}
+            >
+              {acwr.ratio.toFixed(2)}× · {acwr.label}
+            </span>
+          ) : (
+            <span className="text-[11px] text-zinc-500">A calibrar</span>
+          )}
+        </div>
+
+        {acwr.ready ? (
+          <div className="space-y-2.5">
+            <div className="relative h-2 rounded-full bg-white/[0.06] overflow-hidden">
+              {/* Zona ótima 0.80–1.30 numa escala 0..2.0 */}
+              <div
+                aria-hidden
+                className="absolute top-0 bottom-0 bg-emerald-500/25"
+                style={{ left: '40%', width: '25%' }}
+              />
+              <div
+                className={`absolute top-0 bottom-0 w-1.5 rounded-full -translate-x-1/2 ${
+                  acwr.status === 'high_risk'
+                    ? 'bg-rose-400'
+                    : acwr.status === 'caution'
+                      ? 'bg-amber-400'
+                      : 'bg-white'
+                }`}
+                style={{ left: `${Math.min(98, Math.max(2, (acwr.ratio / 2) * 100))}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums">
+              <span>Aguda 7d: <strong className="text-white">{acwr.acuteLoad} AU</strong></span>
+              <span>Crónica 28d: <strong className="text-white">{acwr.chronicLoad} AU/sem</strong></span>
+            </div>
+            <p className="text-xs text-zinc-400 leading-relaxed">{acwr.detail}</p>
+          </div>
+        ) : (
+          <p className="text-xs text-zinc-500">{acwr.detail}</p>
         )}
       </div>
     </div>

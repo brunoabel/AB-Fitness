@@ -101,36 +101,48 @@ export function getBestHistorical1RM(exId, history = [], fallbackWeights = {}) {
   return max1RM > 0 ? max1RM : null;
 }
 
+/** Incremento de carga: o maior entre o passo mínimo do equipamento e a percentagem da carga, arredondado ao passo. */
+export function loadIncrement(prevWeight, { step = 2.5, pct = 0 } = {}) {
+  if (!step) return 0;
+  const relative = Math.round((prevWeight * pct) / step) * step;
+  return Math.max(step, relative);
+}
+
 /**
- * Motor de progressão (dupla progressão autorregulada por RIR) — Helms et al. 2018/2020.
- * Olha pra última sessão completa de um exercício e sugere o próximo passo: subir carga
- * (quando o topo da faixa de reps foi batido com folga), subir reps (dentro da faixa, ainda
- * com reserva), manter (perto da falha) ou reduzir carga (falhou abaixo da faixa com RIR 0).
- * `prevSets`: array de sets da última sessão (vindo de buildPrevIndex). `exerciseConfig`:
- * { repRange: [min,max], progressionIncrementKg }, ambos opcionais (fallback pra exercícios
- * sem esses campos, ex. catálogo de treinos personalizados).
- * `readinessScore`: 0-100 do Índice de Prontidão dos wearables (computeReadinessIndex), ou
- * null sem dados. Abaixo de 55 (mesmo limiar de "Fadiga Elevada" do wearableManager) qualquer
- * progressão de carga/reps é travada para MANTER — autorregulação real, não apenas exibição.
+ * Motor de progressão: dupla progressão com RIR (docs/TRAINING_SCIENCE_AUDIT.md, secção 4.1).
+ * Olha para a última sessão de um exercício e sugere: subir carga (topo da faixa com a reserva alvo), subir reps
+ * (dentro da faixa), manter, ou reduzir carga (abaixo da faixa sem reserva).
+ * `exerciseConfig`: { repRange: [min,max], targetRir, increment: { step, pct }, progressionIncrementKg (legado) }.
+ * RIR por série = 10 - RPE quando registado; série de falha = 0; sem registo = desconhecido (não se assume nada:
+ * aplica-se a dupla progressão clássica só por reps).
+ * `readinessScore`: 0-100 do Índice de Prontidão dos wearables, ou null. Abaixo de 55 trava qualquer subida.
  */
 export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}, readinessScore = null) {
   const repRange = Array.isArray(exerciseConfig.repRange) && exerciseConfig.repRange.length === 2
     ? exerciseConfig.repRange
     : [8, 12];
-  const increment = Number(exerciseConfig.progressionIncrementKg) || 2.5;
+  const targetRir = Number.isFinite(Number(exerciseConfig.targetRir)) ? Number(exerciseConfig.targetRir) : 1;
 
   const working = (prevSets || []).filter((s) => (s.completed || s.done) && s.type !== 'W' && Number(s.weight) > 0);
   if (working.length === 0) return null;
 
-  // RIR = 10 - RPE quando registado; sem RPE assume-se RIR 2 (não penaliza nem assume falha)
-  const rirOf = (s) => (s.rpe ? Math.max(0, 10 - Number(s.rpe)) : 2);
-  const avgRir = working.reduce((sum, s) => sum + rirOf(s), 0) / working.length;
+  const rirOf = (s) => {
+    if (s.rpe !== null && s.rpe !== undefined && s.rpe !== '') return Math.max(0, 10 - Number(s.rpe));
+    if (s.type === 'F') return 0;
+    return null;
+  };
+  const known = working.map(rirOf).filter((r) => r !== null);
+  const avgRir = known.length ? known.reduce((a, b) => a + b, 0) / known.length : null;
   const prevWeight = Number(working[0].weight) || 0;
   const maxReps = Math.max(...working.map((s) => Number(s.reps) || 0));
+  const increment = exerciseConfig.increment
+    ? loadIncrement(prevWeight, exerciseConfig.increment)
+    : Number(exerciseConfig.progressionIncrementKg) || 2.5;
 
-  const failedBelowRangeAtLimit = working.some((s) => Number(s.reps) < repRange[0] && rirOf(s) <= 0);
+  const failedBelowRangeAtLimit = working.some((s) => Number(s.reps) < repRange[0] && rirOf(s) === 0);
   const allAtTopOfRange = working.every((s) => Number(s.reps) >= repRange[1]);
   const isLowReadiness = typeof readinessScore === 'number' && readinessScore < 55;
+  const rirText = avgRir === null ? '' : ` (RIR ${avgRir.toFixed(1)})`;
 
   if (failedBelowRangeAtLimit) {
     return {
@@ -142,7 +154,8 @@ export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}, 
     };
   }
 
-  if (allAtTopOfRange && avgRir >= 2) {
+  // Topo da faixa em todas as séries e com a reserva alvo (ou RIR não registado): sobe carga
+  if (allAtTopOfRange && increment > 0 && (avgRir === null || avgRir >= targetRir)) {
     if (isLowReadiness) {
       return {
         type: 'MAINTAIN',
@@ -157,11 +170,11 @@ export function calculateNextSessionPrescription(prevSets, exerciseConfig = {}, 
       suggestedWeight: Math.round((prevWeight + increment) * 2) / 2,
       suggestedReps: repRange[0],
       badge: `SUBIR +${increment}KG`,
-      rationale: `Bateste o topo da faixa com folga (RIR ${avgRir.toFixed(1)}) — hora de subir carga.`
+      rationale: `Bateste o topo da faixa${rirText} — hora de subir carga.`
     };
   }
 
-  if (maxReps < repRange[1] && avgRir >= 1) {
+  if (maxReps < repRange[1] && (avgRir === null || avgRir >= targetRir - 0.5)) {
     if (isLowReadiness) {
       return {
         type: 'MAINTAIN',

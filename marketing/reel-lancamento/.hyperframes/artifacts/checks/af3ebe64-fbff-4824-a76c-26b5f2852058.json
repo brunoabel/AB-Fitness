@@ -1,0 +1,812 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "filesScanned": 9
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 1,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 11.589,
+        "selector": "#rn-t0",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 594.5,
+          "top": 1107,
+          "right": 760.92,
+          "bottom": 1185,
+          "width": 166.42,
+          "height": 78
+        },
+        "containerSelector": "#rn-t1",
+        "text": "23:28",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 594.5,
+          "y": 1107,
+          "width": 166.42,
+          "height": 78
+        },
+        "firstSeen": 11.589,
+        "lastSeen": 11.589,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.589
+        ]
+      }
+    ],
+    "duration": 20.188,
+    "samples": [
+      1.122,
+      3.365,
+      5.608,
+      7.851,
+      10.094,
+      12.337,
+      14.58,
+      16.823,
+      19.066
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 1,
+    "truncated": false,
+    "faceCheck": {
+      "ran": true,
+      "candidates": 0,
+      "faces": 0
+    }
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": true,
+    "samples": [
+      1.122,
+      5.608,
+      10.094,
+      14.58,
+      19.066
+    ],
+    "checked": 18,
+    "passed": 18
+  },
+  "craft": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 10,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Recorde pessoal: 30 kg 32,5 kg\" (6 words) is on screen 1.57 s (±0.01 s), under its 1.72 s floor: hold it about 0.5 s + 0.3 s a word (2.30 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Recorde pessoal: 30 kg 32,5 kg",
+        "selector": "#pr-rec",
+        "dataAttributes": {},
+        "sourceFile": "compositions/pr.html",
+        "bbox": {
+          "x": 320.02,
+          "y": 690,
+          "width": 289.96000000000004,
+          "height": 41
+        },
+        "time": 5.639,
+        "words": 6,
+        "seconds": 1.566,
+        "floorSeconds": 1.725,
+        "measured": [
+          {
+            "time": 5.359,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 5.483,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 5.608,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 5.732,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 5.857,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 5.982,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 6.106,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 6.729,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 6.854,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 6.979,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 7.103,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 7.228,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.352,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.477,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"94\" (1 word) is on screen 0.35 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "94",
+        "selector": "#rc-n0",
+        "dataAttributes": {},
+        "sourceFile": "compositions/recuperacao.html",
+        "bbox": {
+          "x": 778.94,
+          "y": 284,
+          "width": 107.33000000000004,
+          "height": 115
+        },
+        "time": 7.205,
+        "words": 1,
+        "seconds": 0.351,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 6.854,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 6.979,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.103,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.228,
+            "opacity": 1,
+            "heightPx": 115
+          },
+          {
+            "time": 7.352,
+            "opacity": 1,
+            "heightPx": 115
+          },
+          {
+            "time": 7.477,
+            "opacity": 1,
+            "heightPx": 115
+          },
+          {
+            "time": 7.602,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.726,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.851,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Fadiga registrada · Peito, ombros e tríceps\" (6 words) is on screen 1.62 s (±0.01 s), under its 1.72 s floor: hold it about 0.5 s + 0.3 s a word (2.30 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Fadiga registrada · Peito, ombros e tríceps",
+        "selector": "#rc-label > span:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/recuperacao.html",
+        "bbox": {
+          "x": 156,
+          "y": 438,
+          "width": 670.7,
+          "height": 40
+        },
+        "time": 7.851,
+        "words": 6,
+        "seconds": 1.62,
+        "floorSeconds": 1.725,
+        "measured": [
+          {
+            "time": 7.477,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.602,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.726,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 7.851,
+            "opacity": 0.65,
+            "heightPx": 40
+          },
+          {
+            "time": 7.976,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 8.1,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 8.225,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 8.972,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 9.097,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 9.222,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 9.346,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 9.471,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 9.596,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 9.72,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.78\" (1 word) is on screen 0.10 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.78",
+        "selector": "#rn-d0",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 351.47,
+          "y": 819.65,
+          "width": 316.1,
+          "height": 189.47000000000003
+        },
+        "time": 10.639,
+        "words": 1,
+        "seconds": 0.102,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.343,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.468,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.592,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.717,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 10.842,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.966,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.091,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.79\" (1 word) is on screen 0.12 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.79",
+        "selector": "#rn-d1",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 356.38,
+          "y": 820,
+          "width": 310.87,
+          "height": 189
+        },
+        "time": 10.74,
+        "words": 1,
+        "seconds": 0.117,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.468,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.592,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.717,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.842,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 10.966,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.091,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.216,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.80\" (1 word) is on screen 0.12 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.80",
+        "selector": "#rn-d2",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 329.56,
+          "y": 820,
+          "width": 337.69,
+          "height": 189
+        },
+        "time": 10.858,
+        "words": 1,
+        "seconds": 0.116,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.592,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.717,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.842,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.966,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 11.091,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.216,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.34,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.81\" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.81",
+        "selector": "#rn-d3",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 375.38,
+          "y": 820,
+          "width": 291.87,
+          "height": 189
+        },
+        "time": 10.974,
+        "words": 1,
+        "seconds": 0.133,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.717,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.842,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.966,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.091,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 11.216,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.34,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.465,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.82\" (1 word) is on screen 0.12 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.82",
+        "selector": "#rn-d4",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 346.2,
+          "y": 820,
+          "width": 321.05,
+          "height": 189
+        },
+        "time": 11.107,
+        "words": 1,
+        "seconds": 0.117,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.842,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.966,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.091,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.216,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 11.34,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.465,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.589,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"4.84\" (1 word) is on screen 0.23 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "4.84",
+        "selector": "#rn-d6",
+        "dataAttributes": {},
+        "sourceFile": "compositions/corrida.html",
+        "bbox": {
+          "x": 337.66,
+          "y": 820,
+          "width": 329.59,
+          "height": 189
+        },
+        "time": 11.34,
+        "words": 1,
+        "seconds": 0.233,
+        "floorSeconds": 0.4,
+        "measured": [
+          {
+            "time": 10.966,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.091,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.216,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.34,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 11.465,
+            "opacity": 1,
+            "heightPx": 189
+          },
+          {
+            "time": 11.589,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.714,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.839,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Sem treinar há +4d\" (4 words) is on screen 0.82 s (±0.01 s), under its 1.27 s floor: hold it about 0.5 s + 0.3 s a word (1.70 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Sem treinar há +4d",
+        "selector": "#hb-a2 > span:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/hub.html",
+        "bbox": {
+          "x": 703.31,
+          "y": 913,
+          "width": 276.36,
+          "height": 36
+        },
+        "time": 13.786,
+        "words": 4,
+        "seconds": 0.817,
+        "floorSeconds": 1.275,
+        "measured": [
+          {
+            "time": 13.459,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.583,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.708,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.833,
+            "opacity": 0.9,
+            "heightPx": 36
+          },
+          {
+            "time": 13.957,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14.082,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14.206,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14.331,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14.456,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14.58,
+            "opacity": 0.92,
+            "heightPx": 33
+          },
+          {
+            "time": 14.705,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.829,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.954,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      }
+    ],
+    "enabled": true,
+    "step": 0.125,
+    "samples": 162
+  },
+  "audio": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

@@ -1,0 +1,71 @@
+<template>
+  <style>
+    @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500 800; src: url('assets/fonts/plus-jakarta-sans-latin.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400 700; src: url('assets/fonts/inter-latin.woff2') format('woff2'); }
+    #root { position: absolute; inset: 0; font-family: 'Inter', sans-serif; color: #fff; }
+    #pr-head { position: absolute; left: 90px; right: 90px; top: 420px; text-align: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 100px; line-height: 1.04; letter-spacing: -0.035em; }
+    .pr-w { display: inline-block; opacity: 0; }
+    #pr-row { position: absolute; left: 90px; top: 760px; width: 900px; padding: 22px 22px 10px; border-radius: 29px; border: 2px solid #2b4a7a; background: rgba(29,53,87,0.07); }
+    .pr-grid { display: grid; grid-template-columns: 110px 1fr 1fr 134px; gap: 18px; align-items: center; }
+    .pr-col { display: flex; flex-direction: column; align-items: center; }
+    .pr-idx { width: 86px; height: 86px; border-radius: 19px; border: 2px solid rgba(255,255,255,0.08); color: #a1a1aa; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 29px; }
+    .pr-lab { font-size: 28px; font-weight: 600; color: #71717a; text-transform: uppercase; margin-top: 4px; }
+    .pr-input { position: relative; width: 100%; height: 106px; border-radius: 19px; background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 50px; font-weight: 700; }
+    .pr-unit { position: absolute; right: 16px; top: 36px; font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 600; color: #71717a; }
+    .pr-check { width: 134px; height: 134px; border-radius: 29px; background: #1d3557; border: 2px solid #1d3557; display: flex; align-items: center; justify-content: center; }
+    .pr-bar { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 18px 4px 10px; border-top: 2px solid rgba(255,255,255,0.06); min-height: 96px; }
+    #pr-badge { display: inline-flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 700; color: #fff; background: rgba(29,53,87,0.7); padding: 8px 16px; border-radius: 10px; border: 2px solid #2b4a7a; text-transform: uppercase; letter-spacing: 0.08em; }
+    #pr-rest { position: absolute; left: 90px; top: 1120px; width: 900px; }
+    .pr-rest-top { display: flex; justify-content: space-between; align-items: baseline; }
+    .pr-rest-lab { font-size: 30px; font-weight: 600; color: #a1a1aa; }
+    .pr-rest-t { position: relative; width: 140px; height: 56px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 52px; line-height: 56px; }
+    .pr-rest-t span { position: absolute; right: 0; top: 0; }
+    .pr-track { margin-top: 18px; height: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); overflow: hidden; }
+    #pr-fill { height: 100%; width: 100%; background: #fff; transform-origin: 0 50%; }
+    #pr-dot { position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: #fff; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="pr" data-width="1080" data-height="1920">
+    <div id="pr-head"><span class="pr-w">Sobrecarga</span><br /><span class="pr-w">progressiva.</span></div>
+    <div id="pr-row" data-layout-allow-overflow>
+      <div class="pr-grid">
+        <div class="pr-col"><div class="pr-idx">1</div><div class="pr-lab">Série</div></div>
+        <div class="pr-col"><div class="pr-input">32,5<span class="pr-unit">kg</span></div></div>
+        <div class="pr-col"><div class="pr-input">8<span class="pr-unit">reps</span></div></div>
+        <div class="pr-col"><div class="pr-check"><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+      </div>
+      <div class="pr-bar">
+        <span id="pr-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          <span>Novo PR</span>
+        </span>
+      </div>
+    </div>
+    <div id="pr-rest"><div class="pr-rest-top"><span class="pr-rest-lab">Descanso</span><span class="pr-rest-t"><span id="pr-r0">1:28</span><span id="pr-r1" style="opacity:0">1:27</span><span id="pr-r2" style="opacity:0">1:26</span></span></div><div class="pr-track"><div id="pr-fill"></div></div></div>
+    <div id="pr-dot"></div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      // t local = t video - 5,28. Entra do corte do clipe levemente grande e assenta
+      tl.fromTo("#pr-row", { scale: 1.06, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0);
+      // Novo PR trava na batida 5,28 (pop)
+      tl.fromTo("#pr-badge", { scale: 0.55, opacity: 0, filter: "blur(6px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.28, ease: "expo.out" }, 0.0);
+      // título por palavra, do desfoque para o nítido, na batida 5,76
+      tl.fromTo(".pr-w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.14, stagger: 0.08, ease: "power2.out" }, 0.48);
+      tl.fromTo("#pr-rest", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.08);
+      tl.fromTo("#pr-fill", { scaleX: 88 / 90 }, { scaleX: 86 / 90, duration: 1.92, ease: "none" }, 0);
+      [[0.96, "#pr-r0", "#pr-r1"], [1.92, "#pr-r1", "#pr-r2"]].forEach(([at, a, b]) => {
+        tl.fromTo(a, { opacity: 1 }, { opacity: 0, duration: 0.08, immediateRender: false }, at);
+        tl.fromTo(b, { opacity: 0, y: 12, filter: "blur(4px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.14, ease: "expo.out" }, at);
+      });
+      tl.fromTo("#pr-row", { scale: 1 }, { scale: 1.045, duration: 1.62, ease: "power1.inOut", immediateRender: false }, 0.30);
+      // saída 7,20: título e linha somem, o selo vira ponto e viaja até o peito no mapa
+      tl.to(".pr-w", { opacity: 0, filter: "blur(8px)", duration: 0.18, stagger: 0.05, ease: "power2.in" }, 1.92);
+      tl.to(["#pr-row", "#pr-rest"], { opacity: 0, filter: "blur(12px)", duration: 0.22, ease: "power2.in" }, 1.96);
+      tl.fromTo("#pr-dot", { x: 250, y: 1068, opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 1.94);
+      tl.to("#pr-dot", { x: 330, y: 607, duration: 0.44, ease: "power2.inOut" }, 1.96);
+      tl.to("#pr-dot", { scale: 0, duration: 0.06, ease: "power2.in" }, 2.40);
+      window.__timelines["pr"] = tl;
+    })();
+  </script>
+</template>

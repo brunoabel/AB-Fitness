@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Play, Eye, ChevronUp, ChevronDown, Plus } from 'lucide-react';
+import { Check, Play, Eye, ChevronUp, ChevronDown, Plus, RefreshCw } from 'lucide-react';
 import SetRow from '../SetRow';
 import { getBestHistorical1RM, getBestHistoricalDuration, isTimedExercise } from '../../utils/strengthMetrics';
 import { triggerHaptic } from '../../utils/audio';
@@ -13,12 +13,13 @@ export function workingSetLabels(sets) {
 /** Visão geral do treino: todos os exercícios em acordeão (alternativa ao Modo Foco). */
 export default function ExerciseListView({
   exercises, exercisesData, expandedId, onToggle, pastHistory, prevIndex, pastWeights,
-  hasVideo, onOpenGuide, onSetUpdate, onRemoveSet, onAddSet
+  hasVideo, onOpenGuide, onOpenSwap, onSetUpdate, onRemoveSet, onAddSet
 }) {
   return (
     <div className="space-y-3 animate-fadeIn">
       {exercises.map((exercise, exIndex) => {
         const sets = exercisesData[exercise.id] || [];
+        const prevSets = prevIndex instanceof Map ? prevIndex.get(exercise.id) : prevIndex?.[exercise.id];
         const isCompletedAll = sets.length > 0 && sets.every((s) => s.completed || s.done);
         const isExpanded = expandedId === exercise.id;
         const isTimed = isTimedExercise(exercise, exercise.id);
@@ -81,6 +82,21 @@ export default function ExerciseListView({
                     </>
                   )}
                 </button>
+                {onOpenSwap && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenSwap(exercise);
+                      triggerHaptic(10);
+                    }}
+                    aria-label="Trocar exercício"
+                    title="Aparelho ocupado? Trocar exercício"
+                    className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 stroke-[1.8]" />
+                  </button>
+                )}
                 <div className="text-zinc-500 p-1">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</div>
               </div>
             </div>
@@ -95,7 +111,7 @@ export default function ExerciseListView({
                     index={setIdx}
                     displayIndex={labels[setIdx]}
                     set={set}
-                    prev={prevIndex[exercise.id]?.[setIdx] || (setIdx === 0 ? pastWeights[exercise.id]?.[0] : null)}
+                    prev={prevSets?.[setIdx] || (setIdx === 0 ? pastWeights[exercise.id]?.[0] : null)}
                     bestHistorical1RM={best1RM}
                     bestHistoricalDuration={bestDuration}
                     onChange={(updates) => onSetUpdate(exercise.id, setIdx, updates)}

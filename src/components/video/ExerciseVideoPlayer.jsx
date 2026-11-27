@@ -1,12 +1,24 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { House, Gauge, Users, ImageOff } from 'lucide-react';
+import { House, Gauge, ImageOff } from 'lucide-react';
 import VideoSurface from './VideoSurface';
+import AnimationCredit from './AnimationCredit';
 import useStickyMini from './useStickyMini';
 import { getExerciseMedia } from '../../data/exerciseMedia';
 import { triggerHaptic } from '../../utils/audio';
 
 const pill = 'h-9 px-3 rounded-full text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-md border transition-colors cursor-pointer select-none';
+
+function formatCueLine(text) {
+  const clean = String(text || '')
+    .trim()
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/\.+$/, '')
+    .trim();
+  if (!clean) return '';
+  const semi = clean.indexOf(';');
+  return semi > 12 ? clean.slice(0, semi).trim() : clean;
+}
 
 /**
  * Player de execução: carrega sem saltos, mostra as dicas sobre o vídeo e encolhe para um mini-card fixo ao rolar.
@@ -15,14 +27,40 @@ const pill = 'h-9 px-3 rounded-full text-[11px] font-bold flex items-center gap-
 export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTop = 72, homeMode = false, canSwapHome = false, onToggleHome }) {
   const media = getExerciseMedia(exercise);
   const videoRef = useRef(null);
-  const [gender, setGender] = useState('male');
   const [slow, setSlow] = useState(false);
   const [failedSrc, setFailedSrc] = useState(null);
-  const { anchorRef, isMini } = useStickyMini(sticky && Boolean(media.videoMale), stickyTop);
+  const [bioCues, setBioCues] = useState(null);
+  const { anchorRef, isMini } = useStickyMini(sticky && Boolean(media.video), stickyTop);
 
-  const src = gender === 'female' ? media.videoFemale : media.videoMale;
+  const src = media.video;
   const hasVideo = Boolean(src) && failedSrc !== src;
   const name = exercise?.name || exercise?.nome || '';
+  const exKey = exercise?.id || exercise?.slug || name;
+
+  const needsRichCues =
+    media.cues.length === 0 ||
+    media.cues.some((c) => typeof c === 'string' && (c.endsWith('…') || c.endsWith('...')));
+
+  useEffect(() => {
+    if (!needsRichCues || !exercise) return undefined;
+    let alive = true;
+    import('../../data/exerciseBiomechanics')
+      .then(({ getBiomechanicsForExercise }) => {
+        if (!alive) return;
+        const bio = getBiomechanicsForExercise(exercise);
+        const raw = bio?.checkpoints?.length ? bio.checkpoints : bio?.passos || [];
+        const formatted = raw.map(formatCueLine).filter(Boolean).slice(0, 3);
+        if (formatted.length > 0) {
+          setBioCues({ id: exKey, cues: formatted });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [needsRichCues, exercise, exKey]);
+
+  const displayCues = bioCues?.id === exKey && bioCues.cues.length > 0 ? bioCues.cues : media.cues;
 
   const setRate = (isSlow) => {
     setSlow(isSlow);
@@ -54,7 +92,7 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
           {homeButton}
         </div>
         <ul className="flex flex-wrap gap-2">
-          {media.cues.map((c) => (
+          {displayCues.map((c) => (
             <li key={c} className="px-2.5 py-1.5 rounded-lg bg-accent/70 border border-accent-hover text-white text-xs font-semibold">{c}</li>
           ))}
         </ul>
@@ -63,66 +101,65 @@ export default function ExerciseVideoPlayer({ exercise, sticky = false, stickyTo
   }
 
   return (
-    <div ref={anchorRef} className="relative w-full aspect-video">
-      <motion.div
-        layout
-        transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-        style={isMini ? { top: `calc(env(safe-area-inset-top, 0px) + ${stickyTop}px)` } : undefined}
-        className={
-          isMini
-            ? 'fixed left-3 right-3 z-30 h-[76px] flex items-center gap-3 p-2 pr-3 rounded-2xl bg-surface/85 backdrop-blur-md border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)] max-w-md mx-auto'
-            : 'absolute inset-0 rounded-2xl overflow-hidden border border-white/10 bg-surface'
-        }
-      >
-        <VideoSurface
-          ref={videoRef}
-          src={src}
-          poster={media.poster}
-          playbackRate={slow ? 0.5 : 1}
-          onError={() => setFailedSrc(src)}
-          className={isMini ? 'h-full aspect-video rounded-xl shrink-0' : 'absolute inset-0'}
-        />
-
-        {isMini ? (
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-white truncate">{name}</p>
-            <p className="text-xs text-white truncate">{media.cues[0]}</p>
-          </div>
-        ) : (
-          <>
-            <div className="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
-              <div className="flex gap-1.5">
-                <button type="button" onClick={() => setGender((g) => (g === 'male' ? 'female' : 'male'))} aria-label="Alternar atleta" className={`${pill} bg-black/50 text-zinc-100 border-white/15`}>
-                  <Users className="w-3.5 h-3.5" />
-                  {gender === 'male' ? 'M' : 'F'}
-                </button>
-                <button type="button" onClick={() => setRate(!slow)} aria-pressed={slow} className={`${pill} ${slow ? 'bg-accent/70 text-white border-accent-hover' : 'bg-black/50 text-zinc-100 border-white/15'}`}>
-                  <Gauge className="w-3.5 h-3.5" />
-                  {slow ? '0.5x' : '1x'}
-                </button>
+    <div>
+      <div ref={anchorRef} className="relative w-full aspect-[4/3]">
+        <motion.div
+          layout
+          transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+          style={isMini ? { top: `calc(env(safe-area-inset-top, 0px) + ${stickyTop}px)` } : undefined}
+          className={
+            isMini
+              ? 'fixed left-3 right-3 z-30 h-[76px] flex items-center gap-3 p-2 pr-3 rounded-2xl bg-surface/85 backdrop-blur-md border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)] max-w-md mx-auto'
+              : 'absolute inset-0 rounded-2xl overflow-hidden border border-white/10 bg-surface'
+          }
+        >
+          <VideoSurface
+            ref={videoRef}
+            src={src}
+            poster={media.poster}
+            playbackRate={slow ? 0.5 : 1}
+            onError={() => setFailedSrc(src)}
+            className={isMini ? 'h-full aspect-[4/3] rounded-xl shrink-0' : 'absolute inset-0'}
+          />
+  
+          {isMini ? (
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-white truncate">{name}</p>
+              <p className="text-xs text-white truncate">{displayCues[0]}</p>
+            </div>
+          ) : (
+            <>
+              <div className="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
+                <div className="flex gap-1.5">
+                  <button type="button" onClick={() => setRate(!slow)} aria-pressed={slow} className={`${pill} ${slow ? 'bg-accent/70 text-white border-accent-hover' : 'bg-black/50 text-zinc-100 border-white/15'}`}>
+                    <Gauge className="w-3.5 h-3.5" />
+                    {slow ? '0.5x' : '1x'}
+                  </button>
+                </div>
+                {homeButton}
               </div>
-              {homeButton}
-            </div>
-
-            <div className="absolute inset-x-0 bottom-0 p-3 pt-10 bg-gradient-to-t from-app via-app/70 to-transparent">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.ul
-                  key={src}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex gap-1.5 overflow-x-auto -mx-3 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                >
-                  {media.cues.map((c) => (
-                    <li key={c} className="shrink-0 whitespace-nowrap px-2 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-white">{c}</li>
-                  ))}
-                </motion.ul>
-              </AnimatePresence>
-            </div>
-          </>
-        )}
-      </motion.div>
+  
+              <div className="absolute inset-x-0 bottom-0 p-3 pt-10 bg-gradient-to-t from-app via-app/70 to-transparent">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.ul
+                    key={src}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex gap-1.5 overflow-x-auto -mx-3 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  >
+                    {displayCues.map((c) => (
+                      <li key={c} className="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-white">{c}</li>
+                    ))}
+                  </motion.ul>
+                </AnimatePresence>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </div>
+      <AnimationCredit className="mt-1.5 px-1" />
     </div>
   );
 }

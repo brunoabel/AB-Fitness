@@ -4,7 +4,7 @@ import ABLogo from './ABLogo';
 
 export default function Footer({ onOpenGuide }) {
   return (
-    <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 py-8 text-center text-xs text-zinc-400 space-y-3 transition-colors border-t border-zinc-800/60 mt-8">
+    <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 py-8 text-center text-xs text-zinc-400 space-y-3 transition-colors border-t border-white/[0.06] mt-8">
       <div className="flex items-center justify-center gap-2">
         <ABLogo size={24} showText={false} />
         <span className="text-zinc-100 font-bold tracking-wider text-[11px] uppercase">
@@ -19,10 +19,11 @@ export default function Footer({ onOpenGuide }) {
       {onOpenGuide && (
         <div className="pt-1">
           <button
+            type="button"
             onClick={onOpenGuide}
-            className="inline-flex items-center gap-1.5 text-[11px] text-zinc-300 hover:text-white font-medium bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-700/60 active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-[11px] text-zinc-300 hover:text-white font-medium px-3 py-1.5 rounded-full border border-white/[0.08] hover:border-white/[0.16] active:scale-[0.97] transition-[color,border-color,transform] duration-150 ease-out cursor-pointer"
           >
-            <BookOpen className="w-3.5 h-3.5 text-zinc-500 stroke-[1.8]" />
+            <BookOpen className="w-3.5 h-3.5 text-zinc-400 stroke-[1.75]" />
             <span>Consultar Manuais Técnicos do Atleta</span>
           </button>
         </div>

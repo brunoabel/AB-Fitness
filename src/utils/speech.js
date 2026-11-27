@@ -4,6 +4,7 @@
  */
 
 const STORAGE_VOICE_KEY = 'ab_fitness_voice_cues_enabled_v1';
+const STORAGE_REST_VOICE_KEY = 'ab_fitness_rest_voice_cues_v1';
 
 export const isSpeechSupported = () => {
   return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
@@ -24,6 +25,20 @@ export const saveVoiceCuesPreference = (enabled) => {
   } catch {}
 };
 
+export const getRestVoiceCuesPreference = () => {
+  try {
+    return localStorage.getItem(STORAGE_REST_VOICE_KEY) === 'true'; // Opt-in por padrão
+  } catch {
+    return false;
+  }
+};
+
+export const saveRestVoiceCuesPreference = (enabled) => {
+  try {
+    localStorage.setItem(STORAGE_REST_VOICE_KEY, String(Boolean(enabled)));
+  } catch {}
+};
+
 /**
  * Desbloqueia o sintetizador de voz no iOS Safari (deve ser invocado em resposta a um gesto do utilizador)
  */
@@ -38,36 +53,49 @@ export const unlockSpeechIOS = () => {
 };
 
 
-/**
- * Fala uma mensagem de texto usando a melhor voz em Português disponível no dispositivo
- */
-export const speakText = (text) => {
-  if (!isSpeechSupported() || !getVoiceCuesPreference() || !text) return;
+function speakRaw(text) {
+  if (!isSpeechSupported() || !text) return;
 
   try {
     const synth = window.speechSynthesis;
-    // Cancela fala anterior para evitar atrasos ou sobreposições
     synth.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR'; // Tenta PT-BR ou PT-PT
-    utterance.rate = 1.05;    // Ritmo ligeiramente mais enérgico para esporte
+    utterance.lang = 'pt-PT';
+    utterance.rate = 1.05;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    // Tentar selecionar voz nativa em português se disponível
     const voices = synth.getVoices ? synth.getVoices() : [];
     if (voices && voices.length > 0) {
       const ptVoice = voices.find((v) => v.lang && (v.lang.startsWith('pt') || v.lang.includes('Portuguese')));
-      if (ptVoice) {
-        utterance.voice = ptVoice;
-      }
+      if (ptVoice) utterance.voice = ptVoice;
     }
 
     synth.speak(utterance);
   } catch (err) {
     console.warn('Falha no sintetizador de voz:', err);
   }
+}
+
+/**
+ * Fala uma mensagem de texto usando a melhor voz em Português disponível no dispositivo
+ */
+export const speakText = (text) => {
+  if (!getVoiceCuesPreference()) return;
+  speakRaw(text);
+};
+
+export const announceRestCountdown = (seconds) => {
+  if (!getRestVoiceCuesPreference()) return;
+  const s = Number(seconds);
+  if (s === 10) speakRaw('Dez segundos.');
+  else if (s > 0) speakRaw(`${s} segundos.`);
+};
+
+export const announceRestComplete = (nextSetInfo) => {
+  if (!getRestVoiceCuesPreference()) return;
+  speakRaw(nextSetInfo ? `Descanso concluído. ${nextSetInfo}.` : 'Descanso concluído. Próxima série.');
 };
 
 /**

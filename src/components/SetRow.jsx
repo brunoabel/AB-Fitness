@@ -12,6 +12,7 @@ import {
 } from '../utils/strengthMetrics';
 import { triggerHaptic } from '../utils/audio';
 import NumberField from './ui/NumberField';
+import RirPicker, { rirFromSet, rpeFromRir } from './workout/RirPicker';
 import { getLocalFitnessProfile } from '../services/fitnessProfileService';
 import { isBeginnerProfile } from './onboarding/profileSchema';
 
@@ -71,6 +72,7 @@ export default function SetRow({
   const [isHoldingTimer, setIsHoldingTimer] = useState(false);
   const [holdTimerSeconds, setHoldTimerSeconds] = useState(0);
   const holdIntervalRef = useRef(null);
+  const holdSecRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -96,15 +98,14 @@ export default function SetRow({
       triggerHaptic(15);
     } else {
       triggerHaptic(15);
-      const initialSec = 0;
-      setHoldTimerSeconds(initialSec);
+      holdSecRef.current = 0;
+      setHoldTimerSeconds(0);
       setIsHoldingTimer(true);
       holdIntervalRef.current = setInterval(() => {
-        setHoldTimerSeconds((prevSec) => {
-          const nextSec = prevSec + 1;
-          onChange({ seconds: nextSec, reps: nextSec });
-          return nextSec;
-        });
+        holdSecRef.current += 1;
+        const nextSec = holdSecRef.current;
+        setHoldTimerSeconds(nextSec);
+        onChange({ seconds: nextSec, reps: nextSec });
       }, 1000);
     }
   };
@@ -319,7 +320,7 @@ export default function SetRow({
                 currentType === 'N'
                   ? 'bg-transparent text-zinc-400 border-white/[0.08]'
                   : currentType === 'W'
-                    ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
+                    ? 'bg-accent/50 text-white border-accent-hover'
                     : currentType === 'D'
                       ? 'bg-violet-400/15 text-violet-300 border-violet-400/30'
                       : 'bg-red-400/15 text-red-400 border-red-400/30'
@@ -545,20 +546,20 @@ export default function SetRow({
           )}
         </div>
 
-        {/* 5. Botão Ergonómico de Conclusão (Alvo Tátil ≥ 56px) */}
+        {/* 5. Botão de Conclusão discreto até concluído (sem competir na visão geral) */}
         <div className="flex flex-col items-center justify-center">
           <button
             type="button"
             onClick={toggleDone}
             data-on={isDone}
             aria-label={isDone ? 'Desmarcar série' : 'Concluir série e iniciar descanso'}
-            className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all cursor-pointer active:scale-95 border select-none ${
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-[background-color,border-color,color,transform] duration-150 ease-out cursor-pointer active:scale-95 border select-none ${
               isDone
-                ? 'bg-accent text-white border-accent shadow-sm font-semibold'
-                : 'bg-primary text-app border-primary hover:bg-primary-hover shadow-sm'
+                ? 'bg-accent text-white border-accent-hover font-semibold'
+                : 'bg-transparent text-zinc-400 border-white/25 hover:border-white hover:text-white'
             }`}
           >
-            <Check className={`w-6 h-6 ${isDone ? 'stroke-[3.5]' : 'stroke-[2.2]'}`} />
+            <Check className={`w-5 h-5 ${isDone ? 'stroke-[2.75]' : 'stroke-[1.75]'}`} />
           </button>
         </div>
       </div>
@@ -594,16 +595,16 @@ export default function SetRow({
                 <button
                   type="button"
                   onClick={toggleHoldTimer}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold transition-[background-color,border-color,color,transform] duration-150 ease-out cursor-pointer select-none active:scale-95 ${
                     isHoldingTimer
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse'
+                      ? 'bg-accent/60 text-white border border-accent-hover'
                       : 'text-zinc-400 hover:text-white'
                   }`}
                   title={isHoldingTimer ? "Parar cronómetro de isometria" : "Iniciar cronómetro de isometria ao vivo"}
                 >
                   {isHoldingTimer ? (
                     <>
-                      <Square className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                      <Square className="w-2.5 h-2.5 fill-white text-white" />
                       <span className="tabular-nums font-display">{holdTimerSeconds}s</span>
                     </>
                   ) : (
@@ -640,6 +641,19 @@ export default function SetRow({
           </button>
         )}
       </div>
+
+      {/* Esforço da série concluída (alimenta a progressão); séries de aquecimento e de falha não perguntam */}
+      {isDone && !isTimed && currentType !== 'W' && currentType !== 'F' && (
+        <div className="mt-2 px-1">
+          <RirPicker
+            compact
+            label="Quantas mais conseguias?"
+            value={rirFromSet(set)}
+            target={Number.isFinite(Number(exercise?.targetRir)) ? Number(exercise.targetRir) : null}
+            onChange={(rir) => onChange({ rpe: rpeFromRir(rir) })}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -69,13 +69,15 @@ export default function ExerciseModal({ exercise, onClose }) {
   return (
     <ModalBackdrop className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4">
       <ModalPanel 
-        className="w-full sm:max-w-lg bg-app rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-white/[0.08] flex flex-col max-h-[92vh] transition-colors"
+        onClose={onClose}
+        ariaLabel={`Guia técnico: ${bio?.nome || official100?.nome || exercise.name}`}
+        className="w-full sm:max-w-lg bg-app rounded-t-3xl sm:rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabeçalho do Modal */}
-        <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-center justify-between bg-surface/60">
+        <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-center justify-between bg-app">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.04] text-zinc-200 flex items-center justify-center font-bold border border-white/[0.08]">
+            <div className="w-10 h-10 rounded-full bg-accent/50 text-white flex items-center justify-center font-bold border border-accent-hover shrink-0">
               <Dumbbell className="w-5 h-5" />
             </div>
             <div>
@@ -90,7 +92,7 @@ export default function ExerciseModal({ exercise, onClose }) {
 
           <button
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] rounded-xl text-zinc-400 hover:text-white flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.06] flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
             title="Fechar"
           >
             <X className="w-5 h-5" />
@@ -108,7 +110,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                 <span className="flex items-center gap-1 text-white uppercase font-bold">
                   <span>·</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-accent-hover animate-pulse" />
-                  Vídeo HD
+                  Vídeo
                 </span>
               )}
             </div>
@@ -117,8 +119,8 @@ export default function ExerciseModal({ exercise, onClose }) {
               <span>•</span>
               <span className="font-bold">{official100?.reps || '8-12'} reps</span>
               <span>•</span>
-              <span className="font-bold text-amber-400 flex items-center gap-0.5">
-                <Clock className="w-3 h-3" />
+              <span className="font-bold text-white flex items-center gap-1">
+                <Clock className="w-3 h-3 text-zinc-400" />
                 {official100?.descanso_seg || exercise.restTime || 60}s
               </span>
             </div>
@@ -152,7 +154,7 @@ export default function ExerciseModal({ exercise, onClose }) {
         </div>
 
         {/* Conteúdo Rolável do Modal */}
-        <div className="p-4 sm:p-5 overflow-y-auto space-y-4">
+        <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-4">
           
           {/* Demonstração em Vídeo de Execução Técnica Auditada (quando disponível) */}
           {/* Vídeo quando existe; caso contrário o próprio player mostra as dicas de execução */}
@@ -160,11 +162,11 @@ export default function ExerciseModal({ exercise, onClose }) {
 
           {/* ABA 1: BIOMECÂNICA & FASES DE MOVIMENTO */}
           {activeTab === 'biomechanics' && (
-            <div className="space-y-4 animate-fadeIn">
+            <div className="space-y-5 animate-fadeIn">
               
-              {/* Foco Anatómico Técnico */}
-              <div className="p-4 rounded-xl bg-surface text-white border border-white/[0.08] relative overflow-hidden">
-                <div className="flex items-center justify-between mb-2">
+              {/* Foco Anatómico Técnico — bloco editorial aberto */}
+              <div className="pb-4 border-b border-white/[0.06]">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-500">
                     Músculo alvo principal
                   </span>
@@ -180,7 +182,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                   {bio?.alvo ? `Ativação primária: ${bio.alvo}` : `Foco mecânico direcionado para hipertrofia e força muscular.`}
                 </p>
 
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.06] text-xs">
+                <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-white/[0.06] text-xs">
                   <div>
                     <span className="text-[11px] uppercase font-bold text-zinc-500 block">Equipamento</span>
                     <span className="font-bold text-zinc-200 text-xs">{bio?.equipamento || visual?.equipment || 'Livre / Máquina'}</span>
@@ -194,7 +196,7 @@ export default function ExerciseModal({ exercise, onClose }) {
 
               {/* Fases Anatómicas de Execução — lista tipográfica, sem caixas aninhadas */}
               <div className="space-y-0.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider px-1 pb-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider pb-2">
                   <Layers className="w-4 h-4 text-zinc-500" />
                   <span>Fases Biomecânicas do Exercício</span>
                 </div>
@@ -203,7 +205,7 @@ export default function ExerciseModal({ exercise, onClose }) {
                   {[
                     { dot: 'bg-zinc-500', title: '1. Posição Inicial & Alinhamento Articular', text: visual?.phaseInitial || 'Posicione os pés firmemente e ajuste as articulações com a coluna alinhada antes de aplicar força.' },
                     { dot: 'bg-accent-hover', title: '2. Pico de Contração (Fase Concêntrica)', text: visual?.phaseConcentric || 'Execute a fase positiva com aceleração consciente e contraia o músculo alvo no pico.' },
-                    { dot: 'bg-amber-400', title: '3. Descida Excêntrica Controlada (2 a 3s)', text: visual?.phaseEccentric || 'Retorne de forma controlada resistindo ao peso para maximizar o estímulo mecânico e hipertrofia.' }
+                    { dot: 'bg-white', title: '3. Descida Excêntrica Controlada (2 a 3s)', text: visual?.phaseEccentric || 'Retorne de forma controlada resistindo ao peso para maximizar o estímulo mecânico e hipertrofia.' }
                   ].map((phase) => (
                     <div key={phase.title} className="py-2.5">
                       <div className="flex items-center gap-1.5 text-zinc-200 font-bold mb-1 text-[11px]">
@@ -217,13 +219,13 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Dica Científica Baseada em Evidências & Para Que Serve */}
-              <div className="p-3.5 rounded-xl bg-surface border border-white/[0.08] text-xs text-zinc-300 flex items-start gap-2.5">
+              <div className="pt-1 text-xs text-zinc-300 flex items-start gap-2.5">
                 <Award className="w-4 h-4 text-accent-hover shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-white font-bold mb-0.5 text-[11px]">
                     Finalidade & Propósito do Exercício (Para que serve):
                   </strong>
-                  <p className="leading-relaxed text-[11px]">{evidenceTip}</p>
+                  <p className="leading-relaxed text-[11px] text-zinc-400">{evidenceTip}</p>
                 </div>
               </div>
             </div>
@@ -232,27 +234,29 @@ export default function ExerciseModal({ exercise, onClose }) {
           {/* ABA 2: PASSO A PASSO TÉCNICO */}
           {activeTab === 'steps' && (
             <div className="space-y-3 animate-fadeIn">
-              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider px-1">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
                 Execução Técnica Padrão Ouro
               </h3>
-              {steps.map((step, idx) => (
-                <div key={idx} className="flex gap-3 p-3.5 rounded-xl bg-surface border border-white/[0.08] items-start">
-                  <div className="w-6 h-6 rounded-full bg-accent text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs font-mono tabular-nums">
-                    {idx + 1}
+              <div className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
+                {steps.map((step, idx) => (
+                  <div key={idx} className="flex gap-3 py-3.5 items-start">
+                    <div className="w-6 h-6 rounded-full bg-accent border border-accent-hover text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 font-mono tabular-nums">
+                      {idx + 1}
+                    </div>
+                    <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-medium">
+                      {step}
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-medium">
-                    {step}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
           {/* ABA 3: POSTURA & SEGURANÇA */}
           {activeTab === 'safety' && (
-            <div className="space-y-3.5 animate-fadeIn">
+            <div className="divide-y divide-white/[0.06] animate-fadeIn">
               {/* Checkpoints de Alinhamento */}
-              <div className="p-4 rounded-xl bg-surface border border-white/[0.08] space-y-2">
+              <div className="pb-4 space-y-2">
                 <div className="flex items-center gap-2 text-zinc-100 font-bold text-xs uppercase tracking-wide">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                   <span>Checkpoints de Alinhamento e Postura</span>
@@ -268,7 +272,7 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Padrão de Respiração */}
-              <div className="p-4 rounded-xl bg-surface border border-white/[0.08] space-y-1">
+              <div className="py-4 space-y-1">
                 <div className="flex items-center gap-2 text-zinc-100 font-bold text-xs uppercase tracking-wide">
                   <Wind className="w-4 h-4 text-accent-hover" />
                   <span>Padrão de Respiração</span>
@@ -279,18 +283,20 @@ export default function ExerciseModal({ exercise, onClose }) {
               </div>
 
               {/* Erro Crítico a Evitar */}
-              <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/40 space-y-1">
-                <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wide">
-                  <AlertCircle className="w-4 h-4 text-rose-500" />
-                  <span>Erro Crítico a Evitar</span>
+              <div className="py-4">
+                <div className="border-l-2 border-rose-500/70 pl-3.5 space-y-1">
+                  <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wide">
+                    <AlertCircle className="w-4 h-4 text-rose-500" />
+                    <span>Erro Crítico a Evitar</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-rose-200/90 leading-relaxed font-medium">
+                    {commonMistake}
+                  </p>
                 </div>
-                <p className="text-xs sm:text-sm text-rose-200 leading-relaxed font-medium">
-                  {commonMistake}
-                </p>
               </div>
 
               {/* Intervalo de Descanso */}
-              <div className="p-3 rounded-xl bg-surface border border-white/[0.08] text-xs text-zinc-300 flex items-center gap-2">
+              <div className="pt-4 text-xs text-zinc-300 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>Intervalo ideal entre séries: <strong className="text-white font-bold font-mono tabular-nums">{exercise.restTime || 60} segundos</strong>.</span>
               </div>
@@ -299,10 +305,10 @@ export default function ExerciseModal({ exercise, onClose }) {
         </div>
 
         {/* Rodapé com Botão de Ação */}
-        <div className="p-4 border-t border-white/[0.06] bg-surface/70">
+        <div className="p-4 border-t border-white/[0.06] bg-app">
           <button
             onClick={onClose}
-            className="w-full min-h-[48px] py-3.5 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-sm shadow-sm transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full min-h-[48px] py-3.5 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm transition-colors active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>Executar com Técnica Perfeita</span>
             <ArrowRight className="w-4 h-4" />

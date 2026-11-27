@@ -9,6 +9,10 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const DEFAULT_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
+const ALLOWED_PRICE_IDS = [
+  DEFAULT_PRICE_ID,
+  process.env.STRIPE_PRO_ANNUAL_PRICE_ID
+].filter((v) => typeof v === 'string' && v.trim() !== '');
 
 const ALLOWED_ORIGIN_PATTERNS = [
   /^https:\/\/([a-z0-9-]+\.)?abfitness\.app$/,
@@ -57,7 +61,7 @@ export default async function handler(req, res) {
 
   const user = userData.user;
 
-  // 2. Parse do Corpo da Requisição
+  // 2. Parse e validação estrita de Price ID contra allowlist do servidor
   let body = {};
   try {
     body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
@@ -65,24 +69,45 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'JSON inválido' });
   }
 
+  if (body.priceId !== undefined && !ALLOWED_PRICE_IDS.includes(body.priceId)) {
+    return res.status(400).json({ error: 'Plano inválido' });
+  }
   const priceId = body.priceId || DEFAULT_PRICE_ID;
-  if (!priceId) {
-    return res.status(400).json({ error: 'priceId é obrigatório' });
+  if (!priceId || !ALLOWED_PRICE_IDS.includes(priceId)) {
+    return res.status(500).json({ error: 'STRIPE_PRO_PRICE_ID não configurado no servidor.' });
   }
 
+  // 2b. Verifica elegibilidade para trial de 14 dias no perfil (evita trials ilimitados)
+  const authedSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false }
+  });
+  const { data: profileRow } = await authedSupabase
+    .from('profiles')
+    .select('trial_granted_at, stripe_customer_id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const eligibleForTrial = Boolean(!profileRow?.trial_granted_at && !profileRow?.stripe_customer_id);
   const origin = resolveSafeOrigin(req.headers.origin);
 
   // 3. Criação da Checkout Session via API REST Stripe
   try {
     const params = new URLSearchParams();
     params.append('mode', 'subscription');
-    params.append('customer_email', user.email);
+    if (profileRow?.stripe_customer_id) {
+      params.append('customer', profileRow.stripe_customer_id);
+    } else if (user.email) {
+      params.append('customer_email', user.email);
+    }
     params.append('client_reference_id', user.id);
     params.append('metadata[user_id]', user.id);
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
     params.append('subscription_data[metadata][user_id]', user.id);
-    params.append('subscription_data[trial_period_days]', '14');
+    if (eligibleForTrial) {
+      params.append('subscription_data[trial_period_days]', '14');
+    }
     params.append('success_url', `${origin}/?pro_success=true&session_id={CHECKOUT_SESSION_ID}`);
     params.append('cancel_url', `${origin}/?pro_cancel=true`);
 

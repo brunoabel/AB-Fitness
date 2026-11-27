@@ -9,10 +9,10 @@ import { sortWeeklySquad } from '../../utils/clubHelpers';
 import { triggerHaptic } from '../../utils/audio';
 
 function rankColor(index) {
-  if (index === 0) return 'text-amber-400';
-  if (index === 1) return 'text-zinc-200';
-  if (index === 2) return 'text-amber-600';
-  return 'text-zinc-500';
+  if (index === 0) return 'text-white font-black';
+  if (index === 1) return 'text-zinc-300 font-bold';
+  if (index === 2) return 'text-zinc-400 font-bold';
+  return 'text-zinc-600';
 }
 
 /** Classificação semanal do Squad: linhas abertas com divisores finos, H2H e chat direto. */
@@ -112,8 +112,8 @@ export default function SquadLeaderboardView({
                 </div>
 
                 {s.streak != null && s.streak > 0 && (
-                  <span className="inline-flex items-center gap-1 font-display text-[14px] font-semibold text-amber-300 tabular-nums shrink-0 pr-1">
-                    <Flame className="w-3.5 h-3.5 text-amber-400" strokeWidth={2} />
+                  <span className="inline-flex items-center gap-1 font-display text-[14px] font-semibold text-white tabular-nums shrink-0 pr-1">
+                    <Flame className="w-3.5 h-3.5 text-zinc-300" strokeWidth={2} />
                     {s.streak}d
                   </span>
                 )}

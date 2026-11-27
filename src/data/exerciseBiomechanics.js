@@ -10,15 +10,17 @@ import { SHOULDERS_BIOMECHANICS } from './biomechanics/shoulders.js';
 import { ARMS_BIOMECHANICS } from './biomechanics/arms.js';
 import { LEGS_BIOMECHANICS } from './biomechanics/legs.js';
 import { CORE_FUNCTIONAL_BIOMECHANICS } from './biomechanics/core_functional.js';
+import { OPEN_BIOMECHANICS } from './openExercisesText.js';
 
-// Tabela mestre indexada por ID numérico (1 a 355, com lacunas)
+// Tabela mestre indexada por ID numérico (1 a 355, com lacunas; 2001+ para o lote de animações)
 export const EXERCISE_BIOMECHANICS = {
   ...CHEST_BIOMECHANICS,
   ...BACK_BIOMECHANICS,
   ...SHOULDERS_BIOMECHANICS,
   ...ARMS_BIOMECHANICS,
   ...LEGS_BIOMECHANICS,
-  ...CORE_FUNCTIONAL_BIOMECHANICS
+  ...CORE_FUNCTIONAL_BIOMECHANICS,
+  ...OPEN_BIOMECHANICS
 };
 
 // Mapeamento de apelidos históricos / slugs legados do app para IDs definitivos

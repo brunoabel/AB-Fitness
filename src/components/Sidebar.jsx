@@ -40,8 +40,8 @@ function NavItem({ icon: Icon, label, active, onClick, reducedMotion }) {
       {active && (
         <motion.span
           layoutId="sidebarActivePill"
-          transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 35 }}
-          className="absolute inset-0 rounded-2xl bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+          transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 480, damping: 35 }}
+          className="absolute inset-0 rounded-2xl bg-accent/70 border border-accent-hover"
           aria-hidden="true"
         />
       )}
@@ -50,7 +50,7 @@ function NavItem({ icon: Icon, label, active, onClick, reducedMotion }) {
         aria-hidden="true"
         className={`relative z-10 w-[3px] h-4 rounded-full transition-all duration-200 ${
           active
-            ? 'bg-white shadow-[0_0_10px_rgba(255,255,255,0.75)] opacity-100 scale-y-100'
+            ? 'bg-white opacity-100 scale-y-100'
             : 'bg-white/40 opacity-0 scale-y-50 group-hover:opacity-40'
         }`}
       />
@@ -113,10 +113,6 @@ export default function Sidebar({
     <aside className="hidden lg:flex lg:flex-col lg:w-[272px] lg:shrink-0 lg:sticky lg:top-0 lg:h-screen bg-app border-r border-white/[0.06] px-3.5 py-6 select-none">
       {/* Cabeçalho de Marca & Ritmo */}
       <div className="relative flex items-center gap-3 px-2.5 pb-6 mb-2 border-b border-white/[0.06]">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-2 left-1 w-14 h-14 rounded-full bg-white/[0.05] blur-xl"
-        />
         <div className="relative shrink-0">
           <ABLogo size={38} showText={false} />
         </div>
@@ -184,12 +180,8 @@ export default function Sidebar({
             triggerHaptic(10);
             onOpenAICoach?.();
           }}
-          className="group relative w-full min-h-[54px] p-3 rounded-2xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.1] hover:border-white/[0.2] flex items-center gap-3 text-left cursor-pointer touch-manipulation transition-colors"
+          className="group relative w-full min-h-[54px] p-3 rounded-2xl overflow-hidden bg-surface-2/70 hover:bg-accent/40 border border-accent-hover/60 hover:border-accent-hover flex items-center gap-3 text-left cursor-pointer touch-manipulation transition-colors"
         >
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
-          />
           <span className="relative shrink-0 rounded-full p-0.5 ring-1 ring-white/[0.15]">
             <CoachAvatar size={32} alt="" />
           </span>
@@ -232,8 +224,8 @@ export default function Sidebar({
               {streak > 0 && (
                 <>
                   <span aria-hidden="true" className="text-zinc-600">·</span>
-                  <span className="inline-flex items-center gap-0.5 font-display tabular-nums font-bold text-amber-300 shrink-0">
-                    <Flame className="w-3 h-3 text-amber-400" strokeWidth={2} />
+                  <span className="inline-flex items-center gap-0.5 font-display tabular-nums font-semibold text-white shrink-0">
+                    <Flame className="w-3 h-3 text-zinc-300" strokeWidth={1.75} />
                     {streak}d
                   </span>
                 </>

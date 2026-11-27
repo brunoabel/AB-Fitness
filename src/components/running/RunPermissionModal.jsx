@@ -7,9 +7,9 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-md rounded-3xl bg-surface border border-white/[0.1] p-6 text-white shadow-2xl space-y-5">
+      <div className="w-full max-w-md rounded-3xl bg-app border border-white/[0.08] p-6 text-white space-y-5">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-white text-black flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-full bg-accent/60 border border-accent-hover text-white flex items-center justify-center shrink-0">
             <MapPin className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
@@ -37,14 +37,14 @@ export default function RunPermissionModal({ handleStartCountdown, setShowPermis
           <button
             type="button"
             onClick={() => setShowPermissionModal(false)}
-            className="flex-1 min-h-[48px] px-4 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 font-semibold text-sm cursor-pointer transition-colors"
+            className="flex-1 min-h-[48px] px-4 rounded-full bg-surface hover:bg-surface-2 border border-white/[0.08] text-zinc-300 font-semibold text-sm cursor-pointer transition-colors"
           >
             Agora não
           </button>
           <button
             type="button"
             onClick={handleStartCountdown}
-            className="flex-1 min-h-[48px] px-4 rounded-2xl bg-white hover:bg-zinc-100 text-black font-bold text-sm cursor-pointer transition-colors"
+            className="flex-1 min-h-[48px] px-4 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-sm cursor-pointer transition-colors"
           >
             Permitir
           </button>

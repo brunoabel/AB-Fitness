@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AlertTriangle, Download, MoreHorizontal, Play, Share2, Trash2 } from 'lucide-react';
 import { downloadGPX, formatDuration } from '../../utils/runningService';
 import {
   RUN_TARGETS,
   computeWeeklyRunProgress,
   formatRunRelativeDate,
-  getNextWeeklyGoal
+  getNextWeeklyGoal,
+  recommendRunSessionType
 } from '../../utils/runGoals';
 import { triggerHaptic } from '../../utils/audio';
+import useMuscleRecovery from '../../hooks/useMuscleRecovery';
+import { getLocalCustomPlan } from '../../services/workoutService';
+import { WEEKLY_SCHEDULE } from '../../data/workouts';
+import { exerciseTargetsRegion } from '../../data/muscleRegions';
 
 /** Ecrã inicial de Corrida: progresso semanal editorial, objetivo em 1 toque, arranque limpo e histórico sem caixas. */
 export default function RunHome({
@@ -30,6 +35,26 @@ export default function RunHome({
 }) {
   const [openMenuRunId, setOpenMenuRunId] = useState(null);
   const [confirmDeleteRunId, setConfirmDeleteRunId] = useState(null);
+  const recovery = useMuscleRecovery();
+
+  const hybridRunSuggestion = useMemo(() => {
+    const legIds = ['quadriceps', 'posteriores', 'gemeos'];
+    const legFatiguePct = legIds.reduce(
+      (max, id) => Math.max(max, Number(recovery.muscles?.[id]?.fatigue) || 0),
+      0
+    );
+    const schedule = getLocalCustomPlan() || WEEKLY_SCHEDULE;
+    const todayPlan = schedule.find((d) => d.dayId === new Date().getDay());
+    const exercises = Array.isArray(todayPlan?.exercises) ? todayPlan.exercises : [];
+    const isLegDayToday = !todayPlan?.isRestDay && exercises.some((ex) =>
+      legIds.some((id) => exerciseTargetsRegion(ex, id))
+    );
+    return {
+      ...recommendRunSessionType({ legFatiguePct, isLegDayToday }),
+      legFatiguePct: Math.round(legFatiguePct),
+      isLegDayToday
+    };
+  }, [recovery.muscles]);
 
   if (sessionStatus !== 'idle') return null;
 
@@ -61,7 +86,7 @@ export default function RunHome({
               setWeeklyGoalKm(next);
               triggerHaptic(8);
             }}
-            className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer shrink-0 tabular-nums"
+            className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer shrink-0 tabular-nums"
             title="Tocar para ajustar a tua meta semanal"
           >
             Meta: {weekly.goalKm} km
@@ -88,6 +113,18 @@ export default function RunHome({
             </span>
           )}
         </div>
+
+        {/* Sugestão Híbrida (Força + Corrida sem conflito) */}
+        {!recovery.loading && (
+          <div className="pl-3 py-1 border-l-2 border-accent-hover space-y-0.5">
+            <p className="text-[12px] font-semibold text-white">
+              Sugestão híbrida hoje: {hybridRunSuggestion.label}
+            </p>
+            <p className="text-[11px] text-zinc-400 leading-relaxed">
+              {hybridRunSuggestion.desc}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* 2. Seletor de Objetivo + Botão Herói de Arranque */}
@@ -105,10 +142,10 @@ export default function RunHome({
                   triggerHaptic(8);
                   setSelectedTarget(t);
                 }}
-                className={`min-h-[40px] px-4 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`min-h-[40px] px-4 rounded-full border text-xs font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-150 cursor-pointer ${
                   active
-                    ? 'bg-white text-black shadow-sm'
-                    : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
+                    ? 'bg-accent border-accent-hover text-white'
+                    : 'bg-transparent border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.16]'
                 }`}
               >
                 {t.label}
@@ -118,8 +155,8 @@ export default function RunHome({
         </div>
 
         {(gpsError || permissionState === 'denied') && !isSimulation && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-200 text-xs space-y-1.5">
-            <div className="flex items-center gap-2 font-bold text-rose-300">
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-200 text-xs space-y-1.5">
+            <div className="flex items-center gap-2 font-bold text-red-300">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{gpsError || 'Localização bloqueada no navegador.'}</span>
             </div>
@@ -132,7 +169,7 @@ export default function RunHome({
         <button
           type="button"
           onClick={handleRequestStartRun}
-          className="w-full min-h-[60px] py-4 px-6 rounded-full bg-white text-black hover:bg-zinc-100 font-bold text-base flex items-center justify-center gap-2.5 shadow-[0_14px_38px_rgba(255,255,255,0.14)] active:scale-[0.98] transition-all cursor-pointer"
+          className="w-full min-h-[58px] py-4 px-6 rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-base flex items-center justify-center gap-2.5 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
         >
           <Play className="w-5 h-5 fill-current" />
           <span>
@@ -180,7 +217,7 @@ export default function RunHome({
                         · {formatRunRelativeDate(run.date || run.timestamp)}
                       </span>
                       {run.isSimulation && (
-                        <span className="text-[11px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-semibold">
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-accent/50 border border-accent-hover text-zinc-200 font-medium">
                           Passadeira
                         </span>
                       )}
@@ -225,7 +262,7 @@ export default function RunHome({
                   {menuOpen && (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-12 z-20 min-w-[170px] rounded-2xl bg-surface-2 border border-white/[0.12] shadow-2xl p-1.5 space-y-0.5"
+                      className="absolute right-0 top-12 z-20 min-w-[170px] rounded-2xl bg-surface-2 border border-white/[0.12] p-1.5 space-y-0.5"
                     >
                       {run.coordinates && run.coordinates.length > 0 && (
                         <button

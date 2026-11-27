@@ -119,22 +119,22 @@ export default function AuthScreen({ hideGuest = false }) {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col justify-between items-center px-4 py-8 safe-top safe-bottom text-zinc-100 transition-colors">
+    <div className="min-h-screen bg-app flex flex-col justify-between items-center px-5 py-8 safe-top safe-bottom text-zinc-100">
       <div className="w-full max-w-sm mx-auto flex-1 flex flex-col justify-center">
         
         {/* Topo / Marca AB Fitness */}
-        <div className="text-center mb-7 animate-fadeIn flex flex-col items-center">
+        <div className="text-center mb-8 animate-fadeIn flex flex-col items-center">
           <ABLogo size={110} showText={true} />
           <p className="text-xs text-zinc-400 font-medium mt-3 tracking-wide">
             Treino, Biomecânica & Sobrecarga Progressiva
           </p>
         </div>
 
-        {/* Caixa Principal de Autenticação */}
-        <div className="bg-surface rounded-2xl p-6 shadow-xl border border-white/[0.08]">
+        {/* Fluxo Aberto de Autenticação em OLED #000000 */}
+        <div>
 
           {/* Alternador de Abas: Iniciar Sessão / Registar */}
-          <div className="grid grid-cols-2 p-1 bg-black/40 rounded-xl mb-6 border border-white/[0.08]">
+          <div className="flex items-center justify-center gap-8 border-b border-white/[0.08] mb-6">
             <button
               type="button"
               onClick={() => {
@@ -145,10 +145,10 @@ export default function AuthScreen({ hideGuest = false }) {
                 setPendingConfirmationEmail('');
                 triggerHaptic(10);
               }}
-              className={`min-h-[40px] py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`min-h-[44px] pb-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 -mb-px ${
                 mode === 'login'
-                  ? 'bg-white/10 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'text-white border-accent-hover'
+                  : 'text-zinc-500 hover:text-zinc-300 border-transparent'
               }`}
             >
               Iniciar Sessão
@@ -163,10 +163,10 @@ export default function AuthScreen({ hideGuest = false }) {
                 setPendingConfirmationEmail('');
                 triggerHaptic(10);
               }}
-              className={`min-h-[40px] py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`min-h-[44px] pb-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 -mb-px ${
                 mode === 'register'
-                  ? 'bg-white/10 text-white shadow-xs'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'text-white border-accent-hover'
+                  : 'text-zinc-500 hover:text-zinc-300 border-transparent'
               }`}
             >
               Registar
@@ -175,21 +175,21 @@ export default function AuthScreen({ hideGuest = false }) {
 
           {/* Feedback de Mensagem de Erro / Sucesso */}
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-900/60 text-rose-300 text-xs flex items-center gap-2 animate-shake">
+            <div className="mb-4 p-3 rounded-2xl bg-rose-950/40 border border-rose-900/60 text-rose-300 text-xs flex items-center gap-2 animate-shake">
               <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="mb-4 p-3 rounded-2xl bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
               <span>{successMessage}</span>
             </div>
           )}
 
           {resendSuccess && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="mb-4 p-3 rounded-2xl bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
               <span>{resendSuccess}</span>
             </div>
@@ -197,9 +197,9 @@ export default function AuthScreen({ hideGuest = false }) {
 
           {/* Reenvio de e-mail de confirmação */}
           {pendingConfirmationEmail && (
-            <div className="mb-4 p-3.5 rounded-xl bg-zinc-950/90 border border-amber-500/30 text-xs space-y-2">
-              <div className="flex items-center gap-2 text-amber-300 font-semibold">
-                <Mail className="w-4 h-4 flex-shrink-0 text-amber-400" />
+            <div className="mb-4 p-3.5 rounded-2xl bg-surface-2/80 border border-accent-hover/60 text-xs space-y-2">
+              <div className="flex items-center gap-2 text-white font-semibold">
+                <Mail className="w-4 h-4 flex-shrink-0 text-zinc-300" />
                 <span>Confirmação pendente</span>
               </div>
               <p className="text-[11px] text-zinc-300 leading-relaxed">
@@ -209,7 +209,7 @@ export default function AuthScreen({ hideGuest = false }) {
                 type="button"
                 onClick={handleResendConfirmation}
                 disabled={resending}
-                className="w-full min-h-[38px] py-2 px-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] active:scale-[0.99] border border-white/[0.08] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full min-h-[38px] py-2 px-3 rounded-full bg-white/[0.06] hover:bg-white/[0.1] active:scale-[0.99] border border-white/[0.08] text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {resending ? (
                   <div className="w-4 h-4 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
@@ -237,7 +237,7 @@ export default function AuthScreen({ hideGuest = false }) {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="O seu nome ou alcunha de treino"
-                    className="w-full pl-10 pr-4 py-3 bg-zinc-950 text-white rounded-xl border border-white/10 focus:outline-none focus:border-zinc-400 text-sm transition-all placeholder:text-zinc-400"
+                    className="w-full pl-10 pr-4 py-3 bg-surface text-white rounded-2xl border border-white/[0.08] focus:outline-none focus:border-accent-hover text-sm transition-colors placeholder:text-zinc-500"
                   />
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function AuthScreen({ hideGuest = false }) {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemplo@email.com"
                   autoComplete="email"
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-950 text-white rounded-xl border border-white/10 focus:outline-none focus:border-zinc-400 text-sm transition-all placeholder:text-zinc-400"
+                  className="w-full pl-10 pr-4 py-3 bg-surface text-white rounded-2xl border border-white/[0.08] focus:outline-none focus:border-accent-hover text-sm transition-colors placeholder:text-zinc-500"
                 />
               </div>
             </div>
@@ -273,7 +273,7 @@ export default function AuthScreen({ hideGuest = false }) {
                   placeholder="••••••••"
                   autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                   minLength={mode === 'register' ? 8 : undefined}
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-950 text-white rounded-xl border border-white/10 focus:outline-none focus:border-zinc-400 text-sm transition-all placeholder:text-zinc-400"
+                  className="w-full pl-10 pr-4 py-3 bg-surface text-white rounded-2xl border border-white/[0.08] focus:outline-none focus:border-accent-hover text-sm transition-colors placeholder:text-zinc-500"
                 />
               </div>
               {mode === 'register' && (
@@ -287,7 +287,7 @@ export default function AuthScreen({ hideGuest = false }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full min-h-[48px] py-3.5 mt-2 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-sm shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+              className="w-full min-h-[48px] py-3.5 mt-2 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm active:scale-[0.98] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
@@ -304,9 +304,9 @@ export default function AuthScreen({ hideGuest = false }) {
           {/* Divisor Visual */}
           <div className="relative my-6 text-center">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-white/[0.08]" />
             </div>
-            <span className="relative bg-surface px-3 text-xs text-zinc-400 font-medium">
+            <span className="relative bg-app px-3 text-xs text-zinc-500 font-medium">
               ou acesso rápido
             </span>
           </div>
@@ -315,7 +315,7 @@ export default function AuthScreen({ hideGuest = false }) {
           <button
             type="button"
             onClick={handleGuestAccess}
-            className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full min-h-[48px] py-3 px-4 rounded-2xl bg-surface hover:bg-surface-2 border border-white/[0.08] hover:border-accent-hover text-zinc-200 font-semibold text-xs flex items-center justify-between active:scale-[0.98] transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2.5 text-left">
               <UserCheck className="w-4 h-4 text-zinc-300 flex-shrink-0" />
@@ -332,8 +332,8 @@ export default function AuthScreen({ hideGuest = false }) {
         </div>
 
         {/* Badge Informativo de Segurança */}
-        <div className="mt-5 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] text-[11px] text-zinc-400 border border-white/[0.08] shadow-xs">
+        <div className="mt-6 text-center">
+          <div className="inline-flex items-center gap-1.5 text-[11px] text-zinc-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             <span>Dados e histórico protegidos com encriptação</span>
           </div>

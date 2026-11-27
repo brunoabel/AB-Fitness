@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ab-fitness-v25'; // v25: vídeos do treino do dia em cache, servidos com Range
+const CACHE_NAME = 'ab-fitness-v28'; // v28: Onda 1 + Onda 2 (ACWR, Readiness, Smart Swap, Crash Recovery, Realtime, Portabilidade)
 const MEDIA_CACHE = 'ab-fitness-media-v1';
 const MEDIA_MAX_ENTRIES = 150;
 const VIDEO_CACHE = 'ab-fitness-video-v1';
@@ -9,6 +9,8 @@ const MEDIA_HOST = 'pub-585d42eb1aa64a67aedf483ec328d3fe.r2.dev';
 const EXTRA_MEDIA_HOST = (new URL(self.location.href).searchParams.get('media') || '').trim();
 const MEDIA_HOSTS = new Set([MEDIA_HOST, EXTRA_MEDIA_HOST].filter(Boolean));
 const isMediaHost = (hostname) => MEDIA_HOSTS.has(hostname);
+/** Vídeos que o SW pode guardar: os do próprio app (/exercise-videos) ou do host de média configurado. */
+const isVideoSource = (url) => isMediaHost(url.hostname) || (url.origin === self.location.origin && url.pathname.startsWith('/exercise-videos/'));
 
 // URLs de vídeo já guardadas: só estes pedidos passam pelo SW; os restantes vão direto à rede
 const cachedVideoUrls = new Set();
@@ -170,7 +172,7 @@ async function precacheVideos(urls) {
     } catch {
       continue;
     }
-    if (!isMediaHost(url.hostname) || !url.pathname.endsWith('.mp4')) continue;
+    if (!isVideoSource(url) || !url.pathname.endsWith('.mp4')) continue;
     if (await cache.match(url.href)) {
       cachedVideoUrls.add(url.href);
       continue;
@@ -206,7 +208,7 @@ self.addEventListener('fetch', (event) => {
 
   // Vídeos: só os que foram pré-guardados (com CORS) saem do cache, com Range; os outros vão à rede
   if (request.destination === 'video' || request.headers.has('range') || url.pathname.endsWith('.mp4')) {
-    if (isMediaHost(url.hostname) && cachedVideoUrls.has(url.href)) event.respondWith(serveCachedVideo(request));
+    if (isVideoSource(url) && cachedVideoUrls.has(url.href)) event.respondWith(serveCachedVideo(request));
     return;
   }
 

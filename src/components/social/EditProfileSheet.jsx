@@ -30,8 +30,8 @@ function Chip({ selected, onClick, children }) {
       }}
       className={`min-h-[40px] px-4 rounded-full border text-[13px] cursor-pointer touch-manipulation transition-colors duration-150 ${
         selected
-          ? 'bg-white text-black border-white font-bold shadow-[0_4px_16px_rgba(255,255,255,0.12)]'
-          : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 font-medium hover:text-white hover:bg-white/[0.07]'
+          ? 'bg-accent text-white border-accent-hover font-bold'
+          : 'bg-surface border-white/[0.08] text-zinc-300 font-medium hover:text-white hover:border-white/20'
       }`}
     >
       {children}
@@ -130,7 +130,7 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
           onClick={save}
           disabled={blocked}
           whileTap={blocked ? undefined : { scale: 0.98 }}
-          className="w-full min-h-[52px] rounded-full bg-white text-black hover:bg-zinc-200 font-heading font-bold text-[15px] cursor-pointer touch-manipulation disabled:bg-white/[0.08] disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors shadow-[0_8px_28px_rgba(255,255,255,0.12)]"
+          className="w-full min-h-[52px] rounded-full bg-primary text-app hover:bg-primary-hover font-heading font-bold text-[15px] cursor-pointer touch-manipulation disabled:bg-white/[0.08] disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors"
         >
           {saving ? 'A guardar…' : 'Guardar perfil'}
         </motion.button>

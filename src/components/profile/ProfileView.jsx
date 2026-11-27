@@ -11,6 +11,7 @@ import { triggerHaptic } from '../../utils/audio';
 import { getWorkoutHistory } from '../../utils/storage';
 import NewPostModal from '../social/NewPostModal';
 import ConsistencyCalendar from './ConsistencyCalendar';
+import DataPortabilityCard from './DataPortabilityCard';
 import {
   buildAthletePassContent,
   buildAthletePassStoryBlob,
@@ -186,7 +187,7 @@ export default function ProfileView() {
           </div>
         )}
 
-        {/* Barra de Ações Rápidas do Atleta (Limpa, Tátil e Pronta para Partilha) */}
+        {/* Barra de Ações Rápidas do Atleta (Pílulas limpas sobre preto puro) */}
         <div className="grid grid-cols-3 gap-2">
           {canEdit ? (
             <motion.button
@@ -196,13 +197,13 @@ export default function ProfileView() {
                 triggerHaptic(8);
                 setEditing(true);
               }}
-              className="min-h-[46px] rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+              className="min-h-[44px] rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
             >
-              <PencilLine className="w-3.5 h-3.5 text-zinc-400" strokeWidth={2} />
+              <PencilLine className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.75} />
               <span>Editar</span>
             </motion.button>
           ) : (
-            <div className="min-h-[46px] rounded-2xl bg-white/[0.03] border border-white/[0.06] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
+            <div className="min-h-[44px] rounded-full border border-white/[0.06] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
               Atleta AB
             </div>
           )}
@@ -212,9 +213,9 @@ export default function ProfileView() {
             whileTap={{ scale: 0.97 }}
             disabled={exportingStory}
             onClick={handleShareStory}
-            className="min-h-[46px] rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-all disabled:opacity-60"
+            className="min-h-[44px] rounded-full bg-accent/50 hover:bg-accent/70 border border-accent-hover text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-60"
           >
-            <Share2 className="w-3.5 h-3.5 text-zinc-300" strokeWidth={2} />
+            <Share2 className="w-3.5 h-3.5 text-zinc-200" strokeWidth={1.75} />
             <span>{exportingStory ? 'A gerar…' : 'Story Pass'}</span>
           </motion.button>
 
@@ -225,9 +226,9 @@ export default function ProfileView() {
               triggerHaptic(10);
               setNewPostOpen(true);
             }}
-            className="min-h-[46px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
+            className="min-h-[44px] rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
           >
-            <Camera className="w-3.5 h-3.5 stroke-[2.2]" />
+            <Camera className="w-3.5 h-3.5 stroke-[2]" />
             <span>Publicar Foto</span>
           </motion.button>
         </div>
@@ -300,6 +301,8 @@ export default function ProfileView() {
       <Suspense fallback={<div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 pt-4"><Skeleton className="h-60 rounded-3xl" /></div>}>
         <HistoryView />
       </Suspense>
+
+      <DataPortabilityCard />
 
       <AnimatePresence>
         {newPostOpen && (
@@ -432,19 +435,19 @@ export default function ProfileView() {
                 <button
                   type="button"
                   onClick={handleCopyInviteLink}
-                  className="min-h-[48px] rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  className="min-h-[48px] rounded-full bg-transparent border border-white/[0.12] hover:border-white/[0.25] text-white font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
                 >
                   {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-zinc-300" />}
-                  <span>{copiedLink ? 'Link Copiado!' : 'Copiar Link'}</span>
+                  <span>{copiedLink ? 'Link Copiado' : 'Copiar Link'}</span>
                 </button>
 
                 <button
                   type="button"
                   disabled={exportingStory}
                   onClick={handleShareStory}
-                  className="min-h-[48px] rounded-2xl bg-white text-black hover:bg-zinc-100 font-bold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
+                  className="min-h-[48px] rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
                 >
-                  <Share2 className="w-4 h-4" strokeWidth={2.2} />
+                  <Share2 className="w-4 h-4" strokeWidth={2} />
                   <span>{exportingStory ? 'A preparar…' : 'Exportar Story'}</span>
                 </button>
               </div>

@@ -141,7 +141,9 @@ export default function CelebrationModal({
   return (
     <ModalBackdrop className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
       <ModalPanel 
-        className="w-full max-w-sm bg-zinc-950 rounded-2xl shadow-2xl overflow-hidden border border-white/10 flex flex-col transition-colors"
+        onClose={onClose}
+        ariaLabel="Treino Concluído"
+        className="w-full max-w-sm bg-app rounded-t-3xl sm:rounded-2xl overflow-hidden border border-white/[0.08] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Banner com Troféu */}
@@ -318,7 +320,7 @@ export default function CelebrationModal({
         <div className="p-5 pt-3 space-y-2">
           <button
             onClick={onClose}
-            className="w-full min-h-[48px] py-3.5 rounded-xl bg-primary text-app hover:bg-primary-hover font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+            className="w-full min-h-[48px] py-3.5 rounded-full bg-primary text-app hover:bg-primary-hover font-bold text-sm transition-colors flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
           >
             <span>Concluir e Voltar ao Painel</span>
             <ArrowRight className="w-4 h-4" />
@@ -328,7 +330,7 @@ export default function CelebrationModal({
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="min-h-[44px] py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 font-semibold text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
+              className="min-h-[44px] py-2.5 rounded-full bg-surface hover:bg-surface-2 text-zinc-300 font-semibold text-xs border border-white/[0.08] transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer disabled:opacity-60"
             >
               <Share2 className="w-3.5 h-3.5 text-zinc-400" />
               <span>Partilhar</span>

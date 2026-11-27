@@ -53,14 +53,14 @@ export default function BadgesView() {
   });
 
   return (
-    <div className="space-y-4 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn">
       
-      {/* 1. Header de Conquistas & Barra de Progresso */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-surface border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
+      {/* 1. Header de Conquistas & Barra de Progresso (Aberto no canvas OLED) */}
+      <div className="pt-1 pb-5 border-b border-white/[0.06] text-white">
         <div className="flex items-center justify-between mb-3 gap-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
-              <Trophy className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-full bg-accent/50 text-white border border-accent-hover flex items-center justify-center shrink-0">
+              <Trophy className="w-5 h-5 text-white" />
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-white tracking-[-0.015em]">
@@ -70,7 +70,7 @@ export default function BadgesView() {
           </div>
 
           <div className="text-right">
-            <span className="font-display text-xl font-semibold text-amber-400 tabular-nums tracking-[-0.02em]">
+            <span className="font-display text-xl font-semibold text-white tabular-nums tracking-[-0.02em]">
               {unlockedCount}<span className="text-xs text-zinc-500 font-normal ml-0.5">/{totalBadges}</span>
             </span>
           </div>
@@ -78,13 +78,13 @@ export default function BadgesView() {
 
         {/* Barra de Progresso */}
         <div className="space-y-1.5 mt-4">
-          <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-400">
             <span>Progresso de Conquistas</span>
-            <span className="font-display text-amber-400 tabular-nums">{progressPercent}%</span>
+            <span className="font-display text-white tabular-nums">{progressPercent}%</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
+          <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
             <div 
-              className="h-full bg-amber-400 rounded-full transition-all duration-700 ease-out"
+              className="h-full bg-accent-hover rounded-full transition-[width] duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -106,10 +106,10 @@ export default function BadgesView() {
               setFilter(f.id);
               triggerHaptic(10);
             }}
-            className={`min-h-[38px] px-4 rounded-full transition-all cursor-pointer shrink-0 ${
+            className={`min-h-[38px] px-4 rounded-full border transition-colors cursor-pointer shrink-0 ${
               filter === f.id
-                ? 'bg-primary text-app shadow-xs'
-                : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200'
+                ? 'bg-accent border-accent-hover text-white'
+                : 'bg-surface border-white/[0.08] text-zinc-400 hover:text-zinc-200 hover:border-white/20'
             }`}
           >
             {f.label}
@@ -117,8 +117,8 @@ export default function BadgesView() {
         ))}
       </div>
 
-      {/* 3. Grid de Medalhas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* 3. Lista Aberta de Medalhas */}
+      <div className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
         {filteredBadges.map((badge) => {
           const isUnlocked = Boolean(unlockedMap[badge.id]);
           const unlockedInfo = unlockedMap[badge.id];
@@ -127,18 +127,16 @@ export default function BadgesView() {
           return (
             <div
               key={badge.id}
-              className={`p-3.5 rounded-xl border transition-all relative overflow-hidden flex items-start gap-3 ${
-                isUnlocked
-                  ? 'bg-surface border-white/[0.1] shadow-sm'
-                  : 'bg-surface/40 border-white/[0.06] opacity-70'
+              className={`py-3.5 flex items-center gap-3.5 ${
+                isUnlocked ? '' : 'opacity-55'
               }`}
             >
               {/* Ícone */}
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 border transition-colors ${
                   isUnlocked
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-white/[0.04] text-zinc-600 border-white/[0.08]'
+                    ? 'bg-accent/60 text-white border-accent-hover'
+                    : 'bg-white/[0.03] text-zinc-600 border-white/[0.06]'
                 }`}
               >
                 {isUnlocked ? (
@@ -150,24 +148,24 @@ export default function BadgesView() {
 
               {/* Informações da Conquista */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1 mb-0.5">
-                  <h3 className={`text-xs font-bold truncate ${
+                <div className="flex items-center justify-between gap-2 mb-0.5">
+                  <h3 className={`text-[13px] font-bold truncate ${
                     isUnlocked ? 'text-white' : 'text-zinc-400'
                   }`}>
                     {badge.title}
                   </h3>
                   
                   {isUnlocked && (
-                    <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   )}
                 </div>
 
-                <p className="text-[11px] text-zinc-400 leading-tight">
+                <p className="text-[12px] text-zinc-400 leading-snug">
                   {badge.desc}
                 </p>
 
                 {isUnlocked && unlockedInfo?.unlockedAt && (
-                  <span className="text-[11px] text-zinc-500 tabular-nums mt-1.5 block">
+                  <span className="text-[11px] text-zinc-500 tabular-nums mt-1 block">
                     Conquistada em {new Date(unlockedInfo.unlockedAt).toLocaleDateString('pt-PT')}
                   </span>
                 )}

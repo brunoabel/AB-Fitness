@@ -5,44 +5,66 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { simplifyRoute } from '../utils/runningService';
 import { getRunsHistory } from '../utils/storage';
+import { enqueueJob, flushQueue, readQueue } from '../utils/syncQueue';
+
+const RUNS_SYNC_QUEUE_KEY = 'ab_fitness_runs_sync_queue_v1';
+
+async function pushRunRow(payload) {
+  const { error } = await supabase
+    .from('runs')
+    .upsert(payload, { onConflict: 'id' });
+  if (error) throw error;
+}
 
 /**
- * Salva ou sincroniza um registro de corrida na tabela `public.runs` do Supabase
+ * Salva ou sincroniza um registo de corrida na tabela `public.runs` do Supabase.
+ * Em falha de rede/offline, coloca na fila persistente para reenvio automático na reconexão.
  */
 export async function syncRunToSupabase(runRecord, userId) {
   if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
     return runRecord;
   }
 
+  const payload = {
+    id: runRecord.id,
+    user_id: userId,
+    distance_km: Number(runRecord.distanceKm) || 0,
+    duration_seconds: Number(runRecord.durationSeconds) || 0,
+    avg_pace: runRecord.avgPace || '--:--',
+    avg_pace_seconds: Number(runRecord.avgPaceSeconds) || 0,
+    calories: Number(runRecord.calories) || 0,
+    avg_speed_kmh: Number(runRecord.avgSpeedKmh) || 0,
+    elevation_gain_m: Number(runRecord.elevationGainM) || 0,
+    splits: runRecord.splits || [],
+    coordinates: simplifyRoute(runRecord.coordinates || [], 600, 2.0),
+    is_simulation: Boolean(runRecord.isSimulation),
+    created_at: new Date(runRecord.timestamp || Date.now()).toISOString()
+  };
+
   try {
-    const payload = {
-      id: runRecord.id,
-      user_id: userId,
-      distance_km: Number(runRecord.distanceKm) || 0,
-      duration_seconds: Number(runRecord.durationSeconds) || 0,
-      avg_pace: runRecord.avgPace || '--:--',
-      avg_pace_seconds: Number(runRecord.avgPaceSeconds) || 0,
-      calories: Number(runRecord.calories) || 0,
-      avg_speed_kmh: Number(runRecord.avgSpeedKmh) || 0,
-      elevation_gain_m: Number(runRecord.elevationGainM) || 0,
-      splits: runRecord.splits || [],
-      coordinates: simplifyRoute(runRecord.coordinates || [], 600, 2.0),
-      is_simulation: Boolean(runRecord.isSimulation),
-      created_at: new Date(runRecord.timestamp || Date.now()).toISOString()
-    };
-
-    const { error } = await supabase
-      .from('runs')
-      .upsert(payload, { onConflict: 'id' });
-
-    if (error) {
-      console.warn('Erro ao sincronizar corrida com o Supabase:', error.message);
-    }
+    await pushRunRow(payload);
   } catch (err) {
-    console.warn('Falha na sincronização de corrida:', err);
+    console.warn('Corrida guardada localmente e enfileirada para sync:', err?.message || err);
+    enqueueJob(RUNS_SYNC_QUEUE_KEY, {
+      key: `${userId}:${payload.id}`,
+      userId,
+      payload
+    });
   }
 
   return runRecord;
+}
+
+/** Reenvia corridas que ficaram pendentes offline assim que a ligação regressa. */
+export async function flushRunsSyncQueue(userId) {
+  if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
+    return 0;
+  }
+  return flushQueue(RUNS_SYNC_QUEUE_KEY, async (job) => {
+    if (job.userId !== userId) return false;
+    await pushRunRow(job.payload);
+    return true;
+  });
 }
 
 /**
@@ -68,9 +90,14 @@ export async function syncUserRunsFromSupabase(userId) {
     if (data && data.length > 0) {
       const localRuns = getRunsHistory() || [];
       const localMap = new Map(localRuns.map((r) => [r.id, r]));
+      const pendingIds = new Set(readQueue(RUNS_SYNC_QUEUE_KEY).map((j) => j.payload?.id));
 
-      // Mesclar dados da nuvem no mapa local
+      // Mesclar dados da nuvem sem sobrescrever corridas ainda pendentes de envio local
       data.forEach((row) => {
+        if (pendingIds.has(row.id) && localMap.has(row.id)) return;
+        const existing = localMap.get(row.id);
+        const cloudCoords = Array.isArray(row.coordinates) ? row.coordinates : [];
+        const keepLocalCoords = existing && Array.isArray(existing.coordinates) && existing.coordinates.length > cloudCoords.length;
         localMap.set(row.id, {
           id: row.id,
           timestamp: new Date(row.created_at).getTime(),
@@ -83,7 +110,7 @@ export async function syncUserRunsFromSupabase(userId) {
           avgSpeedKmh: Number(row.avg_speed_kmh),
           elevationGainM: Number(row.elevation_gain_m),
           splits: row.splits || [],
-          coordinates: row.coordinates || [],
+          coordinates: keepLocalCoords ? existing.coordinates : cloudCoords,
           isSimulation: Boolean(row.is_simulation)
         });
       });

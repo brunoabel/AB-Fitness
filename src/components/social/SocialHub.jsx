@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   Search,
@@ -227,9 +227,17 @@ export default function SocialHub({ onNavigateTab }) {
   );
   const showResults = query.trim().length >= 2;
 
+  const flashTimerRef = useRef(null);
+  useEffect(() => {
+    return () => {
+      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    };
+  }, []);
+
   const flash = (msg) => {
     setNotice(msg);
-    setTimeout(() => setNotice(''), 2200);
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setNotice(''), 2200);
   };
 
   const respond = async (f, accept) => {
@@ -348,7 +356,7 @@ export default function SocialHub({ onNavigateTab }) {
         {/* Barra de pesquisa fluida sem caixa pesada */}
         <div>
           <label htmlFor="squad-search" className="sr-only">Procurar atletas</label>
-          <div className="relative flex items-center rounded-full bg-white/[0.04] focus-within:bg-white/[0.07] border border-white/[0.07] focus-within:border-white/[0.2] transition-colors">
+          <div className="relative flex items-center rounded-full bg-white/[0.04] focus-within:bg-surface-2/60 border border-white/[0.08] focus-within:border-accent-hover transition-colors">
             <Search className="ml-4 w-[17px] h-[17px] text-zinc-500 shrink-0" strokeWidth={1.75} />
             <input
               id="squad-search"
@@ -491,8 +499,8 @@ export default function SocialHub({ onNavigateTab }) {
                       />
                     </div>
                     {athlete.streak > 0 && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-[1px] rounded-full bg-black border border-white/[0.14] inline-flex items-center gap-0.5 font-display text-[10px] font-bold text-amber-300 tabular-nums">
-                        <Flame className="w-2.5 h-2.5 text-amber-400" strokeWidth={2.2} />
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-[1px] rounded-full bg-black border border-accent-hover inline-flex items-center gap-0.5 font-display text-[10px] font-bold text-white tabular-nums">
+                        <Flame className="w-2.5 h-2.5 text-zinc-300" strokeWidth={2.2} />
                         {athlete.streak}
                       </span>
                     )}
@@ -510,11 +518,11 @@ export default function SocialHub({ onNavigateTab }) {
         </div>
       )}
 
-      {/* CAMADA C: Segmentação Fluida (Atividade vs. Classificação) */}
+      {/* CAMADA C: Segmentação Editorial sem Caixas (Atividade vs. Classificação) */}
       <div
         role="tablist"
         aria-label="Vistas do clube"
-        className="flex p-1 rounded-full bg-white/[0.04] border border-white/[0.06]"
+        className="flex items-center gap-6 border-b border-white/[0.08]"
       >
         {[
           { id: 'feed', label: 'Atividade' },
@@ -533,27 +541,27 @@ export default function SocialHub({ onNavigateTab }) {
                   setClubTab(tab.id);
                 }
               }}
-              className={`relative flex-1 min-h-[42px] rounded-full text-[13px] flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation transition-colors ${
-                active ? 'text-black font-bold' : 'text-zinc-400 hover:text-white font-semibold'
+              className={`relative min-h-[44px] pb-2.5 text-[14px] inline-flex items-center gap-1.5 cursor-pointer touch-manipulation transition-colors ${
+                active ? 'text-white font-semibold' : 'text-zinc-500 hover:text-zinc-300 font-medium'
               }`}
             >
-              {active && (
-                <motion.span
-                  layoutId="clubSegmentPill"
-                  transition={reducedMotion ? { duration: 0 } : SPRING}
-                  className="absolute inset-0 rounded-full bg-white shadow-xs"
-                  aria-hidden="true"
-                />
-              )}
-              <span className="relative z-10">{tab.label}</span>
+              <span>{tab.label}</span>
               {tab.count != null && tab.count > 0 && (
                 <span
-                  className={`relative z-10 font-display text-[13px] tabular-nums ${
-                    active ? 'text-black/70' : 'text-zinc-500'
+                  className={`font-display text-[13px] tabular-nums ${
+                    active ? 'text-zinc-300' : 'text-zinc-600'
                   }`}
                 >
                   {tab.count}
                 </span>
+              )}
+              {active && (
+                <motion.span
+                  layoutId="clubSegmentUnderline"
+                  transition={reducedMotion ? { duration: 0 } : SPRING}
+                  className="absolute bottom-[-1px] left-0 right-0 h-[2px] rounded-full bg-accent-hover"
+                  aria-hidden="true"
+                />
               )}
             </button>
           );
@@ -589,8 +597,8 @@ export default function SocialHub({ onNavigateTab }) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            transition={SPRING}
-            className="fixed left-1/2 -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom,0px)+92px)] z-40 px-4 py-2.5 rounded-full bg-white text-black text-[13px] font-bold shadow-[0_12px_32px_rgba(0,0,0,0.6)]"
+            transition={reducedMotion ? { duration: 0 } : SPRING}
+            className="fixed left-1/2 -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom,0px)+92px)] z-40 px-4 py-2.5 rounded-full bg-surface-2 border border-accent-hover text-white text-[13px] font-semibold"
           >
             {notice}
           </motion.p>

@@ -99,10 +99,10 @@ export default function RosterPanel({
                 key={f.id}
                 type="button"
                 onClick={() => { triggerHaptic(8); onFilterChange(f.id); }}
-                className={`shrink-0 min-h-[34px] px-3 rounded-full text-[12px] font-semibold tabular-nums cursor-pointer transition-colors ${
+                className={`shrink-0 min-h-[34px] px-3.5 rounded-full border text-[12px] font-semibold tabular-nums cursor-pointer transition-colors ${
                   filter === f.id
-                    ? 'bg-primary text-app'
-                    : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300'
+                    ? 'bg-accent border-accent-hover text-white'
+                    : 'bg-surface border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20'
                 }`}
               >
                 {f.label}{f.id === 'alert' && alerts.length > 0 ? ` (${alerts.length})` : ''}
@@ -113,10 +113,10 @@ export default function RosterPanel({
                 key={tag}
                 type="button"
                 onClick={() => { triggerHaptic(8); onFilterChange(filter === `tag:${tag}` ? 'all' : `tag:${tag}`); }}
-                className={`shrink-0 min-h-[34px] px-3 rounded-full text-[12px] font-semibold cursor-pointer transition-colors ${
+                className={`shrink-0 min-h-[34px] px-3.5 rounded-full border text-[12px] font-semibold cursor-pointer transition-colors ${
                   filter === `tag:${tag}`
-                    ? 'bg-primary text-app'
-                    : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300'
+                    ? 'bg-accent border-accent-hover text-white'
+                    : 'bg-surface border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20'
                 }`}
               >
                 #{tag}
@@ -136,13 +136,13 @@ export default function RosterPanel({
         </div>
 
         <div className="relative">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" strokeWidth={1.75} />
+          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" strokeWidth={1.75} />
           <input
             type="text"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Pesquisar atleta..."
-            className="w-full min-h-[40px] pl-9 pr-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-accent-hover transition-colors"
+            className="w-full min-h-[40px] pl-10 pr-4 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-accent-hover transition-colors"
           />
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function RosterPanel({
                 <button
                   type="button"
                   onClick={() => { triggerHaptic(10); onOpenInvite(); }}
-                  className="mt-1 min-h-[44px] px-4 rounded-xl bg-primary text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer"
+                  className="mt-1 min-h-[44px] px-5 rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-[13px] inline-flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <UserPlus className="w-4 h-4" strokeWidth={2} />
                   Convidar primeiro atleta
@@ -182,7 +182,7 @@ export default function RosterPanel({
                 onClick={() => onSelect(ath.athlete_id)}
                 className={`group px-4 sm:px-5 py-3 cursor-pointer transition-colors ${
                   selected
-                    ? 'bg-accent/15 border-l-2 border-l-white'
+                    ? 'bg-accent/20 border-l-2 border-l-accent-hover'
                     : 'border-l-2 border-l-transparent hover:bg-white/[0.025]'
                 }`}
               >
@@ -199,7 +199,7 @@ export default function RosterPanel({
                       <h4 className="text-[14px] font-semibold text-white truncate">{ath.full_name}</h4>
                       {reason && (
                         <AlertTriangle
-                          className={`w-3.5 h-3.5 shrink-0 ${ath.last_pain_flag ? 'text-rose-400' : 'text-amber-400'}`}
+                          className={`w-3.5 h-3.5 shrink-0 ${ath.last_pain_flag ? 'text-rose-400' : 'text-zinc-300'}`}
                           strokeWidth={2}
                           title={reason}
                         />
@@ -212,7 +212,7 @@ export default function RosterPanel({
                       {Number(ath.streak) > 0 && (
                         <>
                           <span aria-hidden="true" className="mx-1.5 text-zinc-600">·</span>
-                          <span className="text-amber-300 font-semibold">{ath.streak}d</span>
+                          <span className="text-white font-semibold">{ath.streak}d</span>
                         </>
                       )}
                     </p>
@@ -233,7 +233,7 @@ export default function RosterPanel({
                     type="button"
                     onClick={(e) => { e.stopPropagation(); triggerHaptic(10); onQuickAssign(ath.athlete_id); }}
                     title="Prescrever treino"
-                    className="min-h-[34px] px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] text-zinc-200 hover:text-white text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1.5 shrink-0 transition-colors"
+                    className="min-h-[34px] px-3 rounded-full bg-surface hover:bg-accent/30 border border-white/[0.08] hover:border-accent-hover text-zinc-200 hover:text-white text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1.5 shrink-0 transition-colors"
                   >
                     <ClipboardPlus className="w-3.5 h-3.5" strokeWidth={1.75} />
                     <span>Prescrever</span>

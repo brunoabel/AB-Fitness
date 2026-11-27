@@ -19,16 +19,16 @@ import { getWorkoutHistory } from '../utils/storage';
 import { findExerciseIn100 } from '../data/exercises100';
 import { triggerHaptic } from '../utils/audio';
 
-const card = 'p-5 rounded-xl bg-surface border border-white/10 shadow-xs space-y-4 transition-colors';
+const card = 'py-5 border-b border-white/[0.06] first:pt-1 last:border-b-0 space-y-4';
 const eyebrow = 'flex items-center gap-2 text-zinc-400 text-xs font-semibold uppercase tracking-wider';
 const chip = (active) =>
-  `px-3 min-h-[40px] rounded-lg text-xs font-semibold border transition-all active:scale-95 cursor-pointer select-none ${
+  `px-3.5 min-h-[38px] rounded-full text-xs font-semibold border transition-colors active:scale-95 cursor-pointer select-none ${
     active
-      ? 'bg-accent/70 text-white border-accent-hover'
-      : 'bg-surface text-zinc-300 border-white/[0.08]'
+      ? 'bg-accent text-white border-accent-hover'
+      : 'bg-surface text-zinc-400 border-white/[0.08] hover:text-zinc-200 hover:border-white/20'
   }`;
 const inputCls =
-  'w-full h-11 rounded-lg px-3 text-base tabular-nums bg-surface border border-white/[0.08] text-zinc-50 focus:border-accent focus:ring-1 focus:ring-accent outline-none';
+  'w-full h-11 rounded-xl px-3 text-base tabular-nums bg-surface border border-white/[0.08] text-zinc-50 focus:border-accent-hover outline-none transition-colors';
 
 const daysBetween = (a, b) => Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
 const fmt = (n) => (Math.round(n * 10) / 10).toLocaleString('pt-PT');
@@ -43,7 +43,7 @@ function exerciseName(id) {
 function MetricChart({ series, unit }) {
   if (series.length < 2) {
     return (
-      <div className="h-36 flex items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-zinc-400 text-center px-6">
+      <div className="h-36 flex items-center justify-center border-y border-white/[0.06] text-xs text-zinc-400 text-center px-6">
         {series.length === 0 ? 'Ainda sem registos desta medida.' : 'Registe mais uma medição para ver a linha de evolução.'}
       </div>
     );
@@ -101,8 +101,8 @@ function CompareSlider({ beforeUrl, afterUrl, beforeDate, afterDate }) {
         style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         draggable="false"
       />
-      <div className="absolute inset-y-0 w-0.5 bg-accent pointer-events-none" style={{ left: `${pos}%` }}>
-        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent text-white flex items-center justify-center shadow-lg">
+      <div className="absolute inset-y-0 w-0.5 bg-accent-hover pointer-events-none" style={{ left: `${pos}%` }}>
+        <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-accent border border-accent-hover text-white flex items-center justify-center">
           <MoveHorizontal className="w-4 h-4" strokeWidth={2.25} />
         </span>
       </div>
@@ -299,7 +299,7 @@ export default function BodyPortfolio() {
           type="button"
           onClick={handleShare}
           disabled={!canShare || busy === 'card'}
-          className="w-full min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {busy === 'card' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4 stroke-[2.2]" />}
           <span>Partilhar card de evolução</span>
@@ -328,7 +328,7 @@ export default function BodyPortfolio() {
             type="button"
             onClick={() => setFormOpen((v) => !v)}
             aria-expanded={formOpen}
-            className="flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg bg-white/[0.04] text-zinc-100 text-xs font-semibold active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 min-h-[38px] rounded-full bg-surface border border-white/[0.08] hover:border-white/20 text-zinc-100 text-xs font-semibold active:scale-95 transition-colors cursor-pointer"
           >
             {formOpen ? <ChevronDown className="w-4 h-4 rotate-180" /> : <Plus className="w-4 h-4" />}
             <span>{formOpen ? 'Fechar' : 'Registar'}</span>
@@ -370,7 +370,7 @@ export default function BodyPortfolio() {
             </p>
             <button
               type="submit"
-              className="w-full min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app font-bold text-sm active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-app font-bold text-sm active:scale-[0.98] transition-colors cursor-pointer"
             >
               Guardar medidas
             </button>
@@ -461,7 +461,7 @@ export default function BodyPortfolio() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy === 'photo'}
-          className="w-full flex items-center justify-center gap-1.5 min-h-[48px] rounded-2xl bg-primary hover:bg-primary-hover text-app text-sm font-bold active:scale-[0.98] cursor-pointer disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-1.5 min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-app text-sm font-bold active:scale-[0.98] transition-colors cursor-pointer disabled:opacity-50"
         >
           {busy === 'photo' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
           <span>Adicionar foto de {PHOTO_POSES.find((p) => p.id === pose).label.toLowerCase()}</span>
@@ -473,7 +473,7 @@ export default function BodyPortfolio() {
         )}
 
         {photosLoaded && photos.length === 0 && (
-          <div className="flex flex-col items-center gap-2 py-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center px-6">
+          <div className="flex flex-col items-center gap-2 py-8 border-y border-white/[0.06] text-center px-6">
             <ImageOff className="w-6 h-6 text-zinc-400" />
             <p className="text-xs text-zinc-400">
               Tire uma foto de frente, lado e costas, com a mesma luz e distância. Repita a cada 2–4 semanas.

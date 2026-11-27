@@ -1702,7 +1702,7 @@ export const LEGS_BIOMECHANICS = {
     ],
     respiracao: 'Respire continuamente de forma estável.',
     erro_comum: 'Permitir a queda da pelve em direção ao solo por fadiga.',
-    beneficio: 'O exercício número 1 comprovado por ensaios clínicos da UEFA para reduzir lesões de adutores e pubalgia em até 41% em atletas.'
+    beneficio: 'Num ensaio clínico com futebolistas, um programa baseado na prancha Copenhagen reduziu os problemas na virilha em cerca de 41% (Harøy et al., 2019).'
   },
   272: {
     id: 272,

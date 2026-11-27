@@ -5,7 +5,8 @@ import { OptionCard, Segmented, PrecisionPicker, Chip, MicroLabel } from './cont
 import {
   GENDERS, GOALS, LEVELS, LOCATIONS, INJURIES, PRIORITY_MUSCLES, MAX_PRIORITY, DAYS, MINUTES,
   TRAINING_DAYS, WEEK_DAYS, formatTrainingDays, SPLIT_SUMMARY, SPLIT_SUMMARY_SIMPLE, labelOf,
-  SPORTS, SPORT_INTENSITIES, SESSION_ORDERS, overlapSportDays, sportVerdict, isBeginnerProfile
+  SPORTS, SPORT_INTENSITIES, SESSION_ORDERS, overlapSportDays, sportVerdict, isBeginnerProfile,
+  HOME_EQUIPMENT, DEFAULT_HOME_EQUIPMENT
 } from './profileSchema';
 import { triggerHaptic } from '../../utils/audio';
 
@@ -191,9 +192,9 @@ function useEnvironmentCounts() {
   useEffect(() => {
     if (counts) return undefined;
     let alive = true;
-    import('../../data/exerciseCatalog').then(({ EXERCISE_CATALOG }) => {
+    Promise.all([import('../../data/exerciseCatalog'), import('../../data/openExercisesBatch')]).then(([{ EXERCISE_CATALOG }, { OPEN_CATALOG }]) => {
       const c = {};
-      Object.values(EXERCISE_CATALOG).forEach((e) => {
+      [...Object.values(EXERCISE_CATALOG), ...Object.values(OPEN_CATALOG)].forEach((e) => {
         c[e.environment] = (c[e.environment] || 0) + 1;
       });
       ENV_CACHE.counts = c;
@@ -209,13 +210,34 @@ function useEnvironmentCounts() {
 function LocationControl({ profile, set }) {
   const counts = useEnvironmentCounts();
   const total = (loc) => loc.environments.reduce((s, env) => s + (counts?.[env] || 0), 0);
+  const equipment = profile.equipment || [];
+  const selectLocation = (v) => {
+    set('trainingLocation', v);
+    // Casa com equipamento começa com o kit mais comum; só peso corporal começa vazio
+    if (v === 'home_gym' && equipment.length === 0) set('equipment', DEFAULT_HOME_EQUIPMENT);
+    if (v === 'bodyweight') set('equipment', equipment.filter((id) => id === 'pull_up_bar'));
+  };
+  const toggle = (id) => set('equipment', equipment.includes(id) ? equipment.filter((x) => x !== id) : [...equipment, id]);
+  const atHome = profile.trainingLocation === 'home_gym' || profile.trainingLocation === 'bodyweight';
   return (
-    <CardList
-      options={LOCATIONS}
-      value={profile.trainingLocation}
-      onSelect={(v) => set('trainingLocation', v)}
-      meta={(o) => (counts ? `${total(o)} exercícios no catálogo` : 'A ler catálogo')}
-    />
+    <div className="space-y-6">
+      <CardList
+        options={LOCATIONS}
+        value={profile.trainingLocation}
+        onSelect={selectLocation}
+        meta={(o) => (counts ? `${total(o)} exercícios no catálogo` : 'A ler catálogo')}
+      />
+      {atHome && (
+        <div className="space-y-2.5">
+          <MicroLabel>O que tens em casa?</MicroLabel>
+          <div className="grid grid-cols-2 gap-2">
+            {HOME_EQUIPMENT.map((o) => (
+              <Chip key={o.id} label={o.label} selected={equipment.includes(o.id)} onToggle={() => toggle(o.id)} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -383,6 +405,7 @@ function ReviewControl({ profile, goTo }) {
     ['Atleta híbrido', sportSummary, 'sport'],
     ['Sessão', `${profile.sessionMinutes === 75 ? '75+' : profile.sessionMinutes} min`, 'minutes'],
     ['Local', labelOf(LOCATIONS, profile.trainingLocation), 'location'],
+    ...(profile.trainingLocation && profile.trainingLocation !== 'gym' ? [['Equipamento', listOf(profile.equipment || [], HOME_EQUIPMENT, 'Nenhum'), 'location']] : []),
     ['Restrições', listOf(profile.injuries, INJURIES, 'Nenhuma'), 'restrictions'],
     ['Prioridade', listOf(profile.priorityMuscles, PRIORITY_MUSCLES, 'Equilibrado'), 'restrictions']
   ];

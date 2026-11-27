@@ -107,7 +107,8 @@ export async function listTemplates(trainerId) {
     .from('trainer_templates')
     .select('id, title, category, structure_json, created_at')
     .eq('trainer_id', trainerId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(100);
   if (error) return { data: [], error: error.message };
   return { data: data || [], error: null };
 }
@@ -243,7 +244,8 @@ export async function listAssignedProgramsForAthlete(athleteId) {
     .from('assigned_programs')
     .select('id, title, structure_json, target_rpe, rest_timer_seconds, coach_notes, status, assigned_at')
     .eq('athlete_id', athleteId)
-    .order('assigned_at', { ascending: false });
+    .order('assigned_at', { ascending: false })
+    .limit(100);
   if (error) return { data: [], error: error.message };
   return { data: data || [], error: null };
 }
@@ -283,7 +285,8 @@ export async function listMyAssignedPrograms(athleteId) {
     .select('id, trainer_id, title, structure_json, target_rpe, rest_timer_seconds, coach_notes, status, assigned_at')
     .eq('athlete_id', athleteId)
     .eq('status', 'active')
-    .order('assigned_at', { ascending: false });
+    .order('assigned_at', { ascending: false })
+    .limit(100);
   if (error) return { data: [], error: error.message };
   return { data: data || [], error: null };
 }

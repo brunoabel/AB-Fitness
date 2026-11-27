@@ -12,8 +12,8 @@ import { toAppWorkout } from './adapter.js';
 describe('AB Coach — FASE 1: Catálogo e Contrato de Dados', () => {
 
   describe('1. Catálogo de Exercícios (catalog.js)', () => {
-    it('deve conter todos os 348 exercícios oficiais', () => {
-      assert.equal(EXERCISE_CATALOG.length, 348);
+    it('deve conter todos os 481 exercícios oficiais (348 + lote de 133 com animação)', () => {
+      assert.equal(EXERCISE_CATALOG.length, 481);
     });
 
     it('cada item do catálogo deve conter id, nome, grupo, porcao, equipamento e tipo', () => {

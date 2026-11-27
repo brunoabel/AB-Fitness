@@ -1,27 +1,55 @@
-import { getEaseModeToday } from './dailyBriefing';
-import { getLocalBiometrics, getLocalConnections, computeReadinessIndex } from '../services/wearables/wearableManager';
-import { getSavedWeights } from './storage';
+import { getEaseModeToday } from './dailyBriefing.js';
+import { getLocalBiometrics, getLocalConnections, computeReadinessIndex } from '../services/wearables/wearableManager.js';
+import { getSavedWeights, getWorkoutHistory, getRunsHistory } from './storage.js';
 import { applyMesoWeekToSets } from './mesocycleWeek.js';
+import { exerciseTargetsRegion } from '../data/muscleRegions.js';
+import { getSubjectiveReadinessToday, combineReadinessScores } from './subjectiveReadiness.js';
+import { computeWorkloadACWR } from './workloadAcwr.js';
 import {
   e1RM,
   getBestHistorical1RM,
   getBestHistoricalDuration,
   getDefaultDurationSeconds,
   isTimedExercise
-} from './strengthMetrics';
+} from './strengthMetrics.js';
+import { getExerciseMeta } from '../engine/exerciseMeta.js';
 
-/** Devolve a prontidão wearable atual (0-100) ou null se não houver dispositivo ligado. */
+/** Carga da 1.ª sessão sem histórico: 0 em peso corporal/elástico; vazio nos outros, para o utilizador pôr a carga real. */
+function firstSessionWeight(ex) {
+  const loadType = getExerciseMeta(ex)?.loadType;
+  return loadType === 'bodyweight' || loadType === 'bands' ? 0 : '';
+}
+
+/**
+ * Devolve a prontidão atual (0-100) combinando wearable + check-in subjetivo de hoje,
+ * e aplica trava de segurança se o ACWR indicar risco elevado de sobrecarga (> 1.5).
+ */
 export function getCurrentReadinessScore() {
+  let wearableScore = null;
   const conns = getLocalConnections();
-  if (!conns || Object.keys(conns).length === 0) return null;
-  const bios = getLocalBiometrics();
-  const readiness = computeReadinessIndex({
-    whoop: conns.whoop ? bios.whoop : null,
-    fitbit: conns.fitbit ? bios.fitbit : null,
-    strava: conns.strava ? bios.strava : null,
-    garmin: conns.garmin ? bios.garmin : null
+  if (conns && Object.keys(conns).length > 0) {
+    const bios = getLocalBiometrics();
+    const readiness = computeReadinessIndex({
+      whoop: conns.whoop ? bios.whoop : null,
+      fitbit: conns.fitbit ? bios.fitbit : null,
+      strava: conns.strava ? bios.strava : null,
+      garmin: conns.garmin ? bios.garmin : null
+    });
+    if (readiness && !readiness.isStale) wearableScore = readiness.score;
+  }
+
+  const subjectiveScore = getSubjectiveReadinessToday()?.score ?? null;
+  let combined = combineReadinessScores(wearableScore, subjectiveScore);
+
+  const acwr = computeWorkloadACWR({
+    workouts: getWorkoutHistory(),
+    runs: getRunsHistory()
   });
-  return readiness ? readiness.score : null;
+  if (acwr.lockOverload) {
+    combined = combined !== null ? Math.min(combined, 50) : 50;
+  }
+
+  return combined;
 }
 
 /**
@@ -37,19 +65,16 @@ export function buildInitialExercisesData(workout, activeDraft, mesoParams = nul
   const initial = {};
   const exercisesList = Array.isArray(workout?.exercises) ? workout.exercises : [];
   const easeMuscleId = getEaseModeToday();
-  const normalize = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const targetsEasedMuscle = (ex) => {
-    if (!easeMuscleId) return false;
-    return normalize(`${ex.target || ''} ${ex.secondary || ''}`).includes(normalize(easeMuscleId));
-  };
+  const targetsEasedMuscle = (ex) =>
+    Boolean(easeMuscleId) && (easeMuscleId === 'all' || exerciseTargetsRegion(ex, easeMuscleId));
 
   exercisesList.forEach((ex) => {
     const isTimed = isTimedExercise(ex, ex.id);
     const defaultDuration = isTimed ? getDefaultDurationSeconds(ex, ex.id) : 10;
     const prevSets = saved[ex.id];
     if (prevSets && prevSets.length > 0) {
-      initial[ex.id] = prevSets.map((s) => ({
-        weight: s.weight ?? (isTimed ? 0 : (ex.suggestedWeight ?? 10)),
+      let mappedSets = prevSets.map((s) => ({
+        weight: s.weight ?? (isTimed ? 0 : (ex.suggestedWeight ?? firstSessionWeight(ex))),
         reps: s.reps ?? (isTimed ? defaultDuration : (ex.suggestedReps ?? 10)),
         seconds: s.seconds ?? (isTimed ? (Number(s.reps) || defaultDuration) : undefined),
         type: s.type || 'N',
@@ -57,11 +82,27 @@ export function buildInitialExercisesData(workout, activeDraft, mesoParams = nul
         completed: false,
         done: false
       }));
+      if (targetsEasedMuscle(ex)) {
+        const workingCount = mappedSets.filter((s) => s.type !== 'W').length;
+        if (workingCount > 2) {
+          let lastWorkingIdx = -1;
+          for (let i = mappedSets.length - 1; i >= 0; i--) {
+            if (mappedSets[i].type !== 'W') {
+              lastWorkingIdx = i;
+              break;
+            }
+          }
+          if (lastWorkingIdx >= 0) {
+            mappedSets = mappedSets.filter((_, idx) => idx !== lastWorkingIdx);
+          }
+        }
+      }
+      initial[ex.id] = mappedSets;
     } else {
       const baseSetsCount = ex.defaultSets || 3;
       const setsCount = targetsEasedMuscle(ex) ? Math.max(2, baseSetsCount - 1) : baseSetsCount;
       initial[ex.id] = Array.from({ length: setsCount }, () => ({
-        weight: isTimed ? 0 : (ex.suggestedWeight ?? 10),
+        weight: isTimed ? 0 : (ex.suggestedWeight ?? firstSessionWeight(ex)),
         reps: isTimed ? defaultDuration : (ex.suggestedReps ?? 10),
         seconds: isTimed ? defaultDuration : undefined,
         type: 'N',

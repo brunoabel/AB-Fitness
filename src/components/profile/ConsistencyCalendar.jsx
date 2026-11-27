@@ -7,9 +7,9 @@ import { buildMonthCalendarMatrix, buildMonthSummary, buildDayDetailLine, MONTH_
 import { triggerHaptic } from '../../utils/audio';
 
 const DOT_CLASS = {
-  trained_gym: 'bg-white text-black',
-  trained_run: 'bg-white text-black',
-  trained_both: 'bg-white text-black ring-2 ring-white/30 ring-offset-2 ring-offset-app'
+  trained_gym: 'bg-accent border border-accent-hover text-white',
+  trained_run: 'bg-accent border border-accent-hover text-white',
+  trained_both: 'bg-primary text-app border border-primary'
 };
 
 /** Calendário de consistência: um olhar sobre os dias treinados, descansados e em falta. */
@@ -36,7 +36,7 @@ export default function ConsistencyCalendar() {
   const isCurrentMonth = monthOffset === 0;
 
   return (
-    <div className="rounded-2xl bg-surface border border-white/[0.08] p-4 sm:p-5">
+    <div className="py-4 border-y border-white/[0.06]">
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-heading font-bold text-base text-white">
           {MONTH_NAMES_PT[month]} <span className="text-zinc-500 font-normal">{year}</span>

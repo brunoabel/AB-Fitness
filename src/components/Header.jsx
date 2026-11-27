@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Flame, Menu } from 'lucide-react';
+import CoachAvatar from './coach/CoachAvatar';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -68,7 +69,8 @@ export default function Header({
   onNavigateTab,
   completedDays = [],
   schedule = [],
-  onOpenSidebar
+  onOpenSidebar,
+  onOpenAICoach
 }) {
   const { user } = useAuth();
   const identity = useProfileIdentity(user);
@@ -117,7 +119,7 @@ export default function Header({
   return (
     <>
       <header className="sticky top-0 z-20 pt-[env(safe-area-inset-top,0px)]">
-        <motion.div aria-hidden style={{ opacity: barOpacity }} className="absolute inset-0 bg-app/80 backdrop-blur-xl border-b border-white/[0.07]" />
+        <motion.div aria-hidden style={{ opacity: barOpacity }} className="absolute inset-0 bg-black/80 backdrop-blur-2xl border-b border-white/[0.06]" />
         <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
           <motion.button
             type="button"
@@ -137,19 +139,41 @@ export default function Header({
             {compactTitle}
           </motion.span>
 
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.96 }}
-            onClick={() => {
-              triggerHaptic(8);
-              onNavigateTab?.('profile');
-            }}
-            aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
-            className="min-h-[36px] px-3 rounded-full bg-surface-2 border border-white/[0.08] inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0"
-          >
-            <Flame className={`w-4 h-4 ${streak > 0 ? 'text-white' : 'text-zinc-500'}`} strokeWidth={1.75} />
-            {streak}
-          </motion.button>
+          <div className="flex items-center gap-2 shrink-0">
+            {onOpenAICoach && (
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.96 }}
+                onClick={() => {
+                  triggerHaptic(8);
+                  onOpenAICoach();
+                }}
+                aria-label="Abrir AB Coach IA"
+                className="lg:hidden min-h-[36px] pl-1 pr-2.5 rounded-full bg-accent/45 hover:bg-accent/70 border border-accent-hover inline-flex items-center gap-1.5 text-[12px] font-semibold text-white cursor-pointer shrink-0 transition-colors"
+              >
+                <CoachAvatar size={24} alt="" />
+                <span>Coach</span>
+              </motion.button>
+            )}
+
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.96 }}
+              onClick={() => {
+                triggerHaptic(8);
+                onNavigateTab?.('profile');
+              }}
+              aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
+              className={`min-h-[36px] px-3 rounded-full border inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0 transition-colors ${
+                streak > 0
+                  ? 'bg-accent/40 border-accent-hover'
+                  : 'bg-surface border-white/[0.08]'
+              }`}
+            >
+              <Flame className={`w-4 h-4 ${streak > 0 ? 'text-white' : 'text-zinc-500'}`} strokeWidth={1.75} />
+              {streak}
+            </motion.button>
+          </div>
         </div>
       </header>
 

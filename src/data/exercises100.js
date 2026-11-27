@@ -5,6 +5,7 @@
  */
 
 import { HOME_EXERCISES } from './homeExercises.js';
+import { OPEN_EXERCISES } from './openExercisesBatch.js';
 
 /** Catálogo original (320). O script scripts/build_exercise_catalog.mjs lê esta lista. */
 export const EXERCISES_BASE = [
@@ -394,8 +395,8 @@ export const EXERCISES_BASE = [
   { id: 355, nome: "Alongamento de Tríceps e Dorsais Ajoelhado", grupo: "Mobilidade", mecanica: "Alongamento", series: 2, reps: "30s", descanso_seg: 30, slug: "alongamento-triceps-ajoelhado" }
 ];
 
-/** Catálogo completo: os 320 originais + o lote de casa gerado (src/data/homeExercises.js). */
-export const EXERCISES_100 = [...EXERCISES_BASE, ...HOME_EXERCISES];
+/** Catálogo completo: os 320 originais + o lote de casa gerado (src/data/homeExercises.js) + o lote de 133 com animação (src/data/openExercisesBatch.js). */
+export const EXERCISES_100 = [...EXERCISES_BASE, ...HOME_EXERCISES, ...OPEN_EXERCISES];
 
 // Agrupamento prático por grupo muscular
 export const EXERCISES_BY_GROUP = EXERCISES_100.reduce((acc, ex) => {

@@ -11,13 +11,26 @@ const SPRING = { type: 'spring', stiffness: 420, damping: 36 };
  * Modal de Adaptação ao Vivo no Treino — "Máquina Ocupada / Indisponível"
  * Apresenta alternativas biomecânicas com a mesma porção anatómica e vetor de força.
  */
-export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClose }) {
+export default function SwapExerciseModal({
+  exercise,
+  excludeIds = [],
+  prevIndex = null,
+  pastWeights = {},
+  onSelectSubstitute,
+  onClose
+}) {
   const reducedMotion = useReducedMotion();
   const substitutes = useMemo(() => {
     if (!exercise) return [];
-    const list = getBiomechanicalSubstitutes(exercise.id || exercise.nome);
+    const list = getBiomechanicalSubstitutes(exercise.id || exercise.nome, excludeIds);
     return list.map((item) => {
       const full = findExerciseIn100(item.id) || {};
+      const prevSets = (prevIndex instanceof Map ? prevIndex.get(item.id) : prevIndex?.[item.id]) || pastWeights?.[item.id] || null;
+      const lastWorkingSet = Array.isArray(prevSets)
+        ? prevSets.find((s) => (s.completed || s.done || Number(s.weight) > 0) && s.type !== 'W' && Number(s.weight) > 0) || null
+        : null;
+      const isLightEquip = /peso corporal|el[áa]stico|bodyweight|band/i.test(item.equipamento || '');
+      const fallbackWeight = isLightEquip ? 0 : (full.suggestedWeight ?? '');
       return {
         id: item.id,
         name: item.nome,
@@ -25,13 +38,14 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
         equipment: item.equipamento || full.equipment || 'Equivalente',
         porcao: item.porcao,
         grupo: item.grupo,
-        suggestedWeight: exercise.suggestedWeight || full.suggestedWeight || 20,
+        suggestedWeight: lastWorkingSet?.weight ?? fallbackWeight,
+        lastWorkingSet,
         targetReps: exercise.targetReps || '10-12',
         restTime: exercise.restTime || 60,
         isSamePorcao: (item.porcao || '').toLowerCase() === (exercise.target || '').toLowerCase()
       };
     });
-  }, [exercise]);
+  }, [exercise, excludeIds, prevIndex, pastWeights]);
 
   if (!exercise) return null;
 
@@ -42,7 +56,7 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
         transition={reducedMotion ? { duration: 0 } : SPRING}
-        className="w-full max-w-lg bg-surface border border-white/[0.08] rounded-t-3xl sm:rounded-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+        className="w-full max-w-lg bg-app border border-white/[0.08] rounded-t-3xl sm:rounded-2xl max-h-[85vh] flex flex-col overflow-hidden"
       >
         {/* Pega da folha nativa */}
         <div className="pt-3 pb-1 sm:hidden" aria-hidden>
@@ -101,7 +115,9 @@ export default function SwapExerciseModal({ exercise, onSelectSubstitute, onClos
                       {sub.name}
                     </h3>
                     <p className="text-[11px] text-zinc-500">
-                      Mesmo vetor de força · Séries preservadas
+                      {sub.lastWorkingSet
+                        ? `Última: ${sub.lastWorkingSet.weight} kg × ${sub.lastWorkingSet.reps} · Séries preservadas`
+                        : 'Mesmo vetor de força · Séries preservadas'}
                     </p>
                   </div>
 
