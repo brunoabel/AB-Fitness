@@ -456,6 +456,17 @@ export default function SidebarDrawer({
                   />
                 )}
               </div>
+
+              <div className="px-5 pt-5 pb-2 border-t border-white/[0.06] space-y-2 text-[11px] text-zinc-500">
+                <nav aria-label="Documentos legais e apoio ao consumidor" className="flex flex-wrap gap-x-3 gap-y-1">
+                  <a href="/termos" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors">Termos</a>
+                  <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors">Privacidade</a>
+                  <a href="/aviso-medico" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors">Aviso médico</a>
+                  <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors">Livro de Reclamações</a>
+                  <a href="https://www.cicap.pt" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-200 transition-colors">Litígios (CICAP)</a>
+                </nav>
+                <p className="text-[11px] text-zinc-600">AB Fitness · Bruno Abel Studio</p>
+              </div>
             </div>
           </motion.aside>
 

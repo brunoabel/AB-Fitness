@@ -5,7 +5,6 @@ import { AnimatePresence } from 'motion/react';
 import Header from './components/Header';
 import WeeklyDashboard from './components/WeeklyDashboard';
 import Navigation from './components/Navigation';
-import Footer from './components/Footer';
 import InstallPrompt from './components/InstallPrompt';
 import { PRIVATE_LAUNCH_MODE } from './config/launchMode';
 import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
@@ -674,9 +673,6 @@ function AppContent() {
                   {activeTab === 'social' && <SocialHub onNavigateTab={handleTabChange} />}
                 </Suspense>
               </ErrorBoundary>
-
-              {/* Rodapé Institucional */}
-              <Footer onOpenGuide={() => setShowGuideModal(true)} />
             </div>
 
             {/* Barra de Navegação Inferior Ergonómica */}
