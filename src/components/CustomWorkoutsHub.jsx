@@ -9,8 +9,7 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
-  RotateCcw,
-  Sparkles
+  RotateCcw
 } from 'lucide-react';
 import CustomWorkoutModal from './CustomWorkoutModal';
 import {
@@ -129,21 +128,6 @@ export default function CustomWorkoutsHub({ onStartWorkout, onViewExercise, onOp
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {onOpenAICoach && (
-            <button
-              type="button"
-              onClick={() => {
-                onOpenAICoach();
-                triggerHaptic(12);
-              }}
-              className="min-h-[42px] px-3.5 rounded-full bg-accent/40 hover:bg-accent/60 border border-accent-hover text-white text-xs font-semibold inline-flex items-center gap-1.5 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out cursor-pointer"
-              title="Criar ou adaptar plano com o AB Coach"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-zinc-200" strokeWidth={1.75} />
-              <span>Pedir ao Coach</span>
-            </button>
-          )}
-
           <button
             type="button"
             onClick={handleOpenCreateModal}

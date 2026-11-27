@@ -26,10 +26,40 @@ function findTargetedFatigue(todayWorkout, muscles) {
 }
 
 const CHECKIN_METRICS = [
-  { key: 'sleep', label: 'Sono' },
-  { key: 'energy', label: 'Energia' },
-  { key: 'soreness', label: 'Corpo' }
+  {
+    key: 'sleep',
+    label: 'Sono',
+    options: [
+      { value: 1, text: 'Mal', tone: 'low' },
+      { value: 3, text: 'Normal', tone: 'mid' },
+      { value: 5, text: 'Bem', tone: 'high' }
+    ]
+  },
+  {
+    key: 'energy',
+    label: 'Energia',
+    options: [
+      { value: 1, text: 'Baixa', tone: 'low' },
+      { value: 3, text: 'Média', tone: 'mid' },
+      { value: 5, text: 'Alta', tone: 'high' }
+    ]
+  },
+  {
+    key: 'soreness',
+    label: 'Corpo',
+    options: [
+      { value: 1, text: 'Dolorido', tone: 'low' },
+      { value: 3, text: 'Normal', tone: 'mid' },
+      { value: 5, text: 'Fresco', tone: 'high' }
+    ]
+  }
 ];
+
+const OPTION_ACTIVE_STYLE = {
+  low: 'bg-rose-500/20 text-rose-200 border-rose-400/40',
+  mid: 'bg-accent/55 text-white border-accent-hover',
+  high: 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40'
+};
 
 /**
  * Briefing diário do AB Coach: cruza fadiga muscular, prontidão (wearable + check-in subjetivo)
@@ -179,28 +209,31 @@ export default function DailyBriefing({ todayWorkout }) {
       )}
 
       {showCheckin && (
-        <div className="pt-2 space-y-2 max-w-sm">
-          {CHECKIN_METRICS.map(({ key, label }) => (
-            <div key={key} className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-medium text-zinc-400 w-14">{label}</span>
-              <div className="flex items-center gap-1 flex-1 justify-end">
-                {[1, 2, 3, 4, 5].map((val) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => {
-                      triggerHaptic(6);
-                      setDraftCheckin((prev) => ({ ...prev, [key]: val }));
-                    }}
-                    className={`tap-44 w-9 h-9 rounded-full text-xs font-semibold tabular-nums border cursor-pointer touch-manipulation transition-colors ${
-                      draftCheckin[key] === val
-                        ? 'bg-accent text-white border-accent-hover'
-                        : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
-                    }`}
-                  >
-                    {val}
-                  </button>
-                ))}
+        <div className="pt-2 space-y-2.5 max-w-sm">
+          {CHECKIN_METRICS.map(({ key, label, options }) => (
+            <div key={key} className="flex items-center justify-between gap-2.5">
+              <span className="text-[12px] font-medium text-zinc-400 w-14 shrink-0">{label}</span>
+              <div className="grid grid-cols-3 gap-1.5 flex-1">
+                {options.map(({ value, text, tone }) => {
+                  const selected = draftCheckin[key] === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic(6);
+                        setDraftCheckin((prev) => ({ ...prev, [key]: value }));
+                      }}
+                      className={`min-h-[38px] px-2 rounded-full text-[12px] font-semibold border cursor-pointer touch-manipulation transition-colors ${
+                        selected
+                          ? OPTION_ACTIVE_STYLE[tone]
+                          : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
+                      }`}
+                    >
+                      {text}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}

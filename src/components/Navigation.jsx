@@ -19,7 +19,7 @@ export default function Navigation({ activeTab, onTabChange }) {
       aria-label="Navegação principal"
       className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] max-w-[390px] mx-auto z-40 lg:hidden"
     >
-      <div className="relative flex items-stretch justify-around h-[62px] rounded-full backdrop-blur-2xl backdrop-saturate-[190%] bg-black/80 border border-white/[0.1] px-1.5">
+      <div className="relative flex items-stretch justify-around h-[62px] rounded-full backdrop-blur-2xl backdrop-saturate-[200%] bg-zinc-900/45 border border-white/[0.16] shadow-[0_14px_38px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.28),inset_0_-1px_0.5px_rgba(255,255,255,0.06)] px-1.5">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -38,7 +38,7 @@ export default function Navigation({ activeTab, onTabChange }) {
               {isActive && (
                 <motion.span
                   layoutId="liquid-tab-pill"
-                  className="absolute inset-1 rounded-full bg-accent border border-accent-hover"
+                  className="absolute inset-1 rounded-full bg-white/[0.14] border border-white/[0.22] shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.32),0_2px_10px_rgba(0,0,0,0.25)]"
                   transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32 }}
                 />
               )}
@@ -48,10 +48,10 @@ export default function Navigation({ activeTab, onTabChange }) {
                 className="relative z-10 flex flex-col items-center gap-0.5"
               >
                 <Icon
-                  className={`w-[20px] h-[20px] ${isActive ? 'text-white' : 'text-zinc-500'}`}
+                  className={`w-[20px] h-[20px] ${isActive ? 'text-white' : 'text-zinc-400'}`}
                   strokeWidth={1.75}
                 />
-                <span className={`text-[10px] font-medium leading-none tracking-tight ${isActive ? 'text-white' : 'text-zinc-500'}`}>
+                <span className={`text-[10px] font-medium leading-none tracking-tight ${isActive ? 'text-white' : 'text-zinc-400'}`}>
                   {tab.label}
                 </span>
               </motion.span>
