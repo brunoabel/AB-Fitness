@@ -1,51 +1,36 @@
-import React, { useId } from 'react';
+import React from 'react';
+import { HandMetal } from 'lucide-react';
 
 /**
- * Selo de Perfil Verificado (estilo Instagram / Meta / Apple).
- * Atribuído ao criador do app, atletas certificados e futuros membros Premium.
- * Cada instância gera o seu próprio ID de gradiente para nunca colidir com
- * elementos ocultos no DOM (ex.: Sidebar desktop escondida em mobile).
+ * Selo Respect — Identidade de membro PRO / Founder da AB Fitness.
+ * Liga a cultura social do Clube ("dar Respect") ao emblema de destaque junto ao nome.
+ *
+ * `variant`:
+ *  - 'pro'  (padrão): Azul-Marinho metálico (#2B4A7A -> #1D3557) com ícone branco nítido.
+ *  - 'gold': Dourado fosco (#E5C158 -> #B8860B) para Founder / CEO.
  */
 export default function VerifiedBadge({
   size = 18,
+  variant = 'pro',
   className = '',
-  title = 'Perfil Verificado'
+  title
 }) {
-  const rawId = useId();
-  const gradientId = `ab-verified-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const isGold = variant === 'gold';
+  const label = title || (isGold ? 'Selo Respect · Founder' : 'Selo Respect · Membro PRO');
+  const iconSize = Math.max(9, Math.round(size * 0.6));
 
   return (
     <span
-      className={`inline-flex items-center justify-center shrink-0 align-middle select-none ${className}`}
-      title={title}
-      aria-label={title}
+      className={`inline-flex items-center justify-center rounded-full shrink-0 align-middle select-none ring-1 ${
+        isGold
+          ? 'bg-gradient-to-br from-[#E5C158] to-[#B8860B] ring-amber-200/35 text-black'
+          : 'bg-gradient-to-br from-[#2B4A7A] to-[#1D3557] ring-white/20 text-white'
+      } ${className}`}
+      style={{ width: size, height: size }}
+      title={label}
+      aria-label={label}
     >
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0"
-      >
-        <path
-          d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"
-          fill={`url(#${gradientId})`}
-        />
-        <path
-          d="m8.8 12.1 2.2 2.25 4.5-4.7"
-          stroke="#FFFFFF"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <defs>
-          <linearGradient id={gradientId} x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#2B4A7A" />
-            <stop offset="1" stopColor="#1D3557" />
-          </linearGradient>
-        </defs>
-      </svg>
+      <HandMetal style={{ width: iconSize, height: iconSize }} strokeWidth={2.25} />
     </span>
   );
 }

@@ -174,7 +174,7 @@ export default function AthleteCard({
           <h2 className="font-heading font-bold text-xl sm:text-2xl text-white tracking-[-0.02em] truncate">
             {name}
           </h2>
-          {isVerified && <VerifiedBadge size={compact ? 16 : 20} />}
+          {isVerified && <VerifiedBadge size={compact ? 16 : 20} variant={isCeo ? 'gold' : 'pro'} />}
           {isCeo ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider">
               CEO & Founder

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Check, Loader2, X } from 'lucide-react';
 import { ModalBackdrop, ModalPanel } from '../ui/Modal';
+import VerifiedBadge from '../ui/VerifiedBadge';
 import { startProCheckout, openBillingPortal } from '../../services/billingService';
 import { triggerHaptic } from '../../utils/audio';
 
 // Só o que o PRO desbloqueia hoje no app; nada de promessas de funcionalidades por lançar
 const PRO_BENEFITS = [
+  'Selo Respect no teu perfil — destaca-te como membro respeitado no teu grupo',
   'Mesociclo de 5 semanas com RIR alvo por semana e deload planeado',
   'AB Coach com até 50 mensagens por dia (5 no plano gratuito)'
 ];
@@ -86,9 +88,13 @@ export default function ProUpgradeSheet({ reason = 'mesocycles', plan = 'pro', o
         </div>
 
         <ul className="space-y-2.5">
-          {benefits.map((b) => (
+          {benefits.map((b, idx) => (
             <li key={b} className="flex items-start gap-2.5 text-[13px] text-zinc-200">
-              <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
+              {!isTrainerPlan && idx === 0 ? (
+                <VerifiedBadge size={16} className="mt-0.5" />
+              ) : (
+                <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
+              )}
               {b}
             </li>
           ))}

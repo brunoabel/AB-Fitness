@@ -200,7 +200,7 @@ export default function SidebarDrawer({
                   <p className="font-heading text-[20px] font-bold tracking-tight text-white truncate">
                     {fullName}
                   </p>
-                  {verified && <VerifiedBadge size={15} />}
+                  {verified && <VerifiedBadge size={15} variant={ceo ? 'gold' : 'pro'} />}
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap mt-1">
