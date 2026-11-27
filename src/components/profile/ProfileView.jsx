@@ -1,26 +1,25 @@
-import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { PencilLine, Camera, Share2, Link2, Check, X, HandMetal } from 'lucide-react';
+import { Plus, Link2, Check, X, HandMetal } from 'lucide-react';
 import { useAuth } from '../../context';
 import AthleteCard from '../social/AthleteCard';
 import { Skeleton } from '../ui/Skeleton';
-import { athleteLink, canUseSocial, getMyCardStats, getMyProfile, listAthletePosts } from '../../services/socialService';
+import { athleteLink, canUseSocial, getMyCardStats, getMyProfile, listAthletePosts, updateMyProfile } from '../../services/socialService';
 import { timeAgo } from '../social/ui';
 import { isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
 import { triggerHaptic } from '../../utils/audio';
-import { getWorkoutHistory } from '../../utils/storage';
+import { getWorkoutHistory, getRunsHistory } from '../../utils/storage';
+import { getTopLifts } from '../../utils/bodyPortfolio';
+import { computeStrengthEvolution } from '../../utils/strengthEvolution';
+import { CARD_METRICS, buildCardMetrics, getCardTheme, readCardMetricIds, saveCardMetricIds } from '../../utils/profileCard';
+import { renderProfileCardBlob } from '../../utils/profileCardExport';
 import NewPostModal from '../social/NewPostModal';
-import ConsistencyCalendar from './ConsistencyCalendar';
-import DataPortabilityCard from './DataPortabilityCard';
-import {
-  buildAthletePassContent,
-  buildAthletePassStoryBlob,
-  shareAthletePassStory,
-  PASS_PALETTES
-} from '../../utils/athletePassCard';
+import ProfileDashboard from './ProfileDashboard';
+import { buildAthletePassContent, shareAthletePassStory } from '../../utils/athletePassCard';
 
-const HistoryView = lazy(() => import('../HistoryView'));
 const EditProfileSheet = lazy(() => import('../social/EditProfileSheet'));
+const StrengthEvolution = lazy(() => import('./StrengthEvolution'));
+const CardCustomizeSheet = lazy(() => import('./CardCustomizeSheet'));
 
 /**
  * Separador Perfil: "Identidade & Carreira do Atleta".
@@ -40,6 +39,11 @@ export default function ProfileView() {
   const [posts, setPosts] = useState([]);
   const [postNotice, setPostNotice] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
+  const [customizing, setCustomizing] = useState(false);
+  const [savingCard, setSavingCard] = useState(false);
+  const [metricIds, setMetricIds] = useState(() => readCardMetricIds());
+  const [coverOverride, setCoverOverride] = useState(null);
+  const [topLiftName, setTopLiftName] = useState(null);
   const noticeTimerRef = useRef(null);
 
   useEffect(() => {
@@ -98,12 +102,28 @@ export default function ProfileView() {
     is_pro: pro,
     is_premium: pro,
     is_verified: verified,
-    cover_style: state.profile?.cover_style || (ceo ? 'gold' : 'midnight')
+    cover_style: coverOverride || state.profile?.cover_style || (ceo ? 'gold' : 'midnight')
   };
 
   // Estatísticas locais quando o servidor não as dá (convidado / offline)
+  const [history] = useState(() => getWorkoutHistory() || []);
+  const [runKm] = useState(() => (getRunsHistory() || []).reduce((a, run) => a + (Number(run.distanceKm) || 0), 0));
+  const evolution90 = useMemo(() => computeStrengthEvolution(history, { windowDays: 90 }), [history]);
+  const topLift = useMemo(() => getTopLifts(history, 1)[0] || null, [history]);
+  useEffect(() => {
+    if (!topLift) return undefined;
+    let alive = true;
+    import('../../data/exerciseMedia').then((m) => {
+      const name = m.getCatalogEntry(topLift.exerciseId)?.name;
+      if (alive && name) setTopLiftName(name.split(/\s+/).slice(0, 2).join(' '));
+    }).catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [topLift]);
+
   const [localStats] = useState(() => {
-    const h = getWorkoutHistory() || [];
+    const h = history;
     const monthAgo = Date.now() - 30 * 86400000;
     const vol = h.filter((w) => new Date(w.completedAt || w.date || 0).getTime() >= monthAgo).reduce((a, w) => a + (Number(w.totalVolumeKg) || 0), 0);
     return { total_workouts: h.length, streak: null, monthly_volume_kg: vol };
@@ -114,15 +134,29 @@ export default function ProfileView() {
     profile: { ...profile, username: state.profile?.username },
     stats
   });
+  const cardExtra = useMemo(
+    () => ({
+      strengthGainPct: evolution90.ready ? evolution90.totalGainPct : null,
+      topLift: topLift ? { name: topLiftName, e1RM: topLift.e1RM } : null,
+      runKm
+    }),
+    [evolution90, topLift, topLiftName, runKm]
+  );
+  const cardMetrics = useMemo(() => buildCardMetrics(metricIds, stats, cardExtra), [metricIds, stats, cardExtra]);
+  const theme = getCardTheme(profile.cover_style);
 
-  const handleShareStory = async () => {
+  const handleShareStory = async (format = 'story') => {
     if (exportingStory) return;
     triggerHaptic(14);
     setExportingStory(true);
     try {
-      const blob = await buildAthletePassStoryBlob({
+      const blob = await renderProfileCardBlob({
         profile: { ...profile, username: state.profile?.username },
-        stats
+        metrics: cardMetrics,
+        theme,
+        rankLabel: ceo ? '' : passContent.rank?.label || '',
+        evolution: evolution90,
+        format
       });
       await shareAthletePassStory(blob, { username: state.profile?.username || '' });
     } catch (err) {
@@ -130,6 +164,24 @@ export default function ProfileView() {
     } finally {
       setExportingStory(false);
     }
+  };
+
+  const handleSaveCard = async ({ coverStyle, metricIds: nextIds }) => {
+    setSavingCard(true);
+    const ids = saveCardMetricIds(nextIds);
+    setMetricIds(ids);
+    setCoverOverride(coverStyle);
+    if (canEdit) {
+      // A primeira métrica que o servidor conhece fica em destaque para os amigos
+      const featured = ids.find((id) => CARD_METRICS.find((m) => m.id === id)?.server);
+      const { data } = await updateMyProfile(userId, {
+        cover_style: coverStyle,
+        ...(featured ? { featured_stat: featured } : {})
+      });
+      if (data) setState((st) => ({ ...st, profile: { ...st.profile, ...data } }));
+    }
+    setSavingCard(false);
+    setCustomizing(false);
   };
 
   const handleCopyInviteLink = async () => {
@@ -142,7 +194,54 @@ export default function ProfileView() {
     } catch {}
   };
 
-  const glow = (PASS_PALETTES[profile.cover_style] || PASS_PALETTES.midnight).glow;
+  const renderPosts = () => (
+    <div className="space-y-4">
+      <button
+        type="button"
+        onClick={() => {
+          triggerHaptic(10);
+          setNewPostOpen(true);
+        }}
+        className="w-full min-h-[48px] rounded-full bg-primary text-app font-semibold text-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] transition-transform"
+      >
+        <Plus className="w-4 h-4" strokeWidth={2} />
+        Publicar foto
+      </button>
+      {posts.length === 0 ? (
+        <p className="text-sm text-zinc-400 py-6 text-center">As fotos que publicares no Clube aparecem aqui.</p>
+      ) : (
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+          {posts.map((post) => (
+            <motion.button
+              key={post.id}
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                triggerHaptic(8);
+                setSelectedPost(post);
+              }}
+              aria-label={post.caption ? `Abrir foto: ${post.caption}` : 'Abrir publicação no Clube'}
+              className="relative aspect-square rounded-xl overflow-hidden bg-zinc-950 cursor-pointer touch-manipulation group"
+            >
+              <img
+                src={post.image_url}
+                alt={post.caption || 'Foto publicada no Clube'}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              {Number(post.respect_count) > 0 && (
+                <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-bold text-white tabular-nums">
+                  <HandMetal className="w-2.5 h-2.5" />
+                  {post.respect_count}
+                </span>
+              )}
+            </motion.button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <section aria-label="Perfil do Atleta" className="relative overflow-hidden space-y-4">
@@ -150,7 +249,7 @@ export default function ProfileView() {
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[320px] pointer-events-none -z-10"
-        style={{ background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${glow}, transparent 70%)` }}
+        style={{ background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${theme.top}, transparent 70%)` }}
       />
 
       <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 space-y-3">
@@ -159,6 +258,11 @@ export default function ProfileView() {
           <AthleteCard
             profile={{ ...profile, username: state.profile?.username }}
             stats={stats}
+            metrics={cardMetrics}
+            onCustomize={() => {
+              triggerHaptic(8);
+              setCustomizing(true);
+            }}
             onOpenPrintMode={() => {
               triggerHaptic(10);
               setPrintModeOpen(true);
@@ -172,7 +276,7 @@ export default function ProfileView() {
         {canEdit && !state.profile?.username && (
           <div className="flex items-center justify-between gap-3 py-2 px-1 border-b border-white/[0.06] text-xs">
             <span className="text-zinc-400">
-              Define o teu <strong className="text-white">@username</strong> para amigos te encontrarem e partilhares o teu Pass.
+              Escolhe um <strong className="text-white">@username</strong> para te encontrarem.
             </span>
             <button
               type="button"
@@ -187,54 +291,12 @@ export default function ProfileView() {
           </div>
         )}
 
-        {/* Barra de Ações Rápidas do Atleta (Pílulas limpas sobre preto puro) */}
-        <div className="grid grid-cols-3 gap-2">
-          {canEdit ? (
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                triggerHaptic(8);
-                setEditing(true);
-              }}
-              className="min-h-[44px] rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-            >
-              <PencilLine className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.75} />
-              <span>Editar</span>
-            </motion.button>
-          ) : (
-            <div className="min-h-[44px] rounded-full border border-white/[0.06] px-2 flex items-center justify-center text-xs text-zinc-500 text-center font-medium">
-              Atleta AB
-            </div>
-          )}
-
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.97 }}
-            disabled={exportingStory}
-            onClick={handleShareStory}
-            className="min-h-[44px] rounded-full bg-accent/50 hover:bg-accent/70 border border-accent-hover text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-60"
-          >
-            <Share2 className="w-3.5 h-3.5 text-zinc-200" strokeWidth={1.75} />
-            <span>{exportingStory ? 'A gerar…' : 'Story Pass'}</span>
-          </motion.button>
-
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              triggerHaptic(10);
-              setNewPostOpen(true);
-            }}
-            className="min-h-[44px] rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-          >
-            <Camera className="w-3.5 h-3.5 stroke-[2]" />
-            <span>Publicar Foto</span>
-          </motion.button>
+        {/* Evolução de força do corpo inteiro */}
+        <div className="pt-8">
+          <Suspense fallback={<Skeleton className="h-[360px] rounded-3xl" />}>
+            <StrengthEvolution history={history} />
+          </Suspense>
         </div>
-
-        {/* Calendário de Consistência: o mês inteiro, de relance */}
-        <ConsistencyCalendar />
 
         {/* Feedback imediato ao publicar foto a partir do Perfil */}
         <AnimatePresence>
@@ -252,57 +314,11 @@ export default function ProfileView() {
           )}
         </AnimatePresence>
 
-        {/* Publicações fotográficas do atleta no Clube */}
-        {posts.length > 0 && (
-          <div className="pt-2 border-t border-white/[0.06] space-y-3">
-            <div className="flex items-baseline justify-between">
-              <h3 className="font-heading text-sm font-bold text-white tracking-tight">
-                Publicações no Clube
-              </h3>
-              <span className="text-xs font-mono tabular-nums text-zinc-500">
-                {posts.length} {posts.length === 1 ? 'foto' : 'fotos'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-              {posts.map((post) => (
-                <motion.button
-                  key={post.id}
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    triggerHaptic(8);
-                    setSelectedPost(post);
-                  }}
-                  aria-label={post.caption ? `Abrir foto: ${post.caption}` : 'Abrir publicação no Clube'}
-                  className="relative aspect-square rounded-xl overflow-hidden bg-zinc-950 cursor-pointer touch-manipulation group"
-                >
-                  <img
-                    src={post.image_url}
-                    alt={post.caption || 'Foto publicada no Clube'}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {Number(post.respect_count) > 0 && (
-                    <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-bold text-white tabular-nums">
-                      <HandMetal className="w-2.5 h-2.5" />
-                      {post.respect_count}
-                    </span>
-                  )}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Painel: calendário, sessões, exercícios, medalhas, corpo e publicações */}
+        <div className="pt-8 pb-10">
+          <ProfileDashboard history={history} postsCount={posts.length} renderPosts={renderPosts} />
+        </div>
       </div>
-
-      {/* Painel Unificado da Carreira do Atleta (Sessões, Evolução, Medalhas, Corpo) */}
-      <Suspense fallback={<div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 pt-4"><Skeleton className="h-60 rounded-3xl" /></div>}>
-        <HistoryView />
-      </Suspense>
-
-      <DataPortabilityCard />
 
       <AnimatePresence>
         {newPostOpen && (
@@ -388,6 +404,24 @@ export default function ProfileView() {
           </Suspense>
         )}
 
+        {customizing && (
+          <Suspense key="customize-card" fallback={null}>
+            <CardCustomizeSheet
+              profile={{ ...profile, username: state.profile?.username }}
+              stats={stats}
+              extra={cardExtra}
+              metricIds={metricIds}
+              saving={savingCard}
+              onSave={handleSaveCard}
+              onEditProfile={canEdit ? () => {
+                setCustomizing(false);
+                setEditing(true);
+              } : undefined}
+              onClose={() => setCustomizing(false)}
+            />
+          </Suspense>
+        )}
+
         {printModeOpen && (
           <motion.div
             key="print-showcase"
@@ -407,17 +441,14 @@ export default function ProfileView() {
 
             <div className="w-full max-w-md space-y-6">
               <div className="text-center space-y-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">
-                  AB Fitness · Athlete Pass
-                </p>
-                <p className="text-xs text-zinc-400">
-                  Pronto para tirar print ou exportar em HD para os Stories
-                </p>
+                <p className="font-heading text-section font-semibold text-white">Partilhar cartão</p>
+                <p className="text-xs text-zinc-400">Tira print ou exporta em alta resolução</p>
               </div>
 
               <AthleteCard
                 profile={{ ...profile, username: state.profile?.username }}
                 stats={stats}
+                metrics={cardMetrics}
                 showcase
               />
 
@@ -431,25 +462,34 @@ export default function ProfileView() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <div className="space-y-2 pt-2">
                 <button
                   type="button"
                   onClick={handleCopyInviteLink}
-                  className="min-h-[48px] rounded-full bg-transparent border border-white/[0.12] hover:border-white/[0.25] text-white font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  className="w-full min-h-[48px] rounded-full bg-transparent border border-white/[0.12] hover:border-white/[0.25] text-white font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors"
                 >
                   {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-zinc-300" />}
-                  <span>{copiedLink ? 'Link Copiado' : 'Copiar Link'}</span>
+                  <span>{copiedLink ? 'Link copiado' : 'Copiar link'}</span>
                 </button>
 
-                <button
-                  type="button"
-                  disabled={exportingStory}
-                  onClick={handleShareStory}
-                  className="min-h-[48px] rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
-                >
-                  <Share2 className="w-4 h-4" strokeWidth={2} />
-                  <span>{exportingStory ? 'A preparar…' : 'Exportar Story'}</span>
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    disabled={exportingStory}
+                    onClick={() => handleShareStory('story')}
+                    className="min-h-[48px] rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs cursor-pointer transition-colors disabled:opacity-60"
+                  >
+                    Story
+                  </button>
+                  <button
+                    type="button"
+                    disabled={exportingStory}
+                    onClick={() => handleShareStory('feed')}
+                    className="min-h-[48px] rounded-full bg-white/[0.08] border border-white/[0.12] text-white font-semibold text-xs cursor-pointer transition-colors disabled:opacity-60"
+                  >
+                    Feed 4:5
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>

@@ -1,19 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { motion, animate, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
-import { MapPin, Crown, Maximize2, ShieldCheck, RotateCw, Link2, Check } from 'lucide-react';
+import { Crown, Share, ShieldCheck, RotateCw, Link2, Check, SlidersHorizontal } from 'lucide-react';
 import { fmtInt, fmtKg } from './ui';
 import VerifiedBadge from '../ui/VerifiedBadge';
 import { getAthleteRank, isAthleteVerified, isAthleteCeo, isAthletePro } from '../../utils/userVerification';
-import { COVER_STYLES, FEATURED_STATS, athleteLink } from '../../services/socialService';
+import { FEATURED_STATS, athleteLink } from '../../services/socialService';
 import { sanitizeUsername } from '../../utils/athletePassCard';
+import { buildCardMetrics, getCardTheme, themeBackground } from '../../utils/profileCard';
 import { triggerHaptic } from '../../utils/audio';
 
-const statValue = (id, stats) => {
-  if (!stats) return '–';
-  if (id === 'streak') return `${fmtInt(stats.streak)} ${stats.streak === 1 ? 'dia' : 'dias'}`;
-  if (id === 'monthly_volume') return fmtKg(stats.monthly_volume_kg);
-  return fmtInt(stats.total_workouts);
-};
 
 const RANK_TONES = {
   gold: 'bg-accent/60 text-white border-accent-hover',
@@ -30,10 +25,16 @@ export default function AthleteCard({
   avatarPreview,
   compact = false,
   showcase = false,
-  onOpenPrintMode
+  metrics = null,
+  onOpenPrintMode,
+  onCustomize
 }) {
-  const cover = COVER_STYLES.find((c) => c.id === profile?.cover_style) || COVER_STYLES[0];
+  const theme = getCardTheme(profile?.cover_style);
   const featured = FEATURED_STATS.find((f) => f.id === profile?.featured_stat) || FEATURED_STATS[0];
+  // Sem escolha local (cartão de um amigo): as 3 métricas do servidor, com a métrica em destaque primeiro
+  const cardMetrics = Array.isArray(metrics) && metrics.length
+    ? metrics
+    : buildCardMetrics([featured.id, ...FEATURED_STATS.map((f) => f.id)], stats);
   const name = profile?.full_name || 'Atleta AB';
   const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   const cleanUsername = sanitizeUsername(profile?.username);
@@ -103,8 +104,14 @@ export default function AthleteCard({
         onPointerLeave={tiltEnabled ? resetTilt : undefined}
         onPointerUp={tiltEnabled ? resetTilt : undefined}
         onPointerCancel={tiltEnabled ? resetTilt : undefined}
-        style={{ rotateX: tiltEnabled ? rotateX : 0, rotateY: tiltEnabled ? rotateY : 0, scaleX: flipScale }}
-        className={`relative overflow-hidden rounded-3xl ${cover.className} ${cover.className.includes('border-') ? '' : 'border border-white/[0.08]'} backdrop-blur-xl p-5 sm:p-6 transition-colors`}
+        style={{
+          rotateX: tiltEnabled ? rotateX : 0,
+          rotateY: tiltEnabled ? rotateY : 0,
+          scaleX: flipScale,
+          background: themeBackground(theme),
+          borderColor: theme.line
+        }}
+        className="relative overflow-hidden rounded-3xl border p-5 sm:p-6"
       >
         {/* Brilho especular: segue o oposto do ponteiro, só visível durante a interação */}
         {tiltEnabled && (
@@ -122,13 +129,13 @@ export default function AthleteCard({
 
       {!isFlipped ? (
       <div>
-      {/* Topo do Cartão: Avatar com Aura + Métrica em Destaque */}
-      <div className="flex items-start justify-between gap-4 relative z-10">
-        <div className="relative">
+      {/* Identidade: avatar recortado + nome, selo e handle */}
+      <div className="flex items-center gap-3.5 relative z-10">
+        <div className="relative shrink-0">
           {avatarPreview || profile?.avatar_url ? (
             <div
-              className={`relative overflow-hidden rounded-2xl ring-1 ${isCeo ? 'ring-accent-hover' : 'ring-white/15'}`}
-              style={{ width: compact ? 60 : 72, height: compact ? 60 : 72 }}
+              className="relative overflow-hidden rounded-2xl"
+              style={{ width: compact ? 52 : 64, height: compact ? 52 : 64 }}
             >
               <img
                 src={avatarPreview || profile.avatar_url}
@@ -144,114 +151,95 @@ export default function AthleteCard({
             </div>
           ) : (
             <div
-              className="relative flex items-center justify-center font-heading font-semibold text-white"
-              style={{ width: compact ? 60 : 72, height: compact ? 60 : 72, fontSize: (compact ? 60 : 72) * 0.36 }}
+              className="relative flex items-center justify-center rounded-2xl bg-white/[0.06] font-heading font-semibold text-white"
+              style={{ width: compact ? 52 : 64, height: compact ? 52 : 64, fontSize: (compact ? 52 : 64) * 0.36 }}
             >
               {initials}
             </div>
           )}
           {isCeo && (
             <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center border-2 border-black" title="Fundador / CEO">
-              <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
+              <Crown className="w-3.5 h-3.5" strokeWidth={2} />
             </span>
           )}
         </div>
 
-        {/* Estatística de Destaque */}
-        <div className="text-right">
-          <span className="block text-xs text-zinc-500">
-            {featured.label}
-          </span>
-          <span className="block font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] mt-0.5">
-            {statValue(featured.id, stats)}
-          </span>
-        </div>
-      </div>
-
-      {/* Identidade do Atleta */}
-      <div className="mt-4 relative z-10 space-y-1">
-        <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <h2 className="font-heading font-bold text-xl sm:text-2xl text-white tracking-[-0.02em] truncate">
-            {name}
-          </h2>
-          {isVerified && <VerifiedBadge size={compact ? 16 : 20} variant={isCeo ? 'gold' : 'pro'} />}
-          {isCeo ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent/60 text-white border border-accent-hover text-[10px] font-bold uppercase tracking-wider">
-              CEO & Founder
-            </span>
-          ) : isPro ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/10 text-white border border-white/20 text-[10px] font-bold uppercase tracking-wider">
-              PRO
-            </span>
-          ) : null}
-        </div>
-
-        <p className="text-xs font-medium text-zinc-400 truncate">
-          {cleanUsername ? `@${cleanUsername}` : isCeo ? 'CEO & Fundador do AB Fitness' : profile?.id ? 'Atleta Registado' : 'Atleta AB Fitness'}
-        </p>
-
-        {profile?.bio && !compact && (
-          <p className="text-xs text-zinc-300 leading-relaxed pt-1.5 font-normal">
-            {profile.bio}
-          </p>
-        )}
-
-        {(profile?.athlete_tag || profile?.home_gym || !isCeo) && (
-          <div className="pt-2 flex flex-wrap items-center gap-2">
-            {!isCeo && (
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border text-[11px] font-bold ${RANK_TONES[rank.tone] || RANK_TONES.neutral}`}>
-                <ShieldCheck className="w-3 h-3 stroke-[2.2]" />
-                {rank.label}
-              </span>
-            )}
-            {profile?.athlete_tag && (
-              <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-[11px] font-bold text-zinc-200">
-                {profile.athlete_tag}
-              </span>
-            )}
-            {profile?.home_gym && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400 font-medium">
-                <MapPin className="w-3 h-3 text-zinc-500" strokeWidth={1.75} />
-                {profile.home_gym}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h2 className="font-heading font-bold text-xl sm:text-2xl text-white tracking-[-0.02em] truncate">
+              {name}
+            </h2>
+            {isVerified && <VerifiedBadge size={compact ? 16 : 18} variant={isCeo ? 'gold' : 'pro'} />}
+            {!isVerified && isPro && (
+              <span className="shrink-0 px-1.5 py-0.5 rounded-md border border-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
+                PRO
               </span>
             )}
           </div>
-        )}
+          <p className="text-xs font-medium text-zinc-400 truncate mt-0.5">
+            {cleanUsername ? `@${cleanUsername}` : isCeo ? 'CEO & Fundador' : 'Atleta AB Fitness'}
+            {!isCeo && <span className="text-zinc-500"> · {rank.label}</span>}
+          </p>
+        </div>
       </div>
 
-      {/* Assinatura Oficial para Print / Stories + Gatilho de Modo Print Limpo */}
+      {profile?.bio && !compact && (
+        <p className="relative z-10 mt-3 text-[13px] text-zinc-300 leading-snug line-clamp-2">{profile.bio}</p>
+      )}
+
+      {/* As 3 métricas do atleta */}
+      <dl className={`relative z-10 grid grid-cols-3 ${compact ? 'mt-4' : 'mt-6'}`}>
+        {cardMetrics.slice(0, 3).map((m, i) => (
+          <div key={m.id} className={`min-w-0 ${i > 0 ? 'pl-3 border-l' : 'pr-3'}`} style={i > 0 ? { borderColor: theme.line } : undefined}>
+            <dd className="font-display font-semibold tabular-nums tracking-[-0.03em] leading-none truncate" style={{ color: theme.accent }}>
+              <span className={compact ? 'text-xl' : 'text-[28px] sm:text-[32px]'}>{m.value}</span>
+              {m.unit && <span className="ml-0.5 text-[13px] font-medium text-zinc-400">{m.unit}</span>}
+            </dd>
+            <dt className="mt-1.5 text-[11px] font-medium text-zinc-400 truncate">{m.label}</dt>
+          </div>
+        ))}
+      </dl>
+
+      {/* Assinatura para print + ações do cartão */}
       {!compact && (
-        <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2 relative z-10 text-[11px]">
-          <span className="font-medium text-zinc-400 truncate">
-            AB Fitness · abfitness.app
+        <div className="mt-5 pt-3 border-t flex items-center justify-between gap-2 relative z-10" style={{ borderColor: theme.line }}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 truncate">
+            AB Fitness <span className="font-medium normal-case tracking-normal text-zinc-500">· abfitness.app</span>
           </span>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
+            {onCustomize && !showcase && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onCustomize(); }}
+                aria-label="Personalizar cartão"
+                title="Personalizar cartão"
+                className="tap-44 w-8 h-8 rounded-full text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.75} />
+              </button>
+            )}
             {flipEnabled && (
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); toggleFlip(); }}
                 aria-label="Ver verso do cartão"
                 title="Ver verso do cartão"
-                className="tap-44 w-7 h-7 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center cursor-pointer"
+                className="tap-44 w-8 h-8 rounded-full text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" strokeWidth={1.75} />
               </button>
             )}
-            {onOpenPrintMode && !showcase ? (
+            {onOpenPrintMode && !showcase && (
               <button
                 type="button"
-                onClick={onOpenPrintMode}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.14] text-zinc-200 hover:text-white font-semibold transition-colors cursor-pointer shrink-0"
-                title="Abrir cartão em ecrã limpo para tirar print"
+                onClick={(e) => { e.stopPropagation(); onOpenPrintMode(); }}
+                aria-label="Partilhar cartão"
+                title="Partilhar cartão"
+                className="tap-44 w-8 h-8 rounded-full text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer"
               >
-                <Maximize2 className="w-3 h-3 stroke-[2]" />
-                <span>Modo Print</span>
+                <Share className="w-3.5 h-3.5" strokeWidth={1.75} />
               </button>
-            ) : (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 shrink-0">
-                Athlete Pass
-              </span>
             )}
           </div>
         </div>
@@ -265,14 +253,16 @@ export default function AthleteCard({
             {rank.label}
           </span>
 
-          <div className="grid grid-cols-2 gap-6">
-            {FEATURED_STATS.filter((f) => f.id !== featured.id).map((f) => (
-              <div key={f.id}>
-                <span className="block text-[11px] text-zinc-500">{f.label}</span>
-                <span className="block font-display font-semibold text-xl text-white tabular-nums mt-0.5">{statValue(f.id, stats)}</span>
-              </div>
-            ))}
-          </div>
+          {(profile?.athlete_tag || profile?.home_gym) && (
+            <div className="space-y-1">
+              {profile?.athlete_tag && <p className="text-sm font-semibold text-white">{profile.athlete_tag}</p>}
+              {profile?.home_gym && <p className="text-xs text-zinc-400">{profile.home_gym}</p>}
+            </div>
+          )}
+
+          <p className="text-xs text-zinc-400 tabular-nums">
+            {fmtInt(stats?.total_workouts)} treinos · {fmtKg(stats?.monthly_volume_kg)} este mês
+          </p>
 
           {cleanUsername && (
             <button

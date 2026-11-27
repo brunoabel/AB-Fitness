@@ -4,7 +4,7 @@ import { Camera, Check, X as XIcon, Loader2 } from 'lucide-react';
 import AthleteCard from './AthleteCard';
 import { Sheet, Switch, SPRING, TAP } from './ui';
 import {
-  ATHLETE_TAGS, BIO_MAX, COVER_STYLES, FEATURED_STATS, PRIVACY_FIELDS, USERNAME_RE,
+  ATHLETE_TAGS, BIO_MAX, PRIVACY_FIELDS, USERNAME_RE,
   compressAvatar, isUsernameAvailable, updateMyProfile, uploadAvatar
 } from '../../services/socialService';
 import { triggerHaptic } from '../../utils/audio';
@@ -200,49 +200,6 @@ export default function EditProfileSheet({ userId, profile, stats, onClose, onSa
             {ATHLETE_TAGS.map((t) => (
               <Chip key={t} selected={draft.athlete_tag === t} onClick={() => set('athlete_tag', draft.athlete_tag === t ? null : t)}>{t}</Chip>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <Label>Métrica em destaque no card</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {FEATURED_STATS.map((f) => (
-              <Chip key={f.id} selected={draft.featured_stat === f.id} onClick={() => set('featured_stat', f.id)}>{f.label}</Chip>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <Label>Estilo de Capa</Label>
-            <span className="text-[12px] text-zinc-400 font-medium">{COVER_STYLES.length} Temas do Atleta</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {COVER_STYLES.map((c) => {
-              const isSelected = draft.cover_style === c.id;
-              return (
-                <motion.button
-                  key={c.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  whileTap={TAP}
-                  onClick={() => {
-                    triggerHaptic(8);
-                    set('cover_style', c.id);
-                  }}
-                  className={`relative h-14 rounded-xl border p-2.5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all ${c.className} ${isSelected ? 'ring-2 ring-white border-white scale-[1.02] shadow-lg' : 'border-white/[0.1] hover:border-white/20'}`}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-[12px] font-bold text-white tracking-tight drop-shadow-sm">{c.label}</span>
-                    {c.badge && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/25 text-white backdrop-blur-sm border border-white/20">
-                        {c.badge}
-                      </span>
-                    )}
-                  </div>
-                </motion.button>
-              );
-            })}
           </div>
         </div>
 

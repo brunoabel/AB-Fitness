@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import {
-  Trophy,
-  Dumbbell,
-  TrendingUp,
-  Award,
-  Scale
-} from 'lucide-react';
-import BodyPortfolio from './BodyPortfolio';
+import { Dumbbell } from 'lucide-react';
 import { getWorkoutHistory } from '../utils/storage';
-import ProgressionCharts from './ProgressionCharts';
-import BadgesView from './BadgesView';
-import { getUnlockedBadges } from '../utils/badgeService';
 import { getPendingSyncCount, getFailedSyncJobs, retryFailedSyncJob, discardFailedSyncJob } from '../services/workoutService';
 import { useAuth } from '../context';
 import { triggerHaptic } from '../utils/audio';
@@ -30,17 +19,18 @@ function formatHistoryDate(item) {
   return raw;
 }
 
+const PAGE = 20;
+
+/** Ecrã Sessões do painel do perfil: resumo acumulado e lista de treinos concluídos. */
 export default function HistoryView() {
   const { user } = useAuth();
   const isSimpleMode = isBeginnerProfile(getLocalFitnessProfile());
-  const [subTab, setSubTab] = useState('history'); // 'history' | 'charts' | 'badges' | 'body'
+  const [visible, setVisible] = useState(PAGE);
   const history = getWorkoutHistory();
   const [, setSyncTick] = useState(0);
   const refreshSync = () => setSyncTick((t) => t + 1);
   const pendingSyncCount = getPendingSyncCount(user?.id);
   const failedSyncJobs = getFailedSyncJobs(user?.id);
-  const unlockedBadges = getUnlockedBadges();
-  const unlockedCount = Object.keys(unlockedBadges).length;
 
   const totalWorkouts = history.length;
   const totalVolume = history.reduce((acc, curr) => acc + (curr.totalVolumeKg || 0), 0);
@@ -55,170 +45,128 @@ export default function HistoryView() {
   const volumeUnit = totalVolume >= 1000 ? 't' : 'kg';
 
   return (
-    <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-10 space-y-6 animate-fadeIn">
-      {/* Abas editoriais abertas diretamente sobre OLED preto */}
-      <div
-        role="tablist"
-        aria-label="Secções do perfil"
-        className="flex items-center gap-5 overflow-x-auto no-scrollbar border-b border-white/[0.08]"
-      >
-        {[
-          { id: 'history', label: `Sessões (${totalWorkouts})`, icon: Trophy },
-          { id: 'charts', label: 'Evolução', icon: TrendingUp },
-          { id: 'badges', label: `Medalhas (${unlockedCount})`, icon: Award },
-          { id: 'body', label: 'Corpo', icon: Scale }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const active = subTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => {
-                setSubTab(tab.id);
-                triggerHaptic(10);
-              }}
-              className={`relative shrink-0 pb-3 pt-1.5 transition-colors cursor-pointer flex items-center gap-1.5 select-none text-xs sm:text-sm font-semibold tabular-nums ${
-                active ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5 stroke-[1.75] shrink-0" />
-              <span>{tab.label}</span>
-              {active && (
-                <motion.span
-                  layoutId="history-tab-underline"
-                  className="absolute left-0 right-0 bottom-0 h-[2px] rounded-full bg-accent-hover"
-                  transition={{ type: 'spring', stiffness: 460, damping: 36 }}
-                />
-              )}
-            </button>
-          );
-        })}
+    <div className="space-y-6 animate-fadeIn">
+      {/* Resumo acumulado aberto em 3 colunas */}
+      <div className="grid grid-cols-3 divide-x divide-white/[0.08] py-3 border-b border-white/[0.06]">
+        <div className="pr-3">
+          <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
+            {totalWorkouts}
+          </span>
+          <span className="text-xs text-zinc-400">Treinos</span>
+        </div>
+
+        <div className="px-3">
+          <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
+            {volumeNumber}
+            <span className="text-sm font-medium text-zinc-400 ml-1">{volumeUnit}</span>
+          </span>
+          <span className="text-xs text-zinc-400">{isSimpleMode ? 'Carga total' : 'Volume total'}</span>
+        </div>
+
+        <div className="pl-3">
+          <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
+            {totalMinutes}
+            <span className="text-sm font-medium text-zinc-400 ml-1">min</span>
+          </span>
+          <span className="text-xs text-zinc-400">Tempo ativo</span>
+        </div>
       </div>
 
-      {subTab === 'body' && <BodyPortfolio />}
-      {subTab === 'charts' && <ProgressionCharts />}
-      {subTab === 'badges' && <BadgesView />}
-
-      {subTab === 'history' && (
-        <div className="space-y-6 animate-fadeIn">
-          {/* Resumo acumulado aberto em 3 colunas */}
-          <div className="grid grid-cols-3 divide-x divide-white/[0.08] py-3 border-b border-white/[0.06]">
-            <div className="pr-3">
-              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
-                {totalWorkouts}
-              </span>
-              <span className="text-xs text-zinc-400">Treinos</span>
-            </div>
-
-            <div className="px-3">
-              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
-                {volumeNumber}
-                <span className="text-sm font-medium text-zinc-400 ml-1">{volumeUnit}</span>
-              </span>
-              <span className="text-xs text-zinc-400">{isSimpleMode ? 'Carga total' : 'Volume total'}</span>
-            </div>
-
-            <div className="pl-3">
-              <span className="font-display font-semibold text-2xl sm:text-[28px] text-white tabular-nums tracking-[-0.025em] leading-tight block">
-                {totalMinutes}
-                <span className="text-sm font-medium text-zinc-400 ml-1">min</span>
-              </span>
-              <span className="text-xs text-zinc-400">Tempo ativo</span>
-            </div>
-          </div>
-
-          {/* Lista editorial de sessões concluídas */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
-                Histórico de sessões
-              </h3>
-              {pendingSyncCount > 0 && (
-                <span className="text-xs font-medium text-zinc-400 tabular-nums">
-                  {pendingSyncCount} por sincronizar
-                </span>
-              )}
-            </div>
-
-            {failedSyncJobs.map((job) => (
-              <div key={job.sessionId} className="bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3 py-2.5 flex items-center gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white truncate">{job.workoutTitle || job.workoutName || 'Treino'} não sincronizado</p>
-                  <p className="text-xs text-zinc-400">O servidor recusou este treino. Continua guardado neste aparelho.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => retryFailedSyncJob(job.sessionId, user?.id).finally(refreshSync)}
-                  className="shrink-0 text-xs font-semibold text-white px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.06] cursor-pointer"
-                >
-                  Tentar de novo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    discardFailedSyncJob(job.sessionId);
-                    refreshSync();
-                  }}
-                  className="shrink-0 text-xs font-medium text-zinc-400 px-2 py-1.5 hover:text-white cursor-pointer"
-                >
-                  Descartar
-                </button>
-              </div>
-            ))}
-
-            {history.length === 0 ? (
-              <div className="py-8 border-t border-white/[0.06] text-center space-y-2">
-                <Dumbbell className="w-6 h-6 text-zinc-600 mx-auto stroke-[1.6]" />
-                <p className="text-sm font-medium text-zinc-300">
-                  Ainda sem treinos registados.
-                </p>
-                <p className="text-xs text-zinc-500 max-w-xs mx-auto">
-                  Conclui o teu primeiro treino para acompanhar cargas, séries e evolução aqui.
-                </p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
-                {history.map((item, index) => {
-                  const displayName = item.dayName || item.workoutName || `Dia ${item.workoutDayId || index + 1}`;
-                  const displayTitle = item.workoutTitle || item.dayTitle || item.title || 'Sessão de Treino';
-                  const displayDate = formatHistoryDate(item);
-                  const displayMinutes = item.durationMinutes || Math.max(1, Math.round((item.durationSeconds || 0) / 60));
-                  const displaySets = item.totalSetsCompleted ?? item.totalSets ?? item.exerciseCount ?? 0;
-                  const displayVolume = item.totalVolumeKg || 0;
-
-                  return (
-                    <li
-                      key={item.id || `hist_${index}`}
-                      className="py-3.5 flex items-center justify-between gap-4"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold text-white truncate">
-                            {displayTitle}
-                          </h4>
-                          <span className="text-xs text-zinc-500 truncate">
-                            · {displayName}
-                          </span>
-                        </div>
-                        <p className="text-xs text-zinc-400 mt-0.5 tabular-nums">
-                          {displayMinutes} min · {displaySets} séries · {displayVolume} kg
-                        </p>
-                      </div>
-
-                      <span className="text-xs text-zinc-500 tabular-nums shrink-0">
-                        {displayDate}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
+      {/* Lista editorial de sessões concluídas */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
+            Últimas sessões
+          </h3>
+          {pendingSyncCount > 0 && (
+            <span className="text-xs font-medium text-zinc-400 tabular-nums">
+              {pendingSyncCount} por sincronizar
+            </span>
+          )}
         </div>
-      )}
+
+        {failedSyncJobs.map((job) => (
+          <div key={job.sessionId} className="bg-surface-2 border-l-2 border-accent-hover rounded-r-xl px-3 py-2.5 flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-white truncate">{job.workoutTitle || job.workoutName || 'Treino'} não sincronizado</p>
+              <p className="text-xs text-zinc-400">O servidor recusou este treino. Continua guardado neste aparelho.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => retryFailedSyncJob(job.sessionId, user?.id).finally(refreshSync)}
+              className="shrink-0 text-xs font-semibold text-white px-3 py-1.5 rounded-full border border-white/[0.1] hover:bg-white/[0.06] cursor-pointer"
+            >
+              Tentar de novo
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                discardFailedSyncJob(job.sessionId);
+                refreshSync();
+              }}
+              className="shrink-0 text-xs font-medium text-zinc-400 px-2 py-1.5 hover:text-white cursor-pointer"
+            >
+              Descartar
+            </button>
+          </div>
+        ))}
+
+        {history.length === 0 ? (
+          <div className="py-8 border-t border-white/[0.06] text-center space-y-2">
+            <Dumbbell className="w-6 h-6 text-zinc-600 mx-auto stroke-[1.6]" />
+            <p className="text-sm font-medium text-zinc-300">Ainda sem treinos.</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
+            {history.slice(0, visible).map((item, index) => {
+              const displayName = item.dayName || item.workoutName || `Dia ${item.workoutDayId || index + 1}`;
+              const displayTitle = item.workoutTitle || item.dayTitle || item.title || 'Sessão de Treino';
+              const displayDate = formatHistoryDate(item);
+              const displayMinutes = item.durationMinutes || Math.max(1, Math.round((item.durationSeconds || 0) / 60));
+              const displaySets = item.totalSetsCompleted ?? item.totalSets ?? item.exerciseCount ?? 0;
+              const displayVolume = item.totalVolumeKg || 0;
+
+              return (
+                <li
+                  key={item.id || `hist_${index}`}
+                  className="py-3.5 flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-white truncate">
+                        {displayTitle}
+                      </h4>
+                      <span className="text-xs text-zinc-500 truncate">
+                        · {displayName}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-0.5 tabular-nums">
+                      {displayMinutes} min · {displaySets} séries · {displayVolume} kg
+                    </p>
+                  </div>
+
+                  <span className="text-xs text-zinc-500 tabular-nums shrink-0">
+                    {displayDate}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {history.length > visible && (
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic(8);
+              setVisible((v) => v + PAGE);
+            }}
+            className="w-full min-h-[44px] text-xs font-semibold text-zinc-300 hover:text-white cursor-pointer"
+          >
+            Mostrar mais ({history.length - visible})
+          </button>
+        )}
+      </div>
     </div>
   );
 }

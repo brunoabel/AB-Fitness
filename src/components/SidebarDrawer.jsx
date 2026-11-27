@@ -18,7 +18,8 @@ import {
   Watch,
   Flame,
   CreditCard,
-  Users
+  Users,
+  ArrowDownUp
 } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import VerifiedBadge from './ui/VerifiedBadge';
@@ -31,6 +32,8 @@ const DeleteAccountSheet = lazy(() => import('./legal/DeleteAccountSheet'));
 const LinkTrainerSheet = lazy(() => import('./trainer/LinkTrainerSheet'));
 const WearablesModal = lazy(() => import('./wearables/WearablesModal'));
 const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
+const DataPortabilityCard = lazy(() => import('./profile/DataPortabilityCard'));
+const Sheet = lazy(() => import('./social/ui').then((m) => ({ default: m.Sheet })));
 
 const SPRING = { type: 'spring', stiffness: 400, damping: 38 };
 
@@ -104,6 +107,7 @@ export default function SidebarDrawer({
   const [confirmingLogout, setConfirmingLogout] = useState(false);
   const [wearablesOpen, setWearablesOpen] = useState(false);
   const [trainerPlanOpen, setTrainerPlanOpen] = useState(false);
+  const [dataOpen, setDataOpen] = useState(false);
   const [billingError, setBillingError] = useState('');
   const { hasSubscription } = useAuth();
 
@@ -390,6 +394,15 @@ export default function SidebarDrawer({
                   />
                 )}
                 <DrawerRow
+                  icon={ArrowDownUp}
+                  label="Exportar ou importar dados"
+                  hint="Backup em JSON ou CSV, importar da Hevy e da Strong"
+                  onClick={() => {
+                    triggerHaptic(10);
+                    setDataOpen(true);
+                  }}
+                />
+                <DrawerRow
                   icon={Scale}
                   label="Termos, privacidade e aviso médico"
                   hint="Documentos legais"
@@ -475,6 +488,15 @@ export default function SidebarDrawer({
               <ProUpgradeSheet plan="trainer" onClose={() => setTrainerPlanOpen(false)} />
             </Suspense>
           )}
+          <AnimatePresence>
+            {dataOpen && (
+              <Suspense key="data" fallback={null}>
+                <Sheet title="Os teus dados" onClose={() => setDataOpen(false)}>
+                  <DataPortabilityCard />
+                </Sheet>
+              </Suspense>
+            )}
+          </AnimatePresence>
           {wearablesOpen && (
             <Suspense fallback={null}>
               <WearablesModal
