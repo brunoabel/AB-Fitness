@@ -1,22 +1,18 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   Play,
   Clock,
   ChevronRight,
+  ChevronDown,
   Coffee,
   ListPlus,
-  BookOpen,
-  Check,
-  Lock
+  Check
 } from 'lucide-react';
 import { weekProgress } from '../utils/streak';
 import { WEEKLY_SCHEDULE } from '../data/workouts';
-import { ATHLETE_MANUAL_HEADERS } from '../data/athleteManualHeaders';
-import { getSavedUserProfile } from '../utils/storage';
 import { triggerHaptic } from '../utils/audio';
 import { loadExerciseMedia, useHasExerciseVideo } from '../hooks/useExerciseMediaLoader';
-import WearableReadinessCard from './wearables/WearableReadinessCard';
 import { getLocalFitnessProfile } from '../services/fitnessProfileService';
 import { useAuth } from '../context';
 import { canAccessFeature } from '../utils/userVerification';
@@ -51,7 +47,7 @@ export default function WeeklyDashboard({
   const [currentJsDay] = useState(() => new Date().getDay());
   const [selectedDayId, setSelectedDayId] = useState(() => new Date().getDay());
   const [mesocycle, setMesocycle] = useState(null);
-  const [showMesoPicker, setShowMesoPicker] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
   const { user, isGuest, isPro, isTrialActive, trialEndsAt, trialDaysLeft } = useAuth();
   const [upgradeReason, setUpgradeReason] = useState(null);
   const hasAccount = Boolean(user && !isGuest);
@@ -318,20 +314,41 @@ export default function WeeklyDashboard({
 
           {!selectedWorkout.isRestDay ? (
             <div className="mt-6 space-y-5">
-              <div className="flex items-center gap-5 text-sm text-zinc-400">
-                <span className="inline-flex items-baseline gap-1.5">
-                  <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">
-                    {totalExercisesCount}
-                  </strong>
-                  <span className="text-[13px] font-medium text-zinc-400">exercícios</span>
-                </span>
-                <span className="w-px h-4 bg-white/[0.12]" aria-hidden />
-                <span className="inline-flex items-baseline gap-1.5">
-                  <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">
-                    {totalSetsCount}
-                  </strong>
-                  <span className="text-[13px] font-medium text-zinc-400">séries</span>
-                </span>
+              <div className="flex items-center justify-between gap-3 text-sm text-zinc-400">
+                <div className="flex items-center gap-5">
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">
+                      {totalExercisesCount}
+                    </strong>
+                    <span className="text-[13px] font-medium text-zinc-400">exercícios</span>
+                  </span>
+                  <span className="w-px h-4 bg-white/[0.12]" aria-hidden />
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <strong className="font-display font-semibold text-white text-[17px] tabular-nums tracking-[-0.02em]">
+                      {totalSetsCount}
+                    </strong>
+                    <span className="text-[13px] font-medium text-zinc-400">séries</span>
+                  </span>
+                </div>
+
+                {totalExercisesCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic(8);
+                      if (!showExercisesList) loadExerciseMedia();
+                      setShowExercisesList((v) => !v);
+                    }}
+                    aria-expanded={showExercisesList}
+                    className="inline-flex items-center gap-1 text-[12px] font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer select-none py-1"
+                  >
+                    <span>{showExercisesList ? 'Ocultar' : 'Ver lista'}</span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${showExercisesList ? 'rotate-180' : ''}`}
+                      strokeWidth={2}
+                    />
+                  </button>
+                )}
               </div>
 
               <button
@@ -345,6 +362,61 @@ export default function WeeklyDashboard({
                 <Play className="w-4 h-4 fill-current ml-0.5" />
                 <span>{isSelectedDayCompleted ? 'Rever treino' : 'Iniciar treino'}</span>
               </button>
+
+              <AnimatePresence initial={false}>
+                {showExercisesList && totalExercisesCount > 0 && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="divide-y divide-white/[0.06] border-t border-white/[0.06] pt-1">
+                      {selectedWorkout.exercises.map((ex, index) => {
+                        const formattedIndex = String(index + 1).padStart(2, '0');
+                        const hasVideo = hasVerifiedExerciseVideo(ex);
+                        return (
+                          <button
+                            key={ex.id}
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic(8);
+                              onViewExercise(ex);
+                            }}
+                            className="w-full min-h-[52px] py-2.5 px-0.5 hover:bg-white/[0.02] active:bg-white/[0.04] transition-colors cursor-pointer flex items-center justify-between text-left group select-none"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span className="font-display text-xs font-semibold text-zinc-500 group-hover:text-zinc-300 tabular-nums shrink-0 transition-colors">
+                                {formattedIndex}
+                              </span>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <h3 className="text-[13px] font-semibold text-zinc-100 group-hover:text-white transition-colors truncate">
+                                    {ex.name}
+                                  </h3>
+                                  {hasVideo && (
+                                    <Play className="w-2.5 h-2.5 fill-current text-zinc-400 shrink-0" />
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-zinc-500 mt-0.5 truncate">
+                                  {ex.badge || ex.target || 'Geral'} · {ex.equipment || 'Livre'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 pl-3">
+                              <span className="font-display font-semibold text-xs text-zinc-300 tabular-nums">
+                                {ex.defaultSets} × {ex.suggestedReps}
+                              </span>
+                              <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-zinc-300 transition-colors" />
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             <div className="mt-6 pt-5 border-t border-white/[0.08] space-y-4">
@@ -394,123 +466,9 @@ export default function WeeklyDashboard({
         )}
       </section>
 
-      {/* 3. TELEMETRIA ABERTA EM 3 COLUNAS SEM CAIXA */}
-      <section aria-label="Resumo Semanal" className="space-y-3">
-        <div className="grid grid-cols-3 divide-x divide-white/[0.08] py-3.5 border-y border-white/[0.06]">
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenCustomize) onOpenCustomize();
-              triggerHaptic(8);
-            }}
-            className="py-1 px-2 text-center cursor-pointer group select-none"
-          >
-            <span className="block text-[11px] font-medium text-zinc-400">Meta semanal</span>
-            <span
-              className={`block font-display font-semibold text-xl tabular-nums mt-0.5 ${
-                weeklyProgressPercent >= 100 ? 'text-emerald-400' : 'text-white'
-              }`}
-            >
-              {completedCount}/{weeklyTarget}
-            </span>
-            <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-300 truncate transition-colors">
-              {weeklyProgressPercent >= 100 ? 'Batida' : 'Ajustar'}
-            </span>
-          </button>
-
-          <WearableReadinessCard compact />
-
-          {activeMesoWeek ? (
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic(8);
-                if (!canUseMesocycle) {
-                  setUpgradeReason('mesocycles');
-                  return;
-                }
-                setShowMesoPicker((prev) => !prev);
-              }}
-              aria-expanded={canUseMesocycle ? showMesoPicker : undefined}
-              className="py-1 px-2 text-center cursor-pointer group select-none"
-            >
-              <span className="block text-[11px] font-medium text-zinc-400">Mesociclo</span>
-              <span className="inline-flex items-center justify-center gap-1 font-display font-semibold text-xl tabular-nums text-white mt-0.5">
-                {canUseMesocycle ? (
-                  `Sem. ${activeMesoWeek.weekNumber}`
-                ) : (
-                  <>
-                    <Lock className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.75} />
-                    <span>PRO</span>
-                  </>
-                )}
-              </span>
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-300 truncate transition-colors">
-                {canUseMesocycle
-                  ? activeMesoWeek.isDeload
-                    ? 'Deload'
-                    : `RIR ${activeMesoWeek.targetRir}`
-                  : 'Desbloquear'}
-              </span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic(8);
-                onOpenGuide();
-              }}
-              className="py-1 px-2 text-center cursor-pointer group select-none"
-            >
-              <span className="block text-[11px] font-medium text-zinc-400">Biblioteca</span>
-              <span className="inline-flex items-center justify-center font-display font-semibold text-xl text-white mt-0.5">
-                Guia
-              </span>
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-300 truncate transition-colors">
-                Manual do atleta
-              </span>
-            </button>
-          )}
-        </div>
-
-        {/* Semana do mesociclo (avança pelo calendário; aberta sob demanda) */}
-        {activeMesoWeek && canUseMesocycle && showMesoPicker && (
-          <div className="flex items-center justify-between gap-3 px-1 pb-2 border-b border-white/[0.06]">
-            <p className="text-xs text-zinc-300 tabular-nums truncate">
-              {activeMesoWeek.isDeload
-                ? `Semana ${activeMesoWeek.weekNumber} · Deload (${fmtDay(mesoRange.start)} a ${fmtDay(mesoRange.end)})`
-                : `Semana ${activeMesoWeek.weekNumber} de ${mesocycle.totalWeeks} · RIR ${activeMesoWeek.targetRir} (${fmtDay(mesoRange.start)} a ${fmtDay(mesoRange.end)})`}
-            </p>
-            <ol className="flex items-center gap-1 shrink-0" aria-label="Semanas do mesociclo">
-              {mesocycle.weeks.map((w) => {
-                const isCurrent = activeMesoWeek.isDeload ? w.isDeload : w.weekNumber === activeMesoWeek.weekNumber;
-                const isPast = !activeMesoWeek.isDeload && w.weekNumber < activeMesoWeek.weekNumber;
-                return (
-                  <li
-                    key={w.weekNumber}
-                    aria-current={isCurrent ? 'step' : undefined}
-                    aria-label={w.isDeload ? 'Semana de deload' : `Semana ${w.weekNumber}`}
-                    className={`w-8 h-8 rounded-full border text-[12px] font-semibold tabular-nums flex items-center justify-center ${
-                      isCurrent
-                        ? 'bg-accent text-white border-accent-hover'
-                        : isPast
-                          ? 'border-white/[0.08] text-zinc-500'
-                          : 'border-white/[0.08] text-zinc-400'
-                    }`}
-                  >
-                    {w.isDeload ? 'D' : w.weekNumber}
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-        )}
-
-        {/* Progressão de volume por músculo desta semana */}
-        {activeMesoWeek && canUseMesocycle && volumeNote && !meso.isDeload && (
-          <p className="px-1 text-xs text-zinc-400 leading-relaxed">{volumeNote}</p>
-        )}
-
+      {/* 3. AVISOS ACIONÁVEIS DE PLANO / DELOAD (só aparecem quando há ação real) */}
+      {(planUpdate && onApplyPlan) || (activeMesoWeek && canUseMesocycle && deloadAdvice && !meso.isDeload) ? (
+      <section aria-label="Recomendações do plano" className="space-y-3">
         {/* Plano recalculado (corridas registadas, preferências de exercícios, calibração individual) */}
         {planUpdate && onApplyPlan && (
           <div className="rounded-2xl bg-surface-2 border border-white/[0.08] p-4 space-y-3">
@@ -574,100 +532,12 @@ export default function WeeklyDashboard({
           </div>
         )}
       </section>
+      ) : null}
 
-      {/* 4. SEQUÊNCIA DO TREINO — ABERTA DIRETAMENTE NO PRETO PURO */}
-      {!selectedWorkout.isRestDay && totalExercisesCount > 0 && (
-        <section aria-label="Sequência de Exercícios" className="space-y-2">
-          <h2 className="px-1 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
-            Sequência do treino
-          </h2>
-
-          <div
-            className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]"
-            onPointerEnter={() => loadExerciseMedia()}
-          >
-            {selectedWorkout.exercises.map((ex, index) => {
-              const formattedIndex = String(index + 1).padStart(2, '0');
-              const hasVideo = hasVerifiedExerciseVideo(ex);
-
-              return (
-                <button
-                  key={ex.id}
-                  type="button"
-                  onClick={() => {
-                    triggerHaptic(8);
-                    onViewExercise(ex);
-                  }}
-                  className="w-full min-h-[56px] py-3 px-1 hover:bg-white/[0.02] active:bg-white/[0.04] transition-colors cursor-pointer flex items-center justify-between text-left group select-none"
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <span className="font-display text-xs font-semibold text-zinc-500 group-hover:text-zinc-300 tabular-nums shrink-0 transition-colors">
-                      {formattedIndex}
-                    </span>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors truncate">
-                          {ex.name}
-                        </h3>
-                        {hasVideo && (
-                          <span className="inline-flex items-center text-zinc-400 shrink-0">
-                            <Play className="w-2.5 h-2.5 fill-current" />
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-0.5 truncate">
-                        {ex.badge || ex.target || 'Geral'} · {ex.equipment || 'Livre'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 shrink-0 pl-3">
-                    <span className="font-display font-semibold text-sm text-zinc-300 tabular-nums tracking-[-0.01em]">
-                      {ex.defaultSets} × {ex.suggestedReps}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 transition-colors" />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* 5. MAPA FISIOLÓGICO DE RECUPERAÇÃO MUSCULAR */}
+      {/* 4. MAPA FISIOLÓGICO DE RECUPERAÇÃO MUSCULAR */}
       <Suspense fallback={<div className="h-[340px]" />}>
         <MuscleRecoveryMap />
       </Suspense>
-
-      {/* Link discreto sem caixa para o Manual do Atleta quando Mesociclo ocupa a barra superior */}
-      {activeMesoWeek && (() => {
-        const userProfile = getSavedUserProfile();
-        const userGoal = userProfile?.goal || 'athlete';
-        const currentManual = ATHLETE_MANUAL_HEADERS[userGoal] || ATHLETE_MANUAL_HEADERS.athlete;
-
-        return (
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic(8);
-              onOpenGuide();
-            }}
-            className="w-full py-3.5 px-1 border-t border-white/[0.06] hover:bg-white/[0.02] transition-colors cursor-pointer flex items-center justify-between text-left select-none group"
-          >
-            <div className="flex items-center gap-3">
-              <BookOpen className="w-4 h-4 text-zinc-400 group-hover:text-white stroke-[1.75] shrink-0 transition-colors" />
-              <div>
-                <span className="text-[11px] text-zinc-500 block">{currentManual.tag}</span>
-                <span className="text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors">
-                  {currentManual.title}
-                </span>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 shrink-0 transition-colors" />
-          </button>
-        );
-      })()}
 
       <Suspense fallback={null}>
         <AnimatePresence>
