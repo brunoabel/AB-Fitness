@@ -50,7 +50,7 @@ export default function ConsentCheckboxes({ value, onChange, showErrors = false 
       </Box>
 
       <Box id="consent-health" checked={value.health} onChange={set('health')} invalid={showErrors && !value.health}>
-        <strong className="font-semibold text-white">Consinto expressamente</strong> que a ABEX Studio trate os meus dados de saúde e biométricos (peso, altura, idade, lesões, check-ins e fadiga muscular) para calcular a progressão, o mapa de recuperação e as sugestões do AB Coach. Posso retirar este consentimento a qualquer momento, eliminando a conta. Sem ele, posso usar o modo convidado, sem conta.
+        <strong className="font-semibold text-white">Consinto expressamente</strong> que a Bruno Abel Studio trate os meus dados de saúde e biométricos (peso, altura, idade, lesões, check-ins e fadiga muscular) para calcular a progressão, o mapa de recuperação e as sugestões do AB Coach. Posso retirar este consentimento a qualquer momento, eliminando a conta. Sem ele, posso usar o modo convidado, sem conta.
       </Box>
 
       {showErrors && (!value.terms || !value.health) && (

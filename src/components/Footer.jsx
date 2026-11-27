@@ -41,7 +41,7 @@ export default function Footer({ onOpenGuide }) {
       <div className="pt-2 text-[11px] text-zinc-500 font-normal flex items-center justify-center gap-1">
         <span>Desenvolvido por</span>
         <strong className="text-zinc-300 font-semibold">
-          ABEX Studio
+          Bruno Abel Studio
         </strong>
       </div>
 

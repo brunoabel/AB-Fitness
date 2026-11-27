@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Users, Copy, Check, LogOut, X, Radio } from 'lucide-react';
 import { triggerHaptic } from '../../utils/audio';
 
+/** Código da sala: 8 caracteres aleatórios criptográficos (32^8 combinações), porque o canal Realtime é público. */
 function randomRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let out = 'AB';
-  for (let i = 0; i < 4; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return out;
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => chars[b % chars.length]).join('');
 }
 
 /**
@@ -104,7 +103,7 @@ export default function LiveBuddySheet({
                 type="text"
                 value={inputCode}
                 onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-                placeholder="Código (ex: AB4K9P)"
+                placeholder="Código (ex: K7P2QX9M)"
                 maxLength={12}
                 className="flex-1 min-h-[44px] px-4 rounded-full bg-black border border-white/[0.12] text-sm font-mono uppercase tracking-wider text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent-hover"
               />

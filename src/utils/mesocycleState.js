@@ -20,7 +20,7 @@ export function mondayOf(date) {
   return d;
 }
 
-const parseKey = (key) => {
+export const parseKey = (key) => {
   const [y, m, d] = String(key).split('-').map(Number);
   return new Date(y, m - 1, d);
 };
@@ -82,11 +82,19 @@ export function loadMesocycle(now = new Date(), storage = defaultStorage()) {
   return resolved;
 }
 
-/** Parâmetros da semana (séries, RIR, carga) a partir do estado: o deload reativo usa os parâmetros do deload. */
+/** Guarda o estado completo (usado por src/utils/muscleVolumeState.js). */
+export const saveMesocycleState = (state, storage = defaultStorage()) => write(state, storage);
+
+/**
+ * Parâmetros da semana (séries, RIR, carga) a partir do estado: o deload reativo usa os parâmetros do deload.
+ * `setBonus[dayId][exerciseId]`: séries extra da progressão de volume por músculo, só se calculadas para esta semana.
+ */
 export function mesoParamsFor(resolved) {
   if (!resolved) return null;
   if (resolved.isDeload) return { ...mesoWeekParams(resolved.totalWeeks, resolved.totalWeeks), weekNumber: resolved.weekNumber, isDeload: true };
-  return mesoWeekParams(resolved.weekNumber, resolved.totalWeeks);
+  const vol = resolved.state?.volume;
+  const current = vol && vol.mesoStart === resolved.state.startDate && vol.week === resolved.weekNumber;
+  return { ...mesoWeekParams(resolved.weekNumber, resolved.totalWeeks), setBonus: current ? vol.bonus || {} : {} };
 }
 
 /** Parâmetros da semana de hoje (para o treino ativo). */

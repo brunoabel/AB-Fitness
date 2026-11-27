@@ -30,6 +30,7 @@ import { recordReadiness } from '../utils/readinessLog';
 import { syncMesocycle, restoreMesocycle } from '../services/mesocycleService';
 import { precacheWorkoutVideos } from '../services/videoPrecache';
 import { localDateKey } from '../utils/dateKey';
+import { planExtrasFromStorage, planSignature, isPlanUpdateDismissed, dismissPlanUpdate } from '../utils/planInputs';
 
 // Lazy: evita arrastar o catálogo de 348 exercícios (227KB) para o chunk inicial —
 // DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
@@ -43,6 +44,7 @@ export default function WeeklyDashboard({
   onOpenGuide,
   onOpenCustomize,
   onNavigateTab,
+  onApplyPlan,
   schedule = WEEKLY_SCHEDULE
 }) {
   const hasVerifiedExerciseVideo = useHasExerciseVideo();
@@ -65,6 +67,8 @@ export default function WeeklyDashboard({
   // Semana do mesociclo pelo calendário (src/utils/mesocycleState.js): avança sozinha, deload planeado ou reativo
   const [meso, setMeso] = useState(() => loadMesocycle());
   const [deloadAdvice, setDeloadAdvice] = useState(null);
+  const [volumeNote, setVolumeNote] = useState(null);
+  const [planUpdate, setPlanUpdate] = useState(null);
 
   // Mesociclo real (generateMesocyclePlan) só para quem tem perfil de onboarding; import dinâmico mantém o catálogo fora do chunk inicial
   useEffect(() => {
@@ -73,13 +77,13 @@ export default function WeeklyDashboard({
     let alive = true;
     import('../data/planFromProfile')
       .then(({ generateMesocyclePlan }) => {
-        if (alive) setMesocycle(generateMesocyclePlan(fitnessProfile, 5));
+        if (alive) setMesocycle(generateMesocyclePlan(fitnessProfile, 5, planExtrasFromStorage()));
       })
       .catch(() => {});
     // Prontidão de hoje para o histórico e sinais de deload reativo (import dinâmico: o motor puxa o catálogo)
     Promise.all([import('../utils/activeWorkoutHelpers'), import('../engine/deload')])
       .then(([{ getCurrentReadinessScore }, { evaluateDeloadSignals }]) => {
-        const readiness = recordReadiness(getCurrentReadinessScore());
+        const readiness = recordReadiness(getCurrentReadinessScore({ applyLoadLock: false }));
         if (!alive || isDeloadRecommendationDismissed()) return;
         const advice = evaluateDeloadSignals({ history: getWorkoutHistory(), checkins: getCheckins(), readiness, profile: fitnessProfile });
         if (advice.recommend) setDeloadAdvice(advice);
@@ -89,6 +93,48 @@ export default function WeeklyDashboard({
       alive = false;
     };
   }, []);
+
+  // Volume por músculo da semana e plano recalculado com corridas, preferências e calibração (motor P2)
+  useEffect(() => {
+    const fitnessProfile = getLocalFitnessProfile();
+    if (!fitnessProfile) return undefined;
+    let alive = true;
+    Promise.all([import('../utils/muscleVolumeState'), import('../data/planFromProfile'), import('../engine/exerciseMeta')])
+      .then(([{ updateMuscleVolume }, { buildPlanFromProfile }, { MUSCLE_LABEL }]) => {
+        if (!alive) return;
+        const result = updateMuscleVolume({ history: getWorkoutHistory(), checkins: getCheckins(), schedule, profile: fitnessProfile });
+        if (result.changed) setMeso(loadMesocycle());
+        const label = (m) => MUSCLE_LABEL[m] || m;
+        const parts = [];
+        if (result.volume.added?.length) parts.push(`+1 série semanal em ${result.volume.added.map(label).join(', ')}: a força manteve-se ou subiu sem sinais de fadiga.`);
+        const unmet = Object.keys(result.volume.unmet || {});
+        if (unmet.length) parts.push(`Sem tempo nas sessões para mais séries de ${unmet.map(label).join(', ')}.`);
+        if (result.calibrationChanges.length) {
+          parts.push(`Volume individual ajustado pelo último mesociclo: ${result.calibrationChanges.map((c) => `${label(c.muscle)} ${c.field === 'cap' ? 'teto' : 'mínimo'} ${c.delta > 0 ? '+' : ''}${c.delta}`).join(', ')} séries.`);
+        }
+        setVolumeNote(parts.length ? parts.join(' ') : null);
+        const fresh = buildPlanFromProfile(fitnessProfile, planExtrasFromStorage());
+        const sig = planSignature(fresh.plan);
+        setPlanUpdate(sig !== planSignature(schedule) && !isPlanUpdateDismissed(sig) ? { plan: fresh.plan, notes: fresh.notes, sig } : null);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [schedule]);
+
+  const applyPlanUpdate = () => {
+    if (!planUpdate || !onApplyPlan) return;
+    triggerHaptic([12, 30, 12]);
+    onApplyPlan(planUpdate.plan);
+    setPlanUpdate(null);
+  };
+  const skipPlanUpdate = () => {
+    if (!planUpdate) return;
+    triggerHaptic(8);
+    dismissPlanUpdate(planUpdate.sig);
+    setPlanUpdate(null);
+  };
 
   // Conta com sessão: num aparelho novo retoma o mesociclo da conta; depois mantém a tabela atualizada
   useEffect(() => {
@@ -459,6 +505,46 @@ export default function WeeklyDashboard({
                 );
               })}
             </ol>
+          </div>
+        )}
+
+        {/* Progressão de volume por músculo desta semana */}
+        {activeMesoWeek && canUseMesocycle && volumeNote && !meso.isDeload && (
+          <p className="px-1 text-xs text-zinc-400 leading-relaxed">{volumeNote}</p>
+        )}
+
+        {/* Plano recalculado (corridas registadas, preferências de exercícios, calibração individual) */}
+        {planUpdate && onApplyPlan && (
+          <div className="rounded-2xl bg-surface-2 border border-white/[0.08] p-4 space-y-3">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-white">Plano atualizado disponível</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Refiz o plano com as tuas corridas, os exercícios que marcaste e o que o teu corpo respondeu. Aplicar substitui o plano semanal atual, incluindo treinos do AB Coach atribuídos a dias.
+              </p>
+              {planUpdate.notes.length > 0 && (
+                <ul className="pt-1 space-y-1">
+                  {planUpdate.notes.slice(0, 4).map((note) => (
+                    <li key={note} className="text-xs text-zinc-300 leading-relaxed">{note}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={applyPlanUpdate}
+                className="min-h-[44px] px-4 rounded-xl bg-primary text-app text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                Aplicar ao plano
+              </button>
+              <button
+                type="button"
+                onClick={skipPlanUpdate}
+                className="min-h-[44px] px-3 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+              >
+                Manter o atual
+              </button>
+            </div>
           </div>
         )}
 

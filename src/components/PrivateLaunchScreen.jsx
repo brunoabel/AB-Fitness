@@ -496,7 +496,7 @@ export default function PrivateLaunchScreen() {
           <a href="/aviso-medico" className="underline underline-offset-2 hover:text-zinc-300">Aviso médico</a>
           <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-zinc-300">Livro de Reclamações</a>
         </p>
-        <p>Desenvolvido por <strong className="text-zinc-300 font-bold">ABEX Studio</strong></p>
+        <p>Desenvolvido por <strong className="text-zinc-300 font-bold">Bruno Abel Studio</strong></p>
       </footer>
     </div>
   );

@@ -27,6 +27,14 @@ describe('motor da função ab-coach', () => {
     }
   });
 
+  it('exercícios a evitar ficam fora da lista e são trocados', () => {
+    const c = sanitizeMotor({ experience: 'intermediate', goal: 'hypertrophy', location: 'gym', avoid: ['triceps-corda', 'nao-existe'] });
+    assert.deepEqual(c.avoid, ['triceps-corda']);
+    assert.ok(!allowedExerciseIds(c).includes('triceps-corda'));
+    const { treino: out } = applyEngine({ duracao_min: 60, exercicios: [{ id: 'triceps-corda', nome: 'Tríceps Corda', series: 3, reps: '12', descanso_seg: 60 }, { id: 'supino-reto-barra', nome: 'Supino', series: 3, reps: '8', descanso_seg: 120 }] }, c);
+    assert.ok(!out.exercicios.some((e) => e.id === 'triceps-corda'));
+  });
+
   it('troca exercícios proibidos, prescreve pela tabela e cabe no tempo', () => {
     const { treino: out, ajustes } = applyEngine(treino, ctx);
     assert.ok(ajustes.length > 0);

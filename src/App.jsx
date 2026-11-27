@@ -642,6 +642,7 @@ function AppContent() {
                   onOpenGuide={() => setShowGuideModal(true)}
                   onOpenCustomize={() => setShowOnboardingModal(true)}
                   onNavigateTab={handleTabChange}
+                  onApplyPlan={handleOnboardingComplete}
                   schedule={schedule}
                 />
               )}

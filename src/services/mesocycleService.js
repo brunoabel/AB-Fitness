@@ -21,11 +21,13 @@ const toRow = (userId, m, status) => ({
 /** Envia o mesociclo atual (ativo) e os anteriores (concluídos). Falhas ficam só no aviso da consola. */
 export async function syncMesocycle(userId, state) {
   if (!canSync(userId) || !state?.startDate) return { synced: false };
-  const rows = [
-    toRow(userId, state, 'active'),
-    ...(state.history || []).map((h) => toRow(userId, { ...h, deloadWeek: h.reactive ? h.weeks : null }, 'completed'))
-  ];
-  const { error } = await supabase.from('mesocycles').upsert(rows, { onConflict: 'user_id,start_date' });
+  const history = (state.history || []).map((h) => toRow(userId, { ...h, deloadWeek: h.reactive ? h.weeks : null }, 'completed'));
+  // Calibração individual (motor P2) vai no mesociclo ativo; sem a migration 20261143 sincroniza sem ela
+  const active = { ...toRow(userId, state, 'active'), calibration: state.calibration || {}, volume_records: state.volumeRecords || [] };
+  let { error } = await supabase.from('mesocycles').upsert([active, ...history], { onConflict: 'user_id,start_date' });
+  if (error && /calibration|volume_records/.test(error.message || '')) {
+    ({ error } = await supabase.from('mesocycles').upsert([toRow(userId, state, 'active'), ...history], { onConflict: 'user_id,start_date' }));
+  }
   if (error) {
     console.warn('Mesociclo guardado só localmente (Supabase):', error.message);
     return { synced: false, error: error.message };
@@ -41,14 +43,10 @@ export async function restoreMesocycle(userId, storage = typeof window !== 'unde
   } catch {
     return false;
   }
-  const { data, error } = await supabase
-    .from('mesocycles')
-    .select('start_date, weeks, deload_week, deload_reasons')
-    .eq('user_id', userId)
-    .eq('status', 'active')
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const query = (columns) =>
+    supabase.from('mesocycles').select(columns).eq('user_id', userId).eq('status', 'active').order('start_date', { ascending: false }).limit(1).maybeSingle();
+  let { data, error } = await query('start_date, weeks, deload_week, deload_reasons, calibration, volume_records');
+  if (error) ({ data, error } = await query('start_date, weeks, deload_week, deload_reasons'));
   if (error || !data) return false;
   try {
     storage?.setItem(MESO_STATE_KEY, JSON.stringify({
@@ -57,7 +55,9 @@ export async function restoreMesocycle(userId, storage = typeof window !== 'unde
       deloadWeek: data.deload_week,
       deloadReasons: data.deload_reasons || [],
       history: [],
-      dismissedUntil: null
+      dismissedUntil: null,
+      calibration: data.calibration || {},
+      volumeRecords: Array.isArray(data.volume_records) ? data.volume_records : []
     }));
   } catch {
     return false;

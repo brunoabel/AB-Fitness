@@ -53,6 +53,13 @@ export function applyMesoWeekToSets(sets, exerciseIndex, params, { isTimed = fal
   return out;
 }
 
+/** Séries extra da progressão de volume por músculo (cópias da última série, por concluir). */
+export function addBonusSets(sets, n) {
+  if (!Array.isArray(sets) || !sets.length || !(n > 0)) return sets;
+  const last = sets[sets.length - 1];
+  return [...sets, ...Array.from({ length: n }, () => ({ ...last, completed: false, done: false }))];
+}
+
 const reserveText = (rir) =>
   rir <= 0 ? 'leva as séries de trabalho até perto da falha técnica' : `termina cada série com ${rir} ${rir === 1 ? 'repetição' : 'repetições'} em reserva`;
 

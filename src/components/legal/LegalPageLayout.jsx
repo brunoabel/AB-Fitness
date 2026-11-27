@@ -214,7 +214,7 @@ export default function LegalPageLayout({ doc, path }) {
             ))}
 
             <footer className="legal-noprint mt-16 pt-6 border-t border-white/[0.1] text-[14px] text-zinc-400">
-              <p>ABEX Studio, Porto, Portugal.</p>
+              <p>Bruno Abel Studio, Porto, Portugal.</p>
               <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                 {LEGAL_PAGES.map((p) => (
                   <a key={p.path} href={p.path} aria-current={p.path === path ? 'page' : undefined} className={`underline underline-offset-[3px] decoration-white/20 hover:text-white ${p.path === path ? 'text-zinc-100' : ''}`}>{p.label}</a>

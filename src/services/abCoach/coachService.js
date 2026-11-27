@@ -9,6 +9,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { validateAndSanitizeCoachResponse } from './schema';
 import { getSavedWeights, getWorkoutHistory } from '../../utils/storage';
 import { getLocalFitnessProfile } from '../fitnessProfileService';
+import { getExercisePreferences } from '../../utils/exercisePreferences';
 
 /** Perfil estruturado para o motor de prescrição da função ab-coach (supabase/functions/ab-coach/engine.ts). */
 function motorContext() {
@@ -19,7 +20,8 @@ function motorContext() {
     goal: p.primaryGoal,
     location: p.trainingLocation,
     equipment: Array.isArray(p.equipment) ? p.equipment : [],
-    injuries: Array.isArray(p.injuries) ? p.injuries : []
+    injuries: Array.isArray(p.injuries) ? p.injuries : [],
+    avoid: getExercisePreferences().avoid
   };
 }
 

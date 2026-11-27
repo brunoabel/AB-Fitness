@@ -10,7 +10,7 @@ import { DRILLS, REGION_PLANS } from './recoveryProtocols.js';
 import { mesoWeekParams, mesoSetCount } from '../utils/mesocycleWeek.js';
 import { getExerciseMeta, prescribe, buildContext, balancePlan, validatePlan, MUSCLE_LABEL } from '../engine/index.js';
 import { slotFromExercise, candidatesFor, suggestForMuscle, inventoryFor } from '../engine/slots.js';
-import { runningLoad, concurrentAdjustments } from '../engine/concurrent.js';
+import { runningLoad, concurrentAdjustments, trimMuscleVolume } from '../engine/concurrent.js';
 
 
 const PRIORITY_GROUPS = {
@@ -405,6 +405,9 @@ export function buildPlanFromProfile(profile, extras = {}) {
 
     return { ...day, exercises: doubled.exercises, badge: profile.primaryGoal === 'conditioning' ? 'Condicionamento & Resistência' : day.badge };
   });
+
+  // Treino concorrente: acima do limiar de km, menos 20% de séries de quadríceps e posteriores antes do balanceamento
+  trimMuscleVolume(adapted, concurrent.budgetScale);
 
   // Motor de volume: ajusta séries ao orçamento semanal, ao teto por sessão e à duração; depois valida
   const ctx = buildContext({

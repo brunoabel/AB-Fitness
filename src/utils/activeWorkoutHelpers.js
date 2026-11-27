@@ -1,7 +1,7 @@
 import { getEaseModeToday } from './dailyBriefing.js';
 import { getLocalBiometrics, getLocalConnections, computeReadinessIndex } from '../services/wearables/wearableManager.js';
 import { getSavedWeights, getWorkoutHistory, getRunsHistory } from './storage.js';
-import { applyMesoWeekToSets } from './mesocycleWeek.js';
+import { applyMesoWeekToSets, addBonusSets } from './mesocycleWeek.js';
 import { exerciseTargetsRegion } from '../data/muscleRegions.js';
 import { getSubjectiveReadinessToday, combineReadinessScores } from './subjectiveReadiness.js';
 import { computeWorkloadACWR } from './workloadAcwr.js';
@@ -23,8 +23,10 @@ function firstSessionWeight(ex) {
 /**
  * Devolve a prontidão atual (0-100) combinando wearable + check-in subjetivo de hoje,
  * e aplica trava de segurança se o ACWR indicar risco elevado de sobrecarga (> 1.5).
+ * `applyLoadLock: false` devolve só a prontidão medida (wearable + check-in), sem a trava do ACWR:
+ * é o valor que o deload reativo regista, para a carga não contar duas vezes como "prontidão baixa".
  */
-export function getCurrentReadinessScore() {
+export function getCurrentReadinessScore({ applyLoadLock = true } = {}) {
   let wearableScore = null;
   const conns = getLocalConnections();
   if (conns && Object.keys(conns).length > 0) {
@@ -40,6 +42,7 @@ export function getCurrentReadinessScore() {
 
   const subjectiveScore = getSubjectiveReadinessToday()?.score ?? null;
   let combined = combineReadinessScores(wearableScore, subjectiveScore);
+  if (!applyLoadLock) return combined;
 
   const acwr = computeWorkloadACWR({
     workouts: getWorkoutHistory(),
@@ -116,6 +119,9 @@ export function buildInitialExercisesData(workout, activeDraft, mesoParams = nul
   if (mesoParams) {
     exercisesList.forEach((ex, idx) => {
       initial[ex.id] = applyMesoWeekToSets(initial[ex.id], idx, mesoParams, { isTimed: isTimedExercise(ex, ex.id) });
+      // Progressão de volume por músculo (src/engine/muscleVolume.js): séries extra desta semana
+      const bonus = mesoParams.isDeload ? 0 : Number(mesoParams.setBonus?.[workout?.dayId]?.[ex.id]) || 0;
+      if (bonus) initial[ex.id] = addBonusSets(initial[ex.id], bonus);
     });
   }
 

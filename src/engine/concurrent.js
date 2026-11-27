@@ -3,6 +3,9 @@
  * Usa os km reais das últimas 4 semanas, não só o desporto declarado no onboarding.
  * Os limiares são parâmetros iniciais, a afinar com dados reais.
  */
+import { getExerciseMeta } from './exerciseMeta.js';
+import { planVolume } from './volume.js';
+import { SET_LIMITS } from './prescription.js';
 
 /** Km por semana a partir dos quais o orçamento de quadríceps e posteriores desce. [parâmetro] */
 export const RUN_KM_THRESHOLD = 25;
@@ -93,4 +96,28 @@ export function concurrentAdjustments(load) {
     blocked,
     eventDays
   };
+}
+
+const TRIM_ORDER = { isolation: 0, timed: 1, compound: 2, heavy: 3 };
+
+/**
+ * Corta séries dos exercícios que treinam diretamente cada músculo até o volume semanal descer ao fator pedido
+ * (isoladores primeiro, nunca abaixo de SET_LIMITS.min). Muda os exercícios no próprio plano.
+ * @returns {number} séries cortadas
+ */
+export function trimMuscleVolume(days, factors = {}) {
+  let cut = 0;
+  for (const [muscle, f] of Object.entries(factors)) {
+    const target = Math.round((planVolume(days).weekly[muscle] || 0) * f);
+    for (let guard = 0; guard < 60 && (planVolume(days).weekly[muscle] || 0) > target; guard += 1) {
+      const pick = days
+        .flatMap((d) => d.exercises || [])
+        .filter((ex) => getExerciseMeta(ex)?.muscles?.[muscle] === 1 && Number(ex.defaultSets) > SET_LIMITS.min)
+        .sort((a, b) => (TRIM_ORDER[getExerciseMeta(a).repClass] ?? 2) - (TRIM_ORDER[getExerciseMeta(b).repClass] ?? 2) || b.defaultSets - a.defaultSets)[0];
+      if (!pick) break;
+      pick.defaultSets -= 1;
+      cut += 1;
+    }
+  }
+  return cut;
 }

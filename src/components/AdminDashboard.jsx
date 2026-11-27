@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { SkeletonList } from './ui/Skeleton';
 import { 
   Users, 
@@ -26,6 +26,8 @@ import { getLocalWaitlist, fetchWaitlistLeads, exportWaitlistCsv } from '../serv
 import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
 import { localDateKey } from '../utils/dateKey';
 
+const EngineMetricsPanel = lazy(() => import('./admin/EngineMetricsPanel'));
+
 export default function AdminDashboard({ onBackToWorkout }) {
   const { isCeo } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -34,7 +36,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState({ totalLogs: 0, totalVolume: 0, totals: null });
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('athletes'); // 'athletes' | 'sessions' | 'waitlist'
+  const [activeTab, setActiveTab] = useState('athletes'); // 'athletes' | 'sessions' | 'waitlist' | 'engine'
   const [waitlistLeads, setWaitlistLeads] = useState(() => getLocalWaitlist());
   const [selectedAthlete, setSelectedAthlete] = useState(null);
   const [athleteDetailsLoading, setAthleteDetailsLoading] = useState(false);
@@ -314,7 +316,7 @@ export default function AdminDashboard({ onBackToWorkout }) {
           </div>
 
           {/* Abas: Atletas / Histórico Geral / Waitlist VIP Marketing */}
-          <div className="grid grid-cols-3 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold tabular-nums">
+          <div className="grid grid-cols-4 p-1 bg-zinc-900 rounded-xl border border-white/10 text-xs font-bold tabular-nums">
             <button
               onClick={() => {
                 setActiveTab('athletes');
@@ -354,7 +356,26 @@ export default function AdminDashboard({ onBackToWorkout }) {
             >
               Waitlist ({waitlistLeads.length})
             </button>
+            <button
+              onClick={() => {
+                setActiveTab('engine');
+                triggerHaptic(10);
+              }}
+              className={`min-h-[40px] py-2 rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'engine'
+                  ? 'bg-zinc-800 text-white shadow-xs'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Motor
+            </button>
           </div>
+
+          {activeTab === 'engine' && (
+            <Suspense fallback={<SkeletonList />}>
+              <EngineMetricsPanel />
+            </Suspense>
+          )}
 
           {/* Campo de Pesquisa */}
           {activeTab === 'athletes' && (

@@ -59,6 +59,21 @@ describe('workloadAcwr — Motor Determinístico ACWR (Força + Corrida)', () =>
   });
 });
 
+describe('workloadAcwr — regresso de uma pausa', () => {
+  it('não trava a progressão de quem volta depois de 2 semanas parado', () => {
+    const now = Date.UTC(2026, 10, 27);
+    const workouts = [
+      { completedAt: new Date(now - 24 * DAY).toISOString(), totalSets: 16 },
+      { completedAt: new Date(now - 22 * DAY).toISOString(), totalSets: 16 },
+      { completedAt: new Date(now - 2 * DAY).toISOString(), totalSets: 16 },
+      { completedAt: new Date(now - 1 * DAY).toISOString(), totalSets: 16 }
+    ];
+    const res = computeWorkloadACWR({ workouts, now });
+    assert.equal(res.ready, false);
+    assert.equal(res.lockOverload, false);
+  });
+});
+
 describe('subjectiveReadiness — Prontidão Subjetiva Pré-Treino', () => {
   it('calcula score ponderado e combina com wearable quando ambos existem', () => {
     const low = computeSubjectiveReadiness({ sleep: 1, energy: 2, soreness: 2 });

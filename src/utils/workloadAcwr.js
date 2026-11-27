@@ -3,7 +3,9 @@
  * Prevenção de lesão e sobrecarga unificando treinos de força e corridas GPS.
  *
  * - Carga Aguda (Acute): soma de Unidades de Carga (AU) dos últimos 7 dias.
- * - Carga Crónica (Chronic): média semanal de AU das últimas 4 semanas (28 dias).
+ * - Carga Crónica (Chronic): média semanal de AU das 3 semanas anteriores (dias 7 a 28), sem a semana atual.
+ *   Com a semana atual incluída (rácio "acoplado"), quem volta de uma pausa de 2-3 semanas ficava com rácio > 2
+ *   e a progressão travada sem haver sobrecarga real.
  * - ACWR = acute / chronic:
  *     < 0.80  -> underload  (Subcarga / destreino)
  *     0.80–1.30 -> sweet_spot (Zona ótima de progressão)
@@ -70,7 +72,7 @@ export function runSessionLoadAU(run) {
 
 /**
  * Calcula ACWR (7d : média semanal 28d), variação semana-a-semana e guardrails acionáveis.
- * Requer pelo menos 2 semanas com atividade histórica para evitar falsos alarmes no arranque.
+ * Requer atividade nas 3 semanas anteriores para evitar falsos alarmes no arranque e no regresso de uma pausa.
  */
 export function computeWorkloadACWR({ workouts = [], runs = [], now = Date.now() } = {}) {
   const nowMs = typeof now === 'number' ? now : new Date(now).getTime();
@@ -89,10 +91,10 @@ export function computeWorkloadACWR({ workouts = [], runs = [], now = Date.now()
 
   const acuteLoad = Math.round(weekBuckets[0]);
   const prevWeekLoad = Math.round(weekBuckets[1]);
-  const activeWeeks = weekBuckets.filter((v) => v > 0).length;
-  const chronicLoad = Math.round((weekBuckets[0] + weekBuckets[1] + weekBuckets[2] + weekBuckets[3]) / 4);
+  const priorActiveWeeks = weekBuckets.slice(1).filter((v) => v > 0).length;
+  const chronicLoad = Math.round((weekBuckets[1] + weekBuckets[2] + weekBuckets[3]) / 3);
 
-  if (chronicLoad < 40 || activeWeeks < 2) {
+  if (chronicLoad < 40 || priorActiveWeeks < 3) {
     return {
       ready: false,
       acuteLoad,
@@ -104,7 +106,7 @@ export function computeWorkloadACWR({ workouts = [], runs = [], now = Date.now()
       recommendDeload: false,
       lockOverload: false,
       headline: null,
-      detail: 'Precisas de pelo menos 2 semanas de treinos para calibrar a tua carga crónica.'
+      detail: 'Precisas de 3 semanas seguidas de treino antes desta para calibrar a tua carga crónica.'
     };
   }
 

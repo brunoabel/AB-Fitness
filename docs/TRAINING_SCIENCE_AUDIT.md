@@ -338,6 +338,31 @@ Decisões tomadas na implementação:
 
 ### P2: refinamento e personalização (contínuo)
 
+**Estado (2026-11-27): primeira versão implementada.** Todos os limiares abaixo são heurísticas iniciais `[parâmetro]`.
+- Treino concorrente (`src/engine/concurrent.js`): km reais das últimas 4 semanas (`getRunsHistory`). O registo de
+  corrida não guarda o tipo de sessão, por isso o tipo é inferido: longa = 12 km ou mais e 1,5x a mediana; qualidade =
+  ritmo 7% mais rápido que a mediana (com 5 ou mais corridas). Dia habitual = mesmo dia da semana em 2 ou mais semanas.
+  Acima de 25 km/semana corta 20% das séries de quadríceps e posteriores; sem pernas pesadas no dia e na véspera de uma
+  corrida de qualidade nem no dia a seguir a uma longa (mesma troca de dias do desporto de impacto).
+- Volume por músculo guiado pela performance (`src/engine/muscleVolume.js`, `src/utils/muscleVolumeState.js`): no início
+  de cada semana de acumulação, +1 série semanal por músculo se a força estimada se manteve ou subiu (queda = 2,5% ou
+  mais) e não houve check-in "Demais" nem dor numa zona ligada ao músculo; nunca acima do teto. As séries extra vão para
+  os exercícios do músculo com as regras do balanceamento (teto por sessão, duração, limite de séries) e o treino ativo
+  junta-as às séries da semana. Quando não cabem, o painel diz que falta tempo.
+- Calibração individual (MEV/MRV) entre mesociclos: estagnar perto do teto em 2 mesociclos baixa o teto 2 séries;
+  estagnar com pouco volume e sem fadiga em 2 mesociclos sobe o mínimo 2 séries; progredir no teto sem fadiga sobe o
+  teto 2 séries. Desvio máximo de 4 séries. Guardada no mesociclo ativo (migration `20261143_engine_p2_calibration_metrics.sql`).
+- Ênfase em alongamento pesa mais em hipertrofia (x3) e menos em força (x1). Favoritos e exercícios a evitar
+  (botões na ficha do exercício, guardados no aparelho) pesam na escolha por slots e o AB Coach no servidor exclui os
+  exercícios a evitar.
+- Plano recalculado: o painel compara o plano atual com o recalculado (corridas, preferências, calibração) e propõe
+  aplicá-lo; aplicar substitui o plano semanal.
+- Painel admin, separador "Motor": adesão, séries com RIR registado, exercícios a progredir, mesociclos e deloads
+  reativos (`admin_engine_metrics`), e verificação do validador nos 900 perfis da grelha.
+- Testes: `src/engine/p2.test.js`.
+- Por fazer: guardar o tipo de sessão de corrida no registo (em vez de inferir), sincronizar as preferências com a conta,
+  e afinar os limiares com os dados do painel.
+
 1. Treino concorrente com km reais de corrida e tipo de sessão (secção 5).
 2. Progressão de volume por músculo guiada pela performance (secção 4.2) e calibração de MEV/MRV individual a partir do
    histórico (músculos que respondem/estagnam).

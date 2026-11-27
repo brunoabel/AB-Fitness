@@ -18,21 +18,21 @@ const ENGLISH_SYNONYMS = {
   'back squat': 'agachamento-livre',
   'deadlift': 'levantamento-terra',
   'deadlift (barbell)': 'levantamento-terra',
-  'romanian deadlift (barbell)': 'stiff-barra',
-  'romanian deadlift (dumbbell)': 'stiff-halteres',
-  'overhead press (barbell)': 'desenvolvimento-barra',
-  'shoulder press (dumbbell)': 'desenvolvimento-halteres',
-  'pull up': 'barra-fixa',
-  'lat pulldown (cable)': 'puxada-frontal',
-  'bent over row (barbell)': 'remada-curvada',
-  'seated cable row': 'remada-baixa',
+  'romanian deadlift (barbell)': 'stiff-com-barra',
+  'romanian deadlift (dumbbell)': 'stiff-com-halteres',
+  'overhead press (barbell)': 'desenvolvimento-militar',
+  'shoulder press (dumbbell)': 'desenvolvimento-com-halteres',
+  'pull up': 'barra-fixa-pronada',
+  'lat pulldown (cable)': 'puxada-frontal-aberta',
+  'bent over row (barbell)': 'remada-curvada-barra',
+  'seated cable row': 'remada-baixa-cabo',
   'leg press': 'leg-press-45',
   'leg extension (machine)': 'cadeira-extensora',
   'lying leg curl (machine)': 'mesa-flexora',
   'bicep curl (dumbbell)': 'rosca-direta-halteres',
   'bicep curl (barbell)': 'rosca-direta-barra',
   'triceps pushdown': 'triceps-corda',
-  'lateral raise (dumbbell)': 'elevacao-lateral'
+  'lateral raise (dumbbell)': 'elevacao-lateral-halteres'
 };
 
 function normalizeStr(s) {

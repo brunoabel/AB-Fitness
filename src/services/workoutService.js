@@ -604,10 +604,16 @@ export async function flushPlanSyncQueue(userId) {
   if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
     return 0;
   }
-  return flushQueue(PLAN_SYNC_QUEUE_KEY, async (job) => {
-    if (job.userId !== userId) return false;
-    await saveCustomUserPlan(userId, job.planDays, job.planTitle, { _fromQueue: true });
-    return true;
+  return flushQueue(PLAN_SYNC_QUEUE_KEY, {
+    filterFn: (job) => job.userId === userId,
+    sendFn: async (job) => {
+      try {
+        await saveCustomUserPlan(userId, job.planDays, job.planTitle, { _fromQueue: true });
+        return true;
+      } catch {
+        return false;
+      }
+    }
   });
 }
 

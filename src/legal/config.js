@@ -1,7 +1,7 @@
 /** Dados do responsável e das páginas legais. JS puro: também é lido por scripts/prerender_legal.mjs. */
 export const SITE_URL = 'https://www.abfitness.app';
 export const BRAND = 'AB Fitness';
-export const STUDIO = 'ABEX Studio';
+export const STUDIO = 'Bruno Abel Studio';
 export const OWNER = 'Bruno Abel';
 export const CONTACT_EMAIL = 'brunoaaraujo2005@gmail.com';
 /** NIF/NIPC do responsável; quando preenchido aparece nos documentos (exigido para prestadores em Portugal). */

@@ -12,6 +12,9 @@ describe('dataPortability — Exportação & Importação CSV (Hevy / Strong / A
     assert.equal(mapImportedExerciseId('Bench Press (Barbell)'), 'supino-reto-barra');
     assert.equal(mapImportedExerciseId('Squat (Barbell)'), 'agachamento-livre');
     assert.equal(mapImportedExerciseId('Deadlift (Barbell)'), 'levantamento-terra');
+    assert.equal(mapImportedExerciseId('Lat Pulldown (Cable)'), 'puxada-frontal-aberta');
+    assert.equal(mapImportedExerciseId('Pull Up'), 'barra-fixa-pronada');
+    assert.equal(mapImportedExerciseId('Lateral Raise (Dumbbell)'), 'elevacao-lateral-halteres');
   });
 
   it('importa CSV da Hevy agrupando séries por sessão e deduplicando', () => {

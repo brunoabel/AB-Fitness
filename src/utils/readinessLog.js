@@ -1,5 +1,5 @@
 /**
- * Registo diário do Índice de Prontidão dos wearables (um valor por dia, últimos 14 dias),
+ * Registo diário da prontidão medida (wearables e check-in diário, sem a trava do ACWR; um valor por dia, últimos 14 dias),
  * usado pelo deload reativo (src/engine/deload.js) para detetar vários dias seguidos de prontidão baixa.
  */
 import { localDateKey } from './dateKey.js';

@@ -6,6 +6,7 @@ import CoachIntro from './CoachIntro';
 import { CALIBRATION_STEPS } from './calibrationSteps';
 import { DEFAULT_PROFILE, fieldsFilled } from './profileSchema';
 import { buildPlanFromProfile } from '../../data/planFromProfile';
+import { planExtrasFromStorage } from '../../utils/planInputs';
 import { getLocalFitnessProfile, saveFitnessProfile } from '../../services/fitnessProfileService';
 import { getBodyEntries, saveBodyEntry, todayISO } from '../../utils/bodyPortfolio';
 import { triggerHaptic } from '../../utils/audio';
@@ -63,7 +64,7 @@ export default function OnboardingCoach({ userId, userName, onComplete, onClose 
     triggerHaptic([20, 40, 20]);
     setBuild({ ready: false, plan: [], notes: [] });
     const started = Date.now();
-    const { plan, notes } = buildPlanFromProfile(profile);
+    const { plan, notes } = buildPlanFromProfile(profile, planExtrasFromStorage());
     if (getBodyEntries().length === 0 && Number(profile.weightKg) > 0) {
       saveBodyEntry({ date: todayISO(), weight: Number(profile.weightKg) });
     }

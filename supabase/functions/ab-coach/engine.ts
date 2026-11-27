@@ -15,6 +15,8 @@ export interface MotorCtx {
   location: 'gym' | 'home_gym' | 'bodyweight';
   equipment: string[];
   injuries: string[];
+  /** Exercícios que o atleta marcou para evitar (preferências do app). */
+  avoid: string[];
 }
 
 const LEVELS = ['beginner', 'intermediate', 'advanced'];
@@ -36,7 +38,8 @@ export function sanitizeMotor(raw: any): MotorCtx | null {
     goal: raw.goal,
     location: raw.location,
     equipment: list(raw.equipment, ITEMS),
-    injuries: list(raw.injuries, JOINTS)
+    injuries: list(raw.injuries, JOINTS),
+    avoid: (Array.isArray(raw.avoid) ? raw.avoid : []).filter((x: unknown) => typeof x === 'string' && x in EXERCISE_META).slice(0, 60)
   };
 }
 
@@ -66,7 +69,7 @@ export function allowedExerciseIds(ctx: MotorCtx): string[] {
   const inv = inventory(ctx);
   return Object.keys(EXERCISE_META).filter((id) => {
     const m = meta(id);
-    return isAllowed(m, ctx, inv) && m!.pattern !== 'mobility';
+    return isAllowed(m, ctx, inv) && m!.pattern !== 'mobility' && !ctx.avoid.includes(id);
   });
 }
 
@@ -79,7 +82,7 @@ function substitute(id: string, ctx: MotorCtx, inv: Set<string> | null, used: Se
   const muscle = primary(m);
   let best: { id: string; s: number } | null = null;
   for (const cid of Object.keys(EXERCISE_META)) {
-    if (used.has(cid) || cid === id) continue;
+    if (used.has(cid) || cid === id || ctx.avoid.includes(cid)) continue;
     const c = meta(cid);
     if (!c || c.pattern !== m.pattern || !isAllowed(c, ctx, inv)) continue;
     let s = primary(c) === muscle ? 50 : 0;
@@ -121,7 +124,7 @@ export function applyEngine(treino: any, ctx: MotorCtx): { treino: any; ajustes:
     let id = ex.id;
     let m = meta(id);
     const budget = heavyAxial ? 4 : Math.min(5, AXIAL_SUM_CAP - axialSum);
-    if (m && (!isAllowed(m, ctx, inv) || m.axial > budget)) {
+    if (m && (!isAllowed(m, ctx, inv) || m.axial > budget || ctx.avoid.includes(id))) {
       const sub = substitute(id, ctx, inv, used, budget);
       if (!sub) {
         ajustes.push(`tirei ${ex.nome} (não serve ao teu equipamento, lesões ou nível)`);

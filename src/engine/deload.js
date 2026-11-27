@@ -11,7 +11,7 @@ const WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 export const SIGNAL_LABEL = {
   E1RM_DROP: 'a força estimada caiu em vários exercícios principais',
   FAIL_BELOW_RANGE: 'falhaste abaixo da faixa de repetições em vários exercícios',
-  LOW_READINESS: 'a prontidão dos wearables esteve baixa vários dias',
+  LOW_READINESS: 'a prontidão (wearables ou check-in diário) esteve baixa vários dias',
   HIGH_EFFORT: 'marcaste treinos como "Demais" mais de uma vez',
   PAIN: 'registaste dor na mesma zona mais de uma vez'
 };

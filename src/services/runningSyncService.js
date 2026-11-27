@@ -60,10 +60,16 @@ export async function flushRunsSyncQueue(userId) {
   if (!isSupabaseConfigured() || !supabase || !userId || userId === 'guest-local-user') {
     return 0;
   }
-  return flushQueue(RUNS_SYNC_QUEUE_KEY, async (job) => {
-    if (job.userId !== userId) return false;
-    await pushRunRow(job.payload);
-    return true;
+  return flushQueue(RUNS_SYNC_QUEUE_KEY, {
+    filterFn: (job) => job.userId === userId,
+    sendFn: async (job) => {
+      try {
+        await pushRunRow(job.payload);
+        return true;
+      } catch {
+        return false;
+      }
+    }
   });
 }
 

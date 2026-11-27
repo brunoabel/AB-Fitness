@@ -95,7 +95,7 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
   const [isExpressMode, setIsExpressMode] = useState(() => Boolean(activeDraft?.isExpressMode));
   const [restTimerState, setRestTimerState] = useState(() => activeDraft?.restTimerState || null);
 
-  const baseExercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
+  const baseExercises = useMemo(() => (Array.isArray(workout?.exercises) ? workout.exercises : []), [workout?.exercises]);
   const currentExercisesList = useMemo(
     () => baseExercises.map((ex) => liveSwaps[ex.id] || homeSwaps[ex.id] || ex),
     [baseExercises, liveSwaps, homeSwaps]
