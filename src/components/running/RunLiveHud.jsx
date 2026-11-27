@@ -51,7 +51,7 @@ function RunLiveHudComponent({
     <div className="space-y-4 md:grid md:grid-cols-12 md:gap-6 md:space-y-0 items-start pb-8">
       {/* Mapa em tempo real (sempre visível em desktop; alternável em mobile para proteger o polegar) */}
       <div className={`md:col-span-6 ${showMobileMap ? 'block' : 'hidden md:block'}`}>
-        <div className="rounded-3xl overflow-hidden border border-white/[0.1] shadow-lg">
+        <div className="rounded-3xl overflow-hidden border border-white/[0.1]">
           <Suspense fallback={<div className="h-[320px] w-full bg-surface-2 animate-pulse" />}>
             <RunningMap
               coordinates={coordinates}
@@ -70,12 +70,10 @@ function RunLiveHudComponent({
         {/* Topo de controlo rápido */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`px-2.5 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-wider ${
-              sessionStatus === 'running' && !isAutoPaused
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                : 'bg-accent/60 text-white border-accent-hover'
+            <span className={`text-xs font-semibold ${
+              sessionStatus === 'running' && !isAutoPaused ? 'text-emerald-300' : 'text-white'
             }`}>
-              {sessionStatus === 'paused' ? 'Pausado' : isAutoPaused ? 'Auto-Pausa' : 'Em corrida'}
+              {sessionStatus === 'paused' ? 'Em pausa' : isAutoPaused ? 'Pausa automática' : 'Em corrida'}
             </span>
 
             <span className="inline-flex items-center gap-1.5 text-xs text-zinc-400 truncate">
@@ -91,7 +89,7 @@ function RunLiveHudComponent({
                 triggerHaptic(8);
                 setShowMobileMap((v) => !v);
               }}
-              className={`md:hidden min-h-[38px] px-3 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 border transition-colors cursor-pointer ${
+              className={`md:hidden min-h-[44px] px-3.5 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 border transition-colors cursor-pointer ${
                 showMobileMap
                   ? 'bg-accent text-white border-accent-hover'
                   : 'bg-transparent text-zinc-300 border-white/[0.1]'
@@ -109,7 +107,7 @@ function RunLiveHudComponent({
                 saveVoiceCuesPreference(next);
                 triggerHaptic(8);
               }}
-              className={`min-h-[38px] min-w-[38px] px-2.5 rounded-full border inline-flex items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`min-h-[44px] min-w-[44px] px-2.5 rounded-full border inline-flex items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer ${
                 voiceEnabled
                   ? 'bg-accent text-white border-accent-hover'
                   : 'bg-transparent text-zinc-400 border-white/[0.1]'
@@ -131,7 +129,7 @@ function RunLiveHudComponent({
                 try { localStorage.setItem(AUTO_PAUSE_PREF_KEY, String(next)); } catch {}
                 triggerHaptic(8);
               }}
-              className={`min-h-[38px] px-3 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+              className={`min-h-[44px] px-3.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
                 autoPauseEnabled
                   ? 'bg-accent/60 text-white border-accent-hover'
                   : 'bg-transparent text-zinc-500 border-white/[0.08]'
@@ -285,7 +283,7 @@ function RunLiveHudComponent({
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-white">KM {s.km}</span>
                           {isFastest && (
-                            <span className="text-[10px] font-sans font-semibold text-emerald-300">Mais rápido</span>
+                            <span className="text-[11px] font-sans font-semibold text-emerald-300">Mais rápido</span>
                           )}
                         </div>
                         <div className="flex items-center gap-3">

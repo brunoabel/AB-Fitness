@@ -315,7 +315,7 @@ Decisões tomadas na implementação:
   os candidatos são pontuados por lesão, equipamento, nível, alongamento e orçamento axial. A substituição por palavras
   no nome deixou de existir. O validador volta a dar erro em `VOL_LOW` sempre que há exercício que caiba.
 - 2 dias/semana (Full Body A/B) e inventário de equipamento em casa no onboarding
-  (migration `20261141_profile_equipment_two_days.sql`).
+  (migration `20261144_profile_equipment_two_days.sql`).
 - Mesociclo com data de início (`src/utils/mesocycleState.js`), avanço automático por semana de calendário, deload
   planeado na última semana e reativo (`src/engine/deload.js`, 2 ou mais sinais em 7 dias), tabela `mesocycles`
   (migration `20261142_mesocycles.sql`) sincronizada por `src/services/mesocycleService.js`.

@@ -33,15 +33,13 @@ export default function BadgeCelebrationModal({ badge, onClose }) {
     sound.playVictory();
     triggerHaptic([50, 100, 50, 150, 50, 200]);
 
+    // Uma rajada curta e monocromática (respeita reduced motion)
     if (reduce) return;
-    const end = Date.now() + 2.5 * 1000;
-    const colors = [color, '#ffffff', '#000000', '#f4f4f5'];
-
-    (function frame() {
-      confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors });
-      confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors });
-      if (Date.now() < end) requestAnimationFrame(frame);
-    })();
+    const colors = ['#ffffff', '#c9d3e6'];
+    try {
+      confetti({ particleCount: 30, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, ticks: 110, colors, disableForReducedMotion: true });
+      confetti({ particleCount: 30, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, ticks: 110, colors, disableForReducedMotion: true });
+    } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -106,7 +106,7 @@ export default function BadgesView() {
               setFilter(f.id);
               triggerHaptic(10);
             }}
-            className={`min-h-[38px] px-4 rounded-full border transition-colors cursor-pointer shrink-0 ${
+            className={`min-h-[44px] px-4 rounded-full border transition-colors cursor-pointer shrink-0 ${
               filter === f.id
                 ? 'bg-accent border-accent-hover text-white'
                 : 'bg-surface border-white/[0.08] text-zinc-400 hover:text-zinc-200 hover:border-white/20'

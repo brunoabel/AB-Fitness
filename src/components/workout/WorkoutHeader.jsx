@@ -55,6 +55,7 @@ export default function WorkoutHeader({
           onClick={onPause}
           className="flex items-center gap-0.5 text-xs font-semibold text-zinc-400 hover:text-white px-2 py-2 rounded-full active:scale-[0.97] transition-[color,transform] duration-150 ease-out cursor-pointer min-h-[44px]"
           title="Pausar e regressar ao painel"
+          aria-label="Pausar treino"
         >
           <ChevronLeft className="w-4 h-4 stroke-[1.75]" />
           <span className="hidden xs:inline sm:inline">Pausar</span>
@@ -91,8 +92,9 @@ export default function WorkoutHeader({
                 ? 'bg-accent text-white border-accent-hover'
                 : 'bg-transparent text-zinc-400 border-white/[0.08] hover:text-white hover:border-white/[0.16]'
             }`}
-            title={isFocusMode ? 'Modo Foco Ativo (Toque para ver lista completa)' : 'Mudar para Modo Foco'}
-            aria-label="Alternar modo de visualização"
+            title={isFocusMode ? 'Ver lista completa' : 'Modo foco'}
+            aria-label={isFocusMode ? 'Ver lista completa' : 'Modo foco'}
+            aria-pressed={isFocusMode}
           >
             <Layers className="w-4 h-4 stroke-[1.75]" />
           </button>
@@ -102,6 +104,7 @@ export default function WorkoutHeader({
             onClick={onFinish}
             disabled={isFinishing}
             aria-busy={isFinishing}
+            aria-label="Concluir treino"
             className="px-4 py-2 rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-xs active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out flex items-center gap-1.5 cursor-pointer min-h-[44px] disabled:opacity-60 disabled:cursor-default"
           >
             <Check className="w-4 h-4 stroke-[2.25]" />

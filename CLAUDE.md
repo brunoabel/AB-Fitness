@@ -4,7 +4,7 @@
 - NO YAPPING: Zero preâmbulos ou explicações não solicitadas. Não narre chamadas de ferramentas.
 - PRECISION DIFFS: Edite apenas as linhas necessárias, nunca reescreva arquivos inteiros sem necessidade.
 - STACK PADRÃO: Vite + React + Tailwind CSS (stack atual do projeto). Não migre para Next.js nem TypeScript, e não adicione Framer Motion ou GSAP sem pedido explícito.
-- DESIGN SYSTEM BASE: Pure Black + White + Midnight Navy, definido em `STYLESEED.md` (fonte de verdade). Canvas `bg-app` #000000, superfície `bg-surface` #070709, marinho `bg-surface-2`/`bg-surface-3`, bordas `border-white/[0.08]`, CTA branco `bg-primary text-app`, seleção marinho `bg-accent/70 text-white border-accent-hover`, ativo/progresso/PR em branco. Zero box-shadow colorido, zero ciano, zero laranja. Use os tokens de `src/index.css`, nunca hex fixo. Drop-set é violeta, sucesso é emerald.
+- DESIGN SYSTEM BASE: Pure Black + White + Midnight Navy, definido em `STYLESEED.md` (fonte de verdade). Canvas `bg-app` #000000, superfície `bg-surface` #070709, marinho `bg-surface-2`/`bg-surface-3`, bordas `border-white/[0.08]`, CTA branco `bg-primary text-app`, seleção marinho `bg-accent/70 text-white border-accent-hover`, ativo/progresso/PR em branco. Zero box-shadow colorido, zero ciano, zero laranja (exceção: rampa semáforo verde/âmbar/vermelho do mapa de recuperação, escolhida pelo dono do produto). Use os tokens de `src/index.css`, nunca hex fixo. Drop-set é violeta, sucesso é emerald.
 - LOGO OFICIAL: Use sempre `public/ab-logo.png` (PNG) ou `public/pwa-icon.svg` (SVG). A logo antiga (`ab-logo-white.png`) foi removida.
 
 ## Economia de tokens

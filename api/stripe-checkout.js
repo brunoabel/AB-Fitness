@@ -1,18 +1,23 @@
 /**
- * Vercel Serverless Function: Criação de sessão de Checkout Stripe para o plano PRO.
+ * Vercel Serverless Function: Criação de sessão de Checkout Stripe (PRO mensal, PRO anual ou Personal Trainer).
  * Autentica o utilizador via JWT do Supabase e gera o URL seguro de pagamento.
+ * O cliente envia `{ plan: 'pro' | 'pro_annual' | 'trainer' }`; o Price ID vem sempre das variáveis do servidor.
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { resolveCheckoutPrice } from '../src/utils/stripeEntitlements.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-const DEFAULT_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
-const ALLOWED_PRICE_IDS = [
-  DEFAULT_PRICE_ID,
-  process.env.STRIPE_PRO_ANNUAL_PRICE_ID
-].filter((v) => typeof v === 'string' && v.trim() !== '');
+const PRICES = {
+  pro: process.env.STRIPE_PRO_PRICE_ID,
+  proAnnual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+  trainer: process.env.STRIPE_TRAINER_PRICE_ID
+};
+const ALLOWED_PRICE_IDS = Object.values(PRICES)
+  .filter((v) => typeof v === 'string' && v.trim() !== '')
+  .map((v) => v.trim());
 
 const ALLOWED_ORIGIN_PATTERNS = [
   /^https:\/\/([a-z0-9-]+\.)?abfitness\.app$/,
@@ -69,12 +74,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'JSON inválido' });
   }
 
+  // Compatibilidade: `priceId` explícito continua aceite, mas só se estiver na allowlist do servidor
   if (body.priceId !== undefined && !ALLOWED_PRICE_IDS.includes(body.priceId)) {
     return res.status(400).json({ error: 'Plano inválido' });
   }
-  const priceId = body.priceId || DEFAULT_PRICE_ID;
+  if (body.plan !== undefined && !['pro', 'pro_annual', 'trainer'].includes(body.plan)) {
+    return res.status(400).json({ error: 'Plano inválido' });
+  }
+  const resolved = resolveCheckoutPrice(body.plan, PRICES);
+  const priceId = body.priceId || resolved.priceId;
   if (!priceId || !ALLOWED_PRICE_IDS.includes(priceId)) {
-    return res.status(500).json({ error: 'STRIPE_PRO_PRICE_ID não configurado no servidor.' });
+    return res.status(503).json({
+      error: resolved.plan === 'trainer'
+        ? 'O plano Personal Trainer ainda não está disponível.'
+        : 'Este plano ainda não está disponível.'
+    });
   }
 
   // 2b. Verifica elegibilidade para trial de 14 dias no perfil (evita trials ilimitados)
@@ -84,9 +98,17 @@ export default async function handler(req, res) {
   });
   const { data: profileRow } = await authedSupabase
     .from('profiles')
-    .select('trial_granted_at, stripe_customer_id')
+    .select('trial_granted_at, stripe_customer_id, is_pro')
     .eq('id', user.id)
     .maybeSingle();
+
+  // Já tem subscrição ativa: mudar de plano faz-se no portal da Stripe (evita duas cobranças em paralelo)
+  if (profileRow?.is_pro && profileRow?.stripe_customer_id) {
+    return res.status(409).json({
+      error: 'Já tens uma subscrição ativa. Muda de plano em Gerir subscrição.',
+      code: 'already_subscribed'
+    });
+  }
 
   const eligibleForTrial = Boolean(!profileRow?.trial_granted_at && !profileRow?.stripe_customer_id);
   const origin = resolveSafeOrigin(req.headers.origin);
@@ -102,9 +124,11 @@ export default async function handler(req, res) {
     }
     params.append('client_reference_id', user.id);
     params.append('metadata[user_id]', user.id);
+    params.append('metadata[plan]', resolved.plan);
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
     params.append('subscription_data[metadata][user_id]', user.id);
+    params.append('subscription_data[metadata][plan]', resolved.plan);
     if (eligibleForTrial) {
       params.append('subscription_data[trial_period_days]', '14');
     }

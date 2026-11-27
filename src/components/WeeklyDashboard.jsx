@@ -278,7 +278,7 @@ export default function WeeklyDashboard({
           <button
             type="button"
             onClick={() => setUpgradeReason(trialNotice)}
-            className="shrink-0 text-xs font-semibold bg-primary text-app hover:bg-zinc-200 rounded-full px-3.5 py-1.5 cursor-pointer"
+            className="shrink-0 min-h-[36px] tap-44 text-xs font-semibold bg-primary text-app hover:bg-zinc-200 rounded-full px-3.5 cursor-pointer active:scale-[0.98] transition-[background-color,transform] duration-150"
           >
             {trialNotice === 'trial_ending' ? 'Manter PRO' : 'Assinar PRO'}
           </button>
@@ -287,15 +287,15 @@ export default function WeeklyDashboard({
 
       {/* 2. ÚNICO PROTAGONISTA EM DESTAQUE — PALCO DO TREINO DO DIA */}
       <section aria-label="Treino em Destaque" className="space-y-4">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-surface-2/85 to-surface-2/25 border border-accent-hover/70 p-6 sm:p-7">
+        <div className="relative overflow-hidden rounded-3xl bg-surface-2/60 border border-accent-hover/70 p-6 sm:p-7">
           <div className="flex items-center justify-between gap-3 text-xs text-zinc-400 mb-3">
             <span className="flex items-center gap-2 min-w-0">
               <span className="font-medium text-zinc-300 truncate">
                 {isToday ? 'Treino de hoje' : selectedWorkout.name} · {selectedWorkout.badge || 'Musculação'}
               </span>
               {isSelectedDayCompleted && (
-                <span className="inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-full text-[11px] font-semibold shrink-0">
-                  <Check className="w-3 h-3 stroke-[2.5]" /> Concluído
+                <span className="inline-flex items-center gap-1 text-emerald-400 text-[11px] font-semibold shrink-0">
+                  <Check className="w-3 h-3 stroke-[2.25]" /> Concluído
                 </span>
               )}
             </span>
@@ -343,7 +343,7 @@ export default function WeeklyDashboard({
                 className="w-full min-h-[54px] py-3.5 px-6 rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-[15px] active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out flex items-center justify-center gap-2.5 cursor-pointer select-none"
               >
                 <Play className="w-4 h-4 fill-current ml-0.5" />
-                <span>{isSelectedDayCompleted ? 'Rever Treino Concluído' : 'Iniciar Treino Agora'}</span>
+                <span>{isSelectedDayCompleted ? 'Rever treino' : 'Iniciar treino'}</span>
               </button>
             </div>
           ) : (
@@ -351,10 +351,8 @@ export default function WeeklyDashboard({
               <div className="flex items-center gap-3">
                 <Coffee className="w-5 h-5 text-zinc-300 stroke-[1.75] shrink-0" />
                 <div>
-                  <h4 className="text-xs font-semibold text-white">Regeneração biomecânica ativa</h4>
-                  <p className="text-[12px] text-zinc-400 mt-0.5">
-                    O músculo sintetiza fibras durante o repouso. Hidrata-te e foca no sono.
-                  </p>
+                  <h4 className="text-xs font-semibold text-white">Dia de descanso</h4>
+                  <p className="text-[12px] text-zinc-400 mt-0.5">Hidrata-te e dorme bem.</p>
                 </div>
               </div>
 
@@ -369,7 +367,7 @@ export default function WeeklyDashboard({
                     className="flex-1 min-h-[48px] px-4 rounded-full bg-primary text-app font-semibold text-xs hover:bg-zinc-200 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Antecipar {nextWorkoutDay.name}: {nextWorkoutDay.title}</span>
+                    <span className="truncate">Antecipar {nextWorkoutDay.name}</span>
                   </button>
                 )}
                 <button
@@ -381,7 +379,7 @@ export default function WeeklyDashboard({
                   className="min-h-[48px] px-4 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-100 font-semibold text-xs active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <ListPlus className="w-3.5 h-3.5 stroke-[1.75]" />
-                  <span>Treino Personalizado</span>
+                  <span>Treino personalizado</span>
                 </button>
               </div>
             </div>
@@ -519,7 +517,7 @@ export default function WeeklyDashboard({
             <div className="space-y-1">
               <p className="text-sm font-semibold text-white">Plano atualizado disponível</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Refiz o plano com as tuas corridas, os exercícios que marcaste e o que o teu corpo respondeu. Aplicar substitui o plano semanal atual, incluindo treinos do AB Coach atribuídos a dias.
+                Ajustado às tuas corridas, preferências e resposta ao treino. Substitui o plano semanal atual.
               </p>
               {planUpdate.notes.length > 0 && (
                 <ul className="pt-1 space-y-1">
@@ -533,14 +531,14 @@ export default function WeeklyDashboard({
               <button
                 type="button"
                 onClick={applyPlanUpdate}
-                className="min-h-[44px] px-4 rounded-xl bg-primary text-app text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform"
+                className="min-h-[44px] px-4 rounded-full bg-primary text-app text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform"
               >
                 Aplicar ao plano
               </button>
               <button
                 type="button"
                 onClick={skipPlanUpdate}
-                className="min-h-[44px] px-3 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                className="min-h-[44px] px-3 rounded-full text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
               >
                 Manter o atual
               </button>
@@ -554,21 +552,21 @@ export default function WeeklyDashboard({
             <div className="space-y-1">
               <p className="text-sm font-semibold text-white">Sinais de fadiga acumulada</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Nos últimos 7 dias {deloadAdvice.signals.map((sig) => sig.label).join(' e ')}. Antecipar o deload agora (menos séries e carga a 90%) ajuda a recuperar antes de continuar a progredir.
+                Nos últimos 7 dias {deloadAdvice.signals.map((sig) => sig.label).join(' e ')}. Um deload agora (menos séries, carga a 90%) ajuda a recuperar.
               </p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={acceptDeload}
-                className="min-h-[44px] px-4 rounded-xl bg-primary text-app text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform"
+                className="min-h-[44px] px-4 rounded-full bg-primary text-app text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform"
               >
                 Fazer deload esta semana
               </button>
               <button
                 type="button"
                 onClick={dismissDeload}
-                className="min-h-[44px] px-3 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                className="min-h-[44px] px-3 rounded-full text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
               >
                 Agora não
               </button>
@@ -580,14 +578,9 @@ export default function WeeklyDashboard({
       {/* 4. SEQUÊNCIA DO TREINO — ABERTA DIRETAMENTE NO PRETO PURO */}
       {!selectedWorkout.isRestDay && totalExercisesCount > 0 && (
         <section aria-label="Sequência de Exercícios" className="space-y-2">
-          <div className="flex items-baseline justify-between px-1">
-            <h2 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
-              Sequência do treino
-            </h2>
-            <span className="text-[11px] text-zinc-400 tabular-nums">
-              {totalExercisesCount} exercícios · {totalSetsCount} séries
-            </span>
-          </div>
+          <h2 className="px-1 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
+            Sequência do treino
+          </h2>
 
           <div
             className="divide-y divide-white/[0.06] border-t border-b border-white/[0.06]"

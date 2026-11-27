@@ -610,8 +610,8 @@ export async function flushPlanSyncQueue(userId) {
       try {
         await saveCustomUserPlan(userId, job.planDays, job.planTitle, { _fromQueue: true });
         return true;
-      } catch {
-        return false;
+      } catch (err) {
+        return isPermanentSyncError(err) ? { skip: true, error: err?.message || err?.code } : false;
       }
     }
   });

@@ -50,10 +50,10 @@ function firePrConfetti(targetEl) {
   try {
     const rect = targetEl?.getBoundingClientRect?.();
     confetti({
-      particleCount: 60,
+      particleCount: 36,
       spread: 55,
       startVelocity: 32,
-      ticks: 120,
+      ticks: 90,
       colors: ['#ffffff', '#ffffff', '#c9d3e6'],
       origin: rect
         ? {
@@ -355,16 +355,9 @@ export default function FocusExerciseCard({
       {/* 1. CABEÇALHO EDITORIAL ABERTO NO FUNDO PRETO PURO */}
       <div className="flex items-start justify-between gap-3 pt-1">
         <div className="space-y-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-medium text-zinc-400 tabular-nums">
-              Exercício {index + 1} de {total} · {exercise.target}
-            </span>
-            {exercise.badge && (
-              <span className="px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 text-[11px] font-medium border border-white/[0.08]">
-                {exercise.badge}
-              </span>
-            )}
-          </div>
+          {exercise.target && (
+            <span className="block text-xs font-medium text-zinc-400 truncate">{exercise.target}</span>
+          )}
 
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">
             {exercise.name}
@@ -474,7 +467,7 @@ export default function FocusExerciseCard({
           <button
             type="button"
             onClick={() => onApplyProgressionHint(progressionHint)}
-            className="shrink-0 px-3 py-1.5 rounded-full bg-primary text-app font-semibold text-[11px] cursor-pointer hover:bg-zinc-200 active:scale-[0.97] transition-[background-color,transform] duration-150 ease-out"
+            className="shrink-0 min-h-[36px] px-3.5 rounded-full bg-primary text-app font-semibold text-xs cursor-pointer hover:bg-zinc-200 active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out tap-44"
           >
             Aplicar
           </button>
@@ -490,13 +483,11 @@ export default function FocusExerciseCard({
       {/* 4. PALCO DA SÉRIE ATIVA (ACTIVE SET STAGE ESTILO MOTRA) */}
       {showCompletedSummaryHero ? (
         <div className="rounded-3xl bg-surface-2/70 border border-accent-hover p-5 text-center space-y-3.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/60 border border-accent-hover text-xs font-semibold text-white">
-            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Todas as séries concluídas</span>
-          </div>
-          <p className="text-xs text-zinc-400">
-            Podes tocar em qualquer série abaixo para ajustar valores ou avançar para o próximo exercício.
+          <p className="inline-flex items-center gap-2 text-sm font-semibold text-white">
+            <Check className="w-4 h-4 stroke-[2.25]" />
+            Séries concluídas
           </p>
+          <p className="text-xs text-zinc-400">Toca numa série para a ajustar.</p>
           {onNextExercise && (
             <button
               type="button"
@@ -506,7 +497,7 @@ export default function FocusExerciseCard({
               }}
               className="w-full py-3.5 rounded-full bg-primary text-app hover:bg-zinc-200 font-semibold text-sm active:scale-[0.98] transition-[background-color,transform] duration-150 ease-out cursor-pointer min-h-[52px]"
             >
-              {isLastExercise ? 'Concluir Treino' : 'Próximo Exercício'}
+              {isLastExercise ? 'Concluir treino' : 'Próximo exercício'}
             </button>
           )}
         </div>
@@ -533,7 +524,7 @@ export default function FocusExerciseCard({
                     type="button"
                     onClick={cycleSetType}
                     disabled={activeIsDone}
-                    className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] border border-white/[0.1] text-zinc-200 hover:border-white/25 disabled:opacity-50 cursor-pointer transition-colors"
+                    className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] border border-white/[0.1] text-zinc-200 hover:border-white/25 disabled:opacity-50 cursor-pointer transition-colors tap-44"
                     title={`Tipo: ${activeTypeConfig.title}`}
                   >
                     {activeType === 'N'
@@ -552,7 +543,7 @@ export default function FocusExerciseCard({
                   <button
                     type="button"
                     onClick={applyPreviousToActive}
-                    className="px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[11px] font-medium text-zinc-300 hover:text-white tabular-nums cursor-pointer active:scale-[0.97] transition-[background-color,color,transform] duration-150 ease-out"
+                    className="px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[11px] font-medium text-zinc-300 hover:text-white tabular-nums cursor-pointer active:scale-[0.98] transition-[background-color,color,transform] duration-150 ease-out tap-44"
                   >
                     Última: {formatPrevLabel(activePrev)}
                   </button>
@@ -567,7 +558,7 @@ export default function FocusExerciseCard({
                     }}
                     aria-label="Eliminar série"
                     title="Eliminar série"
-                    className="p-2 rounded-full text-zinc-500 hover:text-red-400 hover:bg-white/[0.04] cursor-pointer transition-colors"
+                    className="min-w-[44px] min-h-[44px] -my-2 -mr-2 flex items-center justify-center rounded-full text-zinc-500 hover:text-red-400 cursor-pointer transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5 stroke-[1.75]" />
                   </button>
@@ -593,7 +584,7 @@ export default function FocusExerciseCard({
                       onClick={() => adjustWeight(-2.5)}
                       disabled={activeIsDone}
                       aria-label="Diminuir 2,5 kg"
-                      className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                      className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                     >
                       <Minus className="w-4 h-4 stroke-[2]" />
                     </button>
@@ -624,7 +615,7 @@ export default function FocusExerciseCard({
                       onClick={() => adjustWeight(2.5)}
                       disabled={activeIsDone}
                       aria-label="Aumentar 2,5 kg"
-                      className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                      className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                     >
                       <Plus className="w-4 h-4 stroke-[2]" />
                     </button>
@@ -645,7 +636,7 @@ export default function FocusExerciseCard({
                         onClick={() => adjustDuration(-5)}
                         disabled={activeIsDone}
                         aria-label="Diminuir 5 segundos"
-                        className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                        className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                       >
                         <Minus className="w-4 h-4 stroke-[2]" />
                       </button>
@@ -679,7 +670,7 @@ export default function FocusExerciseCard({
                         onClick={() => adjustDuration(5)}
                         disabled={activeIsDone}
                         aria-label="Aumentar 5 segundos"
-                        className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                        className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                       >
                         <Plus className="w-4 h-4 stroke-[2]" />
                       </button>
@@ -688,7 +679,7 @@ export default function FocusExerciseCard({
                       <button
                         type="button"
                         onClick={toggleHoldTimer}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border cursor-pointer transition-[background-color,border-color] duration-150 ease-out ${
+                        className={`inline-flex items-center gap-1.5 min-h-[36px] px-3.5 rounded-full text-xs font-semibold border cursor-pointer transition-[background-color,border-color] duration-150 ease-out ${
                           isHoldingTimer
                             ? 'bg-accent border-accent-hover text-white'
                             : 'bg-transparent border-white/[0.1] text-zinc-400 hover:text-white'
@@ -715,7 +706,7 @@ export default function FocusExerciseCard({
                       onClick={() => adjustReps(-1)}
                       disabled={activeIsDone}
                       aria-label="Diminuir 1 repetição"
-                      className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                      className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                     >
                       <Minus className="w-4 h-4 stroke-[2]" />
                     </button>
@@ -737,7 +728,7 @@ export default function FocusExerciseCard({
                       onClick={() => adjustReps(1)}
                       disabled={activeIsDone}
                       aria-label="Aumentar 1 repetição"
-                      className="w-10 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 active:scale-90 transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
+                      className="w-11 h-11 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 flex items-center justify-center shrink-0 touch-manipulation active:scale-[0.94] transition-[background-color,transform] duration-150 ease-out cursor-pointer disabled:opacity-30"
                     >
                       <Plus className="w-4 h-4 stroke-[2]" />
                     </button>
@@ -759,8 +750,8 @@ export default function FocusExerciseCard({
                   <Check className="w-4 h-4 stroke-[2.25]" />
                   <span>
                     {activeIsDone
-                      ? `Desmarcar Série ${labels[activeIdx]}`
-                      : `Concluir Série ${labels[activeIdx]}`}
+                      ? `Desmarcar série ${labels[activeIdx]}`
+                      : `Concluir série ${labels[activeIdx]}`}
                   </span>
                 </button>
               </motion.div>
@@ -770,7 +761,7 @@ export default function FocusExerciseCard({
       )}
 
       {rirSetIdx !== -1 && (
-        <div className="rounded-2xl bg-surface border border-white/[0.06] p-3.5">
+        <div className="border-t border-white/[0.06] pt-4">
           <RirPicker
             label={`Série ${labels[rirSetIdx]}: quantas reps mais conseguias fazer?`}
             value={rirFromSet(sets[rirSetIdx])}

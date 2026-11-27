@@ -2,7 +2,7 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { triggerHaptic } from '../../utils/audio';
 
-/** Barra compacta de progresso segmentado e seleção rápida de exercícios. */
+/** Seleção rápida de exercícios (o progresso global está na linha fina do WorkoutHeader). */
 export default function ExercisePillsBar({
   exercises,
   exercisesData,
@@ -12,28 +12,7 @@ export default function ExercisePillsBar({
   onSelectExercise
 }) {
   return (
-    <div className="space-y-2">
-      {/* Trilha segmentada ultrafina de progresso */}
-      <div className="flex items-center gap-1" aria-hidden="true">
-        {exercises.map((ex) => {
-          const sets = exercisesData[ex.id] || [];
-          const isAllDone = sets.length > 0 && sets.every((s) => s.completed || s.done);
-          const isCurrent = ex.id === (isFocusMode ? focusedExerciseId : null);
-          return (
-            <div
-              key={ex.id}
-              className={`h-[3px] flex-1 rounded-full transition-colors duration-200 ${
-                isAllDone
-                  ? 'bg-emerald-400'
-                  : isCurrent
-                    ? 'bg-accent-hover'
-                    : 'bg-white/[0.08]'
-              }`}
-            />
-          );
-        })}
-      </div>
-
+    <div>
       {/* Pílulas numéricas compactas com realce em Azul Marinho */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar scroll-smooth">
         {exercises.map((ex, idx) => {
@@ -52,7 +31,7 @@ export default function ExercisePillsBar({
               }}
               aria-label={`${ex.name} (${doneCount}/${sets.length} séries)`}
               title={`${ex.name} · ${doneCount}/${sets.length} séries`}
-              className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-[0.97] shrink-0 flex items-center gap-1.5 cursor-pointer min-h-[40px] ${
+              className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-[0.97] shrink-0 flex items-center gap-1.5 cursor-pointer touch-manipulation min-h-[44px] ${
                 isCurrent
                   ? 'bg-accent text-white border-accent-hover'
                   : isAllDone

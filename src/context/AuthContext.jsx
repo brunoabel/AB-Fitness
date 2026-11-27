@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { AuthContext } from './authContextDef';
 import { CONSENT_VERSION } from '../legal/config';
 import { PRIVATE_LAUNCH_MODE } from '../config/launchMode';
+import { claimLocalDataOwner, clearUserScopedData, GUEST_USER_ID } from '../utils/userDataReset';
 
 const GUEST_STORAGE_KEY = 'ab_fitness_guest_mode_v1';
 
@@ -36,6 +37,9 @@ export function AuthProvider({ children }) {
         userId,
         role: data?.role || null,
         isPro: Boolean(data?.is_pro || data?.is_premium),
+        // Cliente Stripe associado: mostra "Gerir subscrição" (portal) em vez de um novo checkout
+        hasSubscription: Boolean(data?.stripe_customer_id),
+        trainerSubscriptionActive: Boolean(data?.trainer_subscription_active),
         trialEndsAt: data?.trial_ends_at || null,
         isTrialActive: Boolean(data?.trial_ends_at && new Date(data.trial_ends_at).getTime() > Date.now()),
         trialDaysLeft: data?.trial_ends_at ? Math.ceil((new Date(data.trial_ends_at).getTime() - Date.now()) / 86400000) : null,
@@ -182,17 +186,63 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  // Logout
-  const signOut = async () => {
-    if (configured && supabase) {
-      await supabase.auth.signOut();
+  // Dados locais pertencem a uma conta: se entrar outra conta neste aparelho, limpa antes de misturar históricos
+  useEffect(() => {
+    if (!userId) return undefined;
+    let cancelled = false;
+    claimLocalDataOwner(userId).then((cleared) => {
+      if (cleared && !cancelled) window.location.reload();
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  /**
+   * Logout. Numa conta real tenta enviar o que está por sincronizar (até 5 s), apaga do aparelho os dados
+   * da conta (histórico, corridas, perfil, fotos, wearables...) e recarrega a app sem estado em memória.
+   * `accountDeleted: true` apaga também as filas por sincronizar (a conta já não existe).
+   * O modo convidado mantém os dados locais, que são a única cópia.
+   */
+  const signOut = async ({ accountDeleted = false } = {}) => {
+    const previousUserId = user?.id;
+    const isRealAccount = Boolean(previousUserId && previousUserId !== GUEST_USER_ID);
+
+    if (isRealAccount && !accountDeleted && configured && supabase) {
+      try {
+        const [{ flushWorkoutSyncQueue, flushPlanSyncQueue }, { flushRunsSyncQueue }] = await Promise.all([
+          import('../services/workoutService'),
+          import('../services/runningSyncService')
+        ]);
+        await Promise.race([
+          Promise.allSettled([
+            flushWorkoutSyncQueue(previousUserId),
+            flushRunsSyncQueue(previousUserId),
+            flushPlanSyncQueue(previousUserId)
+          ]),
+          new Promise((resolve) => setTimeout(resolve, 5000))
+        ]);
+      } catch {
+        // Sem rede: as filas ficam no aparelho e são enviadas no próximo login desta conta
+      }
     }
-    setUser(null);
-    setSession(null);
-    setIsGuest(false);
-    localStorage.removeItem(GUEST_STORAGE_KEY);
-    localStorage.removeItem('ab_wearable_connections_v1');
-    localStorage.removeItem('ab_wearable_biometrics_v1');
+
+    try {
+      if (configured && supabase) {
+        await supabase.auth.signOut();
+      }
+    } finally {
+      setUser(null);
+      setSession(null);
+      setIsGuest(false);
+      localStorage.removeItem(GUEST_STORAGE_KEY);
+      localStorage.removeItem('ab_wearable_connections_v1');
+      localStorage.removeItem('ab_wearable_biometrics_v1');
+      if (isRealAccount) {
+        await clearUserScopedData({ keepPendingSync: !accountDeleted });
+        window.location.replace('/');
+      }
+    }
   };
 
   // Acesso Convidado / Modo Offline (bloqueado durante o lançamento privado)
@@ -222,6 +272,8 @@ export function AuthProvider({ children }) {
   const trialDaysLeft = ownState.trialDaysLeft ?? null;
   const isPro = isCeo || Boolean(ownState.isPro);
   const hasActiveTrainer = Boolean(ownState.hasActiveTrainer);
+  const hasSubscription = Boolean(ownState.hasSubscription);
+  const trainerSubscriptionActive = Boolean(ownState.trainerSubscriptionActive);
 
   const value = {
     user,
@@ -236,6 +288,8 @@ export function AuthProvider({ children }) {
     trialEndsAt,
     trialDaysLeft,
     hasActiveTrainer,
+    hasSubscription,
+    trainerSubscriptionActive,
     refreshProfile,
     isConfigured: configured,
     signInWithEmail,

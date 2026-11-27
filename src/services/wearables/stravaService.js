@@ -77,7 +77,7 @@ export async function refreshStravaToken(refreshToken) {
  * Consulta atividades recentes da Strava (últimas 48h) e converte a carga cardiovascular
  * (suffer_score / tempo em movimento / elevação) em Strain (0-21) e Prontidão estimada (0-100).
  */
-export async function fetchLiveStravaBiometrics(accessToken) {
+export async function fetchLiveStravaBiometrics(accessToken, _today, { localSessions = [] } = {}) {
   if (!accessToken) throw new Error('Token de acesso Strava ausente');
 
   const afterEpoch = Math.floor((Date.now() - 48 * 3600 * 1000) / 1000);
@@ -98,8 +98,8 @@ export async function fetchLiveStravaBiometrics(accessToken) {
     };
   }
 
-  const activities = await res.json().catch(() => []);
-  if (!Array.isArray(activities)) {
+  const rawActivities = await res.json().catch(() => []);
+  if (!Array.isArray(rawActivities)) {
     return {
       is_stale: true,
       recovery_score: null,
@@ -111,6 +111,14 @@ export async function fetchLiveStravaBiometrics(accessToken) {
       raw_data: null
     };
   }
+
+  // Sem duplicar carga: tira as atividades que a própria AB Fitness enviou e as que coincidem com
+  // treinos/corridas registados no app (já contam no ACWR e no mapa de fadiga)
+  const pushedIds = getPushedStravaActivityIds();
+  const activities = deduplicateWearableActivities(
+    rawActivities.filter((act) => !pushedIds.has(String(act?.id))),
+    localSessions
+  );
 
   let totalSuffer = 0;
   let totalMovingMin = 0;
@@ -179,26 +187,59 @@ export async function pushActivityToStrava(accessToken, {
   }
 
   const created = await res.json().catch(() => null);
+  rememberPushedStravaActivity(created?.id);
   return { pushed: true, activityId: created?.id || null };
 }
 
 /**
  * Remove atividades externas (wearables) que se sobrepõem a sessões locais na mesma janela temporal,
  * evitando duplicação de calorias e carga interna entre AB Fitness e Strava/Garmin/WHOOP.
+ * Compara intervalos reais: a sessão local guarda a hora de FIM (completedAt/timestamp) e a duração;
+ * a atividade externa traz a hora de INÍCIO e o tempo decorrido. Há duplicado quando os intervalos
+ * se sobrepõem, com `windowMinutes` de tolerância de cada lado.
  */
 export function deduplicateWearableActivities(externalActivities = [], localSessions = [], windowMinutes = 25) {
   const windowMs = Math.max(5, Number(windowMinutes) || 25) * 60 * 1000;
-  const localTimes = (localSessions || [])
-    .map((s) => Number(s?.timestamp) || new Date(s?.completedAt || s?.date || 0).getTime() || 0)
-    .filter((t) => t > 0);
+  const localIntervals = (localSessions || [])
+    .map((s) => {
+      const end = Number(s?.timestamp) || new Date(s?.completedAt || s?.date || 0).getTime() || 0;
+      if (!(end > 0)) return null;
+      const durSec = Number(s?.durationSeconds) || (Number(s?.durationMinutes) || 0) * 60;
+      return { start: end - Math.max(0, durSec) * 1000, end };
+    })
+    .filter(Boolean);
 
-  if (localTimes.length === 0) return Array.isArray(externalActivities) ? externalActivities : [];
+  const list = Array.isArray(externalActivities) ? externalActivities : [];
+  if (localIntervals.length === 0) return list;
 
-  return (externalActivities || []).filter((act) => {
-    const actTs = new Date(act?.start_date || act?.start_date_local || act?.timestamp || 0).getTime();
-    if (!actTs) return true;
-    return !localTimes.some((lt) => Math.abs(lt - actTs) <= windowMs);
+  return list.filter((act) => {
+    const start = new Date(act?.start_date || act?.start_date_local || act?.timestamp || 0).getTime();
+    if (!start) return true;
+    const end = start + (Number(act?.elapsed_time) || Number(act?.moving_time) || 0) * 1000;
+    return !localIntervals.some((li) => start <= li.end + windowMs && end >= li.start - windowMs);
   });
+}
+
+// Atividades criadas pelo write-back da AB Fitness: nunca contam como carga externa na leitura seguinte
+const PUSHED_IDS_KEY = 'ab_strava_pushed_ids_v1';
+const PUSHED_IDS_MAX = 60;
+
+export function getPushedStravaActivityIds() {
+  try {
+    const list = JSON.parse(localStorage.getItem(PUSHED_IDS_KEY) || '[]');
+    return new Set(Array.isArray(list) ? list.map(String) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function rememberPushedStravaActivity(activityId) {
+  if (!activityId) return;
+  try {
+    const list = JSON.parse(localStorage.getItem(PUSHED_IDS_KEY) || '[]');
+    const next = [...(Array.isArray(list) ? list : []).filter((id) => String(id) !== String(activityId)), String(activityId)];
+    localStorage.setItem(PUSHED_IDS_KEY, JSON.stringify(next.slice(-PUSHED_IDS_MAX)));
+  } catch {}
 }
 
 export function generateSimulatedStravaData(dateIso = localDateKey()) {

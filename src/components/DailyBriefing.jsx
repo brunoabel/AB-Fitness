@@ -86,28 +86,28 @@ export default function DailyBriefing({ todayWorkout }) {
     headline = 'Hoje, vai com margem';
     detail = targeted
       ? `${targeted.label} ainda está em recuperação e o treino de hoje ataca-o diretamente.`
-      : `Prontidão em ${combinedReadiness}% hoje — reduz o volume para recuperar melhor.`;
+      : `Prontidão em ${combinedReadiness}% hoje. Reduz o volume.`;
   } else if (acwrCaution) {
     headline = acwr.headline;
     detail = acwr.detail;
   } else if (attention) {
     headline = 'Treina normalmente, com atenção';
     detail = readinessModerate
-      ? `Prontidão em ${combinedReadiness}% — mantém carga sólida, sem forçar recordes hoje.`
-      : 'Fadiga moderada em geral — mantém a técnica antes da carga.';
+      ? `Prontidão em ${combinedReadiness}%. Mantém a carga, sem forçar recordes.`
+      : 'Fadiga moderada. Técnica antes da carga.';
   } else {
     headline = 'Pronto para ir a fundo';
     detail = combinedReadiness !== null
-      ? `Prontidão em ${combinedReadiness}% e fadiga alinhada. Bom dia para progressão de carga.`
+      ? `Prontidão em ${combinedReadiness}%. Bom dia para subir carga.`
       : wearablesStale
-        ? 'Sem leitura recente do wearable — recomendação baseada na recuperação muscular registada.'
-        : 'Fadiga muscular e prontidão alinhadas. Bom dia para progressão de carga.';
+        ? 'Sem leitura recente do wearable. Baseado na recuperação muscular.'
+        : 'Recuperação em dia. Bom dia para subir carga.';
   }
 
   const easeTargetId = acwrHigh || (!targeted && readinessLow) ? 'all' : targeted?.id || null;
   const easeButtonLabel = easeTargetId === 'all'
-    ? 'Ativar modo proteção (−1 série hoje)'
-    : 'Aplicar −1 série hoje nesse grupo';
+    ? 'Menos 1 série hoje'
+    : 'Menos 1 série nesse grupo';
 
   const applyEase = () => {
     if (!easeTargetId) return;
@@ -135,17 +135,12 @@ export default function DailyBriefing({ todayWorkout }) {
     <div className={`pl-3.5 py-1 border-l-2 ${accentBorder} space-y-1.5`}>
       <div className="flex items-center justify-between gap-2">
         <p className="text-[13px] font-semibold text-white leading-snug">{headline}</p>
-        {acwr.ready && (
+        {(acwrHigh || acwrCaution) && (
           <span
-            className={`shrink-0 text-[10px] font-semibold tabular-nums px-2 py-0.5 rounded-full border ${
-              acwrHigh
-                ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-                : acwrCaution
-                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                  : 'bg-white/[0.04] border-white/[0.08] text-zinc-400'
-            }`}
+            className={`shrink-0 text-[11px] font-semibold tabular-nums ${acwrHigh ? 'text-rose-300' : 'text-amber-300'}`}
+            title="Rácio de carga agudo:crónico (ACWR)"
           >
-            ACWR {acwr.ratio.toFixed(2)}×
+            Carga {acwr.ratio.toFixed(2).replace('.', ',')}×
           </span>
         )}
       </div>
@@ -155,13 +150,13 @@ export default function DailyBriefing({ todayWorkout }) {
       {shouldEase && easeTargetId && (
         applied ? (
           <p className="text-[12px] font-semibold text-emerald-400 pt-0.5">
-            Ajuste aplicado: o treino de hoje começa com 1 série a menos.
+            Feito. Hoje tens 1 série a menos.
           </p>
         ) : (
           <button
             type="button"
             onClick={applyEase}
-            className="inline-flex items-center gap-1 pt-0.5 text-[12px] font-semibold text-white hover:text-zinc-300 cursor-pointer"
+            className="inline-flex items-center gap-1 min-h-[44px] -my-2 text-[13px] font-semibold text-white hover:text-zinc-300 cursor-pointer touch-manipulation"
           >
             {easeButtonLabel}
             <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />
@@ -176,9 +171,10 @@ export default function DailyBriefing({ todayWorkout }) {
             triggerHaptic(8);
             setShowCheckin(true);
           }}
-          className="block pt-0.5 text-[11px] font-medium text-zinc-400 hover:text-white cursor-pointer"
+          className="inline-flex items-center gap-1 min-h-[44px] -my-2 text-[12px] font-medium text-zinc-400 hover:text-white cursor-pointer touch-manipulation"
         >
-          Como acordaste hoje? Fazer check-in rápido →
+          Como acordaste hoje?
+          <ChevronRight className="w-3.5 h-3.5" strokeWidth={1.75} />
         </button>
       )}
 
@@ -196,7 +192,7 @@ export default function DailyBriefing({ todayWorkout }) {
                       triggerHaptic(6);
                       setDraftCheckin((prev) => ({ ...prev, [key]: val }));
                     }}
-                    className={`w-8 h-8 rounded-full text-xs font-semibold tabular-nums border cursor-pointer transition-colors ${
+                    className={`tap-44 w-9 h-9 rounded-full text-xs font-semibold tabular-nums border cursor-pointer touch-manipulation transition-colors ${
                       draftCheckin[key] === val
                         ? 'bg-accent text-white border-accent-hover'
                         : 'bg-white/[0.04] text-zinc-400 border-white/[0.08] hover:text-white'
@@ -212,14 +208,14 @@ export default function DailyBriefing({ todayWorkout }) {
             <button
               type="button"
               onClick={handleSaveCheckin}
-              className="px-3.5 py-1.5 rounded-full bg-primary text-app text-xs font-semibold cursor-pointer hover:bg-zinc-200"
+              className="min-h-[44px] px-4 rounded-full bg-primary text-app text-xs font-semibold cursor-pointer hover:bg-zinc-200 active:scale-[0.98] transition-[background-color,transform] duration-150"
             >
-              Guardar prontidão
+              Guardar
             </button>
             <button
               type="button"
               onClick={() => setShowCheckin(false)}
-              className="px-3 py-1.5 rounded-full text-xs text-zinc-400 hover:text-white cursor-pointer"
+              className="min-h-[44px] px-3 rounded-full text-xs text-zinc-400 hover:text-white cursor-pointer"
             >
               Agora não
             </button>

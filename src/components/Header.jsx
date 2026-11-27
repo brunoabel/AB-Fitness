@@ -129,7 +129,7 @@ export default function Header({
               onOpenSidebar?.();
             }}
             aria-label="Abrir menu do atleta"
-            className="flex items-center gap-2 min-h-[40px] pl-1 pr-2.5 -ml-1 rounded-full cursor-pointer shrink-0"
+            className="flex items-center gap-2 min-h-[44px] min-w-[44px] pl-1 pr-2.5 -ml-1 rounded-full cursor-pointer touch-manipulation shrink-0"
           >
             <Menu className="w-[22px] h-[22px] text-white" strokeWidth={1.9} />
             <Avatar url={identity.avatar} name={identity.fullName || user?.email} size={28} />
@@ -149,7 +149,7 @@ export default function Header({
                   onOpenAICoach();
                 }}
                 aria-label="Abrir AB Coach IA"
-                className="lg:hidden min-h-[36px] pl-1 pr-2.5 rounded-full bg-accent/45 hover:bg-accent/70 border border-accent-hover inline-flex items-center gap-1.5 text-[12px] font-semibold text-white cursor-pointer shrink-0 transition-colors"
+                className="lg:hidden tap-44 min-h-[36px] pl-1 pr-2.5 rounded-full bg-accent/45 hover:bg-accent/70 border border-accent-hover inline-flex items-center gap-1.5 text-[12px] font-semibold text-white cursor-pointer shrink-0 transition-colors"
               >
                 <CoachAvatar size={24} alt="" />
                 <span>Coach</span>
@@ -164,7 +164,7 @@ export default function Header({
                 onNavigateTab?.('profile');
               }}
               aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
-              className={`min-h-[36px] px-3 rounded-full border inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0 transition-colors ${
+              className={`tap-44 min-h-[36px] px-3 rounded-full border inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0 transition-colors ${
                 streak > 0
                   ? 'bg-accent/40 border-accent-hover'
                   : 'bg-surface border-white/[0.08]'

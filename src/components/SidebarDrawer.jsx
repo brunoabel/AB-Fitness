@@ -19,16 +19,21 @@ import {
   Crown,
   Sparkles,
   Watch,
-  Flame
+  Flame,
+  CreditCard,
+  Users
 } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import VerifiedBadge from './ui/VerifiedBadge';
 import { useAthleteIdentity } from '../hooks/useAthleteIdentity';
 import { triggerHaptic } from '../utils/audio';
+import { useAuth } from '../context';
+import { openBillingPortal } from '../services/billingService';
 
 const DeleteAccountSheet = lazy(() => import('./legal/DeleteAccountSheet'));
 const LinkTrainerSheet = lazy(() => import('./trainer/LinkTrainerSheet'));
 const WearablesModal = lazy(() => import('./wearables/WearablesModal'));
+const ProUpgradeSheet = lazy(() => import('./pro/ProUpgradeSheet'));
 
 const SPRING = { type: 'spring', stiffness: 400, damping: 38 };
 
@@ -101,6 +106,9 @@ export default function SidebarDrawer({
   const [linkingTrainer, setLinkingTrainer] = useState(false);
   const [confirmingLogout, setConfirmingLogout] = useState(false);
   const [wearablesOpen, setWearablesOpen] = useState(false);
+  const [trainerPlanOpen, setTrainerPlanOpen] = useState(false);
+  const [billingError, setBillingError] = useState('');
+  const { hasSubscription } = useAuth();
 
   const {
     isGuest,
@@ -310,16 +318,27 @@ export default function SidebarDrawer({
                       isLast
                     />
                   ) : (
-                    <DrawerRow
-                      icon={Link2}
-                      label="Vincular Personal Trainer"
-                      hint="Insere o código de 6 dígitos do teu PT"
-                      onClick={() => {
-                        triggerHaptic(10);
-                        setLinkingTrainer(true);
-                      }}
-                      isLast
-                    />
+                    <>
+                      <DrawerRow
+                        icon={Link2}
+                        label="Vincular Personal Trainer"
+                        hint="Insere o código de 6 dígitos do teu PT"
+                        onClick={() => {
+                          triggerHaptic(10);
+                          setLinkingTrainer(true);
+                        }}
+                      />
+                      <DrawerRow
+                        icon={Users}
+                        label="Sou Personal Trainer"
+                        hint="Plano Personal Trainer com Trainer Hub"
+                        onClick={() => {
+                          triggerHaptic(10);
+                          setTrainerPlanOpen(true);
+                        }}
+                        isLast
+                      />
+                    </>
                   )
                 )}
               </div>
@@ -367,6 +386,19 @@ export default function SidebarDrawer({
 
               <div>
                 <SectionLabel>Conta &amp; Segurança</SectionLabel>
+                {hasSubscription && (
+                  <DrawerRow
+                    icon={CreditCard}
+                    label="Gerir subscrição"
+                    hint={billingError || 'Mudar de plano, cancelar ou atualizar o cartão'}
+                    onClick={async () => {
+                      triggerHaptic(10);
+                      setBillingError('');
+                      const { error } = await openBillingPortal();
+                      if (error) setBillingError(error);
+                    }}
+                  />
+                )}
                 <DrawerRow
                   icon={Scale}
                   label="Termos, privacidade e aviso médico"
@@ -435,6 +467,11 @@ export default function SidebarDrawer({
           {linkingTrainer && (
             <Suspense fallback={null}>
               <LinkTrainerSheet onClose={() => setLinkingTrainer(false)} />
+            </Suspense>
+          )}
+          {trainerPlanOpen && (
+            <Suspense fallback={null}>
+              <ProUpgradeSheet plan="trainer" onClose={() => setTrainerPlanOpen(false)} />
             </Suspense>
           )}
           {wearablesOpen && (

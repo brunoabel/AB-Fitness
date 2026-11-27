@@ -45,20 +45,56 @@ export function getQueuedJobs(storageKey, filterFn) {
   return filterFn ? list.filter(filterFn) : list;
 }
 
+/** Tentativas com erro definitivo antes de o job sair para a dead-letter (`<storageKey>_deadletter`). */
+export const MAX_PERMANENT_ATTEMPTS = 5;
+export const SKIP_JOB = 'skip';
+// Classificação de erros: src/utils/syncErrors.js (isPermanentSyncError)
+
+/** Marca uma tentativa falhada definitiva; à 5.ª o job sai da fila para a dead-letter (lógica pura). */
+export function registerPermanentFailure(list, deadLetter, key, error, now = Date.now()) {
+  const queue = Array.isArray(list) ? list : [];
+  const dead = Array.isArray(deadLetter) ? deadLetter : [];
+  const job = queue.find((j) => j.key === key);
+  if (!job) return { queue, deadLetter: dead };
+  const attempts = (Number(job.attempts) || 0) + 1;
+  const lastError = String(error || 'Erro desconhecido').slice(0, 300);
+  if (attempts >= MAX_PERMANENT_ATTEMPTS) {
+    return {
+      queue: removeJobByKey(queue, key),
+      deadLetter: [...dead.filter((j) => j.key !== key), { ...job, attempts, lastError, failedAt: now }]
+    };
+  }
+  return {
+    queue: queue.map((j) => (j.key === key ? { ...j, attempts, lastError } : j)),
+    deadLetter: dead
+  };
+}
+
 /**
- * Tenta reenviar os jobs da fila (filtrados por `filterFn`) um a um via `sendFn`,
- * removendo da fila os que tiverem sucesso. Para no primeiro que falhar,
- * preservando a ordem para a próxima tentativa.
+ * Tenta reenviar os jobs da fila (filtrados por `filterFn`) um a um via `sendFn`, removendo os que
+ * tiverem sucesso. `sendFn` devolve:
+ * - `true`: enviado;
+ * - `false`: falha transitória (rede): para aqui e preserva a ordem para a próxima tentativa;
+ * - `'skip'` (SKIP_JOB) ou `{ skip: true, error }`: rejeitado pelo servidor. O job fica na fila com
+ *   `attempts`+1 (sai para a dead-letter à 5.ª) e o envio continua com os seguintes, sem bloquear a fila.
  */
 export async function flushQueue(storageKey, { filterFn, sendFn } = {}) {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return 0;
   let sent = 0;
   for (const job of getQueuedJobs(storageKey, filterFn)) {
     // eslint-disable-next-line no-await-in-loop
-    const ok = await sendFn(job);
-    if (!ok) break;
-    writeQueue(storageKey, removeJobByKey(readQueue(storageKey), job.key));
-    sent += 1;
+    const result = await sendFn(job);
+    if (result === true) {
+      writeQueue(storageKey, removeJobByKey(readQueue(storageKey), job.key));
+      sent += 1;
+      continue;
+    }
+    const isSkip = result === SKIP_JOB || (result && typeof result === 'object' && result.skip);
+    if (!isSkip) break;
+    const deadKey = `${storageKey}_deadletter`;
+    const next = registerPermanentFailure(readQueue(storageKey), readQueue(deadKey), job.key, result?.error);
+    writeQueue(storageKey, next.queue);
+    writeQueue(deadKey, next.deadLetter);
   }
   return sent;
 }

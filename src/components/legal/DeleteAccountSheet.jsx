@@ -36,7 +36,7 @@ export default function DeleteAccountSheet({ onClose }) {
       return;
     }
     try {
-      await signOut();
+      await signOut({ accountDeleted: true });
     } catch { /* a conta já não existe; a sessão local é limpa abaixo */ }
     window.location.replace('/');
   };

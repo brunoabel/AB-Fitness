@@ -666,7 +666,7 @@ function RunningMapComponent({
       {/* Badges Flutuantes do HUD (Topo Esquerdo) */}
       <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
         <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15 text-white text-[11px] font-bold shadow-md">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-400' : 'bg-zinc-500'}`} />
           <span>{isLive ? 'GPS AO VIVO' : 'PERCURSO'}</span>
         </div>
 
@@ -737,8 +737,8 @@ function RunningMapComponent({
           onClick={handleRecenter}
           className={`h-9 px-2.5 rounded-full flex items-center justify-center gap-1.5 backdrop-blur-md border shadow-lg transition-transform active:scale-90 cursor-pointer ${
             autoFollow
-              ? 'w-9 px-0 bg-primary text-app border-primary shadow-white/20'
-              : 'bg-black/85 text-amber-400 hover:text-white border-amber-500/40 animate-pulse'
+              ? 'w-9 px-0 bg-primary text-app border-primary'
+              : 'bg-black/85 text-white border-white/25'
           }`}
           title="Recentralizar no Corredor"
         >

@@ -256,7 +256,21 @@ export default function ActiveWorkout({ workout, onBackToDashboard }) {
       }
       return nextState;
     });
-    setLiveSwaps((prev) => ({ ...prev, [originalEx.id]: substitute }));
+    // A chave de liveSwaps é sempre o id do exercício do plano: na segunda troca do mesmo slot (ou depois do
+    // Modo Casa) `originalEx` já é um substituto e o seu id não existe em baseExercises.
+    const baseEx = baseExercises.find(
+      (b) => b.id === originalEx.id || (liveSwaps[b.id] || homeSwaps[b.id])?.id === originalEx.id
+    );
+    const slotId = baseEx?.id ?? originalEx.id;
+    setLiveSwaps((prev) => {
+      const next = { ...prev };
+      if (substitute.id === slotId) delete next[slotId];
+      else next[slotId] = substitute;
+      return next;
+    });
+    if (homeSwaps[slotId]) {
+      setHomeSwaps(({ [slotId]: _removed, ...rest }) => rest);
+    }
     setFocusedExerciseId(substitute.id);
     setSwappingExercise(null);
     triggerHaptic(20);

@@ -216,7 +216,7 @@ export default function MuscleRecoveryMap() {
                     setViewMode(mode.id);
                   }}
                   aria-pressed={active}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors cursor-pointer ${
+                  className={`tap-44 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors cursor-pointer touch-manipulation ${
                     active
                       ? 'bg-accent text-white border-accent-hover'
                       : 'bg-transparent text-zinc-400 border-white/[0.08] hover:text-white'

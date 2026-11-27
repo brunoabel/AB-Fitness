@@ -122,16 +122,20 @@ function AppContent() {
   // Regresso do Stripe Checkout (?pro_success / ?pro_cancel definidos em api/stripe-checkout.js)
   const [checkoutNotice, setCheckoutNotice] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('pro_success') ? 'success' : params.get('pro_cancel') ? 'cancel' : null;
+    if (params.get('pro_success')) return 'success';
+    if (params.get('pro_cancel')) return 'cancel';
+    // Regresso do portal da Stripe (api/stripe-portal.js): o plano pode ter mudado ou sido cancelado
+    if (params.get('billing_return')) return 'billing';
+    return null;
   });
   useEffect(() => {
     if (!checkoutNotice) return undefined;
     window.history.replaceState({}, document.title, window.location.pathname);
-    if (checkoutNotice !== 'success') return undefined;
+    if (checkoutNotice === 'cancel') return undefined;
     refreshProfile();
-    // O webhook do Stripe pode chegar depois do redirect: volta a ler o perfil uns segundos depois
-    const t = setTimeout(refreshProfile, 4000);
-    return () => clearTimeout(t);
+    // O webhook do Stripe pode chegar depois do redirect: volta a ler o perfil algumas vezes
+    const timers = [4000, 10000, 20000].map((ms) => setTimeout(refreshProfile, ms));
+    return () => timers.forEach(clearTimeout);
   }, [checkoutNotice, refreshProfile]);
   // Abertura cinematográfica só na primeira abertura da sessão
   const [showSplash, setShowSplash] = useState(() => {
@@ -581,9 +585,13 @@ function AppContent() {
                     <p className="text-[13px] text-white">
                       {checkoutNotice === 'cancel'
                         ? 'Pagamento cancelado. Nada foi cobrado.'
-                        : isPro
-                          ? 'PRO ativo. Obrigado pela confiança.'
-                          : 'Pagamento recebido. O PRO fica ativo assim que o Stripe confirmar.'}
+                        : checkoutNotice === 'billing'
+                          ? 'Subscrição atualizada. As alterações aparecem aqui em poucos segundos.'
+                          : isTrainer && isPro
+                            ? 'Plano ativo. O Trainer Hub está disponível no menu.'
+                            : isPro
+                              ? 'PRO ativo. Obrigado pela confiança.'
+                              : 'Pagamento recebido. O plano fica ativo assim que o Stripe confirmar.'}
                     </p>
                     <button type="button" onClick={() => setCheckoutNotice(null)} className="shrink-0 text-xs font-medium text-zinc-400 hover:text-white">
                       Fechar

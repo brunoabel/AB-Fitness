@@ -6,6 +6,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { simplifyRoute } from '../utils/runningService';
 import { getRunsHistory } from '../utils/storage';
 import { enqueueJob, flushQueue, readQueue } from '../utils/syncQueue';
+import { isPermanentSyncError } from '../utils/syncErrors';
 
 const RUNS_SYNC_QUEUE_KEY = 'ab_fitness_runs_sync_queue_v1';
 
@@ -66,8 +67,9 @@ export async function flushRunsSyncQueue(userId) {
       try {
         await pushRunRow(job.payload);
         return true;
-      } catch {
-        return false;
+      } catch (err) {
+        // Corrida rejeitada pelo servidor não pode bloquear as seguintes (fica na dead-letter, não se perde)
+        return isPermanentSyncError(err) ? { skip: true, error: err?.message || err?.code } : false;
       }
     }
   });

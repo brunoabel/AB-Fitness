@@ -211,7 +211,7 @@ export default function ProgressionCharts() {
                 setHoveredPoint(null);
                 triggerHaptic(10);
               }}
-              className="min-h-[44px] sm:min-h-[38px] px-4 py-2 sm:py-1.5 rounded-full bg-surface text-zinc-100 text-xs font-semibold border border-white/[0.1] focus:border-accent-hover outline-none cursor-pointer max-w-xs truncate transition-colors"
+              className="min-h-[44px] px-4 rounded-full bg-surface text-zinc-100 text-xs font-semibold border border-white/[0.1] focus:border-accent-hover outline-none cursor-pointer max-w-xs truncate transition-colors"
             >
               {exerciseKeys.map((key) => (
                 <option key={key} value={key} className="bg-zinc-950 text-white">
@@ -384,7 +384,7 @@ export default function ProgressionCharts() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-zinc-300 font-medium">{reg.label}</span>
                     <span className="tabular-nums font-semibold text-white">
-                      {reg.sets} <span className="text-[10px] text-zinc-500 font-normal">séries</span>
+                      {reg.sets} <span className="text-[11px] text-zinc-500 font-normal">séries</span>
                     </span>
                   </div>
                   <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
@@ -410,22 +410,23 @@ export default function ProgressionCharts() {
       <div className="pt-6 border-t border-white/[0.06] space-y-3">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h4 className="text-sm font-semibold text-white">Carga Aguda vs. Crónica (ACWR)</h4>
-            <p className="text-[11px] text-zinc-400">Prevenção de sobrecarga (7d vs média 28d · força + corrida)</p>
+            <h4 className="text-sm font-semibold text-white">Carga semanal</h4>
+            <p className="text-[11px] text-zinc-400">Esta semana vs. a tua média (força e corrida)</p>
           </div>
           {acwr.ready ? (
             <span
-              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tabular-nums border ${
+              className={`text-[11px] font-semibold tabular-nums ${
                 acwr.status === 'high_risk'
-                  ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+                  ? 'text-rose-300'
                   : acwr.status === 'caution'
-                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                    ? 'text-amber-300'
                     : acwr.status === 'sweet_spot'
-                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                      : 'bg-white/[0.05] border-white/[0.1] text-zinc-300'
+                      ? 'text-emerald-300'
+                      : 'text-zinc-300'
               }`}
+              title="Rácio de carga agudo:crónico (ACWR)"
             >
-              {acwr.ratio.toFixed(2)}× · {acwr.label}
+              {acwr.ratio.toFixed(2).replace('.', ',')}× · {acwr.label}
             </span>
           ) : (
             <span className="text-[11px] text-zinc-500">A calibrar</span>
@@ -453,8 +454,8 @@ export default function ProgressionCharts() {
               />
             </div>
             <div className="flex items-center justify-between text-[11px] text-zinc-400 tabular-nums">
-              <span>Aguda 7d: <strong className="text-white">{acwr.acuteLoad} AU</strong></span>
-              <span>Crónica 28d: <strong className="text-white">{acwr.chronicLoad} AU/sem</strong></span>
+              <span>Últimos 7 dias: <strong className="text-white">{acwr.acuteLoad}</strong></span>
+              <span>Média semanal: <strong className="text-white">{acwr.chronicLoad}</strong></span>
             </div>
             <p className="text-xs text-zinc-400 leading-relaxed">{acwr.detail}</p>
           </div>

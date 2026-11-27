@@ -44,3 +44,19 @@ describe('syncQueue — removeJobByKey', () => {
     assert.deepEqual(removeJobByKey(undefined, 'a'), []);
   });
 });
+
+import { registerPermanentFailure, MAX_PERMANENT_ATTEMPTS } from './syncQueue.js';
+
+describe('syncQueue — erros definitivos não bloqueiam a fila', () => {
+  it('conta tentativas e move para a dead-letter à última', () => {
+    let state = { queue: [{ key: 'a' }, { key: 'b' }], deadLetter: [] };
+    for (let i = 1; i < MAX_PERMANENT_ATTEMPTS; i++) {
+      state = registerPermanentFailure(state.queue, state.deadLetter, 'a', 'check violado', 1);
+    }
+    assert.equal(state.queue.find((j) => j.key === 'a').attempts, MAX_PERMANENT_ATTEMPTS - 1);
+    state = registerPermanentFailure(state.queue, state.deadLetter, 'a', 'check violado', 1);
+    assert.deepEqual(state.queue.map((j) => j.key), ['b']);
+    assert.equal(state.deadLetter[0].key, 'a');
+    assert.equal(state.deadLetter[0].lastError, 'check violado');
+  });
+});

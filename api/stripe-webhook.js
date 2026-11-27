@@ -5,10 +5,13 @@
 
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { computeEntitlements, buildEntitlementPatch } from '../src/utils/stripeEntitlements.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const TRAINER_PRICE_ID = (process.env.STRIPE_TRAINER_PRICE_ID || '').trim();
 
 export const config = {
   api: {
@@ -66,6 +69,33 @@ function verifyStripeSignature(payload, sigHeader, secret) {
   });
 }
 
+/** Todas as subscrições do cliente na Stripe. `null` quando não há chave ou cliente (o chamador usa o evento). */
+async function listCustomerSubscriptions(customerId) {
+  if (!STRIPE_SECRET_KEY || !customerId) return null;
+  const url = `https://api.stripe.com/v1/subscriptions?customer=${encodeURIComponent(customerId)}&status=all&limit=100`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${STRIPE_SECRET_KEY}` } });
+  if (!res.ok) throw new Error(`Stripe subscriptions HTTP ${res.status}`);
+  const body = await res.json().catch(() => null);
+  return Array.isArray(body?.data) ? body.data : [];
+}
+
+/** Lê o perfil (por user_id ou stripe_customer_id) e grava PRO, plano Trainer e role. Lança em erro para a Stripe repetir. */
+async function applyEntitlements(supabase, { userId, customerId }, entitlements) {
+  const query = supabase.from('profiles').select('*');
+  const { data: profile, error: readErr } = userId
+    ? await query.eq('id', userId).maybeSingle()
+    : await query.eq('stripe_customer_id', customerId).maybeSingle();
+  if (readErr) throw new Error(`Falha ao ler perfil: ${readErr.message}`);
+  if (!profile) {
+    console.warn('Webhook Stripe sem perfil correspondente:', { userId: userId || null, customerId: customerId || null });
+    return;
+  }
+
+  const patch = buildEntitlementPatch(profile, entitlements, { customerId });
+  const { error } = await supabase.from('profiles').update(patch).eq('id', profile.id);
+  if (error) throw new Error(`Falha ao atualizar perfil ${profile.id}: ${error.message}`);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
@@ -104,6 +134,7 @@ export default async function handler(req, res) {
   const eventType = event.type;
   const eventId = event.id;
   const dataObject = event.data?.object;
+  let dedupeRecorded = false;
 
   try {
     // Idempotência: ignora reenvios já processados do mesmo event.id
@@ -120,73 +151,34 @@ export default async function handler(req, res) {
           console.error('Erro ao registar idempotência de webhook Stripe:', dedupeErr);
           return res.status(500).json({ error: 'Falha ao registar evento' });
         }
+      } else {
+        dedupeRecorded = true;
       }
     }
-
-    const assertProfileUpdate = async (patch, filterCol, filterVal) => {
-      const { error } = await supabase.from('profiles').update(patch).eq(filterCol, filterVal);
-      if (error) {
-        throw new Error(`Falha ao atualizar perfil (${filterCol}=${filterVal}): ${error.message}`);
-      }
-    };
 
     switch (eventType) {
       case 'checkout.session.completed': {
         const userId = dataObject?.client_reference_id || dataObject?.metadata?.user_id;
         const customerId = dataObject?.customer;
-        if (userId) {
-          await assertProfileUpdate(
-            {
-              is_pro: true,
-              is_premium: true,
-              stripe_customer_id: customerId,
-              updated_at: new Date().toISOString()
-            },
-            'id',
-            userId
-          );
-        }
+        if (!userId && !customerId) break;
+        const subscriptions = await listCustomerSubscriptions(customerId);
+        // Sem lista (sem chave Stripe), o checkout concluído vale como PRO ativo; o plano Trainer chega no evento de subscrição
+        const entitlements = subscriptions
+          ? computeEntitlements(subscriptions, TRAINER_PRICE_ID)
+          : { isPro: true, trainerActive: false, trialing: false };
+        await applyEntitlements(supabase, { userId, customerId }, entitlements);
         break;
       }
 
       case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
-        const status = dataObject?.status;
-        const isPro = status === 'active' || status === 'trialing';
-        const userId = dataObject?.metadata?.user_id;
-        const customerId = dataObject?.customer;
-        const patch = {
-          is_pro: isPro,
-          is_premium: isPro,
-          updated_at: new Date().toISOString()
-        };
-        if (customerId) patch.stripe_customer_id = customerId;
-        if (status === 'trialing') {
-          patch.trial_granted_at = new Date().toISOString();
-        }
-
-        if (userId) {
-          await assertProfileUpdate(patch, 'id', userId);
-        } else if (customerId) {
-          await assertProfileUpdate(patch, 'stripe_customer_id', customerId);
-        }
-        break;
-      }
-
+      case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
         const userId = dataObject?.metadata?.user_id;
         const customerId = dataObject?.customer;
-        const patch = {
-          is_pro: false,
-          is_premium: false,
-          updated_at: new Date().toISOString()
-        };
-
-        if (userId) {
-          await assertProfileUpdate(patch, 'id', userId);
-        } else if (customerId) {
-          await assertProfileUpdate(patch, 'stripe_customer_id', customerId);
-        }
+        if (!userId && !customerId) break;
+        // Estado atual de todas as subscrições do cliente: resolve eventos fora de ordem e subscrições em duplicado
+        const subscriptions = (await listCustomerSubscriptions(customerId)) || [dataObject];
+        await applyEntitlements(supabase, { userId, customerId }, computeEntitlements(subscriptions, TRAINER_PRICE_ID));
         break;
       }
 
@@ -207,6 +199,10 @@ export default async function handler(req, res) {
     return res.status(200).json({ received: true });
   } catch (err) {
     console.error('Erro ao processar evento Stripe:', err);
+    // Liberta o event_id para o reenvio da Stripe voltar a processar o evento (senão seria tratado como duplicado)
+    if (dedupeRecorded) {
+      await supabase.from('stripe_webhook_events').delete().eq('event_id', eventId).then(() => {}, () => {});
+    }
     return res.status(500).json({ error: 'Falha ao processar webhook' });
   }
 }

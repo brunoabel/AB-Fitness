@@ -40,7 +40,7 @@ Preto OLED como abismo, branco puro como sinal e Deep Midnight Navy como única 
 
 Sucesso `#73D083` · Atenção `#E1AD57` · Perigo `#FF968A` · Drop-set `#A78BFA` (violeta) · Aquecimento `#FBBF24`.
 
-Fadiga muscular (mapa de recuperação): rampa térmica `--color-heat-0..3` (#121C33, #2B4A7A, #8EA6D6, #F4F7FF), de marinho frio (fresco) a branco gelo (fadigado), com halo branco desfocado acima de 35%. Nunca vermelho nem laranja.
+Fadiga muscular (mapa de recuperação): rampa semáforo `--color-heat-0..3` (#10B981, #84CC16, #F59E0B, #EF4444), de verde (pronto) a âmbar (em recuperação) e vermelho (crítico), com halo a pulsar suavemente nos grupos fadigados (estático com `prefers-reduced-motion`). Decisão de produto: é a única exceção à regra "sem laranja", válida só no mapa de recuperação.
 
 ## Tipografia editorial (4 tamanhos mobile)
 

@@ -141,6 +141,24 @@ async function pushConnectionToCloud(job) {
   }
 }
 
+/** Treinos e corridas registados no app (últimas 72 h) para não contar a mesma sessão duas vezes na Strava. */
+function readLocalSessionsForDedupe() {
+  if (typeof localStorage === 'undefined') return [];
+  const since = Date.now() - 72 * 3600 * 1000;
+  const read = (key) => {
+    try {
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  };
+  return [...read('ab_fitness_history_v1'), ...read('ab_fitness_runs_v1')].filter((s) => {
+    const t = Number(s?.timestamp) || new Date(s?.completedAt || 0).getTime() || 0;
+    return t >= since;
+  });
+}
+
 /**
  * Conecta ou simula a conexão de um wearable.
  */
@@ -288,7 +306,7 @@ export async function syncWearableData(userId, provider, options = {}) {
         garmin: fetchLiveGarminBiometrics
       };
       const liveFetcher = options.liveFetcher || fetcherMap[provider] || fetchLiveFitbitBiometrics;
-      const live = await liveFetcher(activeToken, today);
+      const live = await liveFetcher(activeToken, today, { localSessions: readLocalSessionsForDedupe() });
       bioData = {
         ...live,
         provider,

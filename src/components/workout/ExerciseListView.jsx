@@ -31,20 +31,20 @@ export default function ExerciseListView({
         return (
           <div
             key={exercise.id}
-            className={`rounded-2xl border transition-all duration-200 bg-surface shadow-xs overflow-hidden ${
+            className={`rounded-2xl border transition-colors duration-150 overflow-hidden ${
               exercise.supersetGroupId ? 'border-l-2 border-l-accent-hover ' : ''
             }${
-              isCompletedAll ? 'border-emerald-500/40' : isExpanded ? 'border-zinc-500' : 'border-white/10'
+              isExpanded ? 'bg-surface border-white/[0.12]' : 'bg-transparent border-white/[0.06]'
             }`}
           >
             <div className="p-4 flex items-center justify-between cursor-pointer transition-colors" onClick={() => onToggle(isExpanded ? null : exercise.id)}>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-display font-semibold text-sm shrink-0 tabular-nums ${
-                  isCompletedAll ? 'bg-emerald-500 text-zinc-950' : 'text-zinc-500'
+                  isCompletedAll ? 'text-emerald-400' : 'text-zinc-500'
                 }`}>
-                  {isCompletedAll ? <Check className="w-4 h-4 stroke-[3]" /> : exIndex + 1}
+                  {isCompletedAll ? <Check className="w-4 h-4 stroke-[2.25]" /> : exIndex + 1}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[11px] text-zinc-500">{exercise.target}</span>
                     {exercise.supersetGroupId && (
@@ -53,11 +53,11 @@ export default function ExerciseListView({
                       </span>
                     )}
                   </div>
-                  <h2 className="text-sm font-bold text-zinc-100 leading-tight">{exercise.name}</h2>
+                  <h2 className="text-sm font-semibold text-white leading-tight truncate">{exercise.name}</h2>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -65,19 +65,17 @@ export default function ExerciseListView({
                     onOpenGuide(exercise);
                     triggerHaptic(10);
                   }}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border active:scale-95 transition-all cursor-pointer min-h-[44px] ${
-                    withVideo ? 'bg-white/10 hover:bg-white/15 text-white border-white/20 shadow-xs' : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/[0.08]'
-                  }`}
+                  className="px-3 rounded-full text-xs font-medium flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer min-h-[44px]"
                   title={withVideo ? 'Ver vídeo de execução técnica' : 'Ver guia biomecânico'}
                 >
                   {withVideo ? (
                     <>
-                      <Play className="w-3 h-3 fill-accent text-white" />
-                      <span className="font-bold">Vídeo</span>
+                      <Play className="w-3 h-3 fill-current stroke-[1.75]" />
+                      <span>Vídeo</span>
                     </>
                   ) : (
                     <>
-                      <Eye className="w-3.5 h-3.5 stroke-[1.8]" />
+                      <Eye className="w-3.5 h-3.5 stroke-[1.75]" />
                       <span>Guia</span>
                     </>
                   )}
@@ -92,9 +90,9 @@ export default function ExerciseListView({
                     }}
                     aria-label="Trocar exercício"
                     title="Aparelho ocupado? Trocar exercício"
-                    className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/[0.08] active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    className="rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/[0.08] active:scale-[0.98] transition-[background-color,color,transform] duration-150 cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                   >
-                    <RefreshCw className="w-3.5 h-3.5 stroke-[1.8]" />
+                    <RefreshCw className="w-3.5 h-3.5 stroke-[1.75]" />
                   </button>
                 )}
                 <div className="text-zinc-500 p-1">{isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</div>
@@ -123,10 +121,10 @@ export default function ExerciseListView({
                   <button
                     type="button"
                     onClick={() => onAddSet(exercise.id)}
-                    className="py-2 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold flex items-center gap-1.5 border border-white/[0.08] cursor-pointer min-h-[44px] active:scale-95 transition-all"
+                    className="px-4 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold flex items-center gap-1.5 border border-white/[0.08] cursor-pointer min-h-[44px] active:scale-[0.98] transition-[background-color,transform] duration-150"
                   >
-                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                    <span>Adicionar Série</span>
+                    <Plus className="w-3.5 h-3.5 stroke-[2]" />
+                    <span>Adicionar série</span>
                   </button>
                 </div>
               </div>

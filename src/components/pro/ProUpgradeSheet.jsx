@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Check, Loader2, X } from 'lucide-react';
 import { ModalBackdrop, ModalPanel } from '../ui/Modal';
-import { startProCheckout } from '../../services/billingService';
+import { startProCheckout, openBillingPortal } from '../../services/billingService';
 import { triggerHaptic } from '../../utils/audio';
 
 // Só o que o PRO desbloqueia hoje no app; nada de promessas de funcionalidades por lançar
@@ -10,17 +10,33 @@ const PRO_BENEFITS = [
   'AB Coach com até 50 mensagens por dia (5 no plano gratuito)'
 ];
 
+// Plano Personal Trainer: o que o Trainer Hub já faz hoje (inclui tudo do PRO)
+const TRAINER_BENEFITS = [
+  'Trainer Hub com a tua lista de atletas, código de convite e construtor de programas',
+  'Alertas de risco e check-ins pós-treino de cada atleta',
+  'Os teus atletas ganham 14 dias de PRO ao entrar com o teu código',
+  'Inclui tudo o que o PRO desbloqueia'
+];
+
 const REASON_TITLES = {
   mesocycles: 'O mesociclo faz parte do PRO',
   coach_limit: 'Mais conversas com o AB Coach',
   trial_ending: 'O teu teste PRO está a terminar',
-  trial_ended: 'O teu teste PRO terminou'
+  trial_ended: 'O teu teste PRO terminou',
+  trainer: 'Acompanha os teus atletas na AB Fitness'
 };
 
-/** Folha de upgrade: explica o PRO e abre o Stripe Checkout. Usar dentro de <AnimatePresence>. */
-export default function ProUpgradeSheet({ reason = 'mesocycles', onClose }) {
+/**
+ * Folha de upgrade: explica o plano e abre o Stripe Checkout. Usar dentro de <AnimatePresence>.
+ * `plan`: 'pro' (por omissão) ou 'trainer' (Personal Trainer).
+ */
+export default function ProUpgradeSheet({ reason = 'mesocycles', plan = 'pro', onClose }) {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
+  const isTrainerPlan = plan === 'trainer';
+  const benefits = isTrainerPlan ? TRAINER_BENEFITS : PRO_BENEFITS;
+  const title = isTrainerPlan ? REASON_TITLES.trainer : (REASON_TITLES[reason] || REASON_TITLES.mesocycles);
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -32,7 +48,18 @@ export default function ProUpgradeSheet({ reason = 'mesocycles', onClose }) {
     triggerHaptic(12);
     setStatus('loading');
     setError('');
-    const { error: err } = await startProCheckout();
+    const { error: err, code } = await startProCheckout(isTrainerPlan ? 'trainer' : 'pro');
+    if (err) {
+      setStatus('idle');
+      setError(err);
+      setAlreadySubscribed(code === 'already_subscribed');
+    }
+  };
+
+  const handleManage = async () => {
+    triggerHaptic(12);
+    setStatus('loading');
+    const { error: err } = await openBillingPortal();
     if (err) {
       setStatus('idle');
       setError(err);
@@ -50,8 +77,8 @@ export default function ProUpgradeSheet({ reason = 'mesocycles', onClose }) {
       >
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">AB Fitness PRO</p>
-            <h2 className="font-display text-xl font-black text-white tracking-tight">{REASON_TITLES[reason] || REASON_TITLES.mesocycles}</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">{isTrainerPlan ? 'AB Fitness Personal Trainer' : 'AB Fitness PRO'}</p>
+            <h2 className="font-display text-xl font-black text-white tracking-tight">{title}</h2>
           </div>
           <button type="button" onClick={onClose} aria-label="Fechar" className="p-2 -m-2 text-zinc-400 hover:text-white">
             <X className="w-5 h-5" />
@@ -59,7 +86,7 @@ export default function ProUpgradeSheet({ reason = 'mesocycles', onClose }) {
         </div>
 
         <ul className="space-y-2.5">
-          {PRO_BENEFITS.map((b) => (
+          {benefits.map((b) => (
             <li key={b} className="flex items-start gap-2.5 text-[13px] text-zinc-200">
               <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
               {b}
@@ -75,12 +102,12 @@ export default function ProUpgradeSheet({ reason = 'mesocycles', onClose }) {
 
         <button
           type="button"
-          onClick={handleCheckout}
+          onClick={alreadySubscribed ? handleManage : handleCheckout}
           disabled={status === 'loading'}
-          className="w-full inline-flex items-center justify-center gap-2 bg-primary text-app font-semibold text-sm rounded-xl px-4 py-3.5 disabled:opacity-60"
+          className="w-full min-h-[48px] inline-flex items-center justify-center gap-2 bg-primary text-app font-semibold text-sm rounded-xl px-4 py-3.5 disabled:opacity-60"
         >
           {status === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
-          Assinar PRO
+          {alreadySubscribed ? 'Gerir subscrição' : isTrainerPlan ? 'Assinar Personal Trainer' : 'Assinar PRO'}
         </button>
       </ModalPanel>
     </ModalBackdrop>

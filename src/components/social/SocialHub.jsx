@@ -72,7 +72,7 @@ function SearchResultRow({ r, onAdd, onAccept }) {
         type="button"
         whileTap={TAP}
         onClick={onAccept}
-        className="min-h-[40px] px-4 rounded-full bg-white text-black text-[13px] font-bold cursor-pointer touch-manipulation"
+        className="min-h-[44px] px-4 rounded-full bg-primary text-app text-[13px] font-bold cursor-pointer touch-manipulation active:scale-[0.98] transition-transform duration-150"
       >
         Aceitar
       </motion.button>
@@ -84,7 +84,7 @@ function SearchResultRow({ r, onAdd, onAccept }) {
         whileTap={TAP}
         transition={SPRING}
         onClick={onAdd}
-        className="min-h-[40px] px-4 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.12] text-white text-[13px] font-semibold inline-flex items-center gap-1.5 cursor-pointer touch-manipulation transition-colors"
+        className="min-h-[44px] px-4 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.12] text-white text-[13px] font-semibold inline-flex items-center gap-1.5 cursor-pointer touch-manipulation transition-colors"
       >
         <UserPlus className="w-4 h-4" strokeWidth={1.9} />
         Adicionar
@@ -373,7 +373,7 @@ export default function SocialHub({ onNavigateTab }) {
                 type="button"
                 onClick={() => setQuery('')}
                 aria-label="Limpar pesquisa"
-                className="mr-2 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] cursor-pointer"
+                className="tap-44 mr-2 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -490,7 +490,7 @@ export default function SocialHub({ onNavigateTab }) {
                   onClick={openProfileAction}
                   className="flex flex-col items-center shrink-0 w-[68px] cursor-pointer touch-manipulation group"
                 >
-                  <div className="relative p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-500 via-emerald-300 to-white/80">
+                  <div className="relative p-[2px] rounded-full bg-white/70">
                     <div className="rounded-full bg-black p-[2px]">
                       <Avatar
                         url={athlete.avatar_url}
@@ -508,7 +508,7 @@ export default function SocialHub({ onNavigateTab }) {
                   <span className="mt-2 text-[12px] font-semibold text-white truncate max-w-full group-hover:text-zinc-200">
                     {firstName}
                   </span>
-                  <span className="text-[10px] text-emerald-300/90 truncate max-w-full">
+                  <span className="text-[11px] text-zinc-400 truncate max-w-full">
                     {athlete.activityLabel}
                   </span>
                 </motion.button>

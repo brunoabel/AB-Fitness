@@ -86,7 +86,7 @@ export default function RunHome({
               setWeeklyGoalKm(next);
               triggerHaptic(8);
             }}
-            className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer shrink-0 tabular-nums"
+            className="min-h-[44px] px-3.5 rounded-full bg-transparent border border-white/[0.1] hover:border-white/[0.2] text-xs font-semibold text-zinc-200 transition-colors cursor-pointer shrink-0 tabular-nums"
             title="Tocar para ajustar a tua meta semanal"
           >
             Meta: {weekly.goalKm} km
@@ -142,7 +142,7 @@ export default function RunHome({
                   triggerHaptic(8);
                   setSelectedTarget(t);
                 }}
-                className={`min-h-[40px] px-4 rounded-full border text-xs font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-150 cursor-pointer ${
+                className={`min-h-[44px] px-4 rounded-full border text-xs font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-150 cursor-pointer ${
                   active
                     ? 'bg-accent border-accent-hover text-white'
                     : 'bg-transparent border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.16]'
@@ -195,7 +195,7 @@ export default function RunHome({
 
         {runsHistory.length === 0 ? (
           <p className="py-6 text-sm text-zinc-400 border-t border-white/[0.06]">
-            Ainda sem registos. Escolhe um objetivo acima ou sai para correr 15 minutos — a tua primeira marca aparece aqui.
+            Ainda sem corridas. A tua primeira marca aparece aqui.
           </p>
         ) : (
           <ul className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
@@ -272,7 +272,7 @@ export default function RunHome({
                             setOpenMenuRunId(null);
                             downloadGPX(run.coordinates, `corrida_${run.date?.split('T')[0] || 'ab_fitness'}`);
                           }}
-                          className="w-full min-h-[40px] px-3 rounded-xl text-left text-xs font-semibold text-zinc-200 hover:bg-white/[0.08] flex items-center gap-2 cursor-pointer"
+                          className="w-full min-h-[44px] px-3 rounded-xl text-left text-xs font-semibold text-zinc-200 hover:bg-white/[0.08] flex items-center gap-2 cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>Exportar GPX</span>
@@ -290,7 +290,7 @@ export default function RunHome({
                           setOpenMenuRunId(null);
                           handleDeleteRun(e, run.id);
                         }}
-                        className="w-full min-h-[40px] px-3 rounded-xl text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 cursor-pointer"
+                        className="w-full min-h-[44px] px-3 rounded-xl text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>{confirmDeleteRunId === run.id ? 'Confirmar eliminação' : 'Eliminar registo'}</span>

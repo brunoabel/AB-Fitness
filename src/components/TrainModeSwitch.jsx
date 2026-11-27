@@ -31,7 +31,7 @@ export default function TrainModeSwitch({ mode, onChange }) {
                 onChange(id);
                 window.scrollTo({ top: 0 });
               }}
-              className={`relative pb-3 pt-1.5 text-sm font-semibold inline-flex items-center gap-2 cursor-pointer transition-colors ${
+              className={`relative min-h-[44px] pb-3 pt-1.5 text-sm font-semibold inline-flex items-center gap-2 cursor-pointer touch-manipulation transition-colors ${
                 on ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'
               }`}
             >

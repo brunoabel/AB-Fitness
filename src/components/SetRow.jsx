@@ -195,10 +195,10 @@ export default function SetRow({
         const rect = e.currentTarget.getBoundingClientRect();
         try {
           confetti({
-            particleCount: 60,
+            particleCount: 36,
             spread: 55,
             startVelocity: 32,
-            ticks: 120,
+            ticks: 90,
             colors: ['#ffffff', '#ffffff', '#c9d3e6'],
             origin: {
               x: (rect.left + rect.width / 2) / window.innerWidth,
@@ -242,10 +242,10 @@ export default function SetRow({
       const rect = e.currentTarget.getBoundingClientRect();
       try {
         confetti({
-          particleCount: 60,
+          particleCount: 36,
           spread: 55,
           startVelocity: 32,
-          ticks: 120,
+          ticks: 90,
           colors: ['#ffffff', '#ffffff', '#c9d3e6'],
           origin: {
             x: (rect.left + rect.width / 2) / window.innerWidth,
@@ -298,10 +298,10 @@ export default function SetRow({
 
   return (
     <div 
-      className={`rounded-xl border transition-all duration-150 p-2 sm:p-2.5 ${
-        isDone 
-          ? 'bg-accent/[0.07] border-accent-hover shadow-xs' 
-          : 'bg-surface border-white/10'
+      className={`rounded-xl border transition-colors duration-150 p-2 sm:p-2.5 ${
+        isDone
+          ? 'bg-accent/[0.07] border-accent-hover/70'
+          : 'bg-transparent border-white/[0.06]'
       }`}
     >
       <div className="grid grid-cols-[2.5rem_1fr_1fr_3.5rem] sm:grid-cols-[2.75rem_4rem_1fr_1fr_3.5rem] items-center gap-1.5 sm:gap-2 min-h-[56px]">
@@ -582,7 +582,7 @@ export default function SetRow({
 
           {/* Badge de Novo PR */}
           {isPR && (
-            <span className="flex items-center gap-1 font-bold text-white bg-accent/70 px-1.5 py-0.5 rounded border border-accent-hover uppercase tracking-wider motion-safe:animate-[pulse_1s_ease-in-out_3]">
+            <span className="flex items-center gap-1 font-bold text-white bg-accent/70 px-1.5 py-0.5 rounded border border-accent-hover uppercase tracking-wider">
               <Trophy className="w-3 h-3 stroke-[2.5]" />
               <span>{isSimpleMode ? 'Novo recorde' : 'Novo PR'}</span>
             </span>

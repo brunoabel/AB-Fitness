@@ -67,31 +67,13 @@ export default function CelebrationModal({
     sound.playCelebration();
     triggerHaptic([50, 100, 50, 150, 50, 200]);
 
-    // Disparar confetes elegantes nas cores do tema (preto, branco, prata) — respeita reduced motion
+    // Uma rajada curta e monocromática (respeita reduced motion)
     if (reduce) return;
-    const end = Date.now() + 2.5 * 1000;
-    const colors = ['#ffffff', '#000000', '#ffffff', '#71717a', '#f4f4f5'];
-
-    (function frame() {
-      confetti({
-        particleCount: 4,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: colors
-      });
-      confetti({
-        particleCount: 4,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: colors
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    })();
+    const colors = ['#ffffff', '#c9d3e6'];
+    try {
+      confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, ticks: 110, colors, disableForReducedMotion: true });
+      confetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, ticks: 110, colors, disableForReducedMotion: true });
+    } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -190,14 +172,10 @@ export default function CelebrationModal({
           {/* Destaque de Novos Recordes Pessoais (PR) */}
           {newPRs && newPRs.length > 0 && (
             <div className="p-3 rounded-xl bg-accent/70 border border-accent-hover text-left flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center font-bold shrink-0">
-                <Trophy className="w-4 h-4 stroke-[2.5]" />
-              </div>
+              <Trophy className="w-4 h-4 text-white shrink-0" strokeWidth={1.75} />
               <div className="min-w-0 flex-1">
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider block">
-                  {newPRs.length === 1
-                    ? (isSimpleMode ? 'Novo Recorde Pessoal!' : 'Novo Recorde Pessoal (PR)!')
-                    : `${newPRs.length} Novos Recordes Pessoais!`}
+                <span className="text-xs font-semibold text-white block">
+                  {newPRs.length === 1 ? 'Novo recorde pessoal' : `${newPRs.length} novos recordes pessoais`}
                 </span>
                 <p className="text-xs font-bold text-zinc-100 truncate tabular-nums">
                   {newPRs
@@ -216,10 +194,8 @@ export default function CelebrationModal({
 
           {/* Destaque de Análise do Treinador Inteligente (AB Coach) */}
           {coachNarrative && (
-            <div className="p-3.5 rounded-xl bg-accent text-white border border-accent-hover text-left flex items-start gap-3 shadow-md">
-              <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center font-bold shrink-0 mt-0.5">
-                <Sparkles className="w-4 h-4 stroke-[2.5]" />
-              </div>
+            <div className="p-3.5 rounded-xl bg-accent/60 text-white border border-accent-hover text-left flex items-start gap-3">
+              <Sparkles className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.75} />
               <div className="min-w-0 flex-1">
                 <span className="text-xs font-bold text-white/80 block">
                   Análise AB Coach
@@ -293,7 +269,7 @@ export default function CelebrationModal({
 
             <div className="flex-1 min-w-0 space-y-1.5">
               <p className="text-[11px] text-zinc-500">
-                {cardVariant === 'card' ? 'Cartão com fundo — pronto a partilhar sozinho.' : 'Fundo transparente — cola por cima de uma foto no Stories.'}
+                {cardVariant === 'card' ? 'Cartão com fundo, pronto a partilhar.' : 'Fundo transparente, para pôr sobre uma foto.'}
               </p>
               <div className="flex flex-col gap-1">
                 {CARD_VARIANTS.map((v) => (

@@ -129,20 +129,20 @@ export function computeWorkloadACWR({ workouts = [], runs = [], now = Date.now()
     label = 'Risco de sobrecarga';
     recommendDeload = true;
     lockOverload = true;
-    headline = 'Pico de carga detetado — protege as articulações';
-    detail = `A tua carga dos últimos 7 dias está em ${ratio.toFixed(2)}× a média mensal${sharpSpike ? ` (+${weekOverWeekPct}% face à semana passada)` : ''}. Reduz 1 série hoje ou antecipa deload.`;
+    headline = 'Pico de carga: protege as articulações';
+    detail = `Esta semana carregaste ${ratio.toFixed(2).replace('.', ',')}× a tua média${sharpSpike ? ` (+${weekOverWeekPct}% face à anterior)` : ''}. Tira 1 série hoje.`;
   } else if (ratio > 1.3 || sharpSpike) {
     status = 'caution';
     label = 'Atenção ao pico';
     recommendDeload = false;
     lockOverload = false;
     headline = 'Carga semanal a subir depressa';
-    detail = `Rácio em ${ratio.toFixed(2)}× (limite seguro 1.30). Mantém técnica rigorosa e evita adicionar volume extra.`;
+    detail = 'Mantém o volume. Não acrescentes séries esta semana.';
   } else if (ratio < 0.8) {
     status = 'underload';
     label = 'Carga baixa';
     headline = 'Volume abaixo da tua média habitual';
-    detail = `Rácio em ${ratio.toFixed(2)}× — ótima janela para retomar consistência progressivamente.`;
+    detail = 'Boa altura para voltar ao ritmo, aos poucos.';
   }
 
   return {

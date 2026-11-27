@@ -617,7 +617,7 @@ export default function RunningHub({ isDark = true }) {
 
     if (!reduceMotion) {
       try {
-        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 }, ticks: 110, colors: ['#ffffff', '#c9d3e6'], disableForReducedMotion: true });
       } catch {}
     }
 
