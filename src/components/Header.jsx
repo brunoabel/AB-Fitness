@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
-import { Flame, Menu } from 'lucide-react';
+import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react';
+import { Flame, Menu, ChevronRight } from 'lucide-react';
 import CoachAvatar from './coach/CoachAvatar';
 import { triggerHaptic } from '../utils/audio';
 import { useAuth } from '../context';
@@ -82,6 +82,16 @@ export default function Header({
   const tabKey = currentView === 'admin' ? 'admin' : activeTab;
   const isHome = tabKey === 'dashboard';
   const [now, setNow] = useState(() => new Date());
+  const [showStreakPopover, setShowStreakPopover] = useState(false);
+
+  useEffect(() => {
+    if (!showStreakPopover) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowStreakPopover(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showStreakPopover]);
 
   useEffect(() => {
     const syncClock = () => {
@@ -158,24 +168,101 @@ export default function Header({
 
             <motion.button
               type="button"
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.94 }}
               onClick={() => {
-                triggerHaptic(8);
-                onNavigateTab?.('profile');
+                triggerHaptic(10);
+                setShowStreakPopover((v) => !v);
               }}
-              aria-label={`${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} a treinar. Abrir perfil e histórico`}
+              aria-expanded={showStreakPopover}
+              aria-label={`${streak} ${streak === 1 ? 'dia em sequência' : 'dias em sequência'}. Tocar para ver detalhes`}
               className={`tap-44 min-h-[36px] px-3 rounded-full border inline-flex items-center gap-1.5 text-[14px] font-semibold text-white tabular-nums cursor-pointer shrink-0 transition-colors ${
                 streak > 0
-                  ? 'bg-accent/40 border-accent-hover'
-                  : 'bg-surface border-white/[0.08]'
+                  ? 'bg-orange-500/15 border-orange-500/35 hover:bg-orange-500/20'
+                  : 'bg-surface border-white/[0.08] hover:border-white/[0.16]'
               }`}
             >
-              <Flame className={`w-4 h-4 ${streak > 0 ? 'text-white' : 'text-zinc-500'}`} strokeWidth={1.75} />
+              <Flame
+                className={`w-4 h-4 transition-transform ${
+                  streak > 0
+                    ? 'text-orange-400 fill-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.75)]'
+                    : 'text-zinc-500'
+                }`}
+                strokeWidth={1.8}
+              />
               {streak}
             </motion.button>
           </div>
         </div>
       </header>
+
+      {/* Popover nativo da sequência de dias */}
+      <AnimatePresence>
+        {showStreakPopover && (
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setShowStreakPopover(false)}
+          >
+            <motion.div
+              role="dialog"
+              aria-label="Sequência de dias"
+              initial={{ opacity: 0, y: -8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.96 }}
+              transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="fixed top-[calc(env(safe-area-inset-top,0px)+54px)] right-4 sm:right-6 w-[280px] rounded-2xl bg-surface/95 backdrop-blur-2xl border border-white/[0.12] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.75)] space-y-2.5"
+            >
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
+                    streak > 0
+                      ? 'bg-orange-500/15 border-orange-500/30'
+                      : 'bg-white/[0.04] border-white/[0.08]'
+                  }`}
+                >
+                  <Flame
+                    className={`w-5 h-5 ${
+                      streak > 0
+                        ? 'text-orange-400 fill-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.75)]'
+                        : 'text-zinc-500'
+                    }`}
+                    strokeWidth={1.8}
+                  />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-display text-[15px] font-bold text-white tabular-nums leading-tight">
+                    {streak > 0
+                      ? `${streak} ${streak === 1 ? 'dia em sequência' : 'dias em sequência'}`
+                      : 'Sem sequência ativa'}
+                  </p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    {streak > 0 ? 'Chama acesa' : 'Acende hoje'}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-[12px] text-zinc-300 leading-relaxed">
+                {streak > 0
+                  ? 'Continua assim, estás a ir muito bem! Os teus dias de descanso programados protegem a sequência.'
+                  : 'Conclui um treino ou corrida hoje para acender a chama e iniciar a tua sequência.'}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic(8);
+                  setShowStreakPopover(false);
+                  onNavigateTab?.('profile');
+                }}
+                className="w-full pt-2 border-t border-white/[0.08] flex items-center justify-between text-[12px] font-semibold text-white hover:text-zinc-300 cursor-pointer"
+              >
+                <span>Ver calendário e histórico</span>
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-400" strokeWidth={2} />
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Título grande: rola com a página e dá lugar ao título compacto — omitido quando a
           própria view já tem cabeçalho editorial dedicado (ex. Corrida), para nunca duplicar */}

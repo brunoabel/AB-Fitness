@@ -15,7 +15,6 @@ import {
   Dumbbell,
   Link2,
   Crown,
-  Sparkles,
   Watch,
   Flame,
   CreditCard,
@@ -218,7 +217,7 @@ export default function SidebarDrawer({
                   )}
                   {streak > 0 && (
                     <span className="inline-flex items-center gap-1 font-display tabular-nums text-[12px] font-bold text-white">
-                      <Flame className="w-3 h-3 text-zinc-300" strokeWidth={2} />
+                      <Flame className="w-3.5 h-3.5 text-orange-400 fill-orange-500" strokeWidth={1.75} />
                       {streak}d
                     </span>
                   )}
@@ -252,13 +251,13 @@ export default function SidebarDrawer({
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-[14px] font-semibold text-white">
-                    Falar com o AB Coach
+                    AB Coach · Treinador IA
                   </span>
                   <span className="block text-[12px] text-zinc-300 truncate">
-                    Ajustes biomecânicos e metas
+                    Treinos, técnica e estratégia à medida
                   </span>
                 </span>
-                <Sparkles className="w-4 h-4 text-zinc-200 group-hover:text-white shrink-0" strokeWidth={1.75} />
+                <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-white shrink-0 transition-colors" strokeWidth={1.75} />
               </motion.button>
             </div>
 
