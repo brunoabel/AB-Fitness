@@ -4,6 +4,16 @@ import './index.css';
 
 const LEGAL_PATHS = new Set(['/termos', '/privacidade', '/aviso-medico']);
 
+// Bloqueia pinch-zoom no iOS Safari para sensação de app nativa (preservando zoom dentro do mapa Leaflet)
+if (typeof document !== 'undefined') {
+  const preventPinch = (e) => {
+    if (e.target && typeof e.target.closest === 'function' && e.target.closest('.leaflet-container')) return;
+    e.preventDefault();
+  };
+  document.addEventListener('gesturestart', preventPinch, { passive: false });
+  document.addEventListener('gesturechange', preventPinch, { passive: false });
+}
+
 // Páginas legais públicas (/termos, /privacidade, /aviso-medico): fora da app, sem login e sem puxar os textos legais para o bundle principal
 const legalPath = window.location.pathname.replace(/\/+$/, '') || '/';
 

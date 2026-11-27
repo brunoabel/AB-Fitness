@@ -2,12 +2,12 @@ import React from 'react';
 import { HandMetal } from 'lucide-react';
 
 /**
- * Selo Respect — Identidade de membro PRO / Founder da AB Fitness.
- * Liga a cultura social do Clube ("dar Respect") ao emblema de destaque junto ao nome.
+ * Selo Respect — Ícone livre (sem bolinha), ligeiramente elevado e inclinado na diagonal
+ * à direita junto ao nome, para leitura nítida e assinatura visual própria da AB Fitness.
  *
  * `variant`:
- *  - 'pro'  (padrão): Azul-Marinho metálico (#2B4A7A -> #1D3557) com ícone branco nítido.
- *  - 'gold': Dourado fosco (#E5C158 -> #B8860B) para Founder / CEO.
+ *  - 'pro'  (padrão): Azul luminoso sobre OLED (#5B8DEF) com brilho subtil.
+ *  - 'gold': Dourado metálico (#E5C158) para Founder / CEO.
  */
 export default function VerifiedBadge({
   size = 18,
@@ -17,20 +17,18 @@ export default function VerifiedBadge({
 }) {
   const isGold = variant === 'gold';
   const label = title || (isGold ? 'Selo Respect · Founder' : 'Selo Respect · Membro PRO');
-  const iconSize = Math.max(9, Math.round(size * 0.6));
 
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full shrink-0 align-middle select-none ring-1 ${
+      className={`inline-flex items-center justify-center shrink-0 align-top select-none -translate-y-[1.5px] rotate-[14deg] ${
         isGold
-          ? 'bg-gradient-to-br from-[#E5C158] to-[#B8860B] ring-amber-200/35 text-black'
-          : 'bg-gradient-to-br from-[#2B4A7A] to-[#1D3557] ring-white/20 text-white'
+          ? 'text-[#E5C158] drop-shadow-[0_0_6px_rgba(229,193,88,0.38)]'
+          : 'text-[#5B8DEF] drop-shadow-[0_0_6px_rgba(91,141,239,0.42)]'
       } ${className}`}
-      style={{ width: size, height: size }}
       title={label}
       aria-label={label}
     >
-      <HandMetal style={{ width: iconSize, height: iconSize }} strokeWidth={2.25} />
+      <HandMetal style={{ width: size, height: size }} strokeWidth={2} />
     </span>
   );
 }

@@ -10,8 +10,6 @@ import {
   ShieldCheck,
   LogOut,
   ChevronRight,
-  Cloud,
-  HardDrive,
   Scale,
   Trash2,
   Dumbbell,
@@ -226,15 +224,8 @@ export default function SidebarDrawer({
                   )}
                 </div>
 
-                <p className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-zinc-400">
-                  {synced ? (
-                    <Cloud className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.75} />
-                  ) : (
-                    <HardDrive className="w-3.5 h-3.5 text-zinc-500" strokeWidth={1.75} />
-                  )}
-                  <span>
-                    {rank.label} · {synced ? 'Sincronizado na nuvem' : 'Guardado neste aparelho'}
-                  </span>
+                <p className="mt-1.5 text-[12px] text-zinc-400">
+                  {rank.label}
                 </p>
               </div>
 
