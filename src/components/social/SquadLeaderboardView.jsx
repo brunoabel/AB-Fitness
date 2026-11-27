@@ -65,17 +65,8 @@ export default function SquadLeaderboardView({
   }
 
   return (
-    <div className="pt-4">
-      <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.06]">
-        <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-400">
-          Ranking da Semana
-        </span>
-        <span className="text-[11px] font-medium text-zinc-500 tabular-nums">
-          {ranked.length} {ranked.length === 1 ? 'atleta' : 'atletas'} · toque para H2H
-        </span>
-      </div>
-
-      <ul className="divide-y divide-white/[0.05]">
+    <div className="pt-1">
+      <ul className="divide-y divide-white/[0.05] border-y border-white/[0.06]">
         {ranked.map((s, index) => {
           const f = friendships.find((x) => x.friend_id === s.friend_id) || {};
           const friendPayload = { ...s, friendship_id: f.friendship_id };

@@ -8,6 +8,7 @@ import {
   Clock3,
   Users,
   Flame,
+  Camera,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context';
@@ -518,68 +519,8 @@ export default function SocialHub({ onNavigateTab }) {
         </div>
       )}
 
-      {/* CAMADA C: Segmentação Editorial sem Caixas (Atividade vs. Classificação) */}
-      <div
-        role="tablist"
-        aria-label="Vistas do clube"
-        className="flex items-center gap-6 border-b border-white/[0.08]"
-      >
-        {[
-          { id: 'feed', label: 'Atividade' },
-          { id: 'squad', label: 'Classificação', count: summary.length }
-        ].map((tab) => {
-          const active = clubTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => {
-                if (clubTab !== tab.id) {
-                  triggerHaptic(8);
-                  setClubTab(tab.id);
-                }
-              }}
-              className={`relative min-h-[44px] pb-2.5 text-[14px] inline-flex items-center gap-1.5 cursor-pointer touch-manipulation transition-colors ${
-                active ? 'text-white font-semibold' : 'text-zinc-500 hover:text-zinc-300 font-medium'
-              }`}
-            >
-              <span>{tab.label}</span>
-              {tab.count != null && tab.count > 0 && (
-                <span
-                  className={`font-display text-[13px] tabular-nums ${
-                    active ? 'text-zinc-300' : 'text-zinc-600'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
-              {active && (
-                <motion.span
-                  layoutId="clubSegmentUnderline"
-                  transition={reducedMotion ? { duration: 0 } : SPRING}
-                  className="absolute bottom-[-1px] left-0 right-0 h-[2px] rounded-full bg-accent-hover"
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* CAMADA D: Feed Editorial ou Classificação Semanal */}
-      {clubTab === 'feed' ? (
-        <ClubFeedView
-          loaded={loaded}
-          feed={feed}
-          profile={profile}
-          currentUserId={userId}
-          onNewPost={() => setNewPostOpen(true)}
-          onRespect={respect}
-          onOpenChat={(friend) => setActiveChatFriend(friend)}
-        />
-      ) : (
+      {/* CAMADA C: Ranking da Semana + Feed Unificado (sem abas redundantes) */}
+      {loaded && summary.length > 0 && (
         <SquadLeaderboardView
           loaded={loaded}
           summary={summary}
@@ -589,6 +530,32 @@ export default function SocialHub({ onNavigateTab }) {
           onShareInvite={share}
         />
       )}
+
+      <ClubFeedView
+        loaded={loaded}
+        feed={feed}
+        profile={profile}
+        currentUserId={userId}
+        onNewPost={() => setNewPostOpen(true)}
+        onRespect={respect}
+        onOpenChat={(friend) => setActiveChatFriend(friend)}
+      />
+
+      {/* Botão flutuante Liquid Glass estilo iOS 26 para publicar foto/evolução */}
+      <motion.button
+        type="button"
+        whileTap={reducedMotion ? undefined : { scale: 0.92 }}
+        transition={SPRING}
+        onClick={() => {
+          triggerHaptic(10);
+          setNewPostOpen(true);
+        }}
+        aria-label="Publicar foto ou evolução no clube"
+        title="Nova publicação"
+        className="fixed right-5 sm:right-6 bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] lg:bottom-8 z-30 w-[52px] h-[52px] rounded-full backdrop-blur-2xl backdrop-saturate-[200%] bg-zinc-900/55 hover:bg-zinc-800/65 border border-white/[0.2] shadow-[0_12px_32px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.32),inset_0_-1px_0.5px_rgba(255,255,255,0.06)] flex items-center justify-center text-white cursor-pointer touch-manipulation transition-colors"
+      >
+        <Camera className="w-[22px] h-[22px]" strokeWidth={1.85} />
+      </motion.button>
 
       <AnimatePresence>
         {notice && (

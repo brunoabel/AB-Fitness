@@ -7,7 +7,7 @@ import WeeklyDashboard from './components/WeeklyDashboard';
 import Navigation from './components/Navigation';
 import InstallPrompt from './components/InstallPrompt';
 import { PRIVATE_LAUNCH_MODE } from './config/launchMode';
-import { getLocalFitnessProfile, fetchFitnessProfile } from './services/fitnessProfileService';
+import { getLocalFitnessProfile, syncFitnessProfileOnAuth, flushFitnessProfileSync } from './services/fitnessProfileService';
 import BootSequence, { BOOT_SEEN_KEY } from './components/boot/BootSequence';
 import TrainModeSwitch from './components/TrainModeSwitch';
 import { animate, stagger } from 'motion';
@@ -228,6 +228,40 @@ function AppContent() {
     return () => clearTimeout(t);
   }, []);
 
+  // Agendador leve de lembretes de hidratação (corre enquanto a app está aberta/visível)
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    let alive = true;
+    const checkHydration = async () => {
+      if (!alive || document.visibilityState !== 'visible') return;
+      try {
+        const { getHydrationPrefs, saveHydrationPrefs, getHydrationToday, computeDailyWaterTargetMl, shouldTriggerHydrationReminder, sendHydrationNotification } = await import('./utils/hydration');
+        const prefs = getHydrationPrefs();
+        if (!prefs.enabled) return;
+        const profile = getLocalFitnessProfile();
+        const targetMl = Number.isFinite(prefs.customTargetMl) && prefs.customTargetMl >= 1000
+          ? prefs.customTargetMl
+          : computeDailyWaterTargetMl(profile?.weightKg, profile?.primaryGoal);
+        const todayLog = getHydrationToday();
+        const now = new Date();
+        if (shouldTriggerHydrationReminder({ now, prefs, consumedMl: todayLog.consumedMl, targetMl })) {
+          const sent = await sendHydrationNotification({ remainingMl: Math.max(0, targetMl - todayLog.consumedMl) });
+          if (sent) saveHydrationPrefs({ lastNotifiedAt: now.toISOString() });
+        }
+      } catch {}
+    };
+    const intervalId = window.setInterval(checkHydration, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') checkHydration();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      alive = false;
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+
   const wearableCallbackHandledRef = useRef(false);
 
   // Trata o retorno do fluxo OAuth de wearables (ex.: Whoop, Fitbit, Strava ou Garmin)
@@ -319,6 +353,7 @@ function AppContent() {
       flushWearableSyncQueue(user.id).catch(() => {});
       flushRunsSyncQueue(user.id).catch(() => {});
       flushPlanSyncQueue(user.id).catch(() => {});
+      flushFitnessProfileSync(user.id).catch(() => {});
     };
     flushUserQueues();
     window.addEventListener('online', flushUserQueues);
@@ -346,15 +381,20 @@ function AppContent() {
         });
     }
 
-    // Primeiro acesso: sem perfil local nem remoto, o AB Coach conduz o onboarding
-    if ((user || isGuest) && !getSavedUserProfile() && !getLocalFitnessProfile()) {
-      const remote = user?.id ? fetchFitnessProfile(user.id).catch(() => null) : Promise.resolve(null);
-      remote.then((found) => {
-        if (active && !found) setShowOnboardingModal(true);
-      });
-      return () => {
-        active = false;
-      };
+    // Sincroniza sempre as métricas biométricas e nível do atleta ao autenticar;
+    // só abre o onboarding se não existir perfil nem na nuvem nem localmente para esta conta.
+    if (user && user.id && user.id !== 'guest-local-user') {
+      syncFitnessProfileOnAuth(user.id)
+        .then((profile) => {
+          if (active && !profile) setShowOnboardingModal(true);
+        })
+        .catch(() => {
+          if (active && !getLocalFitnessProfile() && !getSavedUserProfile()) {
+            setShowOnboardingModal(true);
+          }
+        });
+    } else if (isGuest && !getSavedUserProfile() && !getLocalFitnessProfile()) {
+      setShowOnboardingModal(true);
     }
 
     return () => {

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { ATHLETE_MANUALS } from '../data/athleteManuals';
 import { getSavedUserProfile, saveUserProfileLocal } from '../utils/storage';
+import { getLocalFitnessProfile } from '../services/fitnessProfileService';
 import { sound, triggerHaptic } from '../utils/audio';
 
 export default function AthleteManualModal({ onClose }) {
@@ -29,7 +30,10 @@ export default function AthleteManualModal({ onClose }) {
   const currentSavedGoal = userProfile?.goal || 'athlete';
   
   const [activeManualKey, setActiveManualKey] = useState(currentSavedGoal);
-  const [calcWeight, setCalcWeight] = useState(68);
+  const [calcWeight, setCalcWeight] = useState(() => {
+    const w = Number(getLocalFitnessProfile()?.weightKg);
+    return Number.isFinite(w) && w >= 35 && w <= 220 ? w : 70;
+  });
   const [showIndexSheet, setShowIndexSheet] = useState(false);
   const [justSavedGoal, setJustSavedGoal] = useState(false);
 

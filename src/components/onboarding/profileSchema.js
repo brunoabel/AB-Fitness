@@ -243,29 +243,58 @@ export function fieldsFilled(profile, fields = []) {
   });
 }
 
-/** Converte para uma linha da tabela user_fitness_profiles (snake_case). */
-export function toRow(userId, p) {
+const VALID_GENDERS = new Set(['male', 'female', 'other']);
+const VALID_GOALS = new Set(['hypertrophy', 'fat_loss', 'strength', 'conditioning']);
+const VALID_LEVELS = new Set(['beginner', 'intermediate', 'advanced']);
+const VALID_LOCATIONS = new Set(['gym', 'home_gym', 'bodyweight']);
+const VALID_SPLITS = new Set(['ppl', 'upper_lower', 'arnold', 'full_body', 'auto']);
+const VALID_MINUTES = new Set([45, 60, 75]);
+const VALID_INTENSITIES = new Set(['recreational', 'moderate', 'competitive']);
+const VALID_SESSION_ORDERS = new Set(['gym_first', 'sport_first', 'split_hours']);
+
+function clampNumber(val, min, max, fallback) {
+  const n = Number(val);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+/** Converte para uma linha da tabela user_fitness_profiles (snake_case), respeitando todos os CHECKs do Postgres. */
+export function toRow(userId, p = {}) {
+  const gender = VALID_GENDERS.has(p.gender) ? p.gender : 'other';
+  const age = Math.round(clampNumber(p.age, 14, 90, 25));
+  const weightKg = Math.round(clampNumber(p.weightKg, 30, 250, 70) * 10) / 10;
+  const heightCm = Math.round(clampNumber(p.heightCm, 120, 230, 175));
+  const primaryGoal = VALID_GOALS.has(p.primaryGoal) ? p.primaryGoal : 'hypertrophy';
+  const experienceLevel = VALID_LEVELS.has(p.experienceLevel) ? p.experienceLevel : 'beginner';
+  const trainingLocation = VALID_LOCATIONS.has(p.trainingLocation) ? p.trainingLocation : 'gym';
+  const daysPerWeek = Math.round(clampNumber(p.daysPerWeek, 2, 6, 4));
+  const rawMinutes = Number(p.sessionMinutes);
+  const sessionMinutes = VALID_MINUTES.has(rawMinutes) ? rawMinutes : 60;
+  const splitPreference = VALID_SPLITS.has(p.splitPreference) ? p.splitPreference : 'auto';
+  const sportIntensity = VALID_INTENSITIES.has(p.sportIntensity) ? p.sportIntensity : null;
+  const sessionOrder = VALID_SESSION_ORDERS.has(p.sessionOrder) ? p.sessionOrder : null;
+
   return {
     user_id: userId,
-    gender: p.gender,
-    age: Math.round(p.age),
-    weight_kg: Math.round(p.weightKg * 10) / 10,
-    height_cm: Math.round(p.heightCm),
-    primary_goal: p.primaryGoal,
-    experience_level: p.experienceLevel,
-    training_location: p.trainingLocation,
-    equipment: p.trainingLocation === 'gym' ? [] : p.equipment || [],
-    days_per_week: p.daysPerWeek,
-    session_minutes: p.sessionMinutes,
-    split_preference: p.splitPreference,
-    injuries: p.injuries,
-    priority_muscles: p.priorityMuscles,
+    gender,
+    age,
+    weight_kg: weightKg,
+    height_cm: heightCm,
+    primary_goal: primaryGoal,
+    experience_level: experienceLevel,
+    training_location: trainingLocation,
+    equipment: trainingLocation === 'gym' ? [] : Array.isArray(p.equipment) ? p.equipment : [],
+    days_per_week: daysPerWeek,
+    session_minutes: sessionMinutes,
+    split_preference: splitPreference,
+    injuries: Array.isArray(p.injuries) ? p.injuries : [],
+    priority_muscles: Array.isArray(p.priorityMuscles) ? p.priorityMuscles : [],
     has_sport: Boolean(p.hasSport),
-    sports: p.sports || [],
+    sports: Array.isArray(p.sports) ? p.sports : [],
     other_sport: p.otherSport || null,
-    sport_days: p.sportDays || [],
-    sport_intensity: p.sportIntensity || null,
-    session_order: p.sessionOrder || null,
+    sport_days: Array.isArray(p.sportDays) ? p.sportDays : [],
+    sport_intensity: sportIntensity,
+    session_order: sessionOrder,
     onboarding_completed_at: new Date().toISOString()
   };
 }

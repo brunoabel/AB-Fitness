@@ -32,6 +32,7 @@ import { planExtrasFromStorage, planSignature, isPlanUpdateDismissed, dismissPla
 // DailyBriefing usa useMuscleRecovery, que também depende do catálogo (getCatalogEntry).
 const MuscleRecoveryMap = lazy(() => import('./MuscleRecoveryMap'));
 const DailyBriefing = lazy(() => import('./DailyBriefing'));
+const HydrationStrip = lazy(() => import('./HydrationStrip'));
 
 export default function WeeklyDashboard({ 
   completedDays = [], 
@@ -537,6 +538,11 @@ export default function WeeklyDashboard({
       {/* 4. MAPA FISIOLÓGICO DE RECUPERAÇÃO MUSCULAR */}
       <Suspense fallback={<div className="h-[340px]" />}>
         <MuscleRecoveryMap />
+      </Suspense>
+
+      {/* 5. HIDRATAÇÃO DIÁRIA & LEMBRETES */}
+      <Suspense fallback={null}>
+        <HydrationStrip />
       </Suspense>
 
       <Suspense fallback={null}>

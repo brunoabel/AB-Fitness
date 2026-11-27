@@ -190,30 +190,8 @@ export default function ClubFeedView({
 
   return (
     <div>
-      {/* Entrada editorial para publicar */}
-      <button
-        type="button"
-        onClick={() => {
-          triggerHaptic(8);
-          onNewPost();
-        }}
-        className="group w-full min-h-[56px] py-3 border-b border-white/[0.06] flex items-center gap-3.5 text-left cursor-pointer touch-manipulation"
-      >
-        <Avatar
-          url={profile?.avatar_url}
-          name={profile?.full_name || profile?.username || 'A'}
-          size={36}
-        />
-        <span className="flex-1 text-[14px] text-zinc-400 group-hover:text-zinc-200 transition-colors truncate">
-          Partilha a tua evolução ou foto de treino...
-        </span>
-        <span className="w-9 h-9 rounded-full bg-white/[0.06] group-hover:bg-white/[0.12] flex items-center justify-center text-white transition-colors shrink-0">
-          <Camera className="w-4 h-4" strokeWidth={1.75} />
-        </span>
-      </button>
-
       {!loaded ? (
-        <div className="pt-4">
+        <div className="pt-2">
           <SkeletonList rows={3} label="A carregar atividade do clube" />
         </div>
       ) : feed.length === 0 ? (
